@@ -1,0 +1,1 @@
+This directory will contain all the necessary code (i.e., HTML/CSS/JavaScript) to actually run the human construction experiments.
