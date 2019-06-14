@@ -102,3 +102,9 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# p5
+p5.js
+
+# npm
+node_modules/
