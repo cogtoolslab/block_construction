@@ -1,7 +1,10 @@
+// Wrapper for Bodies.rectangle class to create boundaries/ walls. 
+// Also includes a show function which draws the box using P5.
+
 function Boundary(x, y, w, h){
     
     var options = {
-        isStatic: true,
+        isStatic: true, // static i.e. not affected by gravity
         friction: 0.4,
         restitution: 0.6
     }

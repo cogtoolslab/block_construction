@@ -1,3 +1,6 @@
+// Wrapper for Bodies.rectangle class to create boxes and add them to the world. 
+// Also includes a show function which draws the box using P5.
+
 function Box(x, y, w, h){
     this.w = w;
     this.h = h;
