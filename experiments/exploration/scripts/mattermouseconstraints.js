@@ -27,10 +27,13 @@ function setup() {
     canvasMouse.pixelRation = pixelDensity(); // Required for mouse's selected pixel to work on high-resolution displays
 
     var options = {
-        mouse: canvasMouse
+        mouse: canvasMouse,
+        //constraint: 0.05
     }
     
-    var mConstraint = MouseConstraint.create(engine, options);
+    mConstraint = MouseConstraint.create(engine, options);
+    mConstraint.constraint.stiffness = 0.2; // can change properties of mouse interaction by playing with this constraint
+    mConstraint.constraint.angularStiffness = 1;
     World.add(engine.world, mConstraint);
     console.log(mConstraint);
 
@@ -46,20 +49,15 @@ function draw(){
     ground.show();
     box1.show();
 
-    /*
-    if (typeof(mConstraint) != 'undefined') { //if the constraint exists
-        console.log(mConstraint.body);
+    
+    if (mConstraint.body) { //if the constraint exists
         var pos = mConstraint.body.position;
         var offset = mConstraint.constraint.pointB;
-        FileList(0,255,0);
+        fill(0,255,0);
         ellipse(pos.x,pos.y, 20,20)
         var m = mConstraint.mouse.position;
         stroke(0, 255, 0);
         line(pos.x + offset.x, pos.y + offset.y, m.x, m.y);
-    }*/
-
-    if (mConstraint.body) {
-        
     }
 
 }
