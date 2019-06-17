@@ -9,10 +9,10 @@ var boxes = [];
 function setup() {
     createCanvas(400,400);
     engine = Engine.create();
-    ground = Bodies.rectangle(200, 400, 800, 60, { isStatic: true });
-    
+    ground = new Boundary(200, 400, 800, 60);
     Engine.run(engine);
     World.add(engine.world, [ground]);
+    console.log(engine);
     
 }
 
@@ -26,4 +26,5 @@ function draw(){
     boxes.forEach(b => {
         b.show();
     });
+    ground.show();
 }
