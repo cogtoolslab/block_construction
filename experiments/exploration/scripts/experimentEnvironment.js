@@ -67,11 +67,14 @@ function setup() {
     mConstraint.constraint.angularStiffness = 1;
     World.add(engine.world, mConstraint); // add the mouse constraint to physics engine world    
     
+    console.log(engine.world);
+
 }
 
 function mouseClicked() {
     // Do nothing
 }
+
 
 function draw(){ // Called continuously by Processing JS 
     background(51);
@@ -86,5 +89,6 @@ function draw(){ // Called continuously by Processing JS
         stroke(0, 255, 0);
         line(pos.x + offset.x, pos.y + offset.y, m.x, m.y); // draw line of mouse constraint
     }
+    
 
 }

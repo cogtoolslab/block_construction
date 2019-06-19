@@ -13,9 +13,6 @@ function BlockMenu (h) {
 
     }
 
-    console.log(0,canvasY-this.h,canvasX,this.h);
-
-
     this.show = function() {
 
         push();
