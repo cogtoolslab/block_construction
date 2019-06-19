@@ -13,6 +13,7 @@ var menuHeight = 70;
 var floorY = 50;
 var canvasY = 400;
 var canvasX = 400;
+var gravity = 0.001;
 
 // Global Variables
 var engine;
@@ -31,8 +32,9 @@ function setup() {
     // Set up Matter Physics Engine
     engine = Engine.create();
 
-    // TODO Create Block Menu
-    blockMenu = new BlockMenu (menuHeight);
+    // Create Block Menu
+    blockMenu = new BlockMenu(menuHeight);
+    
     blockKindA = new BlockKind(30,50,[100,200,100]);
     blockKindB = new BlockKind(30,30,[0,200,190]);
     blockKindC = new BlockKind(30,10,[220,100,100]);
@@ -40,12 +42,14 @@ function setup() {
     blockKinds.push(blockKindB);
     blockKinds.push(blockKindC);
     blockMenu.addBlockKinds(blockKinds);
+    
 
     // Add things to the physics engine world
-    ground = new Boundary(200, canvas.height-menuHeight, 800, 60);
+    ground = new Boundary(200, canvas.height - menuHeight, 800, 60);
     box1 = new Box(200, 100, 30, 30);
     
     // Start physics engine
+    engine.world.gravity.scale = gravity;
     Engine.run(engine);
 
 
@@ -74,16 +78,13 @@ function draw(){ // Called continuously by Processing JS
     ground.show();
     box1.show();
     blockMenu.show();
-
     
     if (mConstraint.body) { //if the constraint exists
         var pos = mConstraint.body.position;
         var offset = mConstraint.constraint.pointB;
-        fill(0,255,0);
-        ellipse(pos.x,pos.y, 20,20)
         var m = mConstraint.mouse.position;
         stroke(0, 255, 0);
-        line(pos.x + offset.x, pos.y + offset.y, m.x, m.y);
+        line(pos.x + offset.x, pos.y + offset.y, m.x, m.y); // draw line of mouse constraint
     }
 
 }

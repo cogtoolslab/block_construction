@@ -13,6 +13,8 @@ function BlockMenu (h) {
 
     }
 
+    console.log(0,canvasY-this.h,canvasX,this.h);
+
 
     this.show = function() {
 
@@ -20,11 +22,11 @@ function BlockMenu (h) {
         rectMode(CORNER);
         stroke(200);
         fill(120);
-        rect(0,canvas.width-this.h,windowWidth,this.h);
+        rect(0,canvasY-this.h,canvasX,this.h);
         
         var i;
         for (i = 0; i < blockKinds.length; i++) { 
-            blockKinds[i].showMenuItem(1,((i+1)*(canvas.width/(blockKinds.length+1))),canvas.height - menuHeight/2);;
+            blockKinds[i].showMenuItem(1,((i+1)*(canvasX/(blockKinds.length+1))),canvasY - menuHeight/2);;
         } 
         pop();
 
