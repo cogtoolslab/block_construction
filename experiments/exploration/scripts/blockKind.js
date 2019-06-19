@@ -2,13 +2,9 @@ function BlockKind(w,h,blockColor){
     this.w = w;
     this.h = h;
     this.color = blockColor;
-    
-    //var this.x;
-    //var this.y;
 
+    // show block scaled according to given ratio, in a given location
     this.showMenuItem = function(sizeRatio,x,y) {
-        //this.x = x;
-        //this.y = y;
 
         push();
         rectMode(CENTER);

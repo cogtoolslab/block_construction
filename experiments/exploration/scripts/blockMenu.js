@@ -4,6 +4,7 @@ function BlockMenu (h) {
 
     this.h = h;
 
+    // Adds a type of block to the menu
     this.addBlockKinds = function(newBlockKinds) {
 
         newBlockKinds.forEach(bK => {
@@ -13,6 +14,7 @@ function BlockMenu (h) {
 
     }
 
+    // Display menu
     this.show = function() {
 
         push();

@@ -1,5 +1,4 @@
-// Blocks are wrappers for Matter Bodies that instantiate a particular blockKind
-
+// Wrappers for Matter Bodies that instantiate a particular blockKind
 function Block(blockKind){
     this.w = blockKind.w;
     this.h = blockKind.h;
