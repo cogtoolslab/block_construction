@@ -29,6 +29,9 @@ var selectedBlockKind;
 
 // Processing JS Function, defines initial environment.
 function setup() {
+
+    //noCursor();
+
     // Create Canvas
     var canvas = createCanvas(canvasX,canvasY); // creates a P5 canvas (which is a wrapper for an HTML canvas)
     
@@ -92,10 +95,6 @@ function draw(){ // Called continuously by Processing JS
     background(51);
     ground.show();
     blockMenu.show();
-    
-    if (isPlacingObject){
-        selectedBlockKind.showGhost(mouseX, mouseY);
-    }
 
     blocks.forEach(b => {
         b.show();
@@ -108,6 +107,15 @@ function draw(){ // Called continuously by Processing JS
         stroke(0, 255, 0);
         line(pos.x + offset.x, pos.y + offset.y, m.x, m.y); // draw line of mouse constraint
     }
-    
+
+    if (mouseY < canvasY - menuHeight){
+        if (isPlacingObject){
+            noCursor(); //feel like this is horribly ineffecient...
+            selectedBlockKind.showGhost(mouseX, mouseY);
+        }
+    } else {
+        cursor();
+    }
+
 
 }
