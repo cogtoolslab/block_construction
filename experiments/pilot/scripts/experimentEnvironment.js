@@ -42,7 +42,7 @@ function setup() {
     blockMenu = new BlockMenu(menuHeight);
     
     //blockKindA = new BlockKind(30,50,[100,200,100]);
-    blockKindB = new BlockKind(30,30,[0,200,190]);
+    blockKindB = new BlockKind(30,30,[0,200,190,100]);
     //blockKindC = new BlockKind(30,10,[220,100,100]);
     //blockKinds.push(blockKindA);
     blockKinds.push(blockKindB);
@@ -81,7 +81,7 @@ function setup() {
 function mouseClicked() {
     //check to see if in env
 
-    if (isPlacingObject) {
+    if (mouseY < canvasY - menuHeight && isPlacingObject) {
         blocks.push(new Block(selectedBlockKind,mouseX,mouseY));
     }
     
