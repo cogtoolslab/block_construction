@@ -14,7 +14,7 @@ function Block(blockKind, x, y){
         var pos = this.body.position;
         var angle = this.body.angle;
 
-        push();
+        push(); //saves the current drawing style settings and transformations
         translate(pos.x, pos.y);
         rectMode(CENTER);
         rotate(angle);

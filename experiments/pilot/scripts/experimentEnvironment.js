@@ -38,18 +38,20 @@ function setup() {
     // Set up Matter Physics Engine
     engine = Engine.create();
 
-    // Create Block Menu
-    blockMenu = new BlockMenu(menuHeight);
     
-    //blockKindA = new BlockKind(30,50,[100,200,100]);
+    
+    blockKindA = new BlockKind(30,50,[0, 100,200,100]);
     blockKindB = new BlockKind(30,30,[0,200,190,100]);
-    //blockKindC = new BlockKind(30,10,[220,100,100]);
-    //blockKinds.push(blockKindA);
+    blockKindC = new BlockKind(30,10,[220,100,100]);
+    blockKinds.push(blockKindA);
     blockKinds.push(blockKindB);
-    //blockKinds.push(blockKindC);
-    blockMenu.addBlockKinds(blockKinds);
+    blockKinds.push(blockKindC);
+
     //TEMP: first block kind is selected
-    selectedBlockKind = blockKindB; //should really be first in list
+    selectedBlockKind = blockKindA; //should really be first in list
+
+    // Create Block Menu
+    blockMenu = new BlockMenu(menuHeight, blockKinds);
 
     // Add things to the physics engine world
     ground = new Boundary(200, canvas.height - menuHeight, 800, 60);
@@ -74,7 +76,6 @@ function setup() {
     mConstraint.constraint.angularStiffness = 1;
     World.add(engine.world, mConstraint); // add the mouse constraint to physics engine world    
     
-    console.log(engine.world);
 
 }
 
@@ -84,9 +85,14 @@ function mouseClicked() {
     if (mouseY < canvasY - menuHeight && isPlacingObject) {
         blocks.push(new Block(selectedBlockKind,mouseX,mouseY));
     }
-    
-    //or if in menu then update selected blockkind
 
+    else if (mouseY > canvasY - menuHeight && mouseY > canvasY - menuHeight && isPlacingObject) { //or if in menu then update selected blockkind
+        // is mouse clicking a block?
+        selectedBlockKind = blockMenu.hasClickedButton(mouseX, mouseY, selectedBlockKind);
+        console.log(selectedBlockKind);
+        isPlacingObject == true;
+    }
+    
 
 }
 

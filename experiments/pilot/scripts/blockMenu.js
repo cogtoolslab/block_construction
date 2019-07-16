@@ -1,21 +1,37 @@
-function BlockMenu (h) {
-    
-    var blockKinds = [];
+class BlockMenu {
 
-    this.h = h;
+    constructor(h, blockKinds){
+        this.h = h;
+        this.blockKinds = blockKinds;
+    }
 
     // Adds a type of block to the menu
-    this.addBlockKinds = function(newBlockKinds) {
-
+    addBlockKinds(newBlockKinds) {
         newBlockKinds.forEach(bK => {
             blockKinds.push(bK);    
         });
         
+    }
+    
+    hasClickedButton(mouseX, mouseY, selectedBlockKind){
+        for (let i = 0; i < blockKinds.length; i++) {
+            // has click hit the block item?
+            const blockX = blockKinds[i].x;
+            const blockY = blockKinds[i].y;
+            if (mouseX >= blockX - blockKinds[i].w/2 && mouseX <= blockX + blockKinds[i].w/2
+                && mouseY >= blockY - blockKinds[i].h/2 && mouseY <= blockY + blockKinds[i].h/2
+                ){
+                //console.log(blockKinds[i])
+                return blockKinds[i];
+            }
+                
+        }
+        return selectedBlockKind;
 
     }
 
     // Display menu
-    this.show = function() {
+    show() {
 
         push();
         rectMode(CORNER);
@@ -30,4 +46,7 @@ function BlockMenu (h) {
         pop();
 
     }
+
+
+
 }
