@@ -1,4 +1,5 @@
 // BlockKinds are a type of block- of which several might be placed in the environment. To be concretely instantiated, a Block must be created that inherets its properties from a BlockKind
+// BlockKind also holds the information for displaying the menu item associated with that blockKind.
 function BlockKind(w,h,blockColor){
     this.w = w;
     this.h = h;

@@ -28,7 +28,6 @@ function Boundary(x, y, w, h){
         stroke(200);
         fill(20);
         rect(0,0,this.w,this.h);
-
         pop();
 
     }

@@ -34,7 +34,7 @@ function setup() {
 
     // Create Canvas
     var canvas = createCanvas(canvasX,canvasY); // creates a P5 canvas (which is a wrapper for an HTML canvas)
-    
+    console.log(canvas);
     // Set up Matter Physics Engine
     engine = Engine.create();
 
@@ -86,13 +86,11 @@ function mouseClicked() {
         blocks.push(new Block(selectedBlockKind,mouseX,mouseY));
     }
 
-    else if (mouseY > canvasY - menuHeight && mouseY > canvasY - menuHeight && isPlacingObject) { //or if in menu then update selected blockkind
+    else  { //or if in menu then update selected blockkind
         // is mouse clicking a block?
         selectedBlockKind = blockMenu.hasClickedButton(mouseX, mouseY, selectedBlockKind);
-        console.log(selectedBlockKind);
         isPlacingObject == true;
     }
-    
 
 }
 
