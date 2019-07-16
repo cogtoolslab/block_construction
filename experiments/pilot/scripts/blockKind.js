@@ -7,6 +7,8 @@ function BlockKind(w,h,blockColor){
     var x;
     var y;
 
+    // removed: options variable- add in later when we need different properties with different block kinds
+
     // show block scaled according to given ratio, in a given location
     this.showMenuItem = function(sizeRatio,x,y) {
 

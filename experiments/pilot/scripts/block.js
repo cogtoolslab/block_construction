@@ -6,6 +6,9 @@ function Block(blockKind, x, y){
     var options = blockKind.options;
 
     this.body = Bodies.rectangle(x,y,this.w,this.h, options);
+    this.body.friction = 0.5;
+    this.body.mass = 0.01;
+    //console.log(this.body);
     World.add(engine.world, this.body); 
 
     // Display the block (maybe separate out view functions later?)
