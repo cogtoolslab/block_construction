@@ -7,13 +7,14 @@ var Engine = Matter.Engine,
     Constraint = Matter.Constraint;
     MouseConstraint = Matter.MouseConstraint;
     Mouse = Matter.Mouse;
+    Sleeping = Matter.Sleeping;
 
 // Parameters
 var menuHeight = 70;
 var floorY = 50;
 var canvasY = 400;
 var canvasX = 400;
-var gravity = 0.001;
+var gravity = 0.0015;
 
 // Global Variables
 var engine;
@@ -37,14 +38,18 @@ function setup() {
 
     // Create Canvas
     var canvas = createCanvas(canvasX,canvasY); // creates a P5 canvas (which is a wrapper for an HTML canvas)
-    console.log(canvas);
     // Set up Matter Physics Engine
-    engine = Engine.create();
+    engineOptions = {
+        velocityIterations: 30,
+        positionIterations: 30,
+        enableSleeping: true
+    }
+    engine = Engine.create(engineOptions);
 
     // Create block kinds that will appear in environment/menu. Later on this will need to be represented in each task.
-    blockKindA = new BlockKind(30,50,[0, 100,200,100]);
+    blockKindA = new BlockKind(20,60,[0, 100,200,100]);
     blockKindB = new BlockKind(30,30,[0,200,190,100]);
-    blockKindC = new BlockKind(50,30,[220,100,100]);
+    blockKindC = new BlockKind(60,20,[220,100,100]);
     blockKinds.push(blockKindA);
     blockKinds.push(blockKindB);
     blockKinds.push(blockKindC);
@@ -89,12 +94,18 @@ function mouseClicked() {
 
     if (mouseY < canvasY - menuHeight && isPlacingObject) {
         blocks.push(new Block(selectedBlockKind,mouseX,mouseY));
+        
+        blocks.forEach(b => { // wake up body from sleeping
+            Matter.Sleeping.set(b.body, false);
+        });
     }
 
     else  { //or if in menu then update selected blockkind
         // is mouse clicking a block?
         selectedBlockKind = blockMenu.hasClickedButton(mouseX, mouseY, selectedBlockKind);
         isPlacingObject == true;
+
+        
     }
 
 }

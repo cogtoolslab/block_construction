@@ -3,12 +3,19 @@ function Block(blockKind, x, y){
     this.w = blockKind.w;
     this.h = blockKind.h;
 
-    var options = blockKind.options;
+    //var options = blockKind.options;
 
-    this.body = Bodies.rectangle(x,y,this.w,this.h, options);
-    this.body.friction = 0.77;
-    this.body.mass = 0.01;
-    //console.log(this.body);
+    var options = {
+        friction: 0.6,
+        frictionStatic: 0.4,
+        //frictionAir: 0.05,
+        density: 0.04,
+        slop: 0,
+        sleepThreshold: 40,
+        restitution: 0.0
+    }
+
+    this.body = Bodies.rectangle(x,y,this.w,this.h);
     World.add(engine.world, this.body); 
 
     // Display the block (maybe separate out view functions later?)
