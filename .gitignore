@@ -107,4 +107,4 @@ venv.bak/
 # p5.js
 
 # npm
-#node_modules/
+node_modules/
