@@ -5,7 +5,7 @@ function Boundary(x, y, w, h){
     
     var options = {
         isStatic: true, // static i.e. not affected by gravity
-        friction: 0.4,
+        friction: 0.9,
         restitution: 0.6
     }
     
