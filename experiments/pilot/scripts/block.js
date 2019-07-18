@@ -6,10 +6,10 @@ function Block(blockKind, x, y){
     //var options = blockKind.options;
 
     var options = {
-        friction: 0.6,
-        frictionStatic: 2,
-        frictionAir: 0.02,
-        slop: 0.1,
+        friction: 0.3,
+        frictionStatic: 1.5,
+        frictionAir: 0.07,
+        slop: 0.05,
         density: 0.002,
         restitution: 0.001
     }
@@ -35,6 +35,7 @@ function Block(blockKind, x, y){
         rect(0,0,this.w,this.h);
 
         pop();
+        
 
     }
 

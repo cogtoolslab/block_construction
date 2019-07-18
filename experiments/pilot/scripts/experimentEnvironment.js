@@ -40,8 +40,9 @@ function setup() {
     var canvas = createCanvas(canvasX,canvasY); // creates a P5 canvas (which is a wrapper for an HTML canvas)
     // Set up Matter Physics Engine
     engineOptions = {
-        velocityIterations: 30,
-        positionIterations: 20
+        velocityIterations: 100,
+        positionIterations: 100,
+        enableSleeping: true
     }
     engine = Engine.create(engineOptions);
 
