@@ -7,15 +7,14 @@ function Block(blockKind, x, y){
 
     var options = {
         friction: 0.6,
-        frictionStatic: 0.4,
-        //frictionAir: 0.05,
-        density: 0.04,
-        slop: 0,
-        sleepThreshold: 40,
-        restitution: 0.0
+        frictionStatic: 2,
+        frictionAir: 0.02,
+        slop: 0.1,
+        density: 0.002,
+        restitution: 0.001
     }
 
-    this.body = Bodies.rectangle(x,y,this.w,this.h);
+    this.body = Bodies.rectangle(x,y,this.w,this.h, options);
     World.add(engine.world, this.body); 
 
     // Display the block (maybe separate out view functions later?)
@@ -30,6 +29,9 @@ function Block(blockKind, x, y){
         rotate(angle);
         stroke(200);
         fill(150);
+        if(this.body.isSleeping) {
+            fill(100);
+        }
         rect(0,0,this.w,this.h);
 
         pop();

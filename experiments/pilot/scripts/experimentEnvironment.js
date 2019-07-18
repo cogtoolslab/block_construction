@@ -10,10 +10,10 @@ var Engine = Matter.Engine,
     Sleeping = Matter.Sleeping;
 
 // Parameters
-var menuHeight = 70;
+var menuHeight = 100;
 var floorY = 50;
-var canvasY = 400;
-var canvasX = 400;
+var canvasY = 600;
+var canvasX = 600;
 var gravity = 0.0015;
 
 // Global Variables
@@ -41,15 +41,14 @@ function setup() {
     // Set up Matter Physics Engine
     engineOptions = {
         velocityIterations: 30,
-        positionIterations: 30,
-        enableSleeping: true
+        positionIterations: 20
     }
     engine = Engine.create(engineOptions);
 
     // Create block kinds that will appear in environment/menu. Later on this will need to be represented in each task.
-    blockKindA = new BlockKind(20,60,[0, 100,200,100]);
-    blockKindB = new BlockKind(30,30,[0,200,190,100]);
-    blockKindC = new BlockKind(60,20,[220,100,100]);
+    blockKindA = new BlockKind(30,90,[0, 100,200,100]);
+    blockKindB = new BlockKind(50,50,[0,200,190,100]);
+    blockKindC = new BlockKind(90,30,[220,100,100]);
     blockKinds.push(blockKindA);
     blockKinds.push(blockKindB);
     blockKinds.push(blockKindC);
@@ -94,10 +93,6 @@ function mouseClicked() {
 
     if (mouseY < canvasY - menuHeight && isPlacingObject) {
         blocks.push(new Block(selectedBlockKind,mouseX,mouseY));
-        
-        blocks.forEach(b => { // wake up body from sleeping
-            Matter.Sleeping.set(b.body, false);
-        });
     }
 
     else  { //or if in menu then update selected blockkind
@@ -138,6 +133,7 @@ function draw(){ // Called continuously by Processing JS
     } else {
         cursor();
     }
+
 
 
 }
