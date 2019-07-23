@@ -8,13 +8,15 @@ var Engine = Matter.Engine,
     MouseConstraint = Matter.MouseConstraint;
     Mouse = Matter.Mouse;
     Sleeping = Matter.Sleeping;
+    Runner = Matter.Runner;
 
 // Parameters
 var menuHeight = 100;
 var floorY = 50;
 var canvasY = 600;
 var canvasX = 600;
-var gravity = 0.0015;
+//var gravity = 0.003;
+var sF = 1;
 
 // Global Variables
 var engine;
@@ -40,16 +42,18 @@ function setup() {
     var canvas = createCanvas(canvasX,canvasY); // creates a P5 canvas (which is a wrapper for an HTML canvas)
     // Set up Matter Physics Engine
     engineOptions = {
-        velocityIterations: 100,
-        positionIterations: 100,
-        enableSleeping: true
+        enableSleeping: true,
+        velocityIterations: 30,
+        positionIterations: 20
     }
     engine = Engine.create(engineOptions);
+    //engine.world.gravity.y= 2;
+
 
     // Create block kinds that will appear in environment/menu. Later on this will need to be represented in each task.
-    blockKindA = new BlockKind(30,90,[0, 100,200,100]);
-    blockKindB = new BlockKind(50,50,[0,200,190,100]);
-    blockKindC = new BlockKind(90,30,[220,100,100]);
+    blockKindA = new BlockKind(30*sF,90*sF,[0, 100,200,100]);
+    blockKindB = new BlockKind(50*sF,50*sF,[0,200,190,100]);
+    blockKindC = new BlockKind(90*sF,30*sF,[0, 220,100,100]);
     blockKinds.push(blockKindA);
     blockKinds.push(blockKindB);
     blockKinds.push(blockKindC);
@@ -61,11 +65,11 @@ function setup() {
     blockMenu = new BlockMenu(menuHeight, blockKinds);
 
     // Add things to the physics engine world
-    ground = new Boundary(200, canvas.height - menuHeight, 800, 60);
+    ground = new Boundary(200*sF, (canvas.height - menuHeight)*sF, 800*sF, 60*sF);
     //box1 = new Box(200, 100, 30, 30);
     
     // Start physics engine
-    engine.world.gravity.scale = gravity;
+    
     Engine.run(engine);
 
     
@@ -75,7 +79,7 @@ function setup() {
     canvasMouse.pixelRatio = pixelDensity(); // Required for mouse's selected pixel to work on high-resolution displays
 
     var options = {
-        mouse: canvasMouse, // set object to mouse object in canvas
+        mouse: canvasMouse // set object to mouse object in canvas
     }
     /* set up constraint between mouse and block- used to move around blocks with mouse click
     mConstraint = MouseConstraint.create(engine, options); // Create 'constraint' (like a spring) between mouse and 'body' object. 'body' is defined when mouse clicked.
@@ -85,7 +89,7 @@ function setup() {
     */
 
     // Set up task (add to task function later)
-    targets = new ConnectingTargets(200, 80, 200, 300);
+    targets = new ConnectingTargets(300*sF, 80*sF, 300*sF, 450*sF);
 
 }
 
@@ -93,17 +97,18 @@ function mouseClicked() {
     //check to see if in env
 
     if (mouseY < canvasY - menuHeight && isPlacingObject) {
-        blocks.push(new Block(selectedBlockKind,mouseX,mouseY));
+        blocks.push(new Block(selectedBlockKind,mouseX*sF,mouseY*sF));
+        blocks.forEach(b => {
+            Sleeping.set(b.body, false);
+        });
     }
 
     else  { //or if in menu then update selected blockkind
         // is mouse clicking a block?
         selectedBlockKind = blockMenu.hasClickedButton(mouseX, mouseY, selectedBlockKind);
         isPlacingObject == true;
-
         
     }
-
 }
 
 
@@ -112,8 +117,6 @@ function draw(){ // Called continuously by Processing JS
     background(51);
     ground.show();
     blockMenu.show();
-    targets.show(); // show targets from task
-
     blocks.forEach(b => {
         b.show();
     });
@@ -134,7 +137,8 @@ function draw(){ // Called continuously by Processing JS
     } else {
         cursor();
     }
+    targets.show(); // show targets from task
 
-
+    
 
 }

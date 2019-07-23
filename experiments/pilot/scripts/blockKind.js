@@ -17,7 +17,7 @@ function BlockKind(w,h,blockColor){
         push();
         rectMode(CENTER);
         fill(this.color);
-        rect(x,y,sizeRatio*this.w,sizeRatio*this.h)
+        rect(x,y,sizeRatio*this.w/sF,sizeRatio*this.h/sF)
         pop();
 
     }
@@ -30,7 +30,7 @@ function BlockKind(w,h,blockColor){
         rectMode(CENTER);
         stroke(200);
         fill(blockColor);
-        rect(0,0,this.w,this.h);
+        rect(0,0,this.w/sF,this.h/sF);
         pop();
 
     }

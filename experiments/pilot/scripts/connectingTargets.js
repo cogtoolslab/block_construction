@@ -40,20 +40,20 @@ function ConnectingTargets(startX, startY, finishX, finishY){
         fill(0,0,0,0);
 
         push();
-        translate(pos.x, pos.y);
+        translate(pos.x/sF, pos.y/sF);
         rectMode(CENTER);
         rotate(angle);
-        rect(0,0,this.w,this.h);
+        rect(0,0,this.w/sF,this.h/sF);
         pop();
 
         var pos2 = this.bodyB.position;
         var angle2 = this.bodyB.angle;
 
         push();
-        translate(pos2.x, pos2.y);
+        translate(pos2.x/sF, pos2.y/sF);
         rectMode(CENTER);
         rotate(angle2);
-        rect(0,0,this.w,this.h);
+        rect(0,0,this.w/sF,this.h/sF);
         pop();
 
         pop();

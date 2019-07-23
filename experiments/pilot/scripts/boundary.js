@@ -6,7 +6,7 @@ function Boundary(x, y, w, h){
     var options = {
         isStatic: true, // static i.e. not affected by gravity
         friction: 0.9,
-        frictionStatic: 2
+        frictionStatic: 1
         //slop: 0,
         //restitution: 0
     }
@@ -24,12 +24,12 @@ function Boundary(x, y, w, h){
         var angle = this.body.angle;
 
         push();
-        translate(pos.x, pos.y);
+        translate(pos.x/sF, pos.y/sF);
         rectMode(CENTER);
         rotate(angle);
         stroke(200);
         fill(20);
-        rect(0,0,this.w,this.h);
+        rect(0,0,this.w/sF,this.h/sF);
         pop();
 
     }
