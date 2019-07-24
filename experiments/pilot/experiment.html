@@ -16,6 +16,7 @@
     <script src="scripts/block.js"></script>
     <script src="scripts/blockKind.js"></script>
     <script src="scripts/connectingTargets.js"></script>
+    <script src="scripts/canvasInteraction.js"></script>
 
     
 
@@ -34,11 +35,17 @@
         margin-right: auto;
         display: block;
       }
+      #experiment-container {
+        display: block;
+      }
     </style>
   </head>
   <body>
-    <div id="canvas-container">
-        <script src="scripts/experimentEnvironment.js"></script>
+    <div id="experiment-container">
+      <script src="scripts/experimentEnvironment.js"></script>
+      <div>
+        <input id="done" type="button" value="done" onclick="donePressed();" />
+      </div>
     </div>
   </body>
 </html>

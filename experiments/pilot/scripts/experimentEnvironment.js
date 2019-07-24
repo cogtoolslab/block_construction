@@ -51,9 +51,9 @@ function setup() {
 
 
     // Create block kinds that will appear in environment/menu. Later on this will need to be represented in each task.
-    blockKindA = new BlockKind(30*sF,90*sF,[0, 100,200,100]);
+    blockKindA = new BlockKind(20*sF,90*sF,[0, 100,200,100]);
     blockKindB = new BlockKind(50*sF,50*sF,[0,200,190,100]);
-    blockKindC = new BlockKind(90*sF,30*sF,[0, 220,100,100]);
+    blockKindC = new BlockKind(90*sF,20*sF,[0, 220,100,100]);
     blockKinds.push(blockKindA);
     blockKinds.push(blockKindB);
     blockKinds.push(blockKindC);
@@ -96,7 +96,7 @@ function setup() {
 function mouseClicked() {
     //check to see if in env
 
-    if (mouseY < canvasY - menuHeight && isPlacingObject) {
+    if (mouseY > 0 && mouseY < canvasY - menuHeight && mouseX > 0 && mouseX < canvasX &&isPlacingObject) {
         blocks.push(new Block(selectedBlockKind,mouseX*sF,mouseY*sF));
         blocks.forEach(b => {
             Sleeping.set(b.body, false);
@@ -138,7 +138,5 @@ function draw(){ // Called continuously by Processing JS
         cursor();
     }
     targets.show(); // show targets from task
-
-    
 
 }
