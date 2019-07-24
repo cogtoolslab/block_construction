@@ -12,7 +12,7 @@ function Block(blockKind, x, y){
         //slop: 0.1,
         //density: 0.08,
         //restitution: 0.001,
-        sleepThreshold: 50
+        sleepThreshold: 100
     }
 
     this.body = Bodies.rectangle(x,y,this.w,this.h, options);

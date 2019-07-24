@@ -44,10 +44,11 @@ function setup() {
     engineOptions = {
         enableSleeping: true,
         velocityIterations: 30,
-        positionIterations: 20
+        positionIterations: 20,
     }
     engine = Engine.create(engineOptions);
     //engine.world.gravity.y= 2;
+    
 
 
     // Create block kinds that will appear in environment/menu. Later on this will need to be represented in each task.
@@ -71,6 +72,14 @@ function setup() {
     // Start physics engine
     
     Engine.run(engine);
+    
+    // Runner- use instead of line above if changes to game loop needed
+    /*
+    runner = Matter.Runner.create({
+        isFixed: true
+    });
+    Runner.run(runner, engine);
+    */
 
     
     // Set up interactions with physics objects
