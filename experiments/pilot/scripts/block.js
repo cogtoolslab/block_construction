@@ -6,17 +6,18 @@ function Block(blockKind, x, y){
     //var options = blockKind.options;
 
     var options = {
-        //friction: 0.8,
-        //frictionStatic: 1.5,
+        friction: 0.8,
+        frictionStatic: 1.5,
         //frictionAir: 0.07,
         //slop: 0.1,
-        //density: 0.08,
+        density: 0.002,
         //restitution: 0.001,
-        sleepThreshold: 100
+        sleepThreshold: 80
     }
 
     this.body = Bodies.rectangle(x,y,this.w,this.h, options);
     World.add(engine.world, this.body); 
+    
 
     // Display the block (maybe separate out view functions later?)
     this.show = function() {

@@ -16,7 +16,7 @@ var floorY = 50;
 var canvasY = 600;
 var canvasX = 600;
 //var gravity = 0.003;
-var sF = 1;
+var sF = 2;
 
 // Global Variables
 var engine;
@@ -43,10 +43,18 @@ function setup() {
     // Set up Matter Physics Engine
     engineOptions = {
         enableSleeping: true,
-        velocityIterations: 30,
-        positionIterations: 20,
+        velocityIterations: 24,
+        positionIterations: 12
+        
     }
+
+    world = World.create({
+        gravity:{
+            y:2
+        }
+    })
     engine = Engine.create(engineOptions);
+    engine.world = world;
     //engine.world.gravity.y= 2;
     
 
@@ -71,15 +79,15 @@ function setup() {
     
     // Start physics engine
     
-    Engine.run(engine);
+    //Engine.run(engine);
     
     // Runner- use instead of line above if changes to game loop needed
-    /*
+    
     runner = Matter.Runner.create({
         isFixed: true
     });
     Runner.run(runner, engine);
-    */
+    
 
     
     // Set up interactions with physics objects
@@ -107,9 +115,11 @@ function mouseClicked() {
 
     if (mouseY > 0 && mouseY < canvasY - menuHeight && mouseX > 0 && mouseX < canvasX &&isPlacingObject) {
         blocks.push(new Block(selectedBlockKind,mouseX*sF,mouseY*sF));
+        
         blocks.forEach(b => {
             Sleeping.set(b.body, false);
         });
+        
     }
 
     else  { //or if in menu then update selected blockkind

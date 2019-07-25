@@ -6417,9 +6417,16 @@ var Events = _dereq_('./Events');
 
 (function() {
 
-    Sleeping._motionWakeThreshold = 0.18;
-    Sleeping._motionSleepThreshold = 0.08;
-    Sleeping._minBias = 0.9;
+    //defaults
+    //Sleeping._motionWakeThreshold = 0.18;
+    //Sleeping._motionSleepThreshold = 0.08;
+    //Sleeping._minBias = 0.9;
+    
+    // these need to be updated when gravity is updated.
+    // These work for a Scale Factor (sf) of 2.
+    Sleeping._motionWakeThreshold = 0.42;
+    Sleeping._motionSleepThreshold = 0.31;
+    Sleeping._minBias = 0.5; //there is motion in each frame. This bases the decision to sleep more on the minimum rather than the maximum movement over these frames
 
     /**
      * Puts bodies to sleep or wakes them up depending on their motion.
