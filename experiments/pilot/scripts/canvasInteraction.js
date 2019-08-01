@@ -15,15 +15,16 @@ function checkPressed(){
     if (finishBlocks === undefined){
         finishBlocks = [];
     }
-    
+    /*
     console.log("Start Bodies: ");
     console.log(startBlocks);
     console.log("End Bodies: ")
     console.log(finishBlocks);
+    */
     console.log(checkListConnected(startBlocks.map(bo => bo.id),finishBlocks.map(bo => bo.id)));
+    
 }
 
-// NEED TO DEBUG- DOESN'T SAY CONNECTED IN SOME SCENARIOS (MULTIPLE BLOCKS OVERLAPPING TARGETS)
 
 
 function makeAdjacencyList(){
@@ -55,7 +56,8 @@ function checkListConnected(startBlocks, targetBlocks){
     if (startBlocks.length == 0 || targetBlocks.length == 0){
         return false
     } else {
-        return(checkConnected(startBlocks[0], targetBlocks[0]));
+        return(checkConnected(startBlocks, targetBlocks));
+        // NEED TO DEBUG- DOESN'T SAY CONNECTED IN SOME SCENARIOS (MULTIPLE BLOCKS OVERLAPPING TARGETS)
         /*return (targetBlocks.forEach(start => {
             startBlocks.forEach(target => {
                 checkConnected(start, target)
@@ -64,31 +66,34 @@ function checkListConnected(startBlocks, targetBlocks){
     }
 }
 
-function checkConnected(start, target){
+function checkConnected(startBlocks, targetBlocks){
     
 
     adjList = makeAdjacencyList();
     // checks whether two blocks are connected using a Breadth First Search
-    if (start == target){
-        return true;
-    }
+    
     var q = [];
     var visited = {};
     
-    q.push(start);
-    visited[start] = true;
-
+    startBlocks.forEach(startBlock => {
+        q.push(startBlock);
+        visited[startBlock] = true;
+        if (targetBlocks.includes(startBlock)){
+            return true;
+        }
+    });
+    
     while (q.length > 0) {
         b = q.shift();
         adjB = adjList[b];
         for (let i = 0; i < adjB.length; i++) {
             nextB = adjB[i];
-            if(nextB != 2){
-                if (nextB == target){
+            if(nextB != 2){ //check to see if floor
+                if (targetBlocks.includes(nextB)){
                     return true
                 }
-                if (!visited[nextB]){
-                    q.push(nextB);
+                if (!visited[nextB]){ // check for backtracking
+                    q.push(nextB); // could save path as well if wanted to know blocks that are being used
                     visited[nextB] = true;
                 }
             }
