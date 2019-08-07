@@ -1,6 +1,6 @@
 // Handles interaction between html elements and the experiment canvas
 
-var nonWorldBodies = 3;
+
 
 function donePressed(){
     console.log(engine.world);
@@ -24,8 +24,6 @@ function checkPressed(){
     console.log(checkListConnected(startBlocks.map(bo => bo.id),finishBlocks.map(bo => bo.id)));
     
 }
-
-
 
 function makeAdjacencyList(){
     // creates adjacency list corresponding to touching blocks

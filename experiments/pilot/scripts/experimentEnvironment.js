@@ -1,5 +1,7 @@
 // Experiment frame, with Matter canvas and surrounding buttons
 
+var imagePath = 'file:///Users/will/Documents/GitHub/block_construction/experiments/pilot/img/';
+
 // Aliases for Matter functions
 var Engine = Matter.Engine,
     World = Matter.World,
@@ -12,6 +14,8 @@ var Engine = Matter.Engine,
 
 // Parameters
 var menuHeight = 100;
+var menuWidth = 600;
+let rotateIcon;
 var floorY = 50;
 var canvasY = 600;
 var canvasX = 600;
@@ -28,6 +32,7 @@ var blockKinds = [];
 
 // Block placement variables
 var isPlacingObject = true;
+var rotated = false;
 var selectedBlockKind;
 
 // Task variables
@@ -60,9 +65,9 @@ function setup() {
 
 
     // Create block kinds that will appear in environment/menu. Later on this will need to be represented in each task.
-    blockKindA = new BlockKind(20*sF,90*sF,[0, 100,200,100]);
-    blockKindB = new BlockKind(50*sF,50*sF,[0,200,190,100]);
-    blockKindC = new BlockKind(90*sF,20*sF,[0, 220,100,100]);
+    blockKindA = new BlockKind(120*sF,40*sF,[0, 100,200,100]);
+    blockKindB = new BlockKind(80*sF,40*sF,[0,200,190,100]);
+    blockKindC = new BlockKind(40*sF,40*sF,[0, 220,100,100]);
     blockKinds.push(blockKindA);
     blockKinds.push(blockKindB);
     blockKinds.push(blockKindC);
@@ -108,13 +113,19 @@ function setup() {
     // Set up task (add to task function later)
     targets = new ConnectingTargets(300*sF, 80*sF, 300*sF, 450*sF);
 
+
 }
 
 function mouseClicked() {
     //check to see if in env
 
-    if (mouseY > 0 && mouseY < canvasY - menuHeight && mouseX > 0 && mouseX < canvasX &&isPlacingObject) {
-        blocks.push(new Block(selectedBlockKind,mouseX*sF,mouseY*sF));
+    if (mouseY < 80 && mouseX > canvasX - 80 && isPlacingObject) {
+        rotated = !rotated; 
+        console.log(rotated);
+    }
+    
+    else if (mouseY > 0 && mouseY < canvasY - menuHeight && mouseX > 0 && mouseX < canvasX &&isPlacingObject) {
+        blocks.push(new Block(selectedBlockKind,mouseX*sF,mouseY*sF, rotated));
         
         blocks.forEach(b => {
             Sleeping.set(b.body, false);
@@ -132,10 +143,18 @@ function mouseClicked() {
 
 
 
+
 function draw(){ // Called continuously by Processing JS 
     background(51);
     ground.show();
+    
+    // Menu
     blockMenu.show();
+    // Rotate button
+    noFill();
+    stroke(200);
+    arc(canvasX - 50, 50, 50, 50, TWO_PI, PI + 3*QUARTER_PI);
+
     blocks.forEach(b => {
         b.show();
     });
@@ -151,7 +170,7 @@ function draw(){ // Called continuously by Processing JS
     if (mouseY < canvasY - menuHeight){
         if (isPlacingObject){
             noCursor(); //feel like this is horribly ineffecient...
-            selectedBlockKind.showGhost(mouseX, mouseY);
+            selectedBlockKind.showGhost(mouseX, mouseY, rotated);
         }
     } else {
         cursor();

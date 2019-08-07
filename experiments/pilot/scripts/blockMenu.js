@@ -41,7 +41,7 @@ class BlockMenu {
         
         var i;
         for (i = 0; i < blockKinds.length; i++) { 
-            blockKinds[i].showMenuItem(1,((i+1)*(canvasX/(blockKinds.length+1))),canvasY - menuHeight/2);;
+            blockKinds[i].showMenuItem(1,((i+1)*(menuWidth/(blockKinds.length+1))),canvasY - menuHeight/2);;
         } 
         pop();
 
