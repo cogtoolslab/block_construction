@@ -31,7 +31,7 @@ var blockMenu;
 var blockKinds = [];
 
 // Block placement variables
-var isPlacingObject = true;
+var isPlacingObject = false;
 var rotated = false;
 var selectedBlockKind;
 
@@ -121,23 +121,37 @@ function mouseClicked() {
 
     if (mouseY < 80 && mouseX > canvasX - 80 && isPlacingObject) {
         rotated = !rotated; 
-        console.log(rotated);
     }
     
-    else if (mouseY > 0 && mouseY < canvasY - menuHeight && mouseX > 0 && mouseX < canvasX &&isPlacingObject) {
-        blocks.push(new Block(selectedBlockKind,mouseX*sF,mouseY*sF, rotated));
+    else if (mouseY > 0 && mouseY < canvasY - menuHeight && mouseX > 0 && mouseX < canvasX) {
         
-        blocks.forEach(b => {
-            Sleeping.set(b.body, false);
-        });
+        if(isPlacingObject){
+            blocks.forEach(b => {
+                Sleeping.set(b.body, false);
+            });
+
+            blocks.push(new Block(selectedBlockKind,mouseX*sF,mouseY*sF, rotated));
+            selectedBlockKind = null;
+            cursor();
+            isPlacingObject = false;
+            rotated = false;
+        }
+        
         
     }
 
     else  { //or if in menu then update selected blockkind
         // is mouse clicking a block?
-        selectedBlockKind = blockMenu.hasClickedButton(mouseX, mouseY, selectedBlockKind);
-        isPlacingObject == true;
-        
+        newSelectedBlockKind = blockMenu.hasClickedButton(mouseX, mouseY, selectedBlockKind);
+        if(newSelectedBlockKind){
+            if(newSelectedBlockKind == selectedBlockKind){
+                rotated = !rotated;
+            }else{
+                rotated = false;
+            }
+            selectedBlockKind = newSelectedBlockKind;
+            isPlacingObject = true;
+        }
     }
 }
 
@@ -154,6 +168,8 @@ function draw(){ // Called continuously by Processing JS
     noFill();
     stroke(200);
     arc(canvasX - 50, 50, 50, 50, TWO_PI, PI + 3*QUARTER_PI);
+    line(canvasX - 50 + 25, 50 - 23, canvasX - 50 + 25, 40);
+    line(canvasX - 50 + 12, 40, canvasX - 50 + 25, 40);
 
     blocks.forEach(b => {
         b.show();
@@ -166,7 +182,11 @@ function draw(){ // Called continuously by Processing JS
         stroke(0, 255, 0);
         line(pos.x + offset.x, pos.y + offset.y, m.x, m.y); // draw line of mouse constraint
     }*/
-
+    if (isPlacingObject){
+        noCursor(); //feel like this is horribly ineffecient...
+        selectedBlockKind.showGhost(mouseX, mouseY, rotated);
+    }
+    /*
     if (mouseY < canvasY - menuHeight){
         if (isPlacingObject){
             noCursor(); //feel like this is horribly ineffecient...
@@ -175,6 +195,7 @@ function draw(){ // Called continuously by Processing JS
     } else {
         cursor();
     }
+    */
     targets.show(); // show targets from task
 
 }
