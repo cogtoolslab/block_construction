@@ -77,3 +77,15 @@ def separating_axis_theorem(vertices_a, vertices_b):
         if not overlapping:
             return False;
     return True
+
+def apply_sat(shape1,shape2,fudge=1e-6):
+    '''
+    thin wrapper around separating_axis_theorem function that adds tiny fudge factor
+    to distinguish between blocks that are merely touching vs. ones that overlap
+    '''
+    if (separating_axis_theorem(shape1-fudge, shape2)) and (separating_axis_theorem(shape1+fudge, shape2)):
+        return True
+    else:
+        return False
+        
+    
