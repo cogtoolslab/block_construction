@@ -61,7 +61,12 @@ function ConnectingTargets(startX, startY, finishX, finishY){
     }
 
     this.hasConnected = function() {
-        console.log('no');
+        checkConnected(5,6);
     }
+
+    this.startBlocks = function(){
+        
+    }
+
 
 }

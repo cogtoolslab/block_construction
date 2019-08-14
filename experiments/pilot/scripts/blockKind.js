@@ -22,7 +22,7 @@ function BlockKind(w,h,blockColor){
 
     }
 
-    this.showGhost = function(mouseX, mouseY) {
+    this.showGhost = function(mouseX, mouseY, rotated) {
 
         // update to include scrolling to rotate? https://p5js.org/reference/#/p5/mouseWheel
         push();
@@ -30,7 +30,11 @@ function BlockKind(w,h,blockColor){
         rectMode(CENTER);
         stroke(200);
         fill(blockColor);
-        rect(0,0,this.w/sF,this.h/sF);
+        if(rotated){
+            rect(0,0,this.h/sF,this.w/sF);
+        } else {
+            rect(0,0,this.w/sF,this.h/sF);
+        }
         pop();
 
     }

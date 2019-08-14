@@ -6426,7 +6426,7 @@ var Events = _dereq_('./Events');
     // These work for a Scale Factor (sf) of 2.
     Sleeping._motionWakeThreshold = 0.42;
     Sleeping._motionSleepThreshold = 0.31;
-    Sleeping._minBias = 0.5; //there is motion in each frame. This bases the decision to sleep more on the minimum rather than the maximum movement over these frames
+    Sleeping._minBias = 0.6; //there is motion in each frame. This bases the decision to sleep more on the minimum rather than the maximum movement over the set of frames being considered
 
     /**
      * Puts bodies to sleep or wakes them up depending on their motion.

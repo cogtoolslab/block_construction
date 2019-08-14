@@ -1,7 +1,13 @@
 // Wrappers for Matter Bodies that instantiate a particular BlockKind
-function Block(blockKind, x, y){
-    this.w = blockKind.w;
-    this.h = blockKind.h;
+function Block(blockKind, x, y, rotated){
+
+    if(rotated){
+        this.w = blockKind.h;
+        this.h = blockKind.w;
+    }else{
+        this.w = blockKind.w;
+        this.h = blockKind.h;
+    }
 
     //var options = blockKind.options;
 
