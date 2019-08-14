@@ -77,17 +77,3 @@ def separating_axis_theorem(vertices_a, vertices_b):
         if not overlapping:
             return False;
     return True
-
-
-def main():
-    a_vertices = [(0, 0), (70, 0), (0, 70)]
-    b_vertices = [(70, 70), (150, 70), (70, 150)]
-    c_vertices = [(30, 30), (150, 70), (70, 150)]
-
-    print (separating_axis_theorem(a_vertices, b_vertices))
-    print (separating_axis_theorem(a_vertices, c_vertices))
-    print (separating_axis_theorem(b_vertices, c_vertices))
-
-
-if __name__ == "__main__":
-    main()
