@@ -12,12 +12,12 @@ function Block(blockKind, x, y, rotated){
     //var options = blockKind.options;
 
     var options = {
-        friction: 0.8,
-        frictionStatic: 1.5,
+        friction: 0.7,
+        frictionStatic: 1.3,
         //frictionAir: 0.07,
         //slop: 0.1,
-        density: 0.002,
-        //restitution: 0.001,
+        density: 0.0025,
+        restitution: 0.001,
         sleepThreshold: 80
     }
 

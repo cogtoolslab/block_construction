@@ -6,10 +6,10 @@ var imagePath = 'file:///Users/will/Documents/GitHub/block_construction/experime
 var Engine = Matter.Engine,
     World = Matter.World,
     Bodies = Matter.Bodies,
-    Constraint = Matter.Constraint;
-    MouseConstraint = Matter.MouseConstraint;
-    Mouse = Matter.Mouse;
-    Sleeping = Matter.Sleeping;
+    Constraint = Matter.Constraint,
+    MouseConstraint = Matter.MouseConstraint,
+    Mouse = Matter.Mouse,
+    Sleeping = Matter.Sleeping,
     Runner = Matter.Runner;
 
 // Parameters
@@ -33,7 +33,7 @@ var blockKinds = [];
 // Block placement variables
 var isPlacingObject = false;
 var rotated = false;
-var selectedBlockKind;
+var selectedBlockKind = null;
 
 // Task variables
 var targets;
@@ -112,8 +112,6 @@ function setup() {
 
     // Set up task (add to task function later)
     targets = new ConnectingTargets(300*sF, 80*sF, 300*sF, 450*sF);
-
-
 }
 
 function mouseClicked() {
