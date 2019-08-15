@@ -64,7 +64,7 @@ def translate(verts, dx, dy):
     new_verts[:,1] = verts[:,1] + dy
     return new_verts
 
-def return_corners(s):
+def get_corners(s):
     '''
     input: list or array of block vertices in absolute coordinates
     output: absolute coordinates of top_left, bottom_left, bottom_right, top_right
@@ -76,7 +76,7 @@ def return_corners(s):
     corners['top_right'] = s[3]
     return corners
 
-def get_width_and_height(corners):
+def get_dims(corners):
     '''
     input: corners dictionary, containing top_left, bottom_left, bottom_right, top_right
     output: return dims dictionary, containing width and height    
@@ -86,7 +86,7 @@ def get_width_and_height(corners):
     dims['height'] = np.abs(corners['bottom_right'][1] - corners['top_left'][1])
     return dims
 
-def compute_area(dims,shape='rectangle'):
+def get_area(dims,shape='rectangle'):
     '''
     input: w = width 
            h = height           
