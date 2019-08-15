@@ -127,7 +127,7 @@ class Block:
 
     def init(self):
         self.corners = self.get_corners(self.verts)
-        self.area = self.get_area(self.dims,shape=self.shape) 
+        self.area = self.get_area(shape=self.shape) 
         
     def translate(self,verts, dx, dy):
         '''
@@ -155,20 +155,18 @@ class Block:
         corners['top_right'] = verts[3]
         return corners
 
-    def get_area(self,dims,shape='rectangle'):
+    def get_area(self,shape='rectangle'):
         '''
         input: w = width 
                h = height           
                shape = ['rectangle', 'square', 'triangle']
         output
         '''
-        ## extract width and height from dims dictionary
-        w = dims['width']
-        h = dims['height']    
+        ## extract width and height from dims dictionary 
         if shape in ['rectangle','square']:
-            area = w*h
+            area = self.width*self.height
         elif shape=='triangle':
-            area = w*h*0.5
+            area = self.width*self.height*0.5
         else:
             print('Shape type not recognized. Please use recognized shape type.')
         return area   
