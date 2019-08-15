@@ -48,3 +48,18 @@ def render_blockworld(patches,
     ax.set_xlim(xlim)
     ax.set_ylim(ylim)
     plt.show()
+    
+def translate(verts, dx, dy):
+    '''
+    input:
+        verts: array or list of (x,y) vertices of convex polygon. 
+                last vertex = first vertex, so len(verts) is num_vertices + 1
+        dx, dy: distance to translate in each direction
+    output:
+        new vertices
+    '''
+    newVerts = [];
+    for pair in verts:
+        newVerts.append([pair[0] + dx, pair[1] + dy])
+    return np.array(newVerts)
+    
