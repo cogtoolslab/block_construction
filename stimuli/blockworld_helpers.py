@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from matplotlib.path import Path
 import matplotlib.patches as patches
+import copy
 
 
 ### visualization helpers
@@ -58,8 +59,48 @@ def translate(verts, dx, dy):
     output:
         new vertices
     '''
-    newVerts = [];
-    for pair in verts:
-        newVerts.append([pair[0] + dx, pair[1] + dy])
-    return np.array(newVerts)
+    new_verts = copy.deepcopy(verts)
+    new_verts[:,0] = verts[:,0] + dx
+    new_verts[:,1] = verts[:,1] + dy
+    return new_verts
+
+def get_corners(s):
+    '''
+    input: list or array of block vertices in absolute coordinates
+    output: absolute coordinates of top_left, bottom_left, bottom_right, top_right
+    '''
+    corners = {}
+    corners['top_left'] = s[0]
+    corners['bottom_left'] = s[1]
+    corners['bottom_right'] = s[2]
+    corners['top_right'] = s[3]
+    return corners
+
+def get_dims(corners):
+    '''
+    input: corners dictionary, containing top_left, bottom_left, bottom_right, top_right
+    output: return dims dictionary, containing width and height    
+    '''
+    dims = {}
+    dims['width'] = np.abs(corners['bottom_right'][0] - corners['top_left'][0])
+    dims['height'] = np.abs(corners['bottom_right'][1] - corners['top_left'][1])
+    return dims
+
+def get_area(dims,shape='rectangle'):
+    '''
+    input: w = width 
+           h = height           
+           shape = ['rectangle', 'square', 'triangle']
+    output
+    '''
+    ## extract width and height from dims dictionary
+    w = dims['width']
+    h = dims['height']    
+    if shape in ['rectangle','square']:
+        area = w*h
+    elif shape=='triangle':
+        area = w*h*0.5
+    else:
+        print('Shape type not recognized. Please use recognized shape type.')
+    return area
     
