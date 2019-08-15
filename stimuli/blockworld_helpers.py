@@ -82,8 +82,8 @@ def get_width_and_height(corners):
     output: return dims dictionary, containing width and height    
     '''
     dims = {}
-    dims['width'] = np.abs(bottom_right[0] - top_left[0])
-    dims['height'] = np.abs(bottom_right[1] - top_left[1])       
+    dims['width'] = np.abs(corners['bottom_right'][0] - corners['top_left'][0])
+    dims['height'] = np.abs(corners['bottom_right'][1] - corners['top_left'][1])
     return dims
 
 def compute_area(dims,shape='rectangle'):
