@@ -127,11 +127,7 @@ class Block:
 
     def init(self):
         self.corners = self.get_corners(self.verts)
-        self.dims = self.get_dims(self.corners)
         self.area = self.get_area(self.dims,shape=self.shape) 
-        
-    def rescale(self, verts, x_scale=1, y_scale=1):
-        print('TODO!')
         
     def translate(self,verts, dx, dy):
         '''
@@ -159,16 +155,6 @@ class Block:
         corners['top_right'] = verts[3]
         return corners
 
-    def get_dims(self,corners):
-        '''
-        input: corners dictionary, containing top_left, bottom_left, bottom_right, top_right
-        output: return dims dictionary, containing width and height    
-        '''
-        dims = {}
-        dims['width'] = np.abs(corners['bottom_right'][0] - corners['top_left'][0])
-        dims['height'] = np.abs(corners['bottom_right'][1] - corners['top_left'][1])
-        return dims
-
     def get_area(self,dims,shape='rectangle'):
         '''
         input: w = width 
@@ -186,8 +172,6 @@ class Block:
         else:
             print('Shape type not recognized. Please use recognized shape type.')
         return area   
-
-
 
 
     
