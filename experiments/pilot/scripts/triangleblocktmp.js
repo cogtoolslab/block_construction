@@ -1,4 +1,4 @@
-// Temporary Triangle Block function to
+// Temporary Triangle Block function to work out how to make triangles
 //
 function TriangleBlock(x, y, w, h, topCorner){
 
