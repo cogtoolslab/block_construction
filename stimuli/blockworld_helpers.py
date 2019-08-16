@@ -124,6 +124,9 @@ class Block:
         self.width = width
         self.height = height
         self.shape = shape
+    
+    def __str__(self):
+        return(str(self.width) + 'x' + str(self.height))
 
     def init(self):
         self.corners = self.get_corners(self.verts)
