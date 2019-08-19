@@ -30,8 +30,8 @@ def get_patch(verts,
 
 
 def render_blockworld(patches,
-                      xlim=(-10,10),
-                      ylim=(-10,10),
+                      xlim=(-2,10),
+                      ylim=(-2,10),
                       figsize=(4,4)):
     
     '''
@@ -49,60 +49,6 @@ def render_blockworld(patches,
     ax.set_xlim(xlim)
     ax.set_ylim(ylim)
     plt.show()
-    
-def translate(verts, dx, dy):
-    '''
-    input:
-        verts: array or list of (x,y) vertices of convex polygon. 
-                last vertex = first vertex, so len(verts) is num_vertices + 1
-        dx, dy: distance to translate in each direction
-    output:
-        new vertices
-    '''
-    new_verts = copy.deepcopy(verts)
-    new_verts[:,0] = verts[:,0] + dx
-    new_verts[:,1] = verts[:,1] + dy
-    return new_verts
-
-def get_corners(s):
-    '''
-    input: list or array of block vertices in absolute coordinates
-    output: absolute coordinates of top_left, bottom_left, bottom_right, top_right
-    '''
-    corners = {}
-    corners['top_left'] = s[0]
-    corners['bottom_left'] = s[1]
-    corners['bottom_right'] = s[2]
-    corners['top_right'] = s[3]
-    return corners
-
-def get_dims(corners):
-    '''
-    input: corners dictionary, containing top_left, bottom_left, bottom_right, top_right
-    output: return dims dictionary, containing width and height    
-    '''
-    dims = {}
-    dims['width'] = np.abs(corners['bottom_right'][0] - corners['top_left'][0])
-    dims['height'] = np.abs(corners['bottom_right'][1] - corners['top_left'][1])
-    return dims
-
-def get_area(dims,shape='rectangle'):
-    '''
-    input: w = width 
-           h = height           
-           shape = ['rectangle', 'square', 'triangle']
-    output
-    '''
-    ## extract width and height from dims dictionary
-    w = dims['width']
-    h = dims['height']    
-    if shape in ['rectangle','square']:
-        area = w*h
-    elif shape=='triangle':
-        area = w*h*0.5
-    else:
-        print('Shape type not recognized. Please use recognized shape type.')
-    return area
 
 
 
@@ -116,11 +62,16 @@ class Block:
     '''
     
     def __init__(self, width=1, height=1, shape='rectangle'):
-        self.verts = np.array([(0, 0), 
+        '''self.verts = np.array([(0, 0), 
                                (0, -1 * height), 
                                (1 * width, -1 * height), 
                                (1 * width, 0), 
-                               (0,0)]) 
+                               (0,0)])'''
+        self.verts = np.array([(0, 0), 
+                               (0, 1 * height), 
+                               (1 * width, 1 * height), 
+                               (1 * width, 0), 
+                               (0,0)])
         self.width = width
         self.height = height
         self.shape = shape
@@ -152,10 +103,10 @@ class Block:
         output: absolute coordinates of top_left, bottom_left, bottom_right, top_right
         '''
         corners = {}
-        corners['top_left'] = verts[0]
-        corners['bottom_left'] = verts[1]
-        corners['bottom_right'] = verts[2]
-        corners['top_right'] = verts[3]
+        corners['bottom_left'] = verts[0]
+        corners['top_left'] = verts[1]
+        corners['top_right'] = verts[2]
+        corners['bottom_right'] = verts[3]
         return corners
 
     def get_area(self,shape='rectangle'):
