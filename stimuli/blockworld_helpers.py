@@ -61,7 +61,7 @@ class Block:
     Base Block class for defining a block object with attributes
     '''
     
-    def __init__(self, width=1, height=1, shape='rectangle'):
+    def __init__(self, width=1, height=1, shape='rectangle', color='gray'):
         '''self.verts = np.array([(0, 0), 
                                (0, -1 * height), 
                                (1 * width, -1 * height), 
@@ -75,6 +75,7 @@ class Block:
         self.width = width
         self.height = height
         self.shape = shape
+        self.color = color
     
     def __str__(self):
         return(str(self.width) + 'x' + str(self.height))
