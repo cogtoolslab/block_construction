@@ -43,7 +43,7 @@ def render_blockworld(patches,
         visualization of block placement
     '''
     fig = plt.figure(figsize=figsize)
-    ax = fig.add_subplot(111)    
+    ax = fig.add_subplot(111)
     for patch in patches:
         ax.add_patch(patch)
     ax.set_xlim(xlim)
@@ -83,7 +83,7 @@ class Block:
         self.corners = self.get_corners(self.verts)
         self.area = self.get_area(shape=self.shape) 
         
-    def translate(self,verts, dx, dy):
+    def translate(self, verts, dx, dy):
         '''
         input:
             verts: array or list of (x,y) vertices of convex polygon. 
