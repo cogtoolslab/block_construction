@@ -144,7 +144,7 @@ class Block:
 ############### TODO: refactor ############################################    
 
 def patch_for_block(b):
-    return utils.get_patch(b.base_block.translate(b.base_block.verts,b.x,b.y),color=b.base_block.color)
+    return get_patch(b.base_block.translate(b.base_block.verts,b.x,b.y),color=b.base_block.color)
 
 def patches_for_floor(floor_blocks, xs):
     patches = []
@@ -153,7 +153,7 @@ def patches_for_floor(floor_blocks, xs):
     return patches
 
 def drawFloor(floor_blocks, xs):
-    utils.render_blockworld(patches_for_floor(floor_blocks, xs))
+    render_blockworld(patches_for_floor(floor_blocks, xs))
     
 def patches_for_world(blocks):
     patches = []
@@ -162,7 +162,7 @@ def patches_for_world(blocks):
     return patches
 
 def draw_world(world):
-    utils.render_blockworld(patches_for_world(world.blocks)) 
+    render_blockworld(patches_for_world(world.blocks)) 
     
 ######################### DEFINITION OF BLOCK WORLD CLASS ##########################
 ############### This class samples a block world. ##################################
@@ -174,7 +174,6 @@ class World:
     
     Dependencies: 
         Block class. 
-        Functions in utils.py.
     
     Input: block and world attributes
         block_dims: tuples defining width and height of types of allowable blocks
@@ -216,7 +215,7 @@ class World:
         # block parameters
         self.block_dims = block_dims
         self.block_colors = block_colors               
-        self.base_blocks = [utils.BaseBlock(w,h,color=c) for ((w,h),c) in list(zip(sorted(block_dims),block_colors[0:len(block_dims)]))] # Block types should be in order from left to right, thinest to thickest, shortest to tallest
+        self.base_blocks = [BaseBlock(w,h,color=c) for ((w,h),c) in list(zip(sorted(block_dims),block_colors[0:len(block_dims)]))] # Block types should be in order from left to right, thinest to thickest, shortest to tallest
         self.block_widths = list(map(lambda b: b.width, self.base_blocks))         
         
         # world parameters
@@ -280,7 +279,7 @@ class World:
             i = np.random.randint(0,len(viable_blocks))
             base_block = self.base_blocks[i]
             if base_block.width <= remaining_space and base_block.height <= remaining_height: 
-                b = utils.Block(self.base_blocks[i],floor_block_x_location,current_level)
+                b = Block(self.base_blocks[i],floor_block_x_location,current_level)
                 floor_block_x_location += b.width
                 floor_blocks.append(b)
                 self.blocks.append(b)
