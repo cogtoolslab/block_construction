@@ -56,17 +56,12 @@ def render_blockworld(patches,
 ######################### DEFINITION OF BLOCK CLASS ################################
 ############### other blocks can inherit from the base block class #################
 
-class Block:
+class BaseBlock:
     '''
     Base Block class for defining a block object with attributes
     '''
     
     def __init__(self, width=1, height=1, shape='rectangle', color='gray'):
-        '''self.verts = np.array([(0, 0), 
-                               (0, -1 * height), 
-                               (1 * width, -1 * height), 
-                               (1 * width, 0), 
-                               (0,0)])'''
         self.verts = np.array([(0, 0), 
                                (0, 1 * height), 
                                (1 * width, 1 * height), 
@@ -127,4 +122,21 @@ class Block:
         return area   
 
 
+
+######################### DEFINITION OF BLOCK CLASS ################################
+############### other blocks can inherit from the base block class #################
+
+class Block:
+    '''
+        Creates Block objects that are instantiated in a world
+    '''
+    def __init__(self, base_block, x, y):
+        self.base_block = base_block # defines height, width and other functions
+        #bottom left coordinate
+        self.x = x
+        self.y = y
+        self.height = base_block.height
+        self.width = base_block.width
+    
+    
     
