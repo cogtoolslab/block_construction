@@ -189,7 +189,7 @@ class World:
     
     
     def __init__(self, 
-                block_dims = [(1,1), # Block types should be in order from left to right, thinest to thickest, shortest to tallest        
+                block_dims = [(1,1), # Blocks from left to right, thinest to thickest, shortest to tallest        
                             (1,2),
                             (2,1),
                             (2,2),
