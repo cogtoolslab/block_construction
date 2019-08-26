@@ -62,7 +62,7 @@ class BaseBlock:
     '''
     
     def __init__(self, width=1, height=1, shape='rectangle', color='gray'):
-        self.verts = np.array([(0, 0), 
+        self.base_verts = np.array([(0, 0), 
                                (0, 1 * height), 
                                (1 * width, 1 * height), 
                                (1 * width, 0), 
@@ -76,24 +76,24 @@ class BaseBlock:
         return(str(self.width) + 'x' + str(self.height))
 
     def init(self):
-        self.corners = self.get_corners(self.verts)
+        self.corners = self.get_corners(self.base_verts)
         self.area = self.get_area(shape=self.shape) 
         
-    def translate(self, verts, dx, dy):
+    def translate(self, base_verts, dx, dy):
         '''
         input:
-            verts: array or list of (x,y) vertices of convex polygon. 
-                    last vertex = first vertex, so len(verts) is num_vertices + 1
+            base_verts: array or list of (x,y) vertices of convex polygon. 
+                    last vertex = first vertex, so len(base_verts) is num_vertices + 1
             dx, dy: distance to translate in each direction
         output:
             new vertices
         '''
-        new_verts = copy.deepcopy(verts)
-        new_verts[:,0] = verts[:,0] + dx
-        new_verts[:,1] = verts[:,1] + dy
+        new_verts = copy.deepcopy(base_verts)
+        new_verts[:,0] = base_verts[:,0] + dx
+        new_verts[:,1] = base_verts[:,1] + dy
         return new_verts
 
-    def get_corners(self,verts):
+    def get_corners(self,base_verts):
         '''
         input: list or array of block vertices in absolute coordinates
         output: absolute coordinates of top_left, bottom_left, bottom_right, top_right
@@ -137,24 +137,16 @@ class Block:
         self.y = y
         self.height = base_block.height
         self.width = base_block.width
+        self.verts = base_block.translate(base_block.base_verts,x,y)
     
     
     
 ######################### SOME DRAWING FUNCTIONS ##########################
-############### TODO: refactor ############################################    
+###########################################################################    
 
 def patch_for_block(b):
-    return get_patch(b.base_block.translate(b.base_block.verts,b.x,b.y),color=b.base_block.color)
+    return get_patch(b.verts,color=b.base_block.color)
 
-def patches_for_floor(floor_blocks, xs):
-    patches = []
-    for (i, b) in enumerate(floor_blocks):
-        patches.append(patch_for_block_here(b,xs[i],0))
-    return patches
-
-def drawFloor(floor_blocks, xs):
-    render_blockworld(patches_for_floor(floor_blocks, xs))
-    
 def patches_for_world(blocks):
     patches = []
     for (b) in blocks:
@@ -163,6 +155,7 @@ def patches_for_world(blocks):
 
 def draw_world(world):
     render_blockworld(patches_for_world(world.blocks)) 
+
     
 ######################### DEFINITION OF BLOCK WORLD CLASS ##########################
 ############### This class samples a block world. ##################################
@@ -199,7 +192,7 @@ class World:
                             ],
                 block_colors = ['#D33E43',
                             '#29335C',
-                            '#EAEAEA',
+                            '#C4C4C4',
                             '#0F8B8D',
                             '#2E3B44',
                             '#E79598',
@@ -318,11 +311,11 @@ class World:
         self.check_full()
         
         ## optionally render world
-        if render==True:
+        if render:
             draw_world(self)
             
     
-    def remove_block(self, block_number, render = True):
+    def remove_block(self, block_number, render = False, checking = False):
         '''
         Assess stability of tower upon removal of one block
         Does not actually remove block or update state
@@ -342,7 +335,8 @@ class World:
                 # Copy and block_map
                 new_block_map = np.copy(self.block_map)     # copy block map
                 new_block_map[self.world_height-(b.y+b.height): self.world_height-b.y, b.x:(b.x+b.width)] = 0 
-                print(new_block_map)
+                if render:
+                    print(new_block_map)
 
                 # For blocks above b, check if there is enough floor beneath
                 # Blocks in list stored in order of height, so just need to traverse tail of list to check for stability
@@ -354,11 +348,21 @@ class World:
                         support = new_block_map[(self.world_height-1)-(b2.y)+1, xs] #get the floor under block
                         # support is the space underneath the base of a block
                         stable = stable and (np.mean(support)>= 0.5) # stable if greater than half of support is 1 in blockmap
-                return stable
+                        #if not(any(stable)) then block can slide down.
+                
+                if stable and not checking:
+                    new_world = copy.deepcopy(self)
+                    new_world.blocks = copy.deepcopy(updated_blocks)
+                    new_world.block_map = new_block_map
+                    if render:
+                        draw_world(new_world)
+                    return (stable, new_world)
+                
+                return (stable, self)
 
             else:
                 print('Index of block to remove out of range')
             
         else:
             print('World not full. Use fill_world to populate world with blocks')
-    
+            
