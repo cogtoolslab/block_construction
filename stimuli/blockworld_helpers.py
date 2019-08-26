@@ -288,9 +288,11 @@ class World:
                 viable_blocks.pop()
         self._update_map_with_floor_blocks(floor_blocks)
 
+        
     def _update_map_with_floor_blocks(self, floor_blocks):
             for (i, b) in enumerate(floor_blocks):
                 self.block_map[self.world_height-(b.y+b.height): self.world_height-b.y, b.x:(b.x+b.width)] = 1 
+                
     
     def fill_world(self, render = True):
         '''
@@ -320,4 +322,43 @@ class World:
             draw_world(self)
             
     
+    def remove_block(self, block_number, render = True):
+        '''
+        Assess stability of tower upon removal of one block
+        Does not actually remove block or update state
+        In: index of block object in blocks list to be removed 
+        Out: True if tower would be stable (i.e. no blocks would move) on removal of block, false otherwise
+        Pre: world is 'full'
+        Post: world unchanged. block_map and blocks only copied here
+        '''
+        if self.check_full():
+            
+            if block_number < len(self.blocks):
+                # Copy blocks and remove one
+                b = self.blocks[block_number]
+                updated_blocks = self.blocks[:]    # copy list of blocks
+                updated_blocks.remove(b)           # remove element
+
+                # Copy and block_map
+                new_block_map = np.copy(self.block_map)     # copy block map
+                new_block_map[self.world_height-(b.y+b.height): self.world_height-b.y, b.x:(b.x+b.width)] = 0 
+                print(new_block_map)
+
+                # For blocks above b, check if there is enough floor beneath
+                # Blocks in list stored in order of height, so just need to traverse tail of list to check for stability
+                stable = True
+                for b2 in updated_blocks[block_number:]:
+                    if b2.y > 0: #block stable if on floor (and avoids indexing errors)
+                        y = b2.y
+                        xs = list(range(b2.x, b2.x+b2.width)) # get x loc of base of block in block_map
+                        support = new_block_map[(self.world_height-1)-(b2.y)+1, xs] #get the floor under block
+                        # support is the space underneath the base of a block
+                        stable = stable and (np.mean(support)>= 0.5) # stable if greater than half of support is 1 in blockmap
+                return stable
+
+            else:
+                print('Index of block to remove out of range')
+            
+        else:
+            print('World not full. Use fill_world to populate world with blocks')
     
