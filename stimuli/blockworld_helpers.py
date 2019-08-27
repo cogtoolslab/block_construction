@@ -56,18 +56,13 @@ def render_blockworld(patches,
 ######################### DEFINITION OF BLOCK CLASS ################################
 ############### other blocks can inherit from the base block class #################
 
-class Block:
+class BaseBlock:
     '''
     Base Block class for defining a block object with attributes
     '''
     
     def __init__(self, width=1, height=1, shape='rectangle', color='gray'):
-        '''self.verts = np.array([(0, 0), 
-                               (0, -1 * height), 
-                               (1 * width, -1 * height), 
-                               (1 * width, 0), 
-                               (0,0)])'''
-        self.verts = np.array([(0, 0), 
+        self.base_verts = np.array([(0, 0), 
                                (0, 1 * height), 
                                (1 * width, 1 * height), 
                                (1 * width, 0), 
@@ -81,24 +76,24 @@ class Block:
         return(str(self.width) + 'x' + str(self.height))
 
     def init(self):
-        self.corners = self.get_corners(self.verts)
+        self.corners = self.get_corners(self.base_verts)
         self.area = self.get_area(shape=self.shape) 
         
-    def translate(self, verts, dx, dy):
+    def translate(self, base_verts, dx, dy):
         '''
         input:
-            verts: array or list of (x,y) vertices of convex polygon. 
-                    last vertex = first vertex, so len(verts) is num_vertices + 1
+            base_verts: array or list of (x,y) vertices of convex polygon. 
+                    last vertex = first vertex, so len(base_verts) is num_vertices + 1
             dx, dy: distance to translate in each direction
         output:
             new vertices
         '''
-        new_verts = copy.deepcopy(verts)
-        new_verts[:,0] = verts[:,0] + dx
-        new_verts[:,1] = verts[:,1] + dy
+        new_verts = copy.deepcopy(base_verts)
+        new_verts[:,0] = base_verts[:,0] + dx
+        new_verts[:,1] = base_verts[:,1] + dy
         return new_verts
 
-    def get_corners(self,verts):
+    def get_corners(self,base_verts):
         '''
         input: list or array of block vertices in absolute coordinates
         output: absolute coordinates of top_left, bottom_left, bottom_right, top_right
@@ -127,4 +122,247 @@ class Block:
         return area   
 
 
+
+#################### DEFINITION OF BLOCK CLASS ###################################
+############### this subclasses BaseBlock above ##################################
+
+class Block:
+    '''
+        Creates Block objects that are instantiated in a world
+    '''
+    def __init__(self, base_block, x, y):
+        self.base_block = base_block # defines height, width and other functions
+        #bottom left coordinate
+        self.x = x
+        self.y = y
+        self.height = base_block.height
+        self.width = base_block.width
+        self.verts = base_block.translate(base_block.base_verts,x,y)
     
+    
+    
+######################### SOME DRAWING FUNCTIONS ##########################
+###########################################################################    
+
+def patch_for_block(b):
+    return get_patch(b.verts,color=b.base_block.color)
+
+def patches_for_world(blocks):
+    patches = []
+    for (b) in blocks:
+        patches.append(patch_for_block(b))
+    return patches
+
+def draw_world(world):
+    render_blockworld(patches_for_world(world.blocks)) 
+
+    
+######################### DEFINITION OF BLOCK WORLD CLASS ##########################
+############### This class samples a block world. ##################################
+    
+# World Class
+class World:       
+    '''
+    This class samples a block world. 
+    
+    Dependencies: 
+        Block class. 
+    
+    Input: block and world attributes
+        block_dims: tuples defining width and height of types of allowable blocks
+        block_colors: colors that will be mapped to these blocks
+        world_width: width of world, this must be positive natural number
+        world_height: height of world, this must be positive natural number        
+    
+    Output: filled block world
+        blocks: list of blocks with attributes
+        
+    '''
+    
+    
+    def __init__(self, 
+                block_dims = [(1,1), # Blocks from left to right, thinest to thickest, shortest to tallest        
+                            (1,2),
+                            (2,1),
+                            (2,2),
+                            (2,4),
+                            (4,2),
+                            (4,4),
+                            (8,2)
+                            ],
+                block_colors = ['#D33E43',
+                            '#29335C',
+                            '#C4C4C4',
+                            '#0F8B8D',
+                            '#2E3B44',
+                            '#E79598',
+                            '#8A8FA6',
+                            '#91CACB',
+                            '#B3B7BB',
+                            '#D33E43',
+                            '#EAEAEA'],
+                world_width = 8, 
+                world_height = 8):
+                                
+        
+        # block parameters
+        self.block_dims = block_dims
+        self.block_colors = block_colors               
+        self.base_blocks = [BaseBlock(w,h,color=c) for ((w,h),c) in list(zip(sorted(block_dims),block_colors[0:len(block_dims)]))] # Block types should be in order from left to right, thinest to thickest, shortest to tallest
+        self.block_widths = list(map(lambda b: b.width, self.base_blocks))         
+        
+        # world parameters
+        self.world_width = world_width 
+        self.world_height = world_height 
+        self.block_map = np.zeros((self.world_width, self.world_height), dtype=int) ## bitmap for placement of blocks        
+        self.blocks = []        
+        self.full = False
+        
+    def check_full(self):
+        '''
+        Checks to see whether the World contains any empty space by summing block_map
+        '''
+        if not self.full:
+            self.full = (sum(sum(self.block_map)) == self.world_width*self.world_height)
+            return self.full
+        else:
+            return True
+        
+    def fill_floor(self, floor_space):
+        '''
+        Fills a 'floor', a level horizontal surface, with blocks.
+        Input: Lexicon of blocks- np arrays with 5 coordinates; length of available floor space
+        Output: List of blocks that can be used to fill the floor space with no gaps
+        '''
+        
+        floor_blocks = []
+        floor_block_widths = []
+        viable_block_widths = copy.deepcopy(self.block_widths)
+        remaining_space = floor_space
+        while remaining_space > 0:
+            i = np.random.randint(0,len(viable_block_widths))
+            if self.block_widths[i] <= remaining_space:
+                floor_blocks.append([self.base_blocks[i],floor_space-remaining_space])
+                floor_block_widths.append(self.block_widths[i])
+                remaining_space -= self.block_widths[i]
+            else:
+                viable_block_widths.pop()
+        return(floor_blocks)
+
+    def fill_floor_here(self, current_level, left_lim, right_lim):
+        '''
+        Fills a 'floor', a level horizontal surface, with blocks.
+        Input: current_level: current height of floor we are trying to fill
+               left_lim, right_lim: horizontal limits of current floor space to fill 
+                                   (length of available floor space)
+        Output: List of blocks that can be used to fill the floor space with no gaps
+        '''
+        
+        floor_space = right_lim - left_lim
+        floor_blocks = []
+        floor_block_x_location = left_lim
+        
+        viable_block_widths = copy.deepcopy(self.block_widths)
+        viable_blocks = copy.deepcopy(self.base_blocks)
+        
+        remaining_height = self.world_height - current_level
+        remaining_space = floor_space
+        
+        while remaining_space > 0:
+            i = np.random.randint(0,len(viable_blocks))
+            base_block = self.base_blocks[i]
+            if base_block.width <= remaining_space and base_block.height <= remaining_height: 
+                b = Block(self.base_blocks[i],floor_block_x_location,current_level)
+                floor_block_x_location += b.width
+                floor_blocks.append(b)
+                self.blocks.append(b)
+                remaining_space -= b.width
+            else:
+                viable_blocks.pop()
+        self._update_map_with_floor_blocks(floor_blocks)
+
+        
+    def _update_map_with_floor_blocks(self, floor_blocks):
+            for (i, b) in enumerate(floor_blocks):
+                self.block_map[self.world_height-(b.y+b.height): self.world_height-b.y, b.x:(b.x+b.width)] = 1 
+                
+    
+    def fill_world(self, render = True):
+        '''
+        Semi-randomly fills world with blocks, adding a 'floor' of blocks to the next available flat surface 
+        '''
+        current_level = 0 #Start at bottom and work up
+        while current_level <= self.world_height - 1: # Until at top
+            #find floor
+            while self.block_map[self.world_height - current_level - 1].all() and current_level < self.world_height: # check if level is full or reached top
+                current_level += 1
+            if current_level == self.world_height:
+                    break
+            left = 0
+            while self.block_map[self.world_height - current_level - 1][left] == 1:
+                left += 1
+            right = left
+            while right < self.world_width and self.block_map[self.world_height - current_level - 1][right] == 0:
+                right += 1
+            #print('fill_world_here: ' + str((current_level, left, right)))
+            self.fill_floor_here(current_level, left, right)
+        
+        ## check that world is filled
+        self.check_full()
+        
+        ## optionally render world
+        if render:
+            draw_world(self)
+            
+    
+    def remove_block(self, block_number, render = False, checking = False):
+        '''
+        Assess stability of tower upon removal of one block
+        Does not actually remove block or update state
+        In: index of block object in blocks list to be removed 
+        Out: True if tower would be stable (i.e. no blocks would move) on removal of block, false otherwise
+        Pre: world is 'full'
+        Post: world unchanged. block_map and blocks only copied here
+        '''
+        if self.check_full():
+            
+            if block_number < len(self.blocks):
+                # Copy blocks and remove one
+                b = self.blocks[block_number]
+                updated_blocks = self.blocks[:]    # copy list of blocks
+                updated_blocks.remove(b)           # remove element
+
+                # Copy and block_map
+                new_block_map = np.copy(self.block_map)     # copy block map
+                new_block_map[self.world_height-(b.y+b.height): self.world_height-b.y, b.x:(b.x+b.width)] = 0 
+                if render:
+                    print(new_block_map)
+
+                # For blocks above b, check if there is enough floor beneath
+                # Blocks in list stored in order of height, so just need to traverse tail of list to check for stability
+                stable = True
+                for b2 in updated_blocks[block_number:]:
+                    if b2.y > 0: #block stable if on floor (and avoids indexing errors)
+                        y = b2.y
+                        xs = list(range(b2.x, b2.x+b2.width)) # get x loc of base of block in block_map
+                        support = new_block_map[(self.world_height-1)-(b2.y)+1, xs] #get the floor under block
+                        # support is the space underneath the base of a block
+                        stable = stable and (np.mean(support)>= 0.5) # stable if greater than half of support is 1 in blockmap
+                        #if not(any(stable)) then block can slide down.
+                
+                if stable and not checking:
+                    new_world = copy.deepcopy(self)
+                    new_world.blocks = copy.deepcopy(updated_blocks)
+                    new_world.block_map = new_block_map
+                    if render:
+                        draw_world(new_world)
+                    return (stable, new_world)
+                
+                return (stable, self)
+
+            else:
+                print('Index of block to remove out of range')
+            
+        else:
+            print('World not full. Use fill_world to populate world with blocks')
+            
