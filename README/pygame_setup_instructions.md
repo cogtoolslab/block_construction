@@ -1,4 +1,4 @@
-Setting up pygame to work on nightingale:
+## Setting up pygame to work on nightingale:
 
 1. Install X11 on remote server:
 `sudo apt-get install xorg openbox`
@@ -9,9 +9,8 @@ https://www.xquartz.org/
 3. Now, when you want to display pygame animations, make sure that you ssh into nightingale with the `-X` flag, e.g., 
 `ssh -X USER@nightingale.ucsd.edu`
 
-4. Test out with a pygame demo from the pygame website. Copy the following code into a file named `demo.py`. Also copy over the `intro_ball.gif` image on the tutorial website: http://www.pygame.org/docs/tut/PygameIntro.html to the same location. 
+4. Test out with a pygame demo from the pygame website. Copy the following code into a file named `demo.py`.
 
-`demo.py`:
 ```
 import sys, pygame
 pygame.init()
@@ -40,5 +39,8 @@ while 1:
     pygame.display.flip()
 ```
 
+Also copy over the `intro_ball.gif` image on the tutorial website: http://www.pygame.org/docs/tut/PygameIntro.html to the same location. 
 
+To run: `python demo.py` 
 
+5. 
