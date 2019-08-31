@@ -292,7 +292,7 @@ class World:
             for (i, b) in enumerate(floor_blocks):
                 self.block_map[self.world_height-(b.y+b.height): self.world_height-b.y, b.x:(b.x+b.width)] = 1 
     
-    def fill_world(self, render = True):
+    def fill_world(self, render = False):
         '''
         Semi-randomly fills world with blocks, adding a 'floor' of blocks to the next available flat surface 
         '''
