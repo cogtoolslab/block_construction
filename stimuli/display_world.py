@@ -6,7 +6,7 @@ import random
 PPM = 20 #pixels per meter
 SCREEN_WIDTH, SCREEN_HEIGHT = 400, 400
 DISPLAY_OFFSET_X, DISPLAY_OFFSET_Y = 100, -100
-TIME_STEP = 0.03
+TIME_STEP = 0.05
 # Helper functions for interacting between stimulus generation and pybox2D
 
 def b2_x(block):
@@ -29,7 +29,7 @@ def add_block_to_world(block, b2world):
     world_block = body.CreatePolygonFixture(box=(block.width/2,block.height/2), density=1, friction=0.3)
 
 
-def display_world():
+def random_world_test(blocks_removed = 0):
 
     pygame.init()
     
@@ -44,7 +44,7 @@ def display_world():
     world = bw.World(world_width = 8,world_height = 8)
     world.fill_world()
     
-    world = jenga_blocks(world,5)
+    world = jenga_blocks(world,blocks_removed)
 
     for block in world.blocks:
         b2block = add_block_to_world(block, b2world)
@@ -143,14 +143,23 @@ def display_blocks(world):
                 pygame.draw.polygon(gameDisplay, dark_green, vertices)
                 pygame.draw.polygon(gameDisplay, green, vertices, 1)
         
-        b2world.Step(TIME_STEP, 10, 10)
+        b2world.Step(TIME_STEP, 8, 10)
         
         pygame.display.update()
     
 def test_T():
     w = bw.World()
-    w.add_block(2,4,2,0)
-    w.add_block(4,2,1,4)
+    w.add_block(2,4,4,0)
+    w.add_block(4,2,2,4)
     display_blocks(w)
 
-test_T()
+def test_stonehenge():
+    w = bw.World()
+    w.add_block(2,4,2,0)
+    w.add_block(2,4,6,0)
+    w.add_block(4,2,3,4)
+    display_blocks(w)
+
+random_world_test(5)
+#test_T()
+#test_stonehenge()
