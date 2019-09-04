@@ -1,4 +1,5 @@
 import pygame
+from pygame.locals import *
 import json
 import blockworld_helpers as bw
 from Box2D import *
@@ -40,6 +41,16 @@ def jenga_blocks(w,n):
                 i += 1;
     return w
 
+def event_handler():
+    for event in pygame.event.get():
+        if event.type == QUIT or (
+             event.type == KEYDOWN and (
+              event.key == K_ESCAPE or
+              event.key == K_q
+             )):
+            pygame.quit()
+            quit() 
+
 def display_blocks(world, 
                    TIME_STEP = 0.01,
                    VEL_ITERS = 10,
@@ -71,10 +82,7 @@ def display_blocks(world,
     gameDisplay.fill(black)
 
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
+        event_handler() ## will quit pygame if Q/Esc key pressed
 
         gameDisplay.fill((0, 0, 0, 0))
         
@@ -90,7 +98,7 @@ def display_blocks(world,
                 pygame.draw.polygon(gameDisplay, dark_green, vertices)
                 pygame.draw.polygon(gameDisplay, green, vertices, 1)
         
-        b2world.Step(TIME_STEP, 8, 10)
+        b2world.Step(TIME_STEP, VEL_ITERS, POS_ITERS)
         
         pygame.display.update()
 
@@ -138,11 +146,8 @@ def random_world_test(blocks_removed = 0,
     gameDisplay.fill(black)
 
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-
+        event_handler() ## will quit pygame if Q/Esc key pressed
+        
         gameDisplay.fill((0, 0, 0, 0))
         
         for body in b2world.bodies:
@@ -157,10 +162,9 @@ def random_world_test(blocks_removed = 0,
                 pygame.draw.polygon(gameDisplay, dark_green, vertices)
                 pygame.draw.polygon(gameDisplay, green, vertices, 1)
         
-        b2world.Step(TIME_STEP, 30, 30)
+        b2world.Step(TIME_STEP, VEL_ITERS, POS_ITERS)
         
-        pygame.display.update()        
-                
+        pygame.display.update()                           
     
 def simple_tests(TEST_NAME='stonehenge',
                  TIME_STEP=0.01,
