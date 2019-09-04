@@ -76,6 +76,7 @@ def display_blocks(world,
     black = (0,0,0)
     green = (0,255,0)
     dark_green = (0,50,0)
+    step = 0
     
     gameDisplay = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
     pygame.display.set_caption('Checking World')
@@ -99,6 +100,11 @@ def display_blocks(world,
                 pygame.draw.polygon(gameDisplay, green, vertices, 1)
         
         b2world.Step(TIME_STEP, VEL_ITERS, POS_ITERS)
+        
+        step +=1
+        text = font.render(str(step), True, green)
+        gameDisplay.blit(text,(SCREEN_WIDTH - 30 -text.get_width(),SCREEN_HEIGHT - 50))
+        
         
         pygame.display.update()
 
