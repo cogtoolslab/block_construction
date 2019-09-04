@@ -171,7 +171,10 @@ def simple_tests(TEST_NAME='stonehenge',
                  VEL_ITERS = 10,
                  POS_ITERS = 10,
                  SCREEN_WIDTH= 400,
-                 SCREEN_HEIGHT = 400):
+                 SCREEN_HEIGHT = 400,
+                 PPM = 20,
+                 DISPLAY_OFFSET_X=100,
+                 DISPLAY_OFFSET_Y=-100):
     '''
     Runs super simple tests in pybox2d, e.g., T block & stonehenge config.
     '''
@@ -186,7 +189,10 @@ def simple_tests(TEST_NAME='stonehenge',
                        VEL_ITERS=VEL_ITERS,
                        POS_ITERS=POS_ITERS,
                        SCREEN_WIDTH=SCREEN_WIDTH,
-                       SCREEN_HEIGHT=SCREEN_HEIGHT)    
+                       SCREEN_HEIGHT=SCREEN_HEIGHT,
+                       PPM=PPM,
+                       DISPLAY_OFFSET_X=DISPLAY_OFFSET_X,
+                       DISPLAY_OFFSET_Y=DISPLAY_OFFSET_Y)    
     elif TEST_NAME == 'T':
         w = bw.World()
         w.add_block(2,4,4,0)
@@ -196,7 +202,10 @@ def simple_tests(TEST_NAME='stonehenge',
                        VEL_ITERS=VEL_ITERS, 
                        POS_ITERS=POS_ITERS,
                        SCREEN_WIDTH=SCREEN_WIDTH,
-                       SCREEN_HEIGHT=SCREEN_HEIGHT) 
+                       SCREEN_HEIGHT=SCREEN_HEIGHT,
+                       PPM=PPM,
+                       DISPLAY_OFFSET_X=DISPLAY_OFFSET_X,
+                       DISPLAY_OFFSET_Y=DISPLAY_OFFSET_Y) 
     else:
         print('simple test type not understood!')
         
