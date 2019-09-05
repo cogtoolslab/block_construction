@@ -20,12 +20,12 @@ def b2_y(block):
     '''
     return ((block.y) + (block.height / 2))
     
-def add_block_to_world(block, b2world):
+def add_block_to_world(block, b2world, SIZE_FACTOR = 1):
     '''
     Add block from stimulus generation to b2world
     '''
-    body = b2world.CreateDynamicBody(position=(b2_x(block),b2_y(block)))
-    world_block = body.CreatePolygonFixture(box=(block.width/2,block.height/2), density=1, friction=0.3)
+    body = b2world.CreateDynamicBody(position=(b2_x(block)*SIZE_FACTOR,b2_y(block)*SIZE_FACTOR))
+    world_block = body.CreatePolygonFixture(box=((block.width/2)*SIZE_FACTOR,(block.height/2)*SIZE_FACTOR), density=1, friction=0.3)
         
 def jenga_blocks(w,n):
 
@@ -59,24 +59,26 @@ def display_blocks(world,
                    SCREEN_HEIGHT = 400, 
                    PPM = 20,
                    DISPLAY_OFFSET_X = 100,
-                   DISPLAY_OFFSET_Y = -100):
+                   DISPLAY_OFFSET_Y = -100,
+                   SIZE_FACTOR = 1):
     
     pygame.init()
     
     #make pybox2D world
     b2world = b2World(gravity=(0,-10), doSleep=False)
     groundBody = b2world.CreateStaticBody( #add ground
-        position=(0,-10),
-        shapes=b2PolygonShape(box=(50,10)),
+        position=(0*SIZE_FACTOR,-10*SIZE_FACTOR),
+        shapes=b2PolygonShape(box=(50*SIZE_FACTOR,10*SIZE_FACTOR)),
     )
 
     for block in world.blocks:
-        b2block = add_block_to_world(block, b2world)
+        b2block = add_block_to_world(block, b2world, SIZE_FACTOR = SIZE_FACTOR)
 
     black = (0,0,0)
     green = (0,255,0)
     dark_green = (0,50,0)
     step = 0
+    font = pygame.font.Font('freesansbold.ttf', 16) 
     
     gameDisplay = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
     pygame.display.set_caption('Checking World')
@@ -92,8 +94,7 @@ def display_blocks(world,
 
                 shape = fixture.shape
 
-                vertices = [(body.transform * v) * PPM for v in shape.vertices]
-
+                vertices = [(body.transform * v) * PPM/ SIZE_FACTOR for v in shape.vertices]
                 vertices = [(v[0] + DISPLAY_OFFSET_X, SCREEN_HEIGHT - v[1] + DISPLAY_OFFSET_Y) for v in vertices]
 
                 pygame.draw.polygon(gameDisplay, dark_green, vertices)
@@ -118,7 +119,8 @@ def random_world_test(blocks_removed = 0,
                       SCREEN_HEIGHT = 400,
                       PPM = 20,
                       DISPLAY_OFFSET_X = 100,
-                      DISPLAY_OFFSET_Y = -100):
+                      DISPLAY_OFFSET_Y = -100,
+                      SIZE_FACTOR = 1):
 
     pygame.init()
     
@@ -180,7 +182,8 @@ def simple_tests(TEST_NAME='stonehenge',
                  SCREEN_HEIGHT = 400,
                  PPM = 20,
                  DISPLAY_OFFSET_X=100,
-                 DISPLAY_OFFSET_Y=-100):
+                 DISPLAY_OFFSET_Y=-100,
+                 SIZE_FACTOR = 1):
     '''
     Runs super simple tests in pybox2d, e.g., T block & stonehenge config.
     '''
@@ -198,11 +201,12 @@ def simple_tests(TEST_NAME='stonehenge',
                        SCREEN_HEIGHT=SCREEN_HEIGHT,
                        PPM=PPM,
                        DISPLAY_OFFSET_X=DISPLAY_OFFSET_X,
-                       DISPLAY_OFFSET_Y=DISPLAY_OFFSET_Y)    
+                       DISPLAY_OFFSET_Y=DISPLAY_OFFSET_Y,
+                       SIZE_FACTOR=SIZE_FACTOR)    
     elif TEST_NAME == 'T':
         w = bw.World()
         w.add_block(2,4,4,0)
-        w.add_block(4,2,2,4)
+        w.add_block(4,2,3,4)
         display_blocks(w, 
                        TIME_STEP=TIME_STEP, 
                        VEL_ITERS=VEL_ITERS, 
@@ -211,7 +215,22 @@ def simple_tests(TEST_NAME='stonehenge',
                        SCREEN_HEIGHT=SCREEN_HEIGHT,
                        PPM=PPM,
                        DISPLAY_OFFSET_X=DISPLAY_OFFSET_X,
-                       DISPLAY_OFFSET_Y=DISPLAY_OFFSET_Y) 
+                       DISPLAY_OFFSET_Y=DISPLAY_OFFSET_Y,
+                       SIZE_FACTOR=SIZE_FACTOR) 
+    elif TEST_NAME == 'r':
+        w = bw.World()
+        w.add_block(2,4,4,0)
+        w.add_block(4,2,4,4)
+        display_blocks(w, 
+                       TIME_STEP=TIME_STEP, 
+                       VEL_ITERS=VEL_ITERS, 
+                       POS_ITERS=POS_ITERS,
+                       SCREEN_WIDTH=SCREEN_WIDTH,
+                       SCREEN_HEIGHT=SCREEN_HEIGHT,
+                       PPM=PPM,
+                       DISPLAY_OFFSET_X=DISPLAY_OFFSET_X,
+                       DISPLAY_OFFSET_Y=DISPLAY_OFFSET_Y,
+                       SIZE_FACTOR = SIZE_FACTOR)
     else:
         print('simple test type not understood!')
         
@@ -231,10 +250,11 @@ if __name__ == "__main__":
     parser.add_argument('--POS_ITERS', type=int, help='how strongly to correct position', default=10)    
     parser.add_argument('--TEST_NAME', type=str, help='which test do you want to run? options: T, stonehenge, jenga', default='jenga')
     parser.add_argument('--BLOCKS_REMOVED',type=int, help='how many blocks to remove? only applies to jenga test.', default=5)
+    parser.add_argument('--SIZE_FACTOR',type=float, help='scale of blocks in physics engine. Values between 0 and 1 recommended', default=1)
     args = parser.parse_args()
     
     ## detect which test the user wants to run and then run that one
-    if args.TEST_NAME in ['stonehenge','T']:
+    if args.TEST_NAME in ['stonehenge','T', 'r']:
         simple_tests(TEST_NAME = args.TEST_NAME,
                      TIME_STEP=args.TIME_STEP,
                      VEL_ITERS=args.VEL_ITERS,
@@ -243,7 +263,8 @@ if __name__ == "__main__":
                      SCREEN_HEIGHT = args.SCREEN_HEIGHT,
                      PPM = args.PPM,
                      DISPLAY_OFFSET_X=args.DISPLAY_OFFSET_X,
-                     DISPLAY_OFFSET_Y=args.DISPLAY_OFFSET_Y)      
+                     DISPLAY_OFFSET_Y=args.DISPLAY_OFFSET_Y,
+                     SIZE_FACTOR = args.SIZE_FACTOR)      
     elif args.TEST_NAME=='jenga':
         random_world_test(blocks_removed = args.BLOCKS_REMOVED,
                           TIME_STEP = args.TIME_STEP,
@@ -253,7 +274,8 @@ if __name__ == "__main__":
                           SCREEN_HEIGHT = args.SCREEN_HEIGHT,
                           PPM=args.PPM,
                           DISPLAY_OFFSET_X=args.DISPLAY_OFFSET_X,
-                          DISPLAY_OFFSET_Y=args.DISPLAY_OFFSET_Y)
+                          DISPLAY_OFFSET_Y=args.DISPLAY_OFFSET_Y,
+                          SIZE_FACTOR = args.SIZE_FACTOR)
     else:
         print('TEST_NAME not recognized. Please specify a valid test name.')
 
