@@ -5,6 +5,8 @@ import blockworld_helpers as bw
 from Box2D import *
 import random
 import argparse
+import numpy as np
+
 
 # Helper functions for interacting between stimulus generation and pybox2D
 
@@ -60,9 +62,11 @@ def display_blocks(world,
                    PPM = 20,
                    DISPLAY_OFFSET_X = 100,
                    DISPLAY_OFFSET_Y = -100,
-                   SIZE_FACTOR = 1):
+                   SIZE_FACTOR = 1,
+                   RENDER = True):
     
-    pygame.init()
+    
+    
     
     #make pybox2D world
     b2world = b2World(gravity=(0,-10), doSleep=False)
@@ -73,43 +77,94 @@ def display_blocks(world,
 
     for block in world.blocks:
         b2block = add_block_to_world(block, b2world, SIZE_FACTOR = SIZE_FACTOR)
+   
+    step = 0
+    
+    # Set up display
+    if RENDER:
+        pygame.init()
+        game_display = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
+        pygame.display.set_caption('Checking World')
+        black = (0,0,0)
+        game_display.fill(black)
+    
+    start_positions = np.array([body.position for body in b2world.bodies])
+    print(start_positions)
 
+    while True:
+        step +=1
+        
+        # render next step
+        if RENDER:
+            event_handler() ## will quit pygame if Q/Esc key pressed
+            render_b2step(b2world,
+                          game_display,
+                          step = step,
+                          TIME_STEP=TIME_STEP,
+                          VEL_ITERS=VEL_ITERS,
+                          POS_ITERS=POS_ITERS,
+                          SCREEN_WIDTH=SCREEN_WIDTH,
+                          SCREEN_HEIGHT=SCREEN_HEIGHT,
+                          PPM=PPM,
+                          DISPLAY_OFFSET_X=DISPLAY_OFFSET_X,
+                          DISPLAY_OFFSET_Y=DISPLAY_OFFSET_Y,
+                          SIZE_FACTOR=SIZE_FACTOR)
+        
+        b2world.Step(TIME_STEP, VEL_ITERS, POS_ITERS)
+        if step == 100:
+            end_positions = np.array([body.position for body in b2world.bodies])
+            print(end_positions)
+            
+            # check stable
+            move_diffs = np.absolute(np.subtract(start_positions, end_positions))
+            if (move_diffs > 0.1).any():
+                print('big move')
+            elif (sum(sum(move_diffs))/len(b2world.bodies) > 1):
+                print('lots of small diffs')
+            else:
+                print('stable')
+            
+            if not RENDER: 
+                quit()
+
+def render_b2step(b2world, 
+                  game_display,
+                  step = 0,
+                  TIME_STEP = 0.01,
+                  VEL_ITERS = 10,
+                  POS_ITERS = 10, 
+                  SCREEN_WIDTH = 400,
+                  SCREEN_HEIGHT = 400,
+                  PPM = 20,
+                  DISPLAY_OFFSET_X = 100,
+                  DISPLAY_OFFSET_Y = -100,
+                  SIZE_FACTOR = 1):
+
+    game_display.fill((0, 0, 0, 0))
+
+    # Display vars
     black = (0,0,0)
     green = (0,255,0)
     dark_green = (0,50,0)
-    step = 0
-    font = pygame.font.Font('freesansbold.ttf', 16) 
+    font = pygame.font.Font('freesansbold.ttf', 16)
+
+    for body in b2world.bodies:
+        for fixture in body.fixtures:
+
+            shape = fixture.shape
+
+            vertices = [(body.transform * v) * PPM/ SIZE_FACTOR for v in shape.vertices]
+            vertices = [(v[0] + DISPLAY_OFFSET_X, SCREEN_HEIGHT - v[1] + DISPLAY_OFFSET_Y) for v in vertices]
+
+            pygame.draw.polygon(game_display, dark_green, vertices)
+            pygame.draw.polygon(game_display, green, vertices, 1)
+
+    text = font.render(str(step), True, green)
+    game_display.blit(text,(SCREEN_WIDTH - 30 -text.get_width(),SCREEN_HEIGHT - 50))
     
-    gameDisplay = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
-    pygame.display.set_caption('Checking World')
-    gameDisplay.fill(black)
-
-    while True:
-        event_handler() ## will quit pygame if Q/Esc key pressed
-
-        gameDisplay.fill((0, 0, 0, 0))
-        
-        for body in b2world.bodies:
-            for fixture in body.fixtures:
-
-                shape = fixture.shape
-
-                vertices = [(body.transform * v) * PPM/ SIZE_FACTOR for v in shape.vertices]
-                vertices = [(v[0] + DISPLAY_OFFSET_X, SCREEN_HEIGHT - v[1] + DISPLAY_OFFSET_Y) for v in vertices]
-
-                pygame.draw.polygon(gameDisplay, dark_green, vertices)
-                pygame.draw.polygon(gameDisplay, green, vertices, 1)
-        
-        b2world.Step(TIME_STEP, VEL_ITERS, POS_ITERS)
-        
-        step +=1
-        text = font.render(str(step), True, green)
-        gameDisplay.blit(text,(SCREEN_WIDTH - 30 -text.get_width(),SCREEN_HEIGHT - 50))
-        
-        
-        pygame.display.update()
-
-        
+    pygame.display.update()                           
+    
+    
         
 def random_world_test(blocks_removed = 0,
                       TIME_STEP = 0.01,
@@ -120,7 +175,8 @@ def random_world_test(blocks_removed = 0,
                       PPM = 20,
                       DISPLAY_OFFSET_X = 100,
                       DISPLAY_OFFSET_Y = -100,
-                      SIZE_FACTOR = 1):
+                      SIZE_FACTOR = 1,
+                      RENDER = True):
 
     pygame.init()
     
@@ -139,40 +195,19 @@ def random_world_test(blocks_removed = 0,
 
     for block in world.blocks:
         b2block = add_block_to_world(block, b2world)
-
-    
-    white = (255,255,255)
-    black = (0,0,0)
-
-    red = (255,0,0)
-    green = (0,255,0)
-    blue = (0,0,255)
-    dark_green = (0,50,0)
-    
-    gameDisplay = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
-    pygame.display.set_caption('World Display')
-    gameDisplay.fill(black)
-
-    while True:
-        event_handler() ## will quit pygame if Q/Esc key pressed
         
-        gameDisplay.fill((0, 0, 0, 0))
-        
-        for body in b2world.bodies:
-            for fixture in body.fixtures:
+    display_blocks(world,
+                   TIME_STEP=TIME_STEP,
+                   VEL_ITERS=VEL_ITERS,
+                   POS_ITERS=POS_ITERS,
+                   SCREEN_WIDTH=SCREEN_WIDTH,
+                   SCREEN_HEIGHT=SCREEN_HEIGHT,
+                   PPM=PPM,
+                   DISPLAY_OFFSET_X=DISPLAY_OFFSET_X,
+                   DISPLAY_OFFSET_Y=DISPLAY_OFFSET_Y,
+                   SIZE_FACTOR=SIZE_FACTOR,
+                   RENDER = RENDER)  
 
-                shape = fixture.shape
-
-                vertices = [(body.transform * v) * PPM for v in shape.vertices]
-
-                vertices = [(v[0] + DISPLAY_OFFSET_X, SCREEN_HEIGHT - v[1] + DISPLAY_OFFSET_Y) for v in vertices]
-
-                pygame.draw.polygon(gameDisplay, dark_green, vertices)
-                pygame.draw.polygon(gameDisplay, green, vertices, 1)
-        
-        b2world.Step(TIME_STEP, VEL_ITERS, POS_ITERS)
-        
-        pygame.display.update()                           
     
 def simple_tests(TEST_NAME='stonehenge',
                  TIME_STEP=0.01,
@@ -183,7 +218,8 @@ def simple_tests(TEST_NAME='stonehenge',
                  PPM = 20,
                  DISPLAY_OFFSET_X=100,
                  DISPLAY_OFFSET_Y=-100,
-                 SIZE_FACTOR = 1):
+                 SIZE_FACTOR = 1,
+                 RENDER = True):
     '''
     Runs super simple tests in pybox2d, e.g., T block & stonehenge config.
     '''
@@ -202,7 +238,8 @@ def simple_tests(TEST_NAME='stonehenge',
                        PPM=PPM,
                        DISPLAY_OFFSET_X=DISPLAY_OFFSET_X,
                        DISPLAY_OFFSET_Y=DISPLAY_OFFSET_Y,
-                       SIZE_FACTOR=SIZE_FACTOR)    
+                       SIZE_FACTOR=SIZE_FACTOR,
+                       RENDER = RENDER)    
     elif TEST_NAME == 'T':
         w = bw.World()
         w.add_block(2,4,4,0)
@@ -216,7 +253,8 @@ def simple_tests(TEST_NAME='stonehenge',
                        PPM=PPM,
                        DISPLAY_OFFSET_X=DISPLAY_OFFSET_X,
                        DISPLAY_OFFSET_Y=DISPLAY_OFFSET_Y,
-                       SIZE_FACTOR=SIZE_FACTOR) 
+                       SIZE_FACTOR=SIZE_FACTOR,
+                       RENDER = RENDER) 
     elif TEST_NAME == 'r':
         w = bw.World()
         w.add_block(2,4,4,0)
@@ -230,14 +268,15 @@ def simple_tests(TEST_NAME='stonehenge',
                        PPM=PPM,
                        DISPLAY_OFFSET_X=DISPLAY_OFFSET_X,
                        DISPLAY_OFFSET_Y=DISPLAY_OFFSET_Y,
-                       SIZE_FACTOR = SIZE_FACTOR)
+                       SIZE_FACTOR = SIZE_FACTOR,
+                       RENDER = RENDER)
     else:
         print('simple test type not understood!')
         
     
 if __name__ == "__main__":
     def str2bool(v):
-        return v.lower() in ("yes", "true", "t", "1")    
+        return v.lower() in ("yes", "true", "t", "1") 
     
     parser = argparse.ArgumentParser()
     parser.add_argument('--PPM', type=int, help='pixels per meter', default=20)
@@ -250,7 +289,8 @@ if __name__ == "__main__":
     parser.add_argument('--POS_ITERS', type=int, help='how strongly to correct position', default=10)    
     parser.add_argument('--TEST_NAME', type=str, help='which test do you want to run? options: T, stonehenge, jenga', default='jenga')
     parser.add_argument('--BLOCKS_REMOVED',type=int, help='how many blocks to remove? only applies to jenga test.', default=5)
-    parser.add_argument('--SIZE_FACTOR',type=float, help='scale of blocks in physics engine. Values between 0 and 1 recommended', default=1)
+    parser.add_argument('--SIZE_FACTOR',type=float, help='scale of blocks in physics engine. 1: 1 meter per unit. Less than 0.5 unstable', default=1)
+    parser.add_argument('--RENDER',type=str, help='display blocks with pygame', default='true')
     args = parser.parse_args()
     
     ## detect which test the user wants to run and then run that one
@@ -264,7 +304,8 @@ if __name__ == "__main__":
                      PPM = args.PPM,
                      DISPLAY_OFFSET_X=args.DISPLAY_OFFSET_X,
                      DISPLAY_OFFSET_Y=args.DISPLAY_OFFSET_Y,
-                     SIZE_FACTOR = args.SIZE_FACTOR)      
+                     SIZE_FACTOR = args.SIZE_FACTOR,
+                     RENDER = str2bool(args.RENDER))      
     elif args.TEST_NAME=='jenga':
         random_world_test(blocks_removed = args.BLOCKS_REMOVED,
                           TIME_STEP = args.TIME_STEP,
@@ -275,7 +316,8 @@ if __name__ == "__main__":
                           PPM=args.PPM,
                           DISPLAY_OFFSET_X=args.DISPLAY_OFFSET_X,
                           DISPLAY_OFFSET_Y=args.DISPLAY_OFFSET_Y,
-                          SIZE_FACTOR = args.SIZE_FACTOR)
+                          SIZE_FACTOR = args.SIZE_FACTOR,
+                          RENDER = str2bool(args.RENDER))
     else:
         print('TEST_NAME not recognized. Please specify a valid test name.')
 
