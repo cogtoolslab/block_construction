@@ -7,6 +7,7 @@ import matplotlib.image as mpimg
 from matplotlib.path import Path
 import matplotlib.patches as patches
 import copy
+import json
 
 
 ### visualization helpers
@@ -335,6 +336,32 @@ class World:
     def pop_block(self):
         block = self.blocks.pop()
         self._update_map_with_blocks([block], delete=True)
+
+
+    def save_to_json(self):
+        
+        block_string = []
+        for b in self.blocks:
+            block_string.append(
+                {
+                    "w": b.width,
+                    "h": b.height,
+                    "x": b.x,
+                    "y": b.y
+                }
+            )
+        
+        return(json.dumps({
+                            "blocks": block_string
+                            }
+                          ))
+        
+    def populate_from_json(self, json_obj):
+        
+        world_obj = json.loads(json_obj)
+        for b in world_obj["blocks"]:
+            self.add_block(b['w'], b['h'], b['x'], b['y'])
+            
     
     def jenga_block(self, block_number, render = False, checking = False):
         '''
