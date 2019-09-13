@@ -130,7 +130,94 @@ class BaseBlock:
 class Block:
     '''
         Creates Block objects that are instantiated in a world
+        x and y define the position of the BOTTOM LEFT corner of the block
     '''
+    
+    
+    #Block Relational Properties
+    def above(self, other):
+        ''' Test whether this block is fully above another block.
+        
+            Returns true iff the height of the bottom face of this block 
+            is greater than or equal to the top face of other block.
+        '''
+        return (self.y >= other.y + other.height)
+    
+    def below(self, other):
+        ''' Test whether this block is fully below another block.
+            
+            Returns true iff the height of the top face of this block 
+            is less than or equal to the bottom face of other block.
+        '''
+        return (self.y + self.height <= other.y)
+    
+    def leftof(self, other):
+        ''' Test whether this block is fully to the left of another block
+        
+            Returns true iff the height of the bottom face of this block 
+            is greater than or equal to the top face of other block.
+        '''
+        return (self.x + self.width <= other.x)
+    
+    def rightof(self, other):
+        ''' Test whether this block is fully to the right of another block.
+            
+            Returns true iff the height of the top face of this block 
+            is less than or equal to the bottom face of other block.
+        '''
+        return (self.x >= other.x + other.width)
+    
+    def sides_touch(self, other):
+        ''' Test to see whether this block sits touching sides of another block.
+            Corner to corner treated as not touching.
+        '''
+        y_overlap = not self.above(other) and not self.below(other) 
+        buttressing_side = self.x == other.x + other.width or other.x == self.x + self.width
+        return y_overlap and buttressing_side
+    
+    def vertical_touch(self, other):
+        ''' Test to see whether this block sits top to bottom against other block.
+            Corner to corner treated as not touching.
+        '''
+        x_overlap = not self.leftof(other) and not self.rightof(other) 
+        buttressing_up = self.y == other.y + other.height or other.y == self.y + self.height
+        return x_overlap and buttressing_up
+    
+    def touching(self, other):
+        ''' Test to see if this block is touching another block.
+            Corner to corner treated as not touching.
+        '''
+        return self.sides_touch(other) or self.vertical_touch(other)
+        
+
+    def abs_overlap(self, other, horizontal_overlap=True):
+        ''' horizontal- are we measureing horizontal overlap?
+        '''
+        if horizontal_overlap and self.vertical_touch(other):
+            return min([abs(self.x + self.width - other.x), abs(other.x + other.width - self.x)])
+        elif not horizontal_overlap and self.sides_touch(other):
+            return min([abs(self.y + self.height - other.y), abs(other.y + other.height - self.y)])
+        else:
+            return 0;
+        
+    def partially_supported_by(self, other):
+        ''' True if the base of this block is touching the top of the other block 
+        '''
+        return self.above(other) and (self.abs_overlap(other) > 0)
+    
+    def completely_supported_by(self, other):
+        ''' True if the whole of the base of this block is touching the top of the other block 
+        '''
+        return self.above(other) and (self.abs_overlap(other) == self.width)
+    
+    '''
+    Other useful properties:
+    - 
+    
+    '''
+        
+        
+    
     def __init__(self, base_block, x, y):
         self.base_block = base_block # defines height, width and other functions
         #bottom left coordinate
@@ -139,8 +226,7 @@ class Block:
         self.height = base_block.height
         self.width = base_block.width
         self.verts = base_block.translate(base_block.base_verts,x,y)
-    
-    
+ 
     
 ######################### SOME DRAWING FUNCTIONS ##########################
 ###########################################################################    
@@ -157,6 +243,8 @@ def patches_for_world(blocks):
 def draw_world(world):
     render_blockworld(patches_for_world(world.blocks)) 
 
+
+    
     
 ######################### DEFINITION OF BLOCK WORLD CLASS ##########################
 ############### This class samples a block world. ##################################
@@ -177,6 +265,8 @@ class World:
     
     Output: filled block world
         blocks: list of blocks with attributes
+        
+    x and y are attributes of a block that refer to the location of its bottom left corner within the World object
         
     '''
     
@@ -325,13 +415,18 @@ class World:
         '''
         Add block of specified dimensions to the world at a given location
         '''
-        base_block = self.base_block_dict[(w,h)]
-        block = Block(base_block, x, y)
-        if (self.can_place(block)):
-            self.blocks.append(block)
-            self._update_map_with_blocks([block])
+        if (w,h) in self.base_block_dict:
+            base_block = self.base_block_dict[(w,h)]
+            block = Block(base_block, x, y)
+            if (self.can_place(block)):
+                self.blocks.append(block)
+                self._update_map_with_blocks([block])
+                return block
+            else:
+                print('Block not placed- overlap with other block')
         else:
-            print('Block not placed- overlap with other block')
+            print('These block dimensions not supported for this World. Use:')
+            print(self.block_dims)
          
     def pop_block(self):
         block = self.blocks.pop()
@@ -344,8 +439,8 @@ class World:
         for b in self.blocks:
             block_string.append(
                 {
-                    "w": b.width,
-                    "h": b.height,
+                    "width": b.width,
+                    "height": b.height,
                     "x": b.x,
                     "y": b.y
                 }
@@ -360,7 +455,7 @@ class World:
         
         world_obj = json.loads(json_obj)
         for b in world_obj["blocks"]:
-            self.add_block(b['w'], b['h'], b['x'], b['y'])
+            self.add_block(b['width'], b['height'], b['x'], b['y'])
             
     
     def jenga_block(self, block_number, render = False, checking = False):
