@@ -19,7 +19,7 @@ def get_patch(verts,
         verts: array or list of (x,y) vertices of convex polygon. 
                 last vertex = first vertex, so len(verts) is num_vertices + 1
         color: facecolor
-        line_width: edge width    
+        line_width: edge width
     output:
         patch matplotlib.path patch object
     '''
@@ -62,10 +62,10 @@ class BaseBlock:
     '''
     
     def __init__(self, width=1, height=1, shape='rectangle', color='gray'):
-        self.base_verts = np.array([(0, 0), 
-                               (0, 1 * height), 
-                               (1 * width, 1 * height), 
-                               (1 * width, 0), 
+        self.base_verts = np.array([(0, 0),
+                               (0, 1 * height),
+                               (1 * width, 1 * height),
+                               (1 * width, 0),
                                (0,0)])
         self.width = width
         self.height = height
@@ -186,9 +186,9 @@ class World:
                             (2,1),
                             (2,2),
                             (2,4),
-                            (4,2),
-                            (4,4),
-                            (8,2)
+                            (4,2)
+                            #(4,4),
+                            #(8,2)
                             ],
                 block_colors = ['#D33E43',
                             '#29335C',
@@ -228,26 +228,6 @@ class World:
         else:
             return True
         
-    def fill_floor(self, floor_space):
-        '''
-        Fills a 'floor', a level horizontal surface, with blocks.
-        Input: Lexicon of blocks- np arrays with 5 coordinates; length of available floor space
-        Output: List of blocks that can be used to fill the floor space with no gaps
-        '''
-        
-        floor_blocks = []
-        floor_block_widths = []
-        viable_block_widths = copy.deepcopy(self.block_widths)
-        remaining_space = floor_space
-        while remaining_space > 0:
-            i = np.random.randint(0,len(viable_block_widths))
-            if self.block_widths[i] <= remaining_space:
-                floor_blocks.append([self.base_blocks[i],floor_space-remaining_space])
-                floor_block_widths.append(self.block_widths[i])
-                remaining_space -= self.block_widths[i]
-            else:
-                viable_block_widths.pop()
-        return(floor_blocks)
 
     def fill_floor_here(self, current_level, left_lim, right_lim):
         '''
@@ -279,10 +259,10 @@ class World:
                 remaining_space -= b.width
             else:
                 viable_blocks.pop()
-        self._update_map_with_floor_blocks(floor_blocks)
+        self._update_map_with_blocks(floor_blocks)
 
         
-    def _update_map_with_floor_blocks(self, floor_blocks):
+    def _update_map_with_blocks(self, floor_blocks):
             for (i, b) in enumerate(floor_blocks):
                 self.block_map[self.world_height-(b.y+b.height): self.world_height-b.y, b.x:(b.x+b.width)] = 1 
                 
@@ -314,6 +294,31 @@ class World:
         if render:
             draw_world(self)
             
+    def build_structure(self, render = True):
+        '''
+        Adds blocks to World from floor, up.
+              
+        While area in world < 80% or adding blocks impossible:
+            b = random block
+            until block placed or out of locations do:
+                l = random location (all locations must be on a floor- or such that some of the base of a block touches the floor)
+                if can_be_placed(b, l)
+                    Add b to world at l
+                
+        can_be_placed(b,l)
+
+            (greater than half supported
+            OR half supported and side support
+            OR two ends supported?
+            OR COM supported
+                For each block, COM of collection of objects above that block must be on block,
+                )
+
+        Maybe pick block, try all locations?
+        Maybe pick location, try all blocks?
+        '''
+        
+
     
     def remove_block(self, block_number, render = False, checking = False):
         '''
@@ -365,4 +370,17 @@ class World:
             
         else:
             print('World not full. Use fill_world to populate world with blocks')
+    
+    def remove_next_block(self):
+        i = 0
+        block_removed = False
+        while not block_removed:
+            #block_number = random_block_order.pop
+            (block_removed, next_world) = self.remove_block(i)
+            if block_removed:
+                draw_world(next_world)
+                return next_world
+            else:
+                i += 1
+
             
