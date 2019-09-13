@@ -66,8 +66,6 @@ def display_blocks(world,
                    RENDER = True):
     
     
-    
-    
     #make pybox2D world
     b2world = b2World(gravity=(0,-10), doSleep=False)
     groundBody = b2world.CreateStaticBody( #add ground
@@ -125,7 +123,7 @@ def display_blocks(world,
                 print('stable')
             
             if not RENDER: 
-                quit()
+                break
 
 def render_b2step(b2world, 
                   game_display,
@@ -226,9 +224,9 @@ def simple_tests(TEST_NAME='stonehenge',
     
     if TEST_NAME == 'stonehenge':        
         w = bw.World()
-        w.add_block(2,4,2,0)
-        w.add_block(2,4,6,0)
-        w.add_block(4,2,3,4)
+        _ = w.add_block(2,4,2,0)
+        _ = w.add_block(2,4,6,0)
+        _ = w.add_block(4,2,3,4)
         display_blocks(w,
                        TIME_STEP=TIME_STEP,
                        VEL_ITERS=VEL_ITERS,
@@ -242,8 +240,8 @@ def simple_tests(TEST_NAME='stonehenge',
                        RENDER = RENDER)    
     elif TEST_NAME == 'T':
         w = bw.World()
-        w.add_block(2,4,4,0)
-        w.add_block(4,2,3,4)
+        _ = w.add_block(2,4,4,0)
+        _ = w.add_block(4,2,3,4)
         display_blocks(w, 
                        TIME_STEP=TIME_STEP, 
                        VEL_ITERS=VEL_ITERS, 
@@ -257,8 +255,8 @@ def simple_tests(TEST_NAME='stonehenge',
                        RENDER = RENDER) 
     elif TEST_NAME == 'r':
         w = bw.World()
-        w.add_block(2,4,4,0)
-        w.add_block(4,2,4,4)
+        _ = w.add_block(2,4,4,0)
+        _ = w.add_block(4,2,4,4)
         display_blocks(w, 
                        TIME_STEP=TIME_STEP, 
                        VEL_ITERS=VEL_ITERS, 
