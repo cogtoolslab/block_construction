@@ -134,7 +134,14 @@ class Block:
         
         Defines functions to calculate relational properties between blocks
     '''
-    
+    def __init__(self, base_block, x, y):
+        self.base_block = base_block # defines height, width and other functions
+        #bottom left coordinate
+        self.x = x
+        self.y = y
+        self.height = base_block.height
+        self.width = base_block.width
+        self.verts = base_block.translate(base_block.base_verts,x,y)
     
     #Block Relational Properties
     def above(self, other):
@@ -218,8 +225,6 @@ class Block:
         return self.partially_supported(block_a) and self.partially_supported(block_b)
     
     
-    
-    
     '''
     Other useful properties:
     - 
@@ -228,15 +233,7 @@ class Block:
         
         
     
-    def __init__(self, base_block, x, y):
-        self.base_block = base_block # defines height, width and other functions
-        #bottom left coordinate
-        self.x = x
-        self.y = y
-        self.height = base_block.height
-        self.width = base_block.width
-        self.verts = base_block.translate(base_block.base_verts,x,y)
- 
+
     
 ######################### SOME DRAWING FUNCTIONS ##########################
 ###########################################################################    
