@@ -207,7 +207,7 @@ class Block:
         elif not horizontal_overlap and self.sides_touch(other):
             return min([abs(self.y + self.height - other.y), abs(other.y + other.height - self.y)])
         else:
-            return 0;
+            return 0
         
     def partially_supported_by(self, other):
         ''' True if the base of this block is touching the top of the other block 
@@ -230,11 +230,9 @@ class Block:
     - 
     
     '''
-        
-        
-    
 
-    
+
+
 ######################### SOME DRAWING FUNCTIONS ##########################
 ###########################################################################    
 
@@ -459,7 +457,9 @@ class World:
                           ))
         
     def populate_from_json(self, json_obj):
-        
+        '''
+        Fill world object with blocks saved in a JSON format
+        '''
         world_obj = json.loads(json_obj)
         for b in world_obj["blocks"]:
             self.add_block(b['width'], b['height'], b['x'], b['y'])
@@ -468,7 +468,6 @@ class World:
     def jenga_block(self, block_number, render = False, checking = False):
         '''
         Assess stability of tower upon removal of one block
-        Does not actually remove block or update state
         In: index of block object in blocks list to be removed 
         Out: True if tower would be stable (i.e. no blocks would move) on removal of block, false otherwise
         Pre: world is 'full'
