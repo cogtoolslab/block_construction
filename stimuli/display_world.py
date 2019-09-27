@@ -32,7 +32,7 @@ def add_block_to_world(block, b2world, SIZE_FACTOR = 1):
 def jenga_blocks(w,n):
 
     for j in range(0,n):
-        i = 0;
+        i = 0
         block_removed = False
         while not block_removed:
             #block_number = random_block_order.pop
@@ -40,7 +40,7 @@ def jenga_blocks(w,n):
             if block_removed:
                 w = w2
             else:
-                i += 1;
+                i += 1
     return w
 
 def event_handler():
@@ -111,9 +111,8 @@ def display_blocks(world,
         b2world.Step(TIME_STEP, VEL_ITERS, POS_ITERS)
         if step == 100:
             end_positions = np.array([body.position for body in b2world.bodies])
-            print(end_positions)
             
-            # check stable
+            # hardcoded check for stability (refactor into function)
             move_diffs = np.absolute(np.subtract(start_positions, end_positions))
             if (move_diffs > 0.1).any():
                 print('big move')
