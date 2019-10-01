@@ -49,7 +49,11 @@ def render_blockworld(patches,
     for patch in patches:
         ax.add_patch(patch)
     ax.set_xlim(xlim)
-    ax.set_ylim(ylim)
+    ax.set_ylim(ylim) 
+    cur_axes = plt.gca()
+    cur_axes.axes.get_xaxis().set_visible(False)
+    cur_axes.axes.get_yaxis().set_visible(False)    
+    
     plt.show()
 
 
