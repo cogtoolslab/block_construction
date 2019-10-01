@@ -8,6 +8,7 @@ from matplotlib.path import Path
 import matplotlib.patches as patches
 import copy
 import json
+import datetime
 
 
 ### visualization helpers
@@ -196,11 +197,10 @@ class Block:
         ''' Test to see if this block is touching another block.
             Corner to corner treated as not touching.
         '''
-        return self.sides_touch(other) or self.vertical_touch(other)
-        
+        return self.sides_touch(other) or self.vertical_touch(other)        
 
     def abs_overlap(self, other, horizontal_overlap=True):
-        ''' horizontal- are we measureing horizontal overlap?
+        ''' horizontal- are we measuring horizontal overlap?
         '''
         if horizontal_overlap and self.vertical_touch(other):
             return min([abs(self.x + self.width - other.x), abs(other.x + other.width - self.x)])
@@ -312,7 +312,7 @@ class World:
         self.world_width = world_width 
         self.world_height = world_height 
         self.block_map = np.zeros((self.world_width, self.world_height), dtype=int) ## bitmap for placement of blocks        
-        self.blocks = []        
+        self.blocks = []   
         self.full = False
         
     def check_full(self):
@@ -437,9 +437,10 @@ class World:
         block = self.blocks.pop()
         self._update_map_with_blocks([block], delete=True)
 
-
     def save_to_json(self):
-        
+        '''
+        DEPRECATED: To be replaced by get_block_dict, below
+        '''
         block_string = []
         for b in self.blocks:
             block_string.append(
@@ -455,6 +456,25 @@ class World:
                             "blocks": block_string
                             }
                           ))
+    
+    def get_block_dict(self):
+        '''
+        Input: self
+        Output: returns block dictionary containing list of blocks'
+                most important properties: x, y, height, width
+        '''
+        import json
+        ## create block dictionary with most essential properties
+        block_list = []
+        for i,this_block in enumerate(self.blocks):
+            newdict = dict()
+            olddict = vars(self.blocks[i])
+            for (key,value) in olddict.items():
+                if key in['x','y','width','height']:
+                    newdict[key] = value
+            block_list.append(newdict)
+        block_dict = {"blocks": block_list}
+        return block_dict
         
     def populate_from_json(self, json_obj):
         '''
@@ -464,6 +484,12 @@ class World:
         for b in world_obj["blocks"]:
             self.add_block(b['width'], b['height'], b['x'], b['y'])
             
+    def populate_from_block_dict(self, block_dict):
+        '''
+        Fill world object with blocks saved as block dictionary (very similar to populate_from_json above)
+        '''
+        for b in block_dict["blocks"]:
+            self.add_block(b['width'], b['height'], b['x'], b['y'])                        
     
     def jenga_block(self, block_number, render = False, checking = False):
         '''
