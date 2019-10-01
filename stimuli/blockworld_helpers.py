@@ -415,7 +415,7 @@ class World:
         Input: current_level: current height of floor we are trying to fill
                left_lim, right_lim: horizontal limits of current floor space to fill 
                                    (length of available floor space)
-        Output: List of blocks that can be used to fill the floor space with no gaps
+        
         '''
         
         floor_space = right_lim - left_lim
@@ -427,8 +427,10 @@ class World:
         
         remaining_height = self.world_height - current_level
         remaining_space = floor_space
-        
-        while remaining_space > 0:
+
+        changed = False
+
+        while remaining_space > 0 and len(viable_blocks) > 0:
             i = np.random.randint(0,len(viable_blocks))
             base_block = self.base_blocks[i]
             if base_block.width <= remaining_space and base_block.height <= remaining_height: 
@@ -436,10 +438,12 @@ class World:
                 floor_block_x_location += b.width
                 floor_blocks.append(b)
                 self.blocks.append(b)
+                changed = True
                 remaining_space -= b.width
             else:
                 viable_blocks.pop()
         self._update_map_with_blocks(floor_blocks)
+        return changed
 
         
     def _update_map_with_blocks(self, blocks, delete=False):
@@ -470,7 +474,8 @@ class World:
             while right < self.world_width and self.block_map[self.world_height - current_level - 1][right] == 0:
                 right += 1
             #print('fill_world_here: ' + str((current_level, left, right)))
-            self.fill_floor_here(current_level, left, right)
+            if not self.fill_floor_here(current_level, left, right): #fills world and returns whether world changed
+                break
         
         ## check that world is filled
         self.check_full()
@@ -562,46 +567,38 @@ class World:
         Pre: world is 'full'
         Post: world unchanged. block_map and blocks only copied here
         '''
-        if self.check_full():
-            
-            if block_number < len(self.blocks):
-                # Copy blocks and remove one
-                b = self.blocks[block_number]
-                updated_blocks = self.blocks[:]    # copy list of blocks
-                updated_blocks.remove(b)           # remove element
+        if block_number < len(self.blocks):
+            # Copy blocks and remove one
+            b = self.blocks[block_number]
+            updated_blocks = self.blocks[:]    # copy list of blocks
+            updated_blocks.remove(b)           # remove element
 
-                # Copy and block_map
-                new_block_map = np.copy(self.block_map)     # copy block map
-                new_block_map[self.world_height-(b.y+b.height): self.world_height-b.y, b.x:(b.x+b.width)] = 0 
+            # Copy and block_map
+            new_block_map = np.copy(self.block_map)     # copy block map
+            new_block_map[self.world_height-(b.y+b.height): self.world_height-b.y, b.x:(b.x+b.width)] = 0 
+            if render:
+                print(new_block_map)
+
+            # For blocks above b, check if there is enough floor beneath
+            # Blocks in list stored in order of height, so just need to traverse tail of list to check for stability
+            stable = True
+            for b2 in updated_blocks[block_number:]:
+                if b2.y > 0: #block stable if on floor (and avoids indexing errors)
+                    y = b2.y
+                    xs = list(range(b2.x, b2.x+b2.width)) # get x loc of base of block in block_map
+                    support = new_block_map[(self.world_height-1)-(b2.y)+1, xs] #get the floor under block
+                    # support is the space underneath the base of a block
+                    stable = stable and (np.mean(support)>= 0.5) # stable if greater than half of support is 1 in blockmap
+                    #if not(any(stable)) then block can slide down.
+            
+            if stable and not checking:
+                new_world = copy.deepcopy(self)
+                new_world.blocks = copy.deepcopy(updated_blocks)
+                new_world.block_map = new_block_map
                 if render:
-                    print(new_block_map)
+                    draw_world(new_world)
+                return (stable, new_world)
+            
+            return (stable, self)
 
-                # For blocks above b, check if there is enough floor beneath
-                # Blocks in list stored in order of height, so just need to traverse tail of list to check for stability
-                stable = True
-                for b2 in updated_blocks[block_number:]:
-                    if b2.y > 0: #block stable if on floor (and avoids indexing errors)
-                        y = b2.y
-                        xs = list(range(b2.x, b2.x+b2.width)) # get x loc of base of block in block_map
-                        support = new_block_map[(self.world_height-1)-(b2.y)+1, xs] #get the floor under block
-                        # support is the space underneath the base of a block
-                        stable = stable and (np.mean(support)>= 0.5) # stable if greater than half of support is 1 in blockmap
-                        #if not(any(stable)) then block can slide down.
-                
-                if stable and not checking:
-                    new_world = copy.deepcopy(self)
-                    new_world.blocks = copy.deepcopy(updated_blocks)
-                    new_world.block_map = new_block_map
-                    if render:
-                        draw_world(new_world)
-                    return (stable, new_world)
-                
-                return (stable, self)
-
-            else:
-                print('Index of block to remove out of range')
-            
-        else:
-            print('World not full. Use fill_world to populate world with blocks')
-            
-            
+        print('Index of block to remove out of range')          
