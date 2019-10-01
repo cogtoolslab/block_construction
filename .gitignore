@@ -109,3 +109,6 @@ venv.bak/
 
 # npm
 node_modules/
+
+# VS Code
+block_construction_nightingale.code-workspace
