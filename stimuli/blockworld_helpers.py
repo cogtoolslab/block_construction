@@ -9,9 +9,25 @@ import matplotlib.patches as patches
 import copy
 import json
 import datetime
+import random
+from random import randint
+import string
 
+######################### SOME DRAWING FUNCTIONS ##########################
+###########################################################################    
 
-### visualization helpers
+def patch_for_block(b):
+    return get_patch(b.verts,color=b.base_block.color)
+
+def patches_for_world(blocks):
+    patches = []
+    for (b) in blocks:
+        patches.append(patch_for_block(b))
+    return patches
+
+def draw_world(world):
+    fig = render_blockworld(patches_for_world(world.blocks)) 
+    return fig
 
 def get_patch(verts,
               color='orange',
@@ -29,7 +45,6 @@ def get_patch(verts,
     path = Path(verts,codes)
     patch = patches.PathPatch(path, facecolor=color, lw=line_width)
     return patch
-
 
 def render_blockworld(patches,
                       xlim=(-2,10),
@@ -52,12 +67,72 @@ def render_blockworld(patches,
     ax.set_ylim(ylim) 
     cur_axes = plt.gca()
     cur_axes.axes.get_xaxis().set_visible(False)
-    cur_axes.axes.get_yaxis().set_visible(False)    
-    
+    cur_axes.axes.get_yaxis().set_visible(False)        
     plt.show()
+    return fig
 
 
+######################### SOME I/O HELPER FUNCTIONS #######################
+########################################################################### 
 
+def generate_random_world(remove_num_blocks=10):    
+    _w = World()
+    _w.fill_world()
+    block_dict = _w.get_block_dict() 
+
+    ## build world from JSON
+    w = World()
+    w.populate_from_block_dict(block_dict)
+
+    ## remove some blocks to sparsify world
+    w2 = jenga_blocks(w,10)
+    block_dict = w2.get_block_dict()
+
+    return w2, block_dict
+
+def save_world_json(block_dict, 
+                    path_to_dump = './sampled_worlds_json',
+                    worldId = 123456789):
+    '''
+    write JSON representation of block world to file
+    '''
+    ## compute simple attributes to append to filename: total_area, num_blocks, timestamp
+    total_area = 0
+    for block in block_dict['blocks']:
+        total_area += (block['height'] * block['width'])
+    num_blocks = len(block_dict['blocks'])    
+    ## now write to file
+    if not os.path.exists(path_to_dump):
+        os.makedirs(path_to_dump)
+    with open(os.path.join(path_to_dump,'blockworld_area{}_num{}_time{}.js'.format(total_area,num_blocks,worldId)), 'w') as fout:
+         json.dump(block_dict, fout)  
+    return block_dict
+    
+def save_world_render(block_dict,
+                     path_to_dump = './sampled_worlds_render',
+                     worldId = 123456789):
+    '''
+    write image rendering of block world to file
+    '''
+    ## build world from JSON
+    w = World()
+    w.populate_from_block_dict(block_dict)
+    ## now write to file    
+    if not os.path.exists(path_to_dump):
+        os.makedirs(path_to_dump)    
+    fig = draw_world(w)
+    fig.savefig(os.path.join(path_to_dump,'blockworld_area{}_num{}_time{}.png'.format(total_area,num_blocks,worldId)))
+    plt.close(fig)
+    return fig
+    
+def generate_worldId():
+    from random import randint
+    return str(randint(1e9, 1e10-1))
+
+def save_world(block_dict):
+    worldId = generate_worldId()
+    block_dict = save_world_json(block_dict, worldId = worldId)
+    fig = save_world_render(block_dict, worldId = worldId)
 
 ######################### DEFINITION OF BLOCK CLASS ################################
 ############### other blocks can inherit from the base block class #################
@@ -237,24 +312,8 @@ class Block:
 
 
 
-######################### SOME DRAWING FUNCTIONS ##########################
-###########################################################################    
-
-def patch_for_block(b):
-    return get_patch(b.verts,color=b.base_block.color)
-
-def patches_for_world(blocks):
-    patches = []
-    for (b) in blocks:
-        patches.append(patch_for_block(b))
-    return patches
-
-def draw_world(world):
-    render_blockworld(patches_for_world(world.blocks)) 
 
 
-    
-    
 ######################### DEFINITION OF BLOCK WORLD CLASS ##########################
 ############### This class samples a block world. ##################################
     
@@ -544,4 +603,5 @@ class World:
             
         else:
             print('World not full. Use fill_world to populate world with blocks')
+            
             
