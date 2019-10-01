@@ -12,6 +12,7 @@ import datetime
 import random
 from random import randint
 import string
+import os
 
 ######################### SOME DRAWING FUNCTIONS ##########################
 ###########################################################################    
@@ -75,6 +76,20 @@ def render_blockworld(patches,
 ######################### SOME I/O HELPER FUNCTIONS #######################
 ########################################################################### 
 
+def jenga_blocks(w,n):
+
+    for j in range(0,n):
+        i = 0;
+        block_removed = False
+        while not block_removed:
+            #block_number = random_block_order.pop
+            (block_removed, w2) = w.jenga_block(i)
+            if block_removed:
+                w = w2
+            else:
+                i += 1;
+    return w
+
 def generate_random_world(remove_num_blocks=10):    
     _w = World()
     _w.fill_world()
@@ -117,6 +132,12 @@ def save_world_render(block_dict,
     ## build world from JSON
     w = World()
     w.populate_from_block_dict(block_dict)
+    ## compute simple attributes to append to filename: total_area, num_blocks, timestamp
+    total_area = 0
+    for block in block_dict['blocks']:
+        total_area += (block['height'] * block['width'])
+    num_blocks = len(block_dict['blocks'])     
+    
     ## now write to file    
     if not os.path.exists(path_to_dump):
         os.makedirs(path_to_dump)    
