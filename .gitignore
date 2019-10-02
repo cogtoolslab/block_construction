@@ -6,6 +6,11 @@ __pycache__/
 # C extensions
 *.so
 .DS_Store
+*.png
+*.pdf
+*.csv
+*.json
+*sampled_worlds_json/
 
 # Distribution / packaging
 .Python
