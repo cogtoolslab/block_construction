@@ -9,6 +9,7 @@ __pycache__/
 *.png
 *.pdf
 *.csv
+*.json
 
 # Distribution / packaging
 .Python
