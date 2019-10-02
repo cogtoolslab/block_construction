@@ -10,6 +10,7 @@ __pycache__/
 *.pdf
 *.csv
 *.json
+*sampled_worlds_json/
 
 # Distribution / packaging
 .Python
