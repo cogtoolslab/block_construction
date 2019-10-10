@@ -64,7 +64,7 @@ def check_if_blocks_moved(start_positions, end_positions):
     move_diffs = np.absolute(np.subtract(start_positions, end_positions))
     if (move_diffs > 0.1).any():
         return('big move')
-    elif (sum(sum(move_diffs))/len(b2world.bodies) > 1):
+    elif (sum(sum(move_diffs))/len(start_positions) > 1):
         return('lots of small diffs')
     else:
         return('stable')
@@ -136,7 +136,7 @@ def display_blocks(world,
             end_positions = np.array([body.position for body in b2world.bodies])
             
             moved = check_if_blocks_moved(start_positions, end_positions)
-            print moved
+            print(moved)
             
             if not RENDER:
                 break
