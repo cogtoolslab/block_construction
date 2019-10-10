@@ -90,8 +90,15 @@ def jenga_blocks(w,n):
                 i += 1;
     return w
 
-def generate_random_world(remove_num_blocks=10):    
-    _w = World()
+def generate_random_world(remove_num_blocks=5, 
+                          block_dims = [
+                            (1,2),
+                            (2,1),
+                            (2,2),
+                            (2,4),
+                            (4,2)
+                            ]):    
+    _w = World(block_dims = block_dims)
     _w.fill_world()
     block_dict = _w.get_block_dict() 
 
@@ -100,7 +107,7 @@ def generate_random_world(remove_num_blocks=10):
     w.populate_from_block_dict(block_dict)
 
     ## remove some blocks to sparsify world
-    w2 = jenga_blocks(w,10)
+    w2 = jenga_blocks(w,remove_num_blocks)
     block_dict = w2.get_block_dict()
 
     return w2, block_dict
@@ -150,10 +157,10 @@ def generate_worldId():
     from random import randint
     return str(randint(1e9, 1e10-1))
 
-def save_world(block_dict):
+def save_world(block_dict, path_to_dump = './sampled_worlds'):
     worldId = generate_worldId()
-    block_dict = save_world_json(block_dict, worldId = worldId)
-    fig = save_world_render(block_dict, worldId = worldId)
+    block_dict = save_world_json(block_dict, worldId = worldId, path_to_dump = path_to_dump + "_json")
+    fig = save_world_render(block_dict, worldId = worldId, path_to_dump = path_to_dump +"_render")
 
 ######################### DEFINITION OF BLOCK CLASS ################################
 ############### other blocks can inherit from the base block class #################

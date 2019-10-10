@@ -22,15 +22,22 @@ def b2_y(block):
     '''
     return ((block.y) + (block.height / 2))
     
-def add_block_to_world(block, b2world, SIZE_FACTOR = 1):
+def add_block_to_world(block, b2world, SIZE_FACTOR = 1, Y_SHIFT = 1):
     '''
     Add block from stimulus generation to b2world
+    SIZE_FACTOR: determines how big the box2d block should be relative to the abstract size of the block
+    Y_SHIFT: Fraction of how far above the y-location the block should be placed. 
+        Used to give block towers a 'nudge' when placed to make unstable towers fall.
+
     '''
-    body = b2world.CreateDynamicBody(position=(b2_x(block)*SIZE_FACTOR,b2_y(block)*SIZE_FACTOR))
+    body = b2world.CreateDynamicBody(position=(b2_x(block)*SIZE_FACTOR,b2_y(block)*SIZE_FACTOR*Y_SHIFT))
     world_block = body.CreatePolygonFixture(box=((block.width/2)*SIZE_FACTOR,(block.height/2)*SIZE_FACTOR), density=1, friction=0.3)
         
 def jenga_blocks(w,n):
-
+    '''
+    Remove n blocks from world w, starting at bottom left. 
+    Geometrically checks to make sure no block will fall into the hole produceremovald by  of block.
+    '''
     for j in range(0,n):
         i = 0
         block_removed = False
@@ -51,7 +58,16 @@ def event_handler():
               event.key == K_q
              )):
             pygame.quit()
-            quit() 
+            quit()
+
+def check_if_blocks_moved(start_positions, end_positions):
+    move_diffs = np.absolute(np.subtract(start_positions, end_positions))
+    if (move_diffs > 0.1).any():
+        return('big move')
+    elif (sum(sum(move_diffs))/len(b2world.bodies) > 1):
+        return('lots of small diffs')
+    else:
+        return('stable')
 
 def display_blocks(world, 
                    TIME_STEP = 0.01,
@@ -63,8 +79,12 @@ def display_blocks(world,
                    DISPLAY_OFFSET_X = 100,
                    DISPLAY_OFFSET_Y = -100,
                    SIZE_FACTOR = 1,
-                   RENDER = True):
-    
+                   RENDER = True,
+                   TEST_TIME_STEPS = 100,
+                   Y_SHIFT = 1):
+    '''
+    Displays a block tower under box2d physics using pygame.
+    '''
     
     #make pybox2D world
     b2world = b2World(gravity=(0,-10), doSleep=False)
@@ -74,7 +94,7 @@ def display_blocks(world,
     )
 
     for block in world.blocks:
-        b2block = add_block_to_world(block, b2world, SIZE_FACTOR = SIZE_FACTOR)
+        b2block = add_block_to_world(block, b2world, SIZE_FACTOR = SIZE_FACTOR, Y_SHIFT = Y_SHIFT)
    
     step = 0
     
@@ -87,7 +107,6 @@ def display_blocks(world,
         game_display.fill(black)
     
     start_positions = np.array([body.position for body in b2world.bodies])
-    print(start_positions)
 
     while True:
         step +=1
@@ -109,17 +128,97 @@ def display_blocks(world,
                           SIZE_FACTOR=SIZE_FACTOR)
         
         b2world.Step(TIME_STEP, VEL_ITERS, POS_ITERS)
-        if step == 100:
+
+        if step == 80: #need to do this not with step?
+            start_positions = np.array([body.position for body in b2world.bodies])
+
+        if step == 250:
+            end_positions = np.array([body.position for body in b2world.bodies])
+            
+            moved = check_if_blocks_moved(start_positions, end_positions)
+            print moved
+            
+            if not RENDER:
+                break
+
+def test_world_stability(world, 
+                   TIME_STEP = 0.01,
+                   VEL_ITERS = 10,
+                   POS_ITERS = 10,
+                   SCREEN_WIDTH = 400,
+                   SCREEN_HEIGHT = 400, 
+                   PPM = 20,
+                   DISPLAY_OFFSET_X = 100,
+                   DISPLAY_OFFSET_Y = -100,
+                   SIZE_FACTOR = 1,
+                   RENDER = False,
+                   TEST_TIME_STEPS = 100,
+                   Y_SHIFT = 1):
+    
+    '''
+    Raises block tower of ground by factor of Y_SHIFT then drops it. 
+    Returns a string:
+        'stable' if no blocks fall
+        'big move' if at least one block moves a large distance
+        'lots of small diffs' if multiple blocks move a small distance
+
+    Calculation hardcoded in by comparing the locations of blocks at timesteps 80 and 250.
+
+    '''
+
+    #make pybox2D world
+    b2world = b2World(gravity=(0,-10), doSleep=False)
+    groundBody = b2world.CreateStaticBody( #add ground
+        position=(0*SIZE_FACTOR,-10*SIZE_FACTOR),
+        shapes=b2PolygonShape(box=(50*SIZE_FACTOR,10*SIZE_FACTOR)),
+    )
+
+    # blocks added to world with vertical offset
+    for block in world.blocks:
+        b2block = add_block_to_world(block, b2world, SIZE_FACTOR = SIZE_FACTOR, Y_SHIFT = Y_SHIFT)
+   
+    step = 0
+    
+    # Set up display
+    if RENDER:
+        pygame.init()
+        game_display = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
+        pygame.display.set_caption('Checking World')
+        black = (0,0,0)
+        game_display.fill(black)
+    
+    while True:
+        step +=1
+        
+        # render next step
+        if RENDER:
+            event_handler() ## will quit pygame if Q/Esc key pressed
+            render_b2step(b2world,
+                          game_display,
+                          step = step,
+                          TIME_STEP=TIME_STEP,
+                          VEL_ITERS=VEL_ITERS,
+                          POS_ITERS=POS_ITERS,
+                          SCREEN_WIDTH=SCREEN_WIDTH,
+                          SCREEN_HEIGHT=SCREEN_HEIGHT,
+                          PPM=PPM,
+                          DISPLAY_OFFSET_X=DISPLAY_OFFSET_X,
+                          DISPLAY_OFFSET_Y=DISPLAY_OFFSET_Y,
+                          SIZE_FACTOR=SIZE_FACTOR)
+        
+        b2world.Step(TIME_STEP, VEL_ITERS, POS_ITERS)
+
+        # Set start positions for movement check
+        if step == 80: #Steps might not be best way of doing this
+            start_positions = np.array([body.position for body in b2world.bodies])
+
+        # Set end positions for movement check
+        if step == 250: #TEST_TIME_STEPS
             end_positions = np.array([body.position for body in b2world.bodies])
             
             # hardcoded check for stability (refactor into function)
-            move_diffs = np.absolute(np.subtract(start_positions, end_positions))
-            if (move_diffs > 0.1).any():
-                print('big move')
-            elif (sum(sum(move_diffs))/len(b2world.bodies) > 1):
-                print('lots of small diffs')
-            else:
-                print('stable')
+            moved = check_if_blocks_moved(start_positions, end_positions)
+            return moved
             
             if not RENDER: 
                 break
@@ -173,6 +272,8 @@ def random_world_test(blocks_removed = 0,
                       DISPLAY_OFFSET_X = 100,
                       DISPLAY_OFFSET_Y = -100,
                       SIZE_FACTOR = 1,
+                      TEST_TIME_STEPS = 100,
+                      Y_SHIFT = 1,
                       RENDER = True):
 
     pygame.init()
@@ -203,7 +304,9 @@ def random_world_test(blocks_removed = 0,
                    DISPLAY_OFFSET_X=DISPLAY_OFFSET_X,
                    DISPLAY_OFFSET_Y=DISPLAY_OFFSET_Y,
                    SIZE_FACTOR=SIZE_FACTOR,
-                   RENDER = RENDER)  
+                   RENDER = RENDER,
+                   TEST_TIME_STEPS = TEST_TIME_STEPS,
+                   Y_SHIFT = Y_SHIFT)  
 
     
 def simple_tests(TEST_NAME='stonehenge',
@@ -288,6 +391,8 @@ if __name__ == "__main__":
     parser.add_argument('--BLOCKS_REMOVED',type=int, help='how many blocks to remove? only applies to jenga test.', default=5)
     parser.add_argument('--SIZE_FACTOR',type=float, help='scale of blocks in physics engine. 1: 1 meter per unit. Less than 0.5 unstable', default=1)
     parser.add_argument('--RENDER',type=str, help='display blocks with pygame', default='true')
+    parser.add_argument('--TEST_TIME_STEPS',type=int, help='number of box2d iterations before stability confirmed', default=100)
+    parser.add_argument('--Y_SHIFT',type=float, help='vertical offset of each block when added to world', default=1)
     args = parser.parse_args()
     
     ## detect which test the user wants to run and then run that one
@@ -314,7 +419,9 @@ if __name__ == "__main__":
                           DISPLAY_OFFSET_X=args.DISPLAY_OFFSET_X,
                           DISPLAY_OFFSET_Y=args.DISPLAY_OFFSET_Y,
                           SIZE_FACTOR = args.SIZE_FACTOR,
-                          RENDER = str2bool(args.RENDER))
+                          RENDER = str2bool(args.RENDER),
+                          TEST_TIME_STEPS = args.TEST_TIME_STEPS,
+                          Y_SHIFT = args.Y_SHIFT,)
     else:
         print('TEST_NAME not recognized. Please specify a valid test name.')
 
