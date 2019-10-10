@@ -20,7 +20,7 @@ var floorY = 50;
 var canvasY = 600;
 var canvasX = 600;
 //var gravity = 0.003;
-var sF = 2;
+var sF = 3;
 
 // Global Variables
 var engine;
@@ -37,6 +37,13 @@ var selectedBlockKind = null;
 
 // Task variables
 var targets;
+var blockDims = [
+    [1,2],
+    [2,1],
+    [2,2],
+    [2,4],
+    [4,2]
+    ];  
 
 // Processing JS Function, defines initial environment.
 function setup() {
@@ -65,15 +72,26 @@ function setup() {
 
 
     // Create block kinds that will appear in environment/menu. Later on this will need to be represented in each task.
-    blockKindA = new BlockKind(120*sF,40*sF,[0, 100,200,100]);
-    blockKindB = new BlockKind(80*sF,40*sF,[0,200,190,100]);
-    blockKindC = new BlockKind(40*sF,40*sF,[0, 220,100,100]);
+
+    blockDims.forEach(dims => {
+        w = dims[0]
+        h = dims[1]
+        blockKinds.push(new BlockKind(w*20*sF,h*20*sF,[15, 139, 141, 100]));
+    });
+    /*
+    blockKinds[i]
+    blockKindA = new BlockKind(120*sF,40*sF,[15, 139, 141, 100]);
+    blockKindB = new BlockKind(80*sF,40*sF,[41, 51, 92, 100]);
+    blockKindC = new BlockKind(40*sF,40*sF,[211, 62, 67, 100]);
+    blockKindD = new BlockKind(120*sF,40*sF,[15, 139, 141, 100]);
+    blockKindE = new BlockKind(80*sF,40*sF,[41, 51, 92, 100]);
     blockKinds.push(blockKindA);
     blockKinds.push(blockKindB);
     blockKinds.push(blockKindC);
+    */
 
     //TEMP: first block kind is selected
-    selectedBlockKind = blockKindA; //should really be first in list
+    selectedBlockKind = blockKinds[0]; //should really be first in list
 
     // Create Block Menu
     blockMenu = new BlockMenu(menuHeight, blockKinds);
@@ -110,8 +128,6 @@ function setup() {
     World.add(engine.world, mConstraint); // add the mouse constraint to physics engine world    
     */
 
-    // Set up task (add to task function later)
-    targets = new ConnectingTargets(300*sF, 80*sF, 300*sF, 450*sF);
 }
 
 function mouseClicked() {
@@ -194,6 +210,5 @@ function draw(){ // Called continuously by Processing JS
         cursor();
     }
     */
-    targets.show(); // show targets from task
 
 }
