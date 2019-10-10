@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="shortcut icon" type="image/png" href="img/favicon.png"/>
+
+    <title>Minimum Viable Connecting Trial</title>
+    
+    <!-- Libraries -->
+    <script src="libraries/matter.js"></script>
+    <script src="libraries/p5.js"></script>
+
+    <!-- Scripts-->
+    <script src="scripts/boundary.js"></script>
+    <script src="scripts/blockMenu.js"></script>
+    <script src="scripts/block.js"></script>
+    <script src="scripts/blockKind.js"></script>
+    <script src="scripts/canvasInteraction.js"></script>
+    
+
+    <style type="text/css">
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 100;
+        padding: 0;
+      }
+      #defaultCanvas0 {
+        padding-left: 0;
+        padding-right: 0;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+      }
+      #experiment-container {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="experiment-container">
+      <script src="scripts/experimentEnvironment.js"></script>
+      <div>
+        <input id="done" type="button" value="done" onclick="donePressed();" />
+        <input id="check" type="button" value="check" onclick="checkPressed();" />
+      </div>
+    </div>
+  </body>
+</html>
