@@ -17,8 +17,8 @@ if(argv.gameport) {
   let gameport = argv.gameport;
   console.log('using port ' + gameport);
 } else {
-  gameport = 8888;
-  console.log('no gameport specified: using 8888\nUse the --gameport flag to change');
+  gameport = 8882;
+  console.log('no gameport specified: using 8882\nUse the --gameport flag to change');
 }
 
 
