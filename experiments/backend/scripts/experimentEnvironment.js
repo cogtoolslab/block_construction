@@ -152,9 +152,8 @@ function mouseClicked() {
                         dataType: 'block',
                         gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
                         time: performance.now(),
-                        time_absolute: Date.now(),                          
-                        newBlock: newBlock
-                        };
+                        time_absolute: Date.now(),                                                  
+                        };            
             console.log('block_data',block_data);
             socket.emit('block',block_data);
 
