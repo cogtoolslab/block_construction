@@ -149,11 +149,11 @@ function mouseClicked() {
 
             // test out sending newBlock info to server/mongodb
             propertyList = Object.keys(newBlock.body); // extract block properties;
-	    propertyList = _.pullAll(propertyList,['parts','plugin','vertices','parent']);  // omit self-referential properties that cause max call stack exceeded error
+	        propertyList = _.pullAll(propertyList,['parts','plugin','vertices','parent']);  // omit self-referential properties that cause max call stack exceeded error
             blockProperties = _.pick(newBlock['body'],propertyList); // pick out all and only the block body properties in the property list
 
-	    // custom de-borkification
-	    vertices = _.map(newBlock.body.vertices, function(key,value) {return _.pick(key,['x','y'])});
+            // custom de-borkification
+            vertices = _.map(newBlock.body.vertices, function(key,value) {return _.pick(key,['x','y'])});
 
             block_data = {dbname: dbname,
                           colname: colname,
