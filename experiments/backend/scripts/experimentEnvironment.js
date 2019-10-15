@@ -41,6 +41,7 @@ var targets;
 var block_data; // data to send to mongodb about every block placement
 var trial_data; // data to send to mongodb about every finished block structure
 var newSelectedBlockKind; // init this variable so we can inspect it in the console
+var newBlock; // init this variable so we can inspect it in the console
 
 // Processing JS Function, defines initial environment.
 function setup() {
@@ -132,7 +133,8 @@ function mouseClicked() {
                 Sleeping.set(b.body, false);
             });
 
-            blocks.push(new Block(selectedBlockKind,mouseX*sF,mouseY*sF, rotated));
+            newBlock = new Block(selectedBlockKind,mouseX*sF,mouseY*sF, rotated);
+            blocks.push(newBlock);
             selectedBlockKind = null;
             cursor();
             isPlacingObject = false;
@@ -145,7 +147,7 @@ function mouseClicked() {
     else  { //or if in menu then update selected blockkind
         // is mouse clicking a block?
         newSelectedBlockKind = blockMenu.hasClickedButton(mouseX, mouseY, selectedBlockKind);
-	    console.log('newSelectedBlockKind',newSelectedBlockKind);
+	    console.log('newSelectedBlockKind',newSelectedBlockKind);        
         if(newSelectedBlockKind){
             if(newSelectedBlockKind == selectedBlockKind){
                 rotated = !rotated;
