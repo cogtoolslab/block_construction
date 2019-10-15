@@ -1,6 +1,7 @@
 // Experiment frame, with Matter canvas and surrounding buttons
 
 var imagePath = '../img/';
+const  socket = io.connect();
 
 // Aliases for Matter functions
 var Engine = Matter.Engine,
