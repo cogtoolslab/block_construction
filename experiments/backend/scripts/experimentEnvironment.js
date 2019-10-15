@@ -35,6 +35,7 @@ var blocks = [];
 var mConstraint; // mouse constraint for moving objects. Will delete?
 var blockMenu;
 var blockKinds = [];
+var blockProperties = [];
 
 // Block placement variables
 var isPlacingObject = false;
@@ -146,6 +147,9 @@ function mouseClicked() {
             rotated = false;
 
             // test out sending newBlock info to server/mongodb
+            propertyList = Object.keys(newBlock.body); // extract block properties;
+            blockProperties = _.pick(newBlock,propertyList); // pick out all and only the block body properties in the property list
+
             block_data = {dbname: dbname,
                         colname: colname,
                         iterationName: iterationName,
@@ -157,7 +161,7 @@ function mouseClicked() {
                         blockHeight: newBlock['h'],
                         blockCenterX: newBlock['body']['position']['x'],
                         blockCenterY: newBlock['body']['position']['y'],
-                        blockBody: newBlock['body']
+                        blockBody: blockProperties
                         };            
             console.log('block_data',block_data);
             socket.emit('block',block_data);
