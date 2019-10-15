@@ -35,6 +35,7 @@ var blocks = [];
 var mConstraint; // mouse constraint for moving objects. Will delete?
 var blockMenu;
 var blockKinds = [];
+var propertyList = [];
 var blockProperties = [];
 
 // Block placement variables
