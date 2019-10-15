@@ -23,6 +23,11 @@ var canvasX = 600;
 //var gravity = 0.003;
 var sF = 2;
 
+// Metavariables
+const dbname = 'block_construction';
+const colname = 'silhouette';
+const iterationName = 'testing';
+
 // Global Variables
 var engine;
 var ground;
@@ -139,6 +144,20 @@ function mouseClicked() {
             cursor();
             isPlacingObject = false;
             rotated = false;
+
+            // test out sending newBlock info to server/mongodb
+            block_data = {dbname: dbname,
+                        colname: colname,
+                        iterationName: iterationName,
+                        dataType: 'block',
+                        gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
+                        time: performance.now(),
+                        time_absolute: Date.now(),                          
+                        newBlock: newBlock
+                        };
+            console.log('block_data',block_data);
+            socket.emit('block',block_data);
+
         }
         
         
@@ -147,7 +166,7 @@ function mouseClicked() {
     else  { //or if in menu then update selected blockkind
         // is mouse clicking a block?
         newSelectedBlockKind = blockMenu.hasClickedButton(mouseX, mouseY, selectedBlockKind);
-	    console.log('newSelectedBlockKind',newSelectedBlockKind);        
+	    // console.log('newSelectedBlockKind',newSelectedBlockKind);        
         if(newSelectedBlockKind){
             if(newSelectedBlockKind == selectedBlockKind){
                 rotated = !rotated;

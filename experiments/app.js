@@ -40,13 +40,14 @@ app.get('/*', (req, res) => {
 });
 
 io.on('connection', function (socket) {
-  socket.on('sketch', function(data) {
-      console.log('sketch received: ' + JSON.stringify(_.omit(data,['pngString','bitmap'])));
+  socket.on('structure', function(data) {
+      // console.log('structure received: ' + JSON.stringify(_.omit(data,['bitmap'])));
+      console.log('structure received: ' + JSON.stringify(data));
       writeDataToMongo(data);      
   });
 
-  socket.on('stroke', function(data) {
-      console.log('stroke data received: ' + JSON.stringify(_.omit(data,'bitmap')));
+  socket.on('block', function(data) {
+      console.log('block data received: ' + JSON.stringify(_.omit(data,'bitmap')));
       writeDataToMongo(data);      
   });
 
