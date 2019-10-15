@@ -1,6 +1,11 @@
 // Handles interaction between html elements and the experiment canvas
 
 
+function resetPressed(){
+    // STILL TO CODE
+    setup();
+}
+
 
 function donePressed(){
     console.log(engine.world);

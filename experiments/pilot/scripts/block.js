@@ -26,23 +26,23 @@ function Block(blockKind, x, y, rotated){
     
 
     // Display the block (maybe separate out view functions later?)
-    this.show = function() {
+    this.show = function(env) {
 
         var pos = this.body.position;
         var angle = this.body.angle;
 
-        push(); //saves the current drawing style settings and transformations
-        translate(pos.x/sF, pos.y/sF);
-        rectMode(CENTER);
-        rotate(angle);
-        stroke(200);
-        fill(150);
+        env.push(); //saves the current drawing style settings and transformations
+        env.translate(pos.x/sF, pos.y/sF);
+        env.rectMode(CENTER);
+        env.rotate(angle);
+        env.stroke(200);
+        env.fill(150);
         if(this.body.isSleeping) {
-            fill(100);
+            env.fill(100);
         }
-        rect(0,0,this.w/sF,this.h/sF);
+        env.rect(0,0,this.w/sF,this.h/sF);
 
-        pop();
+        env.pop();
         
 
     }

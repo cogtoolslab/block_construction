@@ -10,49 +10,41 @@
     <script src="libraries/p5.js"></script>
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="experiments/pilot/utils/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="utils/bootstrap/css/bootstrap.min.css">
     
     <!-- Experiment CSS -->
-    <link rel="stylesheet" href="experiments/pilot/utils/experiment.css">
+    <link rel="stylesheet" href="utils/experiment.css">
 
     <!-- Scripts-->
-    <script src="scripts/box.js"></script>
     <script src="scripts/boundary.js"></script>
     <script src="scripts/blockMenu.js"></script>
     <script src="scripts/block.js"></script>
     <script src="scripts/blockKind.js"></script>
-    <script src="scripts/connectingTargets.js"></script>
     <script src="scripts/canvasInteraction.js"></script>
 
     <style type="text/css">
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 100;
-        padding: 0;
-      }
-      #defaultCanvas0 {
-        padding-left: 0;
-        padding-right: 0;
-        margin-left: auto;
-        margin-right: auto;
-        display: block;
-      }
-      #experiment-container {
-        display: block;
-      }
+
     </style>
   </head>
   <body>
-    <p>Hello</p>
-    <div id="experiment-container">
-      <script src="scripts/experimentEnvironment.js"></script>
-      <div>
-        <input id="done" type="button" value="done" onclick="donePressed();" />
-        <input id="check" type="button" value="check" onclick="checkPressed();" />
-      </div>
+    <div class="container pt-5" id="experiment">
+        <div class="row">
+          <div class="col-md" id="stimulus-window">
+
+          </div>
+          <div class="col-md" id="environment-window">
+            <script src="scripts/experimentEnvironment.js"></script>
+          </div>
+        </div>
+        <div class="row pt-2" id="experiment-buttons">
+            <div class="col-auto mr-auto">
+                <button type="something" class="btn btn-primary" id="something" value="something" onclick="">Something</button>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-danger" id="reset" value="reset" onclick="resetPressed();">Reset</button>
+                <button type="button" class="btn btn-success" id="done" value="done" onclick="donePressed();">Done</button>
+            </div>
+        </div>
     </div>
-    <p>Hello</p>
   </body>
 </html>

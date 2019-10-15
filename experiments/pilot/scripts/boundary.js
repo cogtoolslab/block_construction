@@ -18,19 +18,19 @@ function Boundary(x, y, w, h){
     World.add(engine.world, this.body); 
 
     // Display the boundary on the screen
-    this.show = function() {
+    this.show = function(env) {
 
         var pos = this.body.position;
         var angle = this.body.angle;
 
-        push();
-        translate(pos.x/sF, pos.y/sF);
-        rectMode(CENTER);
-        rotate(angle);
-        stroke(200);
-        fill(20);
-        rect(0,0,this.w/sF,this.h/sF);
-        pop();
+        env.push();
+        env.translate(pos.x/sF, pos.y/sF);
+        env.rectMode(env.CENTER);
+        env.rotate(angle);
+        env.stroke(200);
+        env.fill(20);
+        env.rect(0,0,this.w/sF,this.h/sF);
+        env.pop();
 
     }
 
