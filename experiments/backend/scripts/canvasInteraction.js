@@ -15,12 +15,12 @@ function checkPressed(){
     if (finishBlocks === undefined){
         finishBlocks = [];
     }
-    /*
+    
     console.log("Start Bodies: ");
     console.log(startBlocks);
     console.log("End Bodies: ")
     console.log(finishBlocks);
-    */
+    
     console.log(checkListConnected(startBlocks.map(bo => bo.id),finishBlocks.map(bo => bo.id)));
     
 }
