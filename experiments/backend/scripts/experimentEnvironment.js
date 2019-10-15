@@ -167,7 +167,7 @@ function mouseClicked() {
                           blockCenterX: newBlock['body']['position']['x'],
                           blockCenterY: newBlock['body']['position']['y'],
 	         	  blockVertices: vertices,
-                          blockBodyTest: blockProperties,
+                          blockBodyProperties: blockProperties,
                         };            
             console.log('block_data',block_data);
             socket.emit('block',block_data);
