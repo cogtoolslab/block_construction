@@ -38,6 +38,9 @@ var selectedBlockKind = null;
 
 // Task variables
 var targets;
+var block_data; // data to send to mongodb about every block placement
+var trial_data; // data to send to mongodb about every finished block structure
+var newSelectedBlockKind; // init this variable so we can inspect it in the console
 
 // Processing JS Function, defines initial environment.
 function setup() {
@@ -142,7 +145,7 @@ function mouseClicked() {
     else  { //or if in menu then update selected blockkind
         // is mouse clicking a block?
         newSelectedBlockKind = blockMenu.hasClickedButton(mouseX, mouseY, selectedBlockKind);
-	console.log('newSelectedBlockKind',newSelectedBlockKind);
+	    console.log('newSelectedBlockKind',newSelectedBlockKind);
         if(newSelectedBlockKind){
             if(newSelectedBlockKind == selectedBlockKind){
                 rotated = !rotated;
