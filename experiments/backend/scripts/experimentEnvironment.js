@@ -148,7 +148,7 @@ function mouseClicked() {
 
             // test out sending newBlock info to server/mongodb
             propertyList = Object.keys(newBlock.body); // extract block properties;
-            blockProperties = _.pick(newBlock,propertyList); // pick out all and only the block body properties in the property list
+            blockProperties = _.pick(newBlock['body'],propertyList); // pick out all and only the block body properties in the property list
 
             block_data = {dbname: dbname,
                         colname: colname,
