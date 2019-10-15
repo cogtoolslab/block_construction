@@ -141,6 +141,7 @@ function mouseClicked() {
     else  { //or if in menu then update selected blockkind
         // is mouse clicking a block?
         newSelectedBlockKind = blockMenu.hasClickedButton(mouseX, mouseY, selectedBlockKind);
+	console.log('newSelectedBlockKind',newSelectedBlockKind);
         if(newSelectedBlockKind){
             if(newSelectedBlockKind == selectedBlockKind){
                 rotated = !rotated;
