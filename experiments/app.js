@@ -59,7 +59,7 @@ var serveFile = function(req, res) {
 };
 
 var writeDataToMongo = function(data) {
-    sendPostRequest('http://localhost:7000/db/insert',
+    sendPostRequest('http://localhost:8000/db/insert',
       { json: data },
       (error, res, body) => {
         if (!error && res.statusCode === 200) {

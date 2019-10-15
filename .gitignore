@@ -12,6 +12,10 @@ __pycache__/
 *.json
 *sampled_worlds_json/
 
+auth.json
+auth.txt
+credentials.py
+
 # Distribution / packaging
 .Python
 build/
