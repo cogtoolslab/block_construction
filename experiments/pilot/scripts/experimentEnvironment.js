@@ -49,6 +49,11 @@ var selectedBlockKind = null;
 
 // Task variables
 var targets;
+var block_data; // data to send to mongodb about every block placement
+var trial_data; // data to send to mongodb about every finished block structure
+var newSelectedBlockKind; // init this variable so we can inspect it in the console
+var newBlock; // init this variable so we can inspect it in the console
+
 var blockDims = [
     [1, 2],
     [2, 1],
@@ -195,7 +200,8 @@ var setupEnvironment = function (env) {
                 blocks.forEach(b => {
                     Sleeping.set(b.body, false);
                 });
-    
+                
+                newBlock = new Block(selectedBlockKind,mouseX*sF,mouseY*sF, rotated);
                 blocks.push(new Block(selectedBlockKind, env.mouseX * sF, env.mouseY * sF, rotated));
                 selectedBlockKind = null;
                 env.cursor();
