@@ -149,20 +149,25 @@ function mouseClicked() {
 
             // test out sending newBlock info to server/mongodb
             propertyList = Object.keys(newBlock.body); // extract block properties;
+	    propertyList = _.pullAll(propertyList,['parts','plugin','vertices','parent']);  // omit self-referential properties that cause max call stack exceeded error
             blockProperties = _.pick(newBlock['body'],propertyList); // pick out all and only the block body properties in the property list
 
+	    // custom de-borkification
+	    vertices = _.map(newBlock.body.vertices, function(key,value) {return _.pick(key,['x','y'])});
+
             block_data = {dbname: dbname,
-                        colname: colname,
-                        iterationName: iterationName,
-                        dataType: 'block',
-                        gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
-                        time: performance.now(), // time since session began
-                        timeAbsolute: Date.now(),  
-                        blockWidth: newBlock['w'],
-                        blockHeight: newBlock['h'],
-                        blockCenterX: newBlock['body']['position']['x'],
-                        blockCenterY: newBlock['body']['position']['y'],
-                        blockBody: blockProperties
+                          colname: colname,
+                          iterationName: iterationName,
+                          dataType: 'block',
+                          gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
+                          time: performance.now(), // time since session began
+                          timeAbsolute: Date.now(),  
+                          blockWidth: newBlock['w'],
+                          blockHeight: newBlock['h'],
+                          blockCenterX: newBlock['body']['position']['x'],
+                          blockCenterY: newBlock['body']['position']['y'],
+	         	  blockVertices: vertices,
+                          blockBodyTest: blockProperties,
                         };            
             console.log('block_data',block_data);
             socket.emit('block',block_data);
