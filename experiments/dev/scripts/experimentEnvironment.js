@@ -1,6 +1,6 @@
 // Experiment frame, with Matter canvas and surrounding buttons
 
-var imagePath = 'file:///Users/will/Documents/GitHub/block_construction/experiments/pilot/img/';
+var imagePath = '../img/';
 
 // Aliases for Matter functions
 var Engine = Matter.Engine,
