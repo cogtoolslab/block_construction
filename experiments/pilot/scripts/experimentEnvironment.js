@@ -162,7 +162,7 @@ var setupEnvironment = function (env) {
         }*/
         if (isPlacingObject) {
             env.noCursor(); //feel like this is horribly ineffecient...
-            selectedBlockKind.showGhost(env,mouseX, mouseY, rotated);
+            selectedBlockKind.showGhost(env,env.mouseX, env.mouseY, rotated);
         }
         /*
         if (mouseY < canvasY - menuHeight){
@@ -177,45 +177,43 @@ var setupEnvironment = function (env) {
 
     }
 
-}
+    env.mouseClicked = function() {
+        //check to see if in env
 
-function mouseClicked() {
-    //check to see if in env
-
-    if (mouseY < 80 && mouseX > canvasX - 80 && isPlacingObject) {
-        rotated = !rotated;
-    }
-
-    else if (mouseY > 0 && mouseY < canvasY - menuHeight && mouseX > 0 && mouseX < canvasX) {
-
-        if (isPlacingObject) {
-            blocks.forEach(b => {
-                Sleeping.set(b.body, false);
-            });
-
-            blocks.push(new Block(selectedBlockKind, mouseX * sF, mouseY * sF, rotated));
-            selectedBlockKind = null;
-            cursor();
-            isPlacingObject = false;
-            rotated = false;
+        if (env.mouseY < 80 && env.mouseX > canvasX - 80 && isPlacingObject) {
+            rotated = !rotated;
         }
-    }
-
-    else { //or if in menu then update selected blockkind
-        // is mouse clicking a block?
-        newSelectedBlockKind = blockMenu.hasClickedButton(mouseX, mouseY, selectedBlockKind);
-        if (newSelectedBlockKind) {
-            if (newSelectedBlockKind == selectedBlockKind) {
-                rotated = !rotated;
-            } else {
+        else if (env.mouseY > 0 && (env.mouseY < canvasY - menuHeight) && (env.mouseX > 0 && env.mouseX < canvasX)) {
+            console.log('done');
+            if (isPlacingObject) {
+                blocks.forEach(b => {
+                    Sleeping.set(b.body, false);
+                });
+    
+                blocks.push(new Block(selectedBlockKind, env.mouseX * sF, env.mouseY * sF, rotated));
+                selectedBlockKind = null;
+                env.cursor();
+                isPlacingObject = false;
                 rotated = false;
+                
             }
-            selectedBlockKind = newSelectedBlockKind;
-            isPlacingObject = true;
+        }
+        else { //or if in menu then update selected blockkind
+            // is mouse clicking a block?
+            newSelectedBlockKind = blockMenu.hasClickedButton(env.mouseX, env.mouseY, selectedBlockKind);
+            if (newSelectedBlockKind) {
+                if (newSelectedBlockKind == selectedBlockKind) {
+                    rotated = !rotated;
+                } else {
+                    rotated = false;
+                }
+                selectedBlockKind = newSelectedBlockKind;
+                isPlacingObject = true;
+            }
         }
     }
-}
 
+}
 
 // Sketch Two
 var setupStimulus = function (stim) {

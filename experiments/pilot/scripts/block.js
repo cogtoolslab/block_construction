@@ -33,7 +33,7 @@ function Block(blockKind, x, y, rotated){
 
         env.push(); //saves the current drawing style settings and transformations
         env.translate(pos.x/sF, pos.y/sF);
-        env.rectMode(CENTER);
+        env.rectMode(env.CENTER);
         env.rotate(angle);
         env.stroke(200);
         env.fill(150);
