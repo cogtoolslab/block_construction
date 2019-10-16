@@ -207,7 +207,7 @@ var setupEnvironment = function (env) {
                 env.cursor();
                 isPlacingObject = false;
                 rotated = false;
-
+                
                 // test out sending newBlock info to server/mongodb
                 propertyList = Object.keys(newBlock.body); // extract block properties;
                 propertyList = _.pullAll(propertyList,['parts','plugin','vertices','parent']);  // omit self-referential properties that cause max call stack exceeded error
