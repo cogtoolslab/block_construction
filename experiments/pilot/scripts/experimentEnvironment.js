@@ -1,7 +1,7 @@
 // Experiment frame, with Matter canvas and surrounding buttons
 
 var imagePath = '../img/';
-const  socket = io.connect();
+//const  socket = io.connect();
 
 // Aliases for Matter functions
 var Engine = Matter.Engine,
@@ -30,6 +30,9 @@ const iterationName = 'testing';
 
 var stimCanvasX = canvasX;
 var stimCanvasY = canvasY;
+
+var p5stim;
+var p5env;
 
 //var gravity = 0.003;
 var sF = 3;
@@ -68,7 +71,7 @@ var setupEnvironment = function (env) {
     env.setup = function() {
 
         // Create Experiment Canvas
-        var environmentCanvas = env.createCanvas(canvasX, canvasY); // creates a P5 canvas (which is a wrapper for an HTML canvas)
+        environmentCanvas = env.createCanvas(canvasX, canvasY); // creates a P5 canvas (which is a wrapper for an HTML canvas)
         environmentCanvas.parent('environment-window'); // add parent div 
 
         // Set up Matter Physics Engine
@@ -96,17 +99,6 @@ var setupEnvironment = function (env) {
             h = dims[1]
             blockKinds.push(new BlockKind(w * 20 * sF, h * 20 * sF, [15, 139, 141, 100]));
         });
-        /*
-        blockKinds[i]
-        blockKindA = new BlockKind(120*sF,40*sF,[15, 139, 141, 100]);
-        blockKindB = new BlockKind(80*sF,40*sF,[41, 51, 92, 100]);
-        blockKindC = new BlockKind(40*sF,40*sF,[211, 62, 67, 100]);
-        blockKindD = new BlockKind(120*sF,40*sF,[15, 139, 141, 100]);
-        blockKindE = new BlockKind(80*sF,40*sF,[41, 51, 92, 100]);
-        blockKinds.push(blockKindA);
-        blockKinds.push(blockKindB);
-        blockKinds.push(blockKindC);
-        */
 
         //TEMP: first block kind is selected
         selectedBlockKind = blockKinds[0]; //should really be first in list
@@ -201,13 +193,14 @@ var setupEnvironment = function (env) {
                     Sleeping.set(b.body, false);
                 });
                 
-                newBlock = new Block(selectedBlockKind,mouseX*sF,mouseY*sF, rotated);
+                /*newBlock = new Block(selectedBlockKind,env.mouseX*sF,env.mouseY*sF, rotated);*/
                 blocks.push(new Block(selectedBlockKind, env.mouseX * sF, env.mouseY * sF, rotated));
                 selectedBlockKind = null;
                 env.cursor();
                 isPlacingObject = false;
                 rotated = false;
                 
+                /*
                 // test out sending newBlock info to server/mongodb
                 propertyList = Object.keys(newBlock.body); // extract block properties;
                 propertyList = _.pullAll(propertyList,['parts','plugin','vertices','parent']);  // omit self-referential properties that cause max call stack exceeded error
@@ -215,7 +208,8 @@ var setupEnvironment = function (env) {
 
                 // custom de-borkification
                 vertices = _.map(newBlock.body.vertices, function(key,value) {return _.pick(key,['x','y'])});
-
+                
+                
                 block_data = {dbname: dbname,
                                 colname: colname,
                                 iterationName: iterationName,
@@ -232,10 +226,10 @@ var setupEnvironment = function (env) {
                             };            
                 console.log('block_data',block_data);
                 socket.emit('block',block_data);
-
+                */
             }
         }
-        else { //or if in menu then update selected blockkind
+        else if (env.mouseY > 0 && (env.mouseY < canvasY) && (env.mouseX > 0 && env.mouseX < canvasX)){ //or if in menu then update selected blockkind
             // is mouse clicking a block?
             newSelectedBlockKind = blockMenu.hasClickedButton(env.mouseX, env.mouseY, selectedBlockKind);
             if (newSelectedBlockKind) {
