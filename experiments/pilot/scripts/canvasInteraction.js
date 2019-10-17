@@ -6,9 +6,8 @@ function resetPressed(){
     Works by resetting variables then building a new p5 instance.
     */
     p5env.remove(); // remove environment
-
     // Update variables
-    p5env.remove();
+
     blocks = [];
     blockKinds = [];
     isPlacingObject = false;
@@ -17,10 +16,24 @@ function resetPressed(){
     // setup new environment   
     p5env = new p5(setupEnvironment,'environment-canvas');
 
+    // update reset counter
+
 }
 
 function donePressed(){
-    console.log(engine.world);
+    console.log('starting new trial');
+
+    p5env.remove(); // remove environment
+    p5stim.remove();
+    // Update variables
+
+    blocks = [];
+    blockKinds = [];
+    isPlacingObject = false;
+    rotated = false;
+    selectedBlockKind = null;
+    // setup new environment   
+    trial()
 }
 
 function checkPressed(){

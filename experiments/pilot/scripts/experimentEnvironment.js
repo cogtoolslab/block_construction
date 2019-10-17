@@ -27,10 +27,12 @@ const colname = 'silhouette';
 const iterationName = 'testing';
 
 // Stimulus Display
-
 var stimCanvasX = canvasX;
 var stimCanvasY = canvasY;
+var stimX = stimCanvasX/2;
+var stimY = stimCanvasY/2;
 
+// p5 instances
 var p5stim;
 var p5env;
 
@@ -110,10 +112,6 @@ var setupEnvironment = function (env) {
         ground = new Boundary(200 * sF, (environmentCanvas.height - menuHeight) * sF, 800 * sF, 60 * sF);
         //box1 = new Box(200, 100, 30, 30);
 
-        // Start physics engine
-
-        //Engine.run(engine);
-
         // Runner- use instead of line above if changes to game loop needed
 
         runner = Matter.Runner.create({
@@ -187,7 +185,6 @@ var setupEnvironment = function (env) {
             rotated = !rotated;
         }
         else if (env.mouseY > 0 && (env.mouseY < canvasY - menuHeight) && (env.mouseX > 0 && env.mouseX < canvasX)) {
-            console.log('done');
             if (isPlacingObject) {
                 blocks.forEach(b => {
                     Sleeping.set(b.body, false);
@@ -247,18 +244,24 @@ var setupEnvironment = function (env) {
 }
 
 // Sketch Two
-var setupStimulus = function (stim) {
+var setupStimulus = function (p5stim) {
 
-    stim.setup = function () {
-        stimulusCanvas = stim.createCanvas(stimCanvasX,stimCanvasX);
+    p5stim.setup = function () {
+        stimulusCanvas = p5stim.createCanvas(stimCanvasX,stimCanvasX);
         stimulusCanvas.parent('stimulus-window'); // add parent div 
     };
 
-    stim.draw = function () {
-        stim.background(100);
+    p5stim.draw = function () {
+        p5stim.background(200);
+        var testStim = {"blocks": [{"width": 2, "height": 1, "x": 1, "y": 0}, {"width": 4, "height": 2, "x": 4, "y": 0}, {"width": 4, "height": 2, "x": 0, "y": 1}, {"width": 2, "height": 1, "x": 6, "y": 2}, {"width": 2, "height": 1, "x": 0, "y": 3}, {"width": 4, "height": 2, "x": 3, "y": 3}, {"width": 1, "height": 2, "x": 7, "y": 3}, {"width": 2, "height": 1, "x": 0, "y": 4}, {"width": 2, "height": 2, "x": 0, "y": 5}, {"width": 2, "height": 1, "x": 2, "y": 5}, {"width": 2, "height": 1, "x": 5, "y": 5}, {"width": 1, "height": 2, "x": 2, "y": 6}, {"width": 1, "height": 2, "x": 3, "y": 6}, {"width": 2, "height": 2, "x": 5, "y": 6}, {"width": 2, "height": 1, "x": 0, "y": 7}]};
+        showStimulus(p5stim,testStim)
 
     };
 };
 
-var p5stim = new p5(setupStimulus,'stimulus-canvas');
-var p5env = new p5(setupEnvironment,'environment-canvas');
+var trial = function() {
+    p5stim = new p5(setupStimulus,'stimulus-canvas');
+    p5env = new p5(setupEnvironment,'environment-canvas');
+}
+
+trial()
