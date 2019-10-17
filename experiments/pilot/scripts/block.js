@@ -2,11 +2,11 @@
 function Block(blockKind, x, y, rotated){
 
     if(rotated){
-        this.w = blockKind.h;
-        this.h = blockKind.w;
+        this.w = blockKind.h * sF;
+        this.h = blockKind.w * sF;
     }else{
-        this.w = blockKind.w;
-        this.h = blockKind.h;
+        this.w = blockKind.w * sF;
+        this.h = blockKind.h * sF;
     }
 
     //var options = blockKind.options;
@@ -21,7 +21,7 @@ function Block(blockKind, x, y, rotated){
         sleepThreshold: 80
     }
 
-    this.body = Bodies.rectangle(x,y,this.w,this.h, options);
+    this.body = Bodies.rectangle(x*worldScale,y*worldScale,this.w*worldScale,this.h*worldScale, options);
     World.add(engine.world, this.body); 
     
 
@@ -32,15 +32,15 @@ function Block(blockKind, x, y, rotated){
         var angle = this.body.angle;
 
         env.push(); //saves the current drawing style settings and transformations
-        env.translate(pos.x/sF, pos.y/sF);
+        env.translate(pos.x/worldScale, pos.y/worldScale);
         env.rectMode(env.CENTER);
         env.rotate(angle);
-        env.stroke(200);
+        env.stroke(100);
         env.fill(150);
         if(this.body.isSleeping) {
-            env.fill(100);
+            env.fill(200);
         }
-        env.rect(0,0,this.w/sF,this.h/sF);
+        env.rect(0,0,this.w,this.h);
 
         env.pop();
         

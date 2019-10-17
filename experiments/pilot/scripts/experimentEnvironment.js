@@ -36,8 +36,10 @@ var stimY = stimCanvasY/2;
 var p5stim;
 var p5env;
 
-//var gravity = 0.003;
-var sF = 3;
+// Scaling values
+var sF = 20; //scaling factor to change appearance of blocks
+var worldScale = 2; //scaling factor within matterjs
+var stim_scale = sF;
 
 // Global Variables
 var engine;
@@ -99,7 +101,7 @@ var setupEnvironment = function (env) {
         blockDims.forEach(dims => {
             w = dims[0]
             h = dims[1]
-            blockKinds.push(new BlockKind(w * 20 * sF, h * 20 * sF, [15, 139, 141, 100]));
+            blockKinds.push(new BlockKind(w, h, [15, 139, 141, 100]));
         });
 
         //TEMP: first block kind is selected
@@ -109,7 +111,7 @@ var setupEnvironment = function (env) {
         blockMenu = new BlockMenu(menuHeight, blockKinds);
 
         // Add things to the physics engine world
-        ground = new Boundary(200 * sF, (environmentCanvas.height - menuHeight) * sF, 800 * sF, 60 * sF);
+        ground = new Boundary(canvasX/2, (environmentCanvas.height - menuHeight)*1.15, canvasX*1.5, canvasY/3);
         //box1 = new Box(200, 100, 30, 30);
 
         // Runner- use instead of line above if changes to game loop needed
@@ -190,8 +192,7 @@ var setupEnvironment = function (env) {
                     Sleeping.set(b.body, false);
                 });
                 
-                /*newBlock = new Block(selectedBlockKind,env.mouseX*sF,env.mouseY*sF, rotated);*/
-                blocks.push(new Block(selectedBlockKind, env.mouseX * sF, env.mouseY * sF, rotated));
+                blocks.push(new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated));
                 selectedBlockKind = null;
                 env.cursor();
                 isPlacingObject = false;

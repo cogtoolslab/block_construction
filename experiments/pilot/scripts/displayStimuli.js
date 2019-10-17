@@ -1,6 +1,5 @@
 var worldHeight = 8;
 var worldWidth = 8;
-var stim_scale = 20;
 
 function showStimulus(p5stim,stimulus){
     stimulus.blocks.forEach(block => {

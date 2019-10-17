@@ -14,7 +14,7 @@ function Boundary(x, y, w, h){
     this.w = w;
     this.h = h;
 
-    this.body = Bodies.rectangle(x,y,w,h, options);
+    this.body = Bodies.rectangle(x*worldScale,y*worldScale,w*worldScale,h*worldScale, options);
     World.add(engine.world, this.body); 
 
     // Display the boundary on the screen
@@ -24,12 +24,12 @@ function Boundary(x, y, w, h){
         var angle = this.body.angle;
 
         env.push();
-        env.translate(pos.x/sF, pos.y/sF);
+        env.translate(pos.x/worldScale, pos.y/worldScale);
         env.rectMode(env.CENTER);
         env.rotate(angle);
         env.stroke(200);
         env.fill(20);
-        env.rect(0,0,this.w/sF,this.h/sF);
+        env.rect(0,0,this.w,this.h);
         env.pop();
 
     }
