@@ -3,7 +3,7 @@
   <head>
     <link rel="shortcut icon" type="image/png" href="img/favicon.png"/>
 
-    <title>Minimum Viable Connecting Trial</title>
+    <title>Pilot Trial</title>
     
     <!-- Libraries -->
     <script type="text/javascript" src="../lib/socket.io.js"></script>
@@ -39,11 +39,14 @@
             <script src="scripts/experimentEnvironment.js"></script>
           </div>
         </div>
-        <div class="row pt-2" id="experiment-buttons">
-            <div class="col-auto mr-auto">
+        <div class="row pt-2" id="experiment-button-col">
+            <div class="col-auto mr-auto button-col">
                 <button type="something" class="btn btn-primary" id="something" value="something" onclick="">Something</button>
             </div>
-            <div class="col-auto">
+            <div class="col align-text-center" id="trial-number">
+              <p>Trial 1 of 1</p>
+            </div>
+            <div class="col-auto button-col">
                 <button type="button" class="btn btn-danger" id="reset" value="reset" onclick="resetPressed();">Reset</button>
                 <button type="button" class="btn btn-success" id="done" value="done" onclick="donePressed();">Done</button>
             </div>
