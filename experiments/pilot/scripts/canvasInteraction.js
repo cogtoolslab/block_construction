@@ -5,15 +5,7 @@ function resetPressed(){
     /* Called to clear building environment window. 
     Works by resetting variables then building a new p5 instance.
     */
-    p5env.remove(); // remove environment
-    // Update variables
-
-    blocks = [];
-    blockKinds = [];
-    isPlacingObject = false;
-    rotated = false;
-    selectedBlockKind = null;
-    // setup new environment   
+    resetEnv();
     p5env = new p5(setupEnvironment,'environment-canvas');
 
     // update reset counter

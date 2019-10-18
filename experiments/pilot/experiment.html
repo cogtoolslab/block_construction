@@ -43,13 +43,15 @@
             <div class="col-auto mr-auto button-col">
                 <button type="something" class="btn btn-primary" id="something" value="something" onclick="">Something</button>
             </div>
-            <div class="col align-text-center" id="trial-number">
-              <p>Trial 1 of 1</p>
-            </div>
-            <div class="col-auto button-col">
-                <button type="button" class="btn btn-danger" id="reset" value="reset" onclick="resetPressed();">Reset</button>
+            <div class="col-auto button-col" id="env-buttons">
                 <button type="button" class="btn btn-success" id="done" value="done" onclick="donePressed();">Done</button>
+                <button type="button" class="btn btn-danger" id="reset" value="reset" onclick="resetPressed();">Reset</button>
             </div>
+        </div>
+        <div class="row pt-2" id="trial-info">
+          <div class="col align-text-center" id="trial-number">
+            <p>Trial 1 of 1</p>
+          </div>
         </div>
     </div>
   </body>

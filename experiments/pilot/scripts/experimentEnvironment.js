@@ -3,6 +3,9 @@
 var imagePath = '../img/';
 //const  socket = io.connect();
 
+// TEMPORARY VARIABLES TO BE READ IN
+var external = true;
+
 // Aliases for Matter functions
 var Engine = Matter.Engine,
     World = Matter.World,
@@ -69,7 +72,7 @@ var blockDims = [
     [4, 2]
 ];
 
-var setupEnvironment = function (env) {
+var setupEnvironment = function (env, disabledEnvironment = false) {
 
     // Processing JS Function, defines initial environment.
     env.setup = function() {
@@ -145,12 +148,14 @@ var setupEnvironment = function (env) {
 
         // Menu
         blockMenu.show(env);
+        /*
         // Rotate button
         env.noFill();
         env.stroke(200);
         env.arc(canvasX - 50, 50, 50, 50, env.TWO_PI, env.PI + 3 * env.QUARTER_PI);
         env.line(canvasX - 50 + 25, 50 - 23, canvasX - 50 + 25, 40);
         env.line(canvasX - 50 + 12, 40, canvasX - 50 + 25, 40);
+        */
 
         blocks.forEach(b => {
             b.show(env);
@@ -183,61 +188,67 @@ var setupEnvironment = function (env) {
     env.mouseClicked = function() {
         //check to see if in env
 
+        /* //Is clicking in top right of environment
         if (env.mouseY < 80 && env.mouseX > canvasX - 80 && isPlacingObject) {
             rotated = !rotated;
         }
-        else if (env.mouseY > 0 && (env.mouseY < canvasY - menuHeight) && (env.mouseX > 0 && env.mouseX < canvasX)) {
-            if (isPlacingObject) {
-                blocks.forEach(b => {
-                    Sleeping.set(b.body, false);
-                });
-                
-                blocks.push(new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated));
-                selectedBlockKind = null;
-                env.cursor();
-                isPlacingObject = false;
-                rotated = false;
-                
-                /*
-                // test out sending newBlock info to server/mongodb
-                propertyList = Object.keys(newBlock.body); // extract block properties;
-                propertyList = _.pullAll(propertyList,['parts','plugin','vertices','parent']);  // omit self-referential properties that cause max call stack exceeded error
-                blockProperties = _.pick(newBlock['body'],propertyList); // pick out all and only the block body properties in the property list
+        */
+        
+        if (!disabledEnvironment){ //environment will be disabled in some conditions
 
-                // custom de-borkification
-                vertices = _.map(newBlock.body.vertices, function(key,value) {return _.pick(key,['x','y'])});
-                
-                
-                block_data = {dbname: dbname,
-                                colname: colname,
-                                iterationName: iterationName,
-                                dataType: 'block',
-                                gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
-                                time: performance.now(), // time since session began
-                                timeAbsolute: Date.now(),  
-                                blockWidth: newBlock['w'],
-                                blockHeight: newBlock['h'],
-                                blockCenterX: newBlock['body']['position']['x'],
-                                blockCenterY: newBlock['body']['position']['y'],
-                        blockVertices: vertices,
-                                blockBodyProperties: blockProperties,
-                            };            
-                console.log('block_data',block_data);
-                socket.emit('block',block_data);
-                */
-            }
-        }
-        else if (env.mouseY > 0 && (env.mouseY < canvasY) && (env.mouseX > 0 && env.mouseX < canvasX)){ //or if in menu then update selected blockkind
-            // is mouse clicking a block?
-            newSelectedBlockKind = blockMenu.hasClickedButton(env.mouseX, env.mouseY, selectedBlockKind);
-            if (newSelectedBlockKind) {
-                if (newSelectedBlockKind == selectedBlockKind) {
-                    rotated = !rotated;
-                } else {
+            if (env.mouseY > 0 && (env.mouseY < canvasY - menuHeight) && (env.mouseX > 0 && env.mouseX < canvasX)) {
+                if (isPlacingObject) {
+                    blocks.forEach(b => {
+                        Sleeping.set(b.body, false);
+                    });
+                    
+                    blocks.push(new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated));
+                    selectedBlockKind = null;
+                    env.cursor();
+                    isPlacingObject = false;
                     rotated = false;
+                    
+                    /*
+                    // test out sending newBlock info to server/mongodb
+                    propertyList = Object.keys(newBlock.body); // extract block properties;
+                    propertyList = _.pullAll(propertyList,['parts','plugin','vertices','parent']);  // omit self-referential properties that cause max call stack exceeded error
+                    blockProperties = _.pick(newBlock['body'],propertyList); // pick out all and only the block body properties in the property list
+
+                    // custom de-borkification
+                    vertices = _.map(newBlock.body.vertices, function(key,value) {return _.pick(key,['x','y'])});
+                    
+                    
+                    block_data = {dbname: dbname,
+                                    colname: colname,
+                                    iterationName: iterationName,
+                                    dataType: 'block',
+                                    gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
+                                    time: performance.now(), // time since session began
+                                    timeAbsolute: Date.now(),  
+                                    blockWidth: newBlock['w'],
+                                    blockHeight: newBlock['h'],
+                                    blockCenterX: newBlock['body']['position']['x'],
+                                    blockCenterY: newBlock['body']['position']['y'],
+                            blockVertices: vertices,
+                                    blockBodyProperties: blockProperties,
+                                };            
+                    console.log('block_data',block_data);
+                    socket.emit('block',block_data);
+                    */
                 }
-                selectedBlockKind = newSelectedBlockKind;
-                isPlacingObject = true;
+            }
+            else if (env.mouseY > 0 && (env.mouseY < canvasY) && (env.mouseX > 0 && env.mouseX < canvasX)){ //or if in menu then update selected blockkind
+                // is mouse clicking a block?
+                newSelectedBlockKind = blockMenu.hasClickedButton(env.mouseX, env.mouseY, selectedBlockKind);
+                if (newSelectedBlockKind) {
+                    if (newSelectedBlockKind == selectedBlockKind) {
+                        rotated = !rotated;
+                    } else {
+                        rotated = false;
+                    }
+                    selectedBlockKind = newSelectedBlockKind;
+                    isPlacingObject = true;
+                }
             }
         }
     }
@@ -260,9 +271,105 @@ var setupStimulus = function (p5stim) {
     };
 };
 
-var trial = function() {
+var trial = function(condition='external') {
+    if (condition=='external'){
+        explore()
+    }
+    else if (condition=='internal'){
+        simulate()
+    }
+    else {
+        console.log('Unrecognised condition type, use `external` or `internal`')
+    }
+    //wait until returned, then
+    /*
     p5stim = new p5(setupStimulus,'stimulus-canvas');
-    p5env = new p5(setupEnvironment,'environment-canvas');
+    p5env = new p5(setupEnvironment,'environment-canvas');*/
+
+    // then
+    //resetStimWindow()
+
 }
 
-trial()
+var setupEnvironmentCurried = function(disabledEnvironment) {
+    //p5 constructor takes a one argument function, but we want to pass multiple arguments to our setup function
+    // can think of it the place to put environment variables for a given trial or stage
+    return (env) => {
+        setupEnvironment(env, disabledEnvironment)
+    }
+}
+
+var setupStimulusCurried = function() {
+    // p5 constructor takes a one argument function, but we want to pass multiple arguments to our setup function
+    // can think of it the place to put stimulus variables for a given trial
+
+    return (env) => {
+        setupStimulus(env)
+    }
+}
+
+var simulate = function() {
+    p5stim = new p5(setupStimulusCurried(),'stimulus-canvas');
+    disabledEnvironment = true;
+    p5env = new p5(setupEnvironmentCurried(disabledEnvironment),'environment-canvas');
+    hideEnvButtons();
+}
+
+var explore = function() {
+    p5stim = new p5(setupStimulusCurried(),'stimulus-canvas');
+    disabledEnvironment = false;
+    p5env = new p5(setupEnvironmentCurried(disabledEnvironment),'environment-canvas');
+    hideDoneButton();
+}
+
+var buildStage = function() {
+    p5stim = new p5(setupStimulusCurried(),'stimulus-canvas');
+    disabledEnvironment = false;
+    p5env = new p5(setupEnvironmentCurried(disabledEnvironment),'environment-canvas');
+}
+
+var resetEnv = function(){
+    
+    // remove environment
+    p5env.remove(); 
+    
+    // Update variables
+    blocks = [];
+    blockKinds = [];
+    isPlacingObject = false;
+    rotated = false;
+    selectedBlockKind = null;
+    // setup new environment   
+}
+
+var resetStimWindow = function(){
+    // remove environment
+    p5stim.remove(); 
+
+}
+
+function hideEnvButtons() {
+    window.onload = function(){
+        var envButtons = document.getElementById("env-buttons");
+        envButtons.style.display = "none";
+    };
+    
+}
+
+function hideDoneButton() {
+    window.onload = function(){
+        var envButtons = document.getElementById("done");
+        envButtons.style.display = "none";
+    };
+    
+}
+
+function revealEnvButtons() {
+    window.onload = function(){
+        var envButtons = document.getElementById("env-buttons");
+        envButtons.style.display = "inline-block";
+    };
+}
+
+
+buildStage();
