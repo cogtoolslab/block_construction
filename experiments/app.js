@@ -21,7 +21,6 @@ if(argv.gameport) {
   console.log('no gameport specified: using 8888\nUse the --gameport flag to change');
 }
 
-
 try {
   var   privateKey  = fs.readFileSync('/etc/letsencrypt/live/cogtoolslab.org/privkey.pem'), 
         certificate = fs.readFileSync('/etc/letsencrypt/live/cogtoolslab.org/cert.pem'),
@@ -61,7 +60,7 @@ var serveFile = function(req, res) {
 
 function initializeWithTrials(socket) {
   var gameid = UUID();
-  var colname = 'silhouette';
+  var colname = 'block-construction-silhouette';
   sendPostRequest('http://localhost:8000/db/getstims', {
     json: {
       dbname: 'stimuli',
@@ -74,9 +73,7 @@ function initializeWithTrials(socket) {
       // send trial list (and id) to client
       var packet = {
         gameid: gameid,
-        version: recogVersion,  
-        recogID: body.recogID,
-        trials: body.meta
+        trials: body
       };      
       socket.emit('onConnected', packet);
     } else {
