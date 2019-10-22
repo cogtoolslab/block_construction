@@ -50,3 +50,15 @@ body {
 #experiment-buttons .col-auto{
     padding: 100px;
 }
+
+#occluder {
+  float: middle;
+  border:solid 1px #7F7F7F;
+  height: 100vh;
+  width: 100vw;
+  margin: auto;
+  top: 40px; bottom: auto; left:0; right: 0;
+  background: #7F7F7F;
+  position: absolute;
+  z-index: 12;
+}

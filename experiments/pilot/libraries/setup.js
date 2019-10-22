@@ -1,6 +1,6 @@
 var callback;
 var score = 0;
-var numTrials = 8;
+var numTrials = 12;
 var shuffleTrials = false; // set to False to preserve order in db; set to True if you want to shuffle trials from db (scrambled10)
 
 function sendData() {
@@ -19,7 +19,7 @@ var goodbyeTrial = {
 };
 
 var consentHTML = {
-  'str1' : '<p>In this HIT, you will see some cool shapes. For each shape, you will try to reconstruct it from a set of blocks. For really good reconstructions, you will receive a bonus. </p>',
+  'str1' : '<p>In this HIT, you will see some gnarly shapes. For each shape, you will try to reconstruct it from a set of blocks. For really good reconstructions, you will receive a bonus. </p>',
   'str2' : '<p>We expect the average game to last approximately 10 minutes, including the time it takes to read instructions.</p>',
   'str3' : ["<u><p id='legal'>Consenting to Participate:</p></u>",
 	    "<p id='legal'>By completing this HIT, you are participating in a study being performed by cognitive scientists in the UC San Diego Department of Psychology. If you have questions about this research, please contact the <b>Sketchloop Admin</b> at <b><a href='mailto://sketchloop@gmail.com'>sketchloop@gmail.com</a> </b>. You must be at least 18 years old to participate. Your participation in this research is voluntary. You may decline to answer any or all of the following questions. You may decline further participation, at any time, without adverse consequences. Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you.</p>"].join(' ')
@@ -82,7 +82,6 @@ function setupGame () {
     // extra information to bind to trial list
     var additionalInfo = {
       gameID: d.gameid,
-      version: d.version, // dataset version: yoked, scrambled40, scrambled10
       post_trial_gap: 1000, // add brief ITI between trials
       num_trials : numTrials,
       on_finish : on_finish

@@ -235,7 +235,7 @@ jsPsych.plugins["block-silhouette"] = (function() {
 
       // gather the data to store for the trial
       if (trial.dev_mode == true) {
-        console.log(trial.choices);
+        console.log(trial);
       }
       var trial_data = _.extend(_.omit(trial, 'on_finish'), {
           dbname: 'block_construction',
