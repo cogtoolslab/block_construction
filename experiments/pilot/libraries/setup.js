@@ -64,6 +64,8 @@ function Trial () {
 
 function setupGame () {
 
+  console.log('setupGame called!');  
+
   // number of trials to fetch from database is defined in ./app.js
   var socket = io.connect();
 
@@ -75,6 +77,9 @@ function setupGame () {
 
   // Start once server initializes us
   socket.on('onConnected', function(d) {
+
+    // contents of d
+    console.log(d);
 
     // get workerId, etc. from URL (so that it can be sent to the server)
     var turkInfo = jsPsych.turk.turkInfo();    
