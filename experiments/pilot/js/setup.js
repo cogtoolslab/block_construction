@@ -57,7 +57,7 @@ var previewTrial = {
 // define trial object with boilerplate
 function Trial () {
   this.type = 'block-silhouette';
-  this.iterationName = 'testing';
+  this.iterationName = 'testing1';
   this.prompt = "Please reconstruct the tower using as few blocks as possible.";
   this.dev_mode = false;
 };

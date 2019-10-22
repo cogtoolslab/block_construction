@@ -27,12 +27,18 @@ jsPsych.plugins["block-silhouette"] = (function() {
     name: 'block-silhouette',
     description: '',
     parameters: {
-      target: {
+      targetBlocks: {
         type: jsPsych.plugins.parameterType.STRING,
         pretty_name: 'Block Collection (JSON String)',
         default: undefined,
-        description: 'definition of block silhouette cue'
+        description: 'list of blocks comprising target structure'
       },
+      targetName: {
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Block Collection (JSON String)',
+        default: undefined,
+        description: 'nickname for target structure'
+      },      
       button_html: {
         type: jsPsych.plugins.parameterType.IMAGE,
         pretty_name: 'Button HTML',
@@ -81,7 +87,7 @@ jsPsych.plugins["block-silhouette"] = (function() {
 
   plugin.trial = function(display_element, trial) {
 
-    if(typeof trial.target === 'undefined'){
+    if(typeof trial.targetBlocks === 'undefined'){
       console.error('Required parameter "target" missing in block-silhouette');
     }
 
