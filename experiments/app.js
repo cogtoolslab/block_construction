@@ -11,7 +11,9 @@ const
     XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest,
     sendPostRequest = require('request').post;    
 
-let  gameport;
+var gameport;
+var researchers = ['A4SSYO0HDVD4E', 'A1BOIDKD33QSDK', 'A1MMCS8S8CTWKU','A1MMCS8S8CTWKV','A1MMCS8S8CTWKS'];
+var blockResearcher = false;
 
 if(argv.gameport) {
   let gameport = argv.gameport;
@@ -39,6 +41,14 @@ app.get('/*', (req, res) => {
 });
 
 io.on('connection', function (socket) {
+
+  // Recover query string information and set condition
+  var hs = socket.request;
+  var query = require('url').parse(hs.headers.referer, true).query;
+
+  // Send client stims
+  initializeWithTrials(socket);
+
   socket.on('structure', function(data) {
       // console.log('structure received: ' + JSON.stringify(_.omit(data,['bitmap'])));
       console.log('structure received: ' + JSON.stringify(data));
