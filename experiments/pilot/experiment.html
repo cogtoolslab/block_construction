@@ -9,6 +9,8 @@
     <script type="text/javascript" src="../lib/socket.io.js"></script>
     <script src="libraries/matter.js"></script>
     <script src="libraries/p5.js"></script>
+    <script src="libraries/jsPsych/jspsych.js"></script>
+    <script src="libraries/setup.js"></script>
     <script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
 
     <!-- Bootstrap CSS -->
@@ -54,5 +56,18 @@
           </div>
         </div>
     </div>
+
+<!-- TODO: Move all of the above stuff to setup.js once things are more in place -->
+<!--     <script>
+      window.onload = function() {
+        setupGame();
+      }
+
+      window.onbeforeunload = function() {
+        return "Data will be lost if you leave the page, are you sure?";
+      };
+
+    </script> -->
+
   </body>
 </html>
