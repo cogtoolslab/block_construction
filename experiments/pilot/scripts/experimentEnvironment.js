@@ -4,7 +4,6 @@ var imagePath = '../img/';
 //const  socket = io.connect();
 
 // TEMPORARY VARIABLES TO BE READ IN
-var external = true;
 
 // Aliases for Matter functions
 var Engine = Matter.Engine,
@@ -172,16 +171,6 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
             env.noCursor(); //feel like this is horribly ineffecient...
             selectedBlockKind.showGhost(env,env.mouseX, env.mouseY, rotated);
         }
-        /*
-        if (mouseY < canvasY - menuHeight){
-            if (isPlacingObject){
-                noCursor(); //feel like this is horribly ineffecient...
-                selectedBlockKind.showGhost(mouseX, mouseY, rotated);
-            }
-        } else {
-            cursor();
-        }
-        */
 
     }
 
@@ -195,7 +184,8 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
         */
         
         if (!disabledEnvironment){ //environment will be disabled in some conditions
-
+            
+            // if mouse in main environment
             if (env.mouseY > 0 && (env.mouseY < canvasY - menuHeight) && (env.mouseX > 0 && env.mouseX < canvasX)) {
                 if (isPlacingObject) {
                     blocks.forEach(b => {
@@ -242,7 +232,8 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
                 newSelectedBlockKind = blockMenu.hasClickedButton(env.mouseX, env.mouseY, selectedBlockKind);
                 if (newSelectedBlockKind) {
                     if (newSelectedBlockKind == selectedBlockKind) {
-                        rotated = !rotated;
+                        
+                        //rotated = !rotated; // uncomment to allow rotation by re-selecting block from menu
                     } else {
                         rotated = false;
                     }
@@ -310,22 +301,19 @@ var setupStimulusCurried = function() {
 
 var simulate = function() {
     p5stim = new p5(setupStimulusCurried(),'stimulus-canvas');
-    disabledEnvironment = true;
-    p5env = new p5(setupEnvironmentCurried(disabledEnvironment),'environment-canvas');
+    p5env = new p5(setupEnvironmentCurried(disabledEnvironment = true),'environment-canvas');
     hideEnvButtons();
 }
 
 var explore = function() {
     p5stim = new p5(setupStimulusCurried(),'stimulus-canvas');
-    disabledEnvironment = false;
-    p5env = new p5(setupEnvironmentCurried(disabledEnvironment),'environment-canvas');
+    p5env = new p5(setupEnvironmentCurried(disabledEnvironment = false),'environment-canvas');
     hideDoneButton();
 }
 
 var buildStage = function() {
     p5stim = new p5(setupStimulusCurried(),'stimulus-canvas');
-    disabledEnvironment = false;
-    p5env = new p5(setupEnvironmentCurried(disabledEnvironment),'environment-canvas');
+    p5env = new p5(setupEnvironmentCurried(disabledEnvironment = false),'environment-canvas');
 }
 
 var resetEnv = function(){
