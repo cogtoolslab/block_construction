@@ -83,7 +83,8 @@ function initializeWithTrials(socket) {
       // send trial list (and id) to client
       var packet = {
         gameid: gameid,
-        trials: body
+        trials: body.meta,
+        version: body.version
       };      
       socket.emit('onConnected', packet);
     } else {
