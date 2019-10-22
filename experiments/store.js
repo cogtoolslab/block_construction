@@ -52,6 +52,20 @@ function mongoConnectWithRetry(delayInMilliseconds, callback) {
   });
 }
 
+function markAnnotation(collection, gameid, sketchid) {
+  collection.update({_id: ObjectID(sketchid)}, {
+    $push : {games : gameid},
+    $inc  : {numGames : 1}
+  }, function(err, items) {
+    if (err) {
+      console.log(`error marking annotation data: ${err}`);
+    } else {
+      console.log(`successfully marked annotation. result: ${JSON.stringify(items)}`);
+    }
+  });
+};
+
+
 function serve() {
 
   mongoConnectWithRetry(2000, (connection) => {
