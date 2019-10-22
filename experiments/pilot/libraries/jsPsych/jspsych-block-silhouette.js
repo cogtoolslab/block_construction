@@ -81,11 +81,8 @@ jsPsych.plugins["block-silhouette"] = (function() {
 
   plugin.trial = function(display_element, trial) {
 
-    if(typeof trial.choices === 'undefined'){
-      console.error('Required parameter "choices" missing in block-silhouette');
-    }
-    if(typeof trial.sketch === 'undefined'){
-      console.error('Required parameter "sketch" missing in block-silhouette');
+    if(typeof trial.stimulus === 'undefined'){
+      console.error('Required parameter "stimulus" missing in block-silhouette');
     }
 
     // wrapper function to show everything, call this when you've waited what you

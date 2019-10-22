@@ -3,7 +3,7 @@
   <head>
     <link rel="shortcut icon" type="image/png" href="img/favicon.png"/>
 
-    <title>Pilot Trial</title>
+    <title>Build that structure!</title>
     
     <!-- Libraries -->
     <script type="text/javascript" src="../lib/socket.io.js"></script>
@@ -16,21 +16,21 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="style/bootstrap/css/bootstrap.min.css">
     
-    <!-- Experiment CSS -->
+    <!-- CSS -->
     <link rel="stylesheet" href="style/experiment.css">
+    <link rel="stylesheet" href="libraries/jsPsych/jspsych.css">    
+    <link rel="stylesheet" href="style/bootstrap/css/bootstrap.min.css">
 
-    <!-- Scripts-->
+    <!-- Custom Scripts -->
     <script src="scripts/boundary.js"></script>
     <script src="scripts/blockMenu.js"></script>
     <script src="scripts/block.js"></script>
     <script src="scripts/blockKind.js"></script>
     <script src="scripts/canvasInteraction.js"></script>
     <script src="scripts/displayStimuli.js"></script>
-
-    <style type="text/css">
-
-    </style>
+    <script src="scripts/experimentEnvironment.js"></script>
   </head>
+
   <body>
     <div class="container pt-5" id="experiment">
         <div class="row">
@@ -38,7 +38,7 @@
 
           </div>
           <div class="col-md" id="environment-window">
-            <script src="scripts/experimentEnvironment.js"></script>
+            
           </div>
         </div>
         <div class="row pt-2" id="experiment-button-col">
