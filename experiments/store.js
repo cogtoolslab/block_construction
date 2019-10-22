@@ -95,6 +95,39 @@ function serve() {
       });
     });
 
+    app.post('/db/getstims', (request, response) => {
+      if (!request.body) {
+        return failure(response, '/db/getstims needs post request body');
+      }
+      console.log(`got request to get stims from ${request.body.dbname}/${request.body.colname}`);
+
+      const databaseName = request.body.dbname;
+      const collectionName = request.body.colname;
+      if (!collectionName) {
+        return failure(response, '/db/getstims needs collection');
+      }
+      if (!databaseName) {
+        return failure(response, '/db/getstims needs database');
+      }
+
+      const database = connection.db(databaseName);
+      const collection = database.collection(collectionName);
+
+      // sort by number of times previously served up and take the first
+      collection.aggregate([
+        { $addFields : { numGames: { $size: '$games'} } },
+        { $sort : {numGames : 1} },
+        { $limit : 1}
+        ]).toArray( (err, results) => {
+        if(err) {
+          console.log(err);
+        } else {
+      // Immediately mark as annotated so others won't get it too
+      markAnnotation(collection, request.body.gameid, results[0]['_id']);
+          response.send(results[0]);
+        }
+      });
+    });
 
     app.listen(port, () => {
       log(`running at http://localhost:${port}`);

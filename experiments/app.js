@@ -59,6 +59,45 @@ var serveFile = function(req, res) {
   return res.sendFile(fileName, {root: __dirname}); 
 };
 
+function initializeWithTrials(socket) {
+  var gameid = UUID();
+  var colname = 'silhouette';
+  sendPostRequest('http://localhost:8000/db/getstims', {
+    json: {
+      dbname: 'stimuli',
+      colname: colname,
+      numTrials: 1,
+      gameid: gameid
+    }
+  }, (error, res, body) => {
+    if (!error && res.statusCode === 200) {
+      // send trial list (and id) to client
+      var packet = {
+        gameid: gameid,
+        version: recogVersion,  
+        recogID: body.recogID,
+        trials: body.meta
+      };      
+      socket.emit('onConnected', packet);
+    } else {
+      console.log(`error getting stims: ${error} ${body}`);
+    }
+  });
+}
+
+function UUID () {
+  var baseName = (Math.floor(Math.random() * 10) + '' +
+        Math.floor(Math.random() * 10) + '' +
+        Math.floor(Math.random() * 10) + '' +
+        Math.floor(Math.random() * 10));
+  var template = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
+  var id = baseName + '-' + template.replace(/[xy]/g, function(c) {
+    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+    return v.toString(16);
+  });
+  return id;
+};
+
 var writeDataToMongo = function(data) {
     sendPostRequest('http://localhost:8000/db/insert',
       { json: data },

@@ -1,9 +1,7 @@
 var callback;
 var score = 0;
-var quizAttempts = 1;
 var numTrials = 8;
-var numInserted = 0;
-var shuffleTrials = false; // set to False to preserve order in db (scrambled40, yoked); set to True if you want to shuffle trials from db (scrambled10)
+var shuffleTrials = false; // set to False to preserve order in db; set to True if you want to shuffle trials from db (scrambled10)
 
 function sendData() {
   console.log('sending data to mturk');
@@ -29,8 +27,8 @@ var consentHTML = {
 
 // add welcome page
 var instructionsHTML = {
-  'str1' : "<p> Here's how the game will work: On each trial, you will see a sketch appear above four images of different objects. Your goal is to select the object in the set that best matches the sketch. <div><img src='../images/recog_screen_cap.png' id='example_screen'></div>",
-  'str2' : '<p> There are 8 trials in this HIT. For each correct response you make, you will receive an <b>accuracy bonus</b> of 1.5 cents. <p> In addition, you will receive a <b>speed bonus</b> (up to 0.5 cents) based on how fast you make the correct response. In other words, the faster you can select the correct object, the larger the bonus you will receive. </p> <p> However, you <i> must select the correct object to receive any bonus at all</i>, so please pay attention and above all <b> aim to be as accurate as you can</b>!</p>',
+  'str1' : "<p> Here's how the game will work: On each trial, you will see a block structure appear on the left. Your goal is to use the blocks on the right to reconstruct it using as few blocks as possible. <div><img src='../images/recog_screen_cap.png' id='example_screen'></div>",
+  'str2' : '<p> There are 8 trials in this HIT. For each correct response you make, you will receive an <b> bonus</b> of 1.5 cents.</p>',
   'str3' : "<p>If you encounter a problem or error, send us an email (sketchloop@gmail.com) and we will make sure you're compensated for your time! Please pay attention and do your best! </p><p> Note: We recommend using Chrome. We have not tested this HIT in other browsers.</p>",  
   'str4' : "<p> Once you are finished, the HIT will be automatically submitted for approval. Please know that you can only perform this HIT one time. Before we begin, please complete a brief questionnaire to show you understand how this HIT works.</p>"
 };
@@ -58,20 +56,20 @@ var previewTrial = {
 
 // define trial object with boilerplate
 function Trial () {
-  this.type = 'image-button-response';
-  this.iterationName = 'pilot4';
-  this.prompt = "Please select the object that best matches the sketch.";
+  this.type = 'block-silhouette';
+  this.iterationName = 'testing';
+  this.prompt = "Please reconstruct the tower using as few blocks as possible.";
   this.dev_mode = false;
 };
-
 
 function setupGame () {
 
   // number of trials to fetch from database is defined in ./app.js
   var socket = io.connect();
+
+  // on_finish is called at the very very end of the experiment
   var on_finish = function(data) {
     score = data.score ? data.score : score;
-    data.quizAttempts = quizAttempts;
     socket.emit('currentData', data);
   };
 
@@ -80,31 +78,20 @@ function setupGame () {
 
     // get workerId, etc. from URL (so that it can be sent to the server)
     var turkInfo = jsPsych.turk.turkInfo();    
-  
-    // insert one catch trial per block of 8 // assigns indices only within the experimental trials, excludes instructions trials
-    var catchTrialIndices = _.map(_.range(Math.floor(numTrials/8)), i => {
-      return i*8 + _.random(0, 7) ;
-    });
 
     // extra information to bind to trial list
     var additionalInfo = {
       gameID: d.gameid,
       version: d.version, // dataset version: yoked, scrambled40, scrambled10
       post_trial_gap: 1000, // add brief ITI between trials
-      num_trials : numTrials + catchTrialIndices.length,
+      num_trials : numTrials,
       on_finish : on_finish
     };
-
-    // define catch trial indicator to also bind to trial list // complements condition label of catch for this trial tyle
-    var catchTrialTrue = {catch_trial: true};
-    var catchTrialFalse = {catch_trial: false};
     
     // Bind trial data with boilerplate
     var rawTrialList = shuffleTrials ? _.shuffle(d.trials) : d.trials;
     var trials = _.flatten(_.map(rawTrialList, function(trialData, i) {
-      var trial = _.extend(new Trial, trialData, additionalInfo, catchTrialFalse, {
-        choices: _.shuffle([trialData.target.url, trialData.distractor1.url,
-        		    trialData.distractor2.url, trialData.distractor3.url]),
+      var trial = _.extend(new Trial, trialData, additionalInfo, {
         trialNum : i
       });
       return trial
