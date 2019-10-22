@@ -27,8 +27,8 @@ var consentHTML = {
 
 // add welcome page
 var instructionsHTML = {
-  'str1' : "<p> Here's how the game will work: On each trial, you will see a block structure appear on the left. Your goal is to use the blocks on the right to reconstruct it using as few blocks as possible. <div><img src='../images/task_display.png' id='example_screen'></div>",
-  'str2' : '<p> There are 8 trials in this HIT. For each correct response you make, you will receive an <b> bonus</b> of 1.5 cents.</p>',
+  'str1' : "<p> Here's how the game will work: On each trial, you will see a block structure appear on the left. Your goal is to use the blocks on the right to reconstruct it using as few blocks as possible. <div><img src='pilot/images/task_display.png' id='example_screen'></div>",
+  'str2' : '<p> There are 8 trials in this HIT. For really good reconstructions, you will receive a <b> bonus</b> of X.X cents.</p>',
   'str3' : "<p>If you encounter a problem or error, send us an email (sketchloop@gmail.com) and we will make sure you're compensated for your time! Please pay attention and do your best! </p><p> Note: We recommend using Chrome. We have not tested this HIT in other browsers.</p>",  
   'str4' : "<p> Once you are finished, the HIT will be automatically submitted for approval. Please know that you can only perform this HIT one time. Before we begin, please complete a brief questionnaire to show you understand how this HIT works.</p>"
 };
