@@ -30,8 +30,21 @@
     <script src="scripts/displayStimuli.js"></script>
     <script src="scripts/experimentEnvironment.js"></script>
 
+    <!-- Custom JsPsych Plugins -->
     <script src="js/jspsych-block-silhouette.js"></script>
     <script src="js/jspsych-instructions.js"></script>
+
+    <!-- TODO: Move all of the above stuff to setup.js once things are more in place -->
+    <script>
+      window.onload = function() {
+        setupGame();
+      }
+
+      // window.onbeforeunload = function() {
+      //   return "Data will be lost if you leave the page, are you sure?";
+      // };
+
+    </script>
 
   </head>
 
@@ -60,18 +73,6 @@
           </div>
         </div>
     </div>
-
-<!-- TODO: Move all of the above stuff to setup.js once things are more in place -->
-    <script>
-      window.onload = function() {
-        setupGame();
-      }
-
-      // window.onbeforeunload = function() {
-      //   return "Data will be lost if you leave the page, are you sure?";
-      // };
-
-    </script>
 
   </body>
 </html>
