@@ -354,7 +354,7 @@ function hideDoneButton() {
 
 function revealEnvButtons() {
     window.onload = function(){
-        var envButtons = document.getElementById("env-buttons");
+        var envButtons = document.getElemgitentById("env-buttons");
         envButtons.style.display = "inline-block";
     };
 }
