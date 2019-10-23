@@ -117,7 +117,7 @@ function setupGame () {
       timeline: trials,
       default_iti: 1000,
       show_progress_bar: true
-    });      
+    });
 
   });
 }
