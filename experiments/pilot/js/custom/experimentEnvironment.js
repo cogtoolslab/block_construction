@@ -1,7 +1,7 @@
 // Experiment frame, with Matter canvas and surrounding buttons
 
 var imagePath = '../img/';
-//const  socket = io.connect();
+const  socket = io.connect();
 
 // TEMPORARY VARIABLES TO BE READ IN
 
