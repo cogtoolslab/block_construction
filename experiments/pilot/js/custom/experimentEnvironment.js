@@ -41,7 +41,7 @@ var p5env;
 // Scaling values
 var sF = 20; //scaling factor to change appearance of blocks
 var worldScale = 2; //scaling factor within matterjs
-var stim_scale = sF;
+var stim_scale = sF; //scale of stimulus silhouette
 
 // Global Variables
 var engine;
@@ -281,39 +281,33 @@ var trial = function(condition='external') {
     //resetStimWindow()
 
 }
-
-var setupEnvironmentCurried = function(disabledEnvironment) {
-    //p5 constructor takes a one argument function, but we want to pass multiple arguments to our setup function
-    // can think of it the place to put environment variables for a given trial or stage
-    return (env) => {
-        setupEnvironment(env, disabledEnvironment)
-    }
-}
-
-var setupStimulusCurried = function() {
-    // p5 constructor takes a one argument function, but we want to pass multiple arguments to our setup function
-    // can think of it the place to put stimulus variables for a given trial
-
-    return (env) => {
+var simulate = function () {
+    p5stim = new p5((env) => {
         setupStimulus(env)
-    }
-}
-
-var simulate = function() {
-    p5stim = new p5(setupStimulusCurried(),'stimulus-canvas');
-    p5env = new p5(setupEnvironmentCurried(disabledEnvironment = true),'environment-canvas');
+    }, 'stimulus-canvas');
+    p5env = new p5((env) => {
+        setupEnvironment(env, disabledEnvironment = true)
+    }, 'environment-canvas');
     hideEnvButtons();
 }
 
-var explore = function() {
-    p5stim = new p5(setupStimulusCurried(),'stimulus-canvas');
-    p5env = new p5(setupEnvironmentCurried(disabledEnvironment = false),'environment-canvas');
+var explore = function () {
+    p5stim = new p5((env) => {
+        setupStimulus(env)
+    }, 'stimulus-canvas');
+    p5env = new p5((env) => {
+        setupEnvironment(env, disabledEnvironment = false)
+    }, 'environment-canvas');
     hideDoneButton();
 }
 
-var buildStage = function() {
-    p5stim = new p5(setupStimulusCurried(),'stimulus-canvas');
-    p5env = new p5(setupEnvironmentCurried(disabledEnvironment = false),'environment-canvas');
+var buildStage = function () {
+    p5stim = new p5((env) => {
+        setupStimulus(env)
+    }, 'stimulus-canvas');
+    p5env = new p5((env) => {
+        setupEnvironment(env, disabledEnvironment = false)
+    }, 'environment-canvas');
 }
 
 var resetEnv = function(){

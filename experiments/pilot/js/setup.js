@@ -104,7 +104,7 @@ function setupGame () {
     
     // Stick welcome trial at beginning & goodbye trial at end
     if (!turkInfo.previewMode) { 
-      trials.unshift(welcomeTrial);
+      //trials.unshift(welcomeTrial);
     } else {
       trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
     }

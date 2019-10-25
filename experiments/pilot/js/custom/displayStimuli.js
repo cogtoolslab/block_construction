@@ -2,7 +2,7 @@ var worldHeight = 8;
 var worldWidth = 8;
 
 function showStimulus(p5stim,stimulus){
-    stimulus.blocks.forEach(block => {
+    Array.prototype.forEach.call(stimulus, block => {
         showBlock(p5stim, block)
     });
 }
