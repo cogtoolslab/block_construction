@@ -13,11 +13,13 @@ function resetPressed(){
 }
 
 function donePressed(){
-    console.log('starting new trial');
+    console.log('Ending current trial');
 
     p5env.remove(); // remove environment
     p5stim.remove();
     // Update variables
+
+    jsPsych.finishTrial()
 
     blocks = [];
     blockKinds = [];
@@ -25,7 +27,7 @@ function donePressed(){
     rotated = false;
     selectedBlockKind = null;
     // setup new environment   
-    trial()
+    
 }
 
 function checkPressed(){

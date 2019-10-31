@@ -247,7 +247,7 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
 }
 
 // Sketch Two
-var setupStimulus = function (p5stim) {
+var setupStimulus = function (p5stim, stimBlocks) {
 
     p5stim.setup = function () {
         stimulusCanvas = p5stim.createCanvas(stimCanvasX,stimCanvasX);
@@ -256,7 +256,7 @@ var setupStimulus = function (p5stim) {
 
     p5stim.draw = function () {
         p5stim.background(200);
-        var testStim = {"blocks": [{"width": 2, "height": 1, "x": 1, "y": 0}, {"width": 4, "height": 2, "x": 4, "y": 0}, {"width": 4, "height": 2, "x": 0, "y": 1}, {"width": 2, "height": 1, "x": 6, "y": 2}, {"width": 2, "height": 1, "x": 0, "y": 3}, {"width": 4, "height": 2, "x": 3, "y": 3}, {"width": 1, "height": 2, "x": 7, "y": 3}, {"width": 2, "height": 1, "x": 0, "y": 4}, {"width": 2, "height": 2, "x": 0, "y": 5}, {"width": 2, "height": 1, "x": 2, "y": 5}, {"width": 2, "height": 1, "x": 5, "y": 5}, {"width": 1, "height": 2, "x": 2, "y": 6}, {"width": 1, "height": 2, "x": 3, "y": 6}, {"width": 2, "height": 2, "x": 5, "y": 6}, {"width": 2, "height": 1, "x": 0, "y": 7}]};
+        var testStim = stimBlocks;
         showStimulus(p5stim,testStim)
 
     };
@@ -281,33 +281,36 @@ var trial = function(condition='external') {
     //resetStimWindow()
 
 }
-var simulate = function () {
+var simulate = function (targetBlocks) {
     p5stim = new p5((env) => {
-        setupStimulus(env)
+        setupStimulus(env, targetBlocks)
     }, 'stimulus-canvas');
     p5env = new p5((env) => {
         setupEnvironment(env, disabledEnvironment = true)
     }, 'environment-canvas');
     hideEnvButtons();
+    return p5stim, p5env
 }
 
-var explore = function () {
+var explore = function (targetBlocks) {
     p5stim = new p5((env) => {
-        setupStimulus(env)
+        setupStimulus(env, targetBlocks)
     }, 'stimulus-canvas');
     p5env = new p5((env) => {
         setupEnvironment(env, disabledEnvironment = false)
     }, 'environment-canvas');
     hideDoneButton();
+    return p5stim, p5env
 }
 
-var buildStage = function () {
+var buildStage = function (targetBlocks) {
     p5stim = new p5((env) => {
-        setupStimulus(env)
+        setupStimulus(env,targetBlocks)
     }, 'stimulus-canvas');
     p5env = new p5((env) => {
         setupEnvironment(env, disabledEnvironment = false)
     }, 'environment-canvas');
+    return p5stim, p5env
 }
 
 var resetEnv = function(){
@@ -352,6 +355,3 @@ function revealEnvButtons() {
         envButtons.style.display = "inline-block";
     };
 }
-
-
-buildStage();
