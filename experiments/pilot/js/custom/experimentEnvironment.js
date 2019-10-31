@@ -192,11 +192,14 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
                         Sleeping.set(b.body, false);
                     });
                     
-                    blocks.push(new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated));
-                    selectedBlockKind = null;
-                    env.cursor();
-                    isPlacingObject = false;
-                    rotated = false;
+                    test_block = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated, testing_placement = true)
+                    if(test_block.can_be_placed()){
+                        blocks.push(new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated));
+                        selectedBlockKind = null;
+                        env.cursor();
+                        isPlacingObject = false;
+                    }
+                    
                     
                     /*
                     // test out sending newBlock info to server/mongodb
