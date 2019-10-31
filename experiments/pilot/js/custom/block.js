@@ -1,5 +1,5 @@
 // Wrappers for Matter Bodies that instantiate a particular BlockKind
-function Block(blockKind, x, y, rotated){
+function Block(blockKind, x, y, rotated, testing_placement = false){
 
     if(rotated){
         this.w = blockKind.h * sF;
@@ -20,10 +20,16 @@ function Block(blockKind, x, y, rotated){
         restitution: 0.001,
         sleepThreshold: 80
     }
+    if(!testing_placement){
+        this.body = Bodies.rectangle(x*worldScale,y*worldScale,this.w*worldScale,this.h*worldScale, options);
+        World.add(engine.world, this.body); 
+    }
+    else{
+        this.test_body = Bodies.rectangle(x*worldScale,y*worldScale,this.w*worldScale,this.h*worldScale);
+        this.test_body.collisionFilter.category = 3;
 
-    this.body = Bodies.rectangle(x*worldScale,y*worldScale,this.w*worldScale,this.h*worldScale, options);
-    World.add(engine.world, this.body); 
-    
+    }
+        
 
     // Display the block (maybe separate out view functions later?)
     this.show = function(env) {
@@ -47,4 +53,10 @@ function Block(blockKind, x, y, rotated){
 
     }
 
+    this.can_be_placed = function(){
+        colliding_bodies = Matter.Query.region(engine.world.bodies, this.test_body.bounds );
+        return (colliding_bodies === undefined || colliding_bodies.length == 0)
+    }
+
 }
+

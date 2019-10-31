@@ -20,7 +20,8 @@ function showBlock(p5stim, block){
     p5stim.push(); //saves the current drawing style settings and transformations
     p5stim.translate(stimX + stim_scale*x_center, stimY + stim_scale*y_center);
     p5stim.rectMode(p5stim.CENTER);
-    p5stim.noStroke()
+    //p5stim.stroke(100)
+    p5stim.noStroke();
     p5stim.fill(0);
     p5stim.rect(0,0,stim_scale*width,stim_scale*height);
     p5stim.pop();

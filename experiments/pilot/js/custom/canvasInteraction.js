@@ -15,8 +15,9 @@ function resetPressed(){
 function donePressed(){
     console.log('Ending current trial');
 
-    p5env.remove(); // remove environment
-    p5stim.remove();
+    p5env.remove(); // remove environment display
+    p5stim.remove();// remove stimulus display
+    
     // Update variables
 
     jsPsych.finishTrial()
@@ -26,6 +27,7 @@ function donePressed(){
     isPlacingObject = false;
     rotated = false;
     selectedBlockKind = null;
+    
     // setup new environment   
     
 }
