@@ -41,10 +41,10 @@ function Block(blockKind, x, y, rotated, testing_placement = false){
         env.translate(pos.x/worldScale, pos.y/worldScale);
         env.rectMode(env.CENTER);
         env.rotate(angle);
-        env.stroke(100);
-        env.fill(150);
+        env.stroke(30);
+        env.fill(30);
         if(this.body.isSleeping) {
-            env.fill(200);
+            env.fill(30);
         }
         env.rect(0,0,this.w,this.h);
 

@@ -106,9 +106,6 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
             blockKinds.push(new BlockKind(w, h, [15, 139, 141, 100]));
         });
 
-        //TEMP: first block kind is selected
-        selectedBlockKind = blockKinds[0]; //should really be first in list
-
         // Create Block Menu
         blockMenu = new BlockMenu(menuHeight, blockKinds);
 
@@ -142,7 +139,7 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
 
 
     env.draw = function() { // Called continuously by Processing JS 
-        env.background(51);
+        env.background(220);
         ground.show(env);
 
         // Menu
@@ -188,9 +185,6 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
             // if mouse in main environment
             if (env.mouseY > 0 && (env.mouseY < canvasY - menuHeight) && (env.mouseX > 0 && env.mouseX < canvasX)) {
                 if (isPlacingObject) {
-                    blocks.forEach(b => {
-                        Sleeping.set(b.body, false);
-                    });
                     
                     test_block = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated, testing_placement = true)
                     if(test_block.can_be_placed()){
@@ -198,6 +192,10 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
                         selectedBlockKind = null;
                         env.cursor();
                         isPlacingObject = false;
+
+                        blocks.forEach(b => {
+                            Sleeping.set(b.body, false);
+                        });
                     }
                     
                     
@@ -258,11 +256,12 @@ var setupStimulus = function (p5stim, stimBlocks) {
     };
 
     p5stim.draw = function () {
-        p5stim.background(200);
+        p5stim.background(220);
         var testStim = stimBlocks;
-        showStimulus(p5stim,testStim)
-
+        showStimulus(p5stim,testStim);
+        showFloor(p5stim);
     };
+
 };
 
 var trial = function(condition='external') {
