@@ -90,6 +90,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
     if (typeof trial.targetBlocks === 'undefined') {
       console.error('Required parameter "target" missing in block-silhouette');
     }
+    
+    console.log(trial);
 
     // wrapper function to show everything, call this when you've waited what you
     // reckon is long enough for the data to come back from the db
@@ -132,7 +134,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       html += '</div>'
       html += '<div class="row pt-2" id="trial-info">'
       html += '<div class="col align-text-center" id="trial-number">'
-      html += '<p>Trial 1 of 1</p>'
+      html += `<p>Trial ${trial.trialNum + 1} of ${trial.num_trials}</p>`
       html += '</div>'
       html += '</div>'
       html += '</div>'
@@ -169,7 +171,13 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // actually assign html to display_element.innerHTML
       display_element.innerHTML = html;
 
-      p5stim, p5env = buildStage(trial.targetBlocks);
+      if (trial.condition == "mental"){
+        p5stim, p5env = simulate(trial.targetBlocks);
+      }
+      else if(trial.condition == "physical"){
+        p5stim, p5env = explore(trial.targetBlocks);
+      }
+      
 
       // // add click event listener to the image response buttons
       // for (var i = 0; i < trial.choices.length; i++) {

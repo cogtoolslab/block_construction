@@ -79,7 +79,7 @@ function setupGame () {
   socket.on('onConnected', function(d) {
 
     // contents of d
-    console.log(d);
+    //console.log(d);
 
     // get workerId, etc. from URL (so that it can be sent to the server)
     var turkInfo = jsPsych.turk.turkInfo();    
@@ -111,7 +111,7 @@ function setupGame () {
     trials.push(goodbyeTrial);
 
     // print out trial list    
-    console.log(trials);
+    //console.log(trials);
       
     jsPsych.init({
       timeline: trials,
