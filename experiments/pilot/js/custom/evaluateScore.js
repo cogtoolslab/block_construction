@@ -62,3 +62,14 @@ var resize = function( img, scale ) {
     return scaled;
 }
 
+function printWorld(image, imsize) {
+  // Print the image
+  for (let row = 0; row < imsize; row++) {
+    let str = '';
+    for (let col = 0; col < imsize; col++) {
+      str += image[row * imsize + col] === 1 ? 'x' : ' ';
+    }
+    console.log(`${(row+'').padStart(3, '0')} ${str}`);
+  }
+
+}
