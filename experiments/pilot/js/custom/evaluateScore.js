@@ -103,5 +103,5 @@ function getMatchScore(canvas0, canvas1, imsize) {
   t = Array.from(targ);
   e = Array.from(env);
   score = matchScore(t,e);    
-
+  return score;
 }
