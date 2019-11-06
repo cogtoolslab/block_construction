@@ -116,6 +116,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       var html = ''
 
       html += '<div class="container pt-5" id="experiment">'
+      html += '<div class="container" id="text-bar"><p id="Condition Info">Build that structure!</p></div>'
       html += '<div class="row">'
       html += '<div class="col-md" id="stimulus-window">'
       html += '</div>'
@@ -203,10 +204,10 @@ jsPsych.plugins["block-silhouette"] = (function () {
     var widthPct = 100 // starts at 105% b/c of the 1000ms delay above before occluder disappears
     var seconds_passed = 0;
     var interval = setInterval(function () {
-      console.log(widthPct);
       seconds_passed += 1;
-      widthPct -= pct_per_sec;
-      progressBar.animate({ width: widthPct + '%' }, 1000, "linear");
+
+      //widthPct -= pct_per_sec;
+      //progressBar.animate({ width: widthPct + '%' }, 1000, "linear");
 
       if (widthPct <= 0) {
         clearInterval(interval);

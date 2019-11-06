@@ -44,7 +44,7 @@ function Block(blockKind, x, y, rotated, testing_placement = false){
         env.stroke(30);
         env.fill(30);
         if(this.body.isSleeping) {
-            env.fill(30);
+            //env.fill(100);
         }
         env.rect(0,0,this.w,this.h);
 
