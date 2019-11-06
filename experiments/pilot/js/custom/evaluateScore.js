@@ -82,10 +82,15 @@ function matchScore(im1, im2) {
   arr1 = Array.from(im1);
   arr2 = Array.from(im2);
   prod = math.dotMultiply(arr1,arr2);
-  score = math.sum(prod);
+  numerator = math.sum(prod);
+  denominator = getPixelSum(im1);
+  score = math.divide(numerator,denominator);
   return score;
 }
 
+function getPixelSum(im) {
+  return math.sum(Array.from(im))
+}
 
 function getMatchScore(canvas0, canvas1, imsize) {
   // canvas0 is ID of canvas element 0, e.g., 'defaultCanvas0'
@@ -94,11 +99,11 @@ function getMatchScore(canvas0, canvas1, imsize) {
 
   target = document.getElementById(canvas0);
   targ = extractBitmap(target,imsize);
-  printWorld(targ, imsize);
+  // printWorld(targ, imsize);
 
   environment = document.getElementById(canvas1);
   env = extractBitmap(environment,imsize);
-  printWorld(env, imsize);
+  // printWorld(env, imsize);
 
   t = Array.from(targ);
   e = Array.from(env);
