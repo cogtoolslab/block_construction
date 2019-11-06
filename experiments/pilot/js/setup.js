@@ -64,8 +64,6 @@ function Trial () {
 
 function setupGame () {
 
-  console.log('setupGame called!');  
-
   // number of trials to fetch from database is defined in ./app.js
   var socket = io.connect();
 

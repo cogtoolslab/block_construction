@@ -10,12 +10,8 @@
  **/
 
 var score = 0; // initial score set to 0
-// var numCorrect = 0; // initial num correct set to 0
-// var accuracy_bonus = 0.015; // max accuracy bonus
-// var max_time_bonus = 0.005; // max speed bonus
-// var time_limit = 20; // time limit in seconds
-// var pct_per_sec = (1/time_limit) * 100; // if time_limit==20, that means that progress bar goes down by 5% each unit time
-// var decrement_per_sec = max_time_bonus/time_limit; // how much time bonus goes down per second
+var time_limit = 5; // time limit in seconds
+var pct_per_sec = (1 / time_limit) * 100; // if time_limit==20, that means that progress bar goes down by 5% each unit time
 
 jsPsych.plugins["block-silhouette"] = (function () {
 
@@ -90,7 +86,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     if (typeof trial.targetBlocks === 'undefined') {
       console.error('Required parameter "target" missing in block-silhouette');
     }
-    
+
     console.log(trial);
 
     // wrapper function to show everything, call this when you've waited what you
@@ -134,26 +130,13 @@ jsPsych.plugins["block-silhouette"] = (function () {
       html += '</div>'
       html += '<div class="row pt-2" id="trial-info">'
       html += '<div class="col align-text-center" id="trial-number">'
+      html += '<div class="progress"><div id="progress-bar"></div></div>'
       html += `<p>Trial ${trial.trialNum + 1} of ${trial.num_trials}</p>`
       html += '</div>'
       html += '</div>'
       html += '</div>'
 
-      // html += '<div class="progress"><div id="progress-bar"></div></div>'
 
-      // // display sketch (image)
-      // html += '<div style="margin-top:20px"><img id="jspsych-block-silhouette-sketch" src="'+ trial.sketch_url +'"></img></div>';
-
-      // html += '<div id="jspsych-block-silhouette-btngroup">';
-
-      // // embed images inside the response button divs
-      // for (var i = 0; i < trial.choices.length; i++) {
-      //   var str = buttons[i].replace(/%imageURL%/g, trial.choices[i]);
-      //   var object_id = trial.choices[i].split('/').slice(-1)[0].split('.')[0]; // splice to extract only shapenetID and target_status
-      //   html += '<div class="jspsych-block-silhouette-button" style="display: inline-block; margin : 0" id="jspsych-block-silhouette-button-' + i +'" data-choice="'+object_id+'">'+str+'</div>'; //'+trial.margin_horizontal+' '+trial.margin_vertical+'"
-      // }
-
-      // html += '</div>';
 
       // // display score earned so far
       // html += '<div id="score"> <p2> bonus earned: ' + parseFloat(score).toFixed(3) + '</p2></div>'
@@ -170,14 +153,11 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       // actually assign html to display_element.innerHTML
       display_element.innerHTML = html;
-
-      if (trial.condition == "mental"){
-        p5stim, p5env = simulate(trial.targetBlocks);
-      }
-      else if(trial.condition == "physical"){
-        p5stim, p5env = explore(trial.targetBlocks);
-      }
-      
+      //wait to screen and moving onto next trial until you show feedback
+      // jsPsych.pluginAPI.setTimeout(function () {
+      //   clearP5Envs();
+      //   build();
+      // }, 5000);
 
       // // add click event listener to the image response buttons
       // for (var i = 0; i < trial.choices.length; i++) {
@@ -192,25 +172,57 @@ jsPsych.plugins["block-silhouette"] = (function () {
     // call show_display now, which includes a massive occluder that covers everything up
     show_display();
 
-    // wait for a little bit, then remove the occluder, which should be safely after everything has been rendered
-    jsPsych.pluginAPI.setTimeout(function () { $('#occluder').hide(); }, 1000);
+    var doneButton = document.getElementById("done");
+    var progressBar = $('#progress-bar');
+    var occluder = document.getElementById("occluder");
+    occluder.style.display = "none";
+
+    function pre_build() {
+      doneButton.style.display = "none";
+      // mental or physical exploration
+      if (trial.condition == "mental") {
+        p5stim, p5env = simulate(trial.targetBlocks);
+      }
+      else if (trial.condition == "physical") {
+        p5stim, p5env = explore(trial.targetBlocks);
+      }
+    }
+
+    function build() {
+      doneButton.style.display = "inline-block";
+      // actual building phase (same for everyone)
+      p5stim, p5env = buildStage(trial.targetBlocks);
+    }
+
+    pre_build();
 
     // start timing
     var start_time = Date.now();
-    var progressBar = $('#progress-bar');
     var time_bonus = 0;
+    
+    var widthPct = 100 // starts at 105% b/c of the 1000ms delay above before occluder disappears
+    var seconds_passed = 0;
+    var interval = setInterval(function () {
+      console.log(widthPct);
+      seconds_passed += 1;
+      widthPct -= pct_per_sec;
+      progressBar.animate({ width: widthPct + '%' }, 1000, "linear");
 
-    // progressBar.show();
-    // var widthPct = 100 // starts at 105% b/c of the 1000ms delay above before occluder disappears
-    // var seconds_passed = 0;
-    // var interval = setInterval(function(){
-    //   seconds_passed += 1;
-    //   widthPct -= pct_per_sec; // goes down by 5% each second
-    //   progressBar.animate({ width: widthPct + '%' }, 1000, "linear");
-    //   if (widthPct <= 0) {
-    //     clearInterval(interval);
-    //   }
-    // }, 1000);
+      if (widthPct <= 0) {
+        clearInterval(interval);
+      }
+
+      if (seconds_passed == time_limit) {
+        clearInterval(interval)
+        clearP5Envs();
+        build();
+      }
+    }, 1000);
+
+
+    // wait for a little bit, then remove the occluder, which should be safely after everything has been rendered
+    //jsPsych.pluginAPI.setTimeout(function () { $('#occluder').hide(); }, 1000);
+
 
     // store response
     var response = {
@@ -317,10 +329,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
       //  display_element.querySelector('#jspsych-block-silhouette-button-' + target_index).style.border = "8px solid #282828"      
       //  display_element.querySelector('#jspsych-block-silhouette-button-' + response_index).style.border = "8px solid #D02B16"      
       // }
-
-      // // wait to screen and moving onto next trial until you show feedback
-      // jsPsych.pluginAPI.setTimeout(function() {
-      //                   clear_display_move_on(trial_data);},2000);      
 
     };
 

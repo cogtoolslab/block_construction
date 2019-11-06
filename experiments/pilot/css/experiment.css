@@ -62,3 +62,8 @@ body {
   position: absolute;
   z-index: 12;
 }
+
+#progress-bar {
+    background-color: blue;
+    width: 100%;
+}

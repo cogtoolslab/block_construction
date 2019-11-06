@@ -99,11 +99,16 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
 
 
         // Create block kinds that will appear in environment/menu. Later on this will need to be represented in each task.
+        
+        var block_color = [15, 139, 141, 200];
+        if (disabledEnvironment) {
+            block_color = [100, 100, 100, 30];
+        }
 
         blockDims.forEach(dims => {
             w = dims[0]
             h = dims[1]
-            blockKinds.push(new BlockKind(w, h, [15, 139, 141, 100]));
+            blockKinds.push(new BlockKind(w, h, block_color));
         });
 
         // Create Block Menu
@@ -290,7 +295,6 @@ var simulate = function (targetBlocks) {
     p5env = new p5((env) => {
         setupEnvironment(env, disabledEnvironment = true)
     }, 'environment-canvas');
-    hideEnvButtons();
     return p5stim, p5env
 }
 
@@ -301,7 +305,6 @@ var explore = function (targetBlocks) {
     p5env = new p5((env) => {
         setupEnvironment(env, disabledEnvironment = false)
     }, 'environment-canvas');
-    hideDoneButton();
     return p5stim, p5env
 }
 
@@ -335,25 +338,25 @@ var resetStimWindow = function(){
 
 }
 
-function hideEnvButtons() {
-    window.onload = function(){
-        var envButtons = document.getElementById("env-buttons");
-        envButtons.style.display = "none";
-    };
+// function hideEnvButtons() {
+//     window.onload = function(){
+//         var envButtons = document.getElementById("env-buttons");
+//         envButtons.style.display = "none";
+//     };
     
-}
+// }
 
-function hideDoneButton() {
-    window.onload = function(){
-        var envButtons = document.getElementById("done");
-        envButtons.style.display = "none";
-    };
+// function hideDoneButton() {
+//     window.onload = function(){
+//         var envButtons = document.getElementById("done");
+//         envButtons.style.display = "none";
+//     };
     
-}
+// }
 
-function revealEnvButtons() {
-    window.onload = function(){
-        var envButtons = document.getElementById("env-buttons");
-        envButtons.style.display = "inline-block";
-    };
-}
+// function revealEnvButtons() {
+//     window.onload = function(){
+//         var envButtons = document.getElementById("env-buttons");
+//         envButtons.style.display = "inline-block";
+//     };
+// }
