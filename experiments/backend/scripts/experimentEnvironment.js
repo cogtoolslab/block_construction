@@ -166,7 +166,7 @@ function mouseClicked() {
                           blockHeight: newBlock['h'],
                           blockCenterX: newBlock['body']['position']['x'],
                           blockCenterY: newBlock['body']['position']['y'],
-	         	  blockVertices: vertices,
+	         	          blockVertices: vertices,
                           blockBodyProperties: blockProperties,
                         };            
             console.log('block_data',block_data);
