@@ -73,11 +73,15 @@ function printWorld(image, imsize) {
 
 }
 
+
 // various accuracy metrics
 function F1Score(im1,im2) {
 
 }
 
-function correlation(im1, im2) {
-  
+function matchScore(im1, im2) {
+  arr1 = Array.from(im1);
+  arr2 = Array.from(im2);
+  sim = math.dotMultiply(arr1,arr2);
+  return sim;
 }
