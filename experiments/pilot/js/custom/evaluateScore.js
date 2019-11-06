@@ -73,16 +73,35 @@ function printWorld(image, imsize) {
 
 }
 
-
-// various accuracy metrics
 function F1Score(im1,im2) {
-
+  // see: https://en.wikipedia.org/wiki/F1_score
 }
 
 function matchScore(im1, im2) {
+  // supersimple: multiples the two images together and sums up the result
   arr1 = Array.from(im1);
   arr2 = Array.from(im2);
   prod = math.dotMultiply(arr1,arr2);
   score = math.sum(prod);
   return score;
+}
+
+
+function getMatchScore(canvas0, canvas1, imsize) {
+  // canvas0 is ID of canvas element 0, e.g., 'defaultCanvas0'
+  // canvas1 is ID of canvas element 1, e.g., 'defaultCanvas1'
+  // imsize is size of rescaled canvas, e.g., 64
+
+  target = document.getElementById(canvas0);
+  targ = extractBitmap(target,imsize);
+  printWorld(targ, imsize);
+
+  environment = document.getElementById(canvas1);
+  env = extractBitmap(environment,imsize);
+  printWorld(env, imsize);
+
+  t = Array.from(targ);
+  e = Array.from(env);
+  score = matchScore(t,e);    
+
 }
