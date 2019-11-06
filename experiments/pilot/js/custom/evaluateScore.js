@@ -61,4 +61,4 @@ var resize = function( img, scale ) {
     scaledCtx.putImageData( scaledPixels, 0, 0 );
     return scaled;
 }
-};
+

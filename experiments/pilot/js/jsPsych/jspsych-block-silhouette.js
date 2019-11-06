@@ -285,6 +285,10 @@ jsPsych.plugins["block-silhouette"] = (function () {
       //   trial_correct = 0;
       // }
 
+      // score the built structure against the target
+
+      
+
       // gather the data to store for the trial
       if (trial.dev_mode == true) {
         console.log(trial);
