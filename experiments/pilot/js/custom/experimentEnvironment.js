@@ -50,6 +50,8 @@ var blocks = [];
 var mConstraint; // mouse constraint for moving objects. Will delete?
 var blockMenu;
 var blockKinds = [];
+var propertyList = [];
+var blockProperties = [];
 
 // Block placement variables
 var isPlacingObject = false;
@@ -193,7 +195,9 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
                     
                     test_block = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated, testing_placement = true)
                     if(test_block.can_be_placed()){
-                        blocks.push(new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated));
+                        newBlock = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated);
+                        blocks.push(newBlock);                        
+                        // blocks.push(new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated));
                         selectedBlockKind = null;
                         env.cursor();
                         isPlacingObject = false;
@@ -201,18 +205,15 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
                         blocks.forEach(b => {
                             Sleeping.set(b.body, false);
                         });
-                    }
+                    }                                        
                     
-                    
-                    /*
                     // test out sending newBlock info to server/mongodb
                     propertyList = Object.keys(newBlock.body); // extract block properties;
                     propertyList = _.pullAll(propertyList,['parts','plugin','vertices','parent']);  // omit self-referential properties that cause max call stack exceeded error
                     blockProperties = _.pick(newBlock['body'],propertyList); // pick out all and only the block body properties in the property list
 
                     // custom de-borkification
-                    vertices = _.map(newBlock.body.vertices, function(key,value) {return _.pick(key,['x','y'])});
-                    
+                    vertices = _.map(newBlock.body.vertices, function(key,value) {return _.pick(key,['x','y'])});                    
                     
                     block_data = {dbname: dbname,
                                     colname: colname,
@@ -230,7 +231,7 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
                                 };            
                     console.log('block_data',block_data);
                     socket.emit('block',block_data);
-                    */
+                    
                 }
             }
             else if (env.mouseY > 0 && (env.mouseY < canvasY) && (env.mouseX > 0 && env.mouseX < canvasX)){ //or if in menu then update selected blockkind
