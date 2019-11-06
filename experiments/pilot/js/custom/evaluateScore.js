@@ -24,7 +24,6 @@ function extractBitmap(sketch,imsize) {
   return binaryImage;
 }
 
-
 var resize = function( img, scale ) {
     // Takes an image and a scaling factor and returns the scaled image
 
@@ -72,4 +71,13 @@ function printWorld(image, imsize) {
     console.log(`${(row+'').padStart(3, '0')} ${str}`);
   }
 
+}
+
+// various accuracy metrics
+function F1Score(im1,im2) {
+
+}
+
+function correlation(im1, im2) {
+  
 }
