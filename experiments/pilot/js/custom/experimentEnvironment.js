@@ -228,7 +228,8 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
                                 blockCenterX: newBlock['body']['position']['x'],
                                 blockCenterY: newBlock['body']['position']['y'],
                                 blockVertices: vertices,
-                                blockBodyProperties: blockProperties,
+                                blockBodyProperties: blockProperties
+                                // TODO: add WORLD information
                                 };            
                     console.log('block_data',block_data);
                     socket.emit('block',block_data);
