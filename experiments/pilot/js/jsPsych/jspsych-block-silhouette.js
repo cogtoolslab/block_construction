@@ -9,7 +9,9 @@
  * 
  **/
 
-var score = 0; // initial score set to 0
+var rawScore = 0; // initial raw score set to 0
+var currentBonus = 0; // initial bonus set to 0
+var cumulativeBonus = 0; // cumulative bonus initialized at 0
 var explore_time_limit = 5; // time limit in seconds
 var build_time_limit = 10; // time limit in seconds
 //var pct_per_sec = (1 / explore_time_limit) * 100; // if time_limit==20, that means that progress bar goes down by 5% each unit time
@@ -118,7 +120,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       html += '<div class="container pt-1" id="experiment">'
       html += '<div class="container" id="text-bar">'
-      html += '<p id="bonus-meter">Bonus: $0.00 </p>'
+      html += `<p id="bonus-meter">Bonus: ${cumulativeBonus.toFixed(2)} </p>`
       html += '<p id="condition-heading">Build that structure!</p>'
       html += '<p id="timer-text">00:00</p>'
       html += '</div>'

@@ -215,6 +215,11 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
                     // custom de-borkification
                     vertices = _.map(newBlock.body.vertices, function(key,value) {return _.pick(key,['x','y'])});                    
                     
+                    // compute raw score
+                    currScore = getScore('defaultCanvas0', 'defaultCanvas1', 64);
+                    console.log('current F1 score = ',currScore);
+                    cumulativeBonus += 0.01; // test things out
+
                     block_data = {dbname: dbname,
                                 colname: colname,
                                 iterationName: iterationName,
@@ -232,8 +237,6 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
                                 // TODO: add WORLD information
                                 };            
                     console.log('block_data',block_data);
-                    currScore = getScore('defaultCanvas0', 'defaultCanvas1', 64);
-                    console.log('current F1 score = ',currScore);
                     socket.emit('block',block_data);
                     
                 }
