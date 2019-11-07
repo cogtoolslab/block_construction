@@ -117,6 +117,29 @@ function F1Score(im1,im2) {
   return score
 }
 
+function getScore(canvas0, canvas1, imsize) {
+  // canvas0 is ID of canvas element 0, e.g., 'defaultCanvas0'
+  // canvas1 is ID of canvas element 1, e.g., 'defaultCanvas1'
+  // imsize is size of rescaled canvas, e.g., 64
+
+  target = document.getElementById(canvas0);
+  targ = extractBitmap(target,imsize);
+  // printWorld(targ, imsize);
+
+  reconstruction = document.getElementById(canvas1);
+  recon = extractBitmap(reconstruction,imsize);
+  // printWorld(env, imsize);
+
+  t = Array.from(targ);
+  r = Array.from(recon);
+
+  score = F1Score(t,r);
+  return score;
+
+}
+
+// TODO: Get rid of below ... 
+
 function matchScore(im1, im2) {
   // supersimple: multiplies the two images together and sums up the result
   // im1 is the target image
@@ -129,7 +152,6 @@ function matchScore(im1, im2) {
   score = math.divide(numerator,denominator);
   return score;
 }
-
 
 function getMatchScore(canvas0, canvas1, imsize) {
   // canvas0 is ID of canvas element 0, e.g., 'defaultCanvas0'
