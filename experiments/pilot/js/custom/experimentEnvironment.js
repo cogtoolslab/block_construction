@@ -216,20 +216,24 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
                     vertices = _.map(newBlock.body.vertices, function(key,value) {return _.pick(key,['x','y'])});                    
                     
                     block_data = {dbname: dbname,
-                                    colname: colname,
-                                    iterationName: iterationName,
-                                    dataType: 'block',
-                                    gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
-                                    time: performance.now(), // time since session began
-                                    timeAbsolute: Date.now(),  
-                                    blockWidth: newBlock['w'],
-                                    blockHeight: newBlock['h'],
-                                    blockCenterX: newBlock['body']['position']['x'],
-                                    blockCenterY: newBlock['body']['position']['y'],
-                            blockVertices: vertices,
-                                    blockBodyProperties: blockProperties,
+                                colname: colname,
+                                iterationName: iterationName,
+                                dataType: 'block',
+                                timePoint: 'initial', // initial block placement decision vs. final block resting position.
+                                gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
+                                time: performance.now(), // time since session began
+                                timeAbsolute: Date.now(),  
+                                blockWidth: newBlock['w'],
+                                blockHeight: newBlock['h'],
+                                blockCenterX: newBlock['body']['position']['x'],
+                                blockCenterY: newBlock['body']['position']['y'],
+                                blockVertices: vertices,
+                                blockBodyProperties: blockProperties
+                                // TODO: add WORLD information
                                 };            
                     console.log('block_data',block_data);
+                    currMatchScore = getMatchScore('defaultCanvas0', 'defaultCanvas1', 64);
+                    console.log('current match score = ',currMatchScore);
                     socket.emit('block',block_data);
                     
                 }
