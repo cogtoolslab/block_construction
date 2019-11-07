@@ -129,8 +129,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
       html += '</div>'
       html += '<div class="row pt-2" id="experiment-button-col">'
       html += '<div class="col-auto ml-auto button-col" id="env-buttons">'
-      html += '<button type="button" class="btn btn-success" id="done" value="done" onclick="donePressed();">Done</button>'
-      html += '<button type="button" class="btn btn-danger" id="reset" value="reset" onclick="resetPressed();">Reset</button>'
+      html += '<button type="button" class="btn btn-success" id="done" value="done">Done</button>'
+      html += '<button type="button" class="btn btn-danger" id="reset" value="reset">Reset</button>'
       html += '</div>'
       html += '</div>'
       html += '<div class="row pt-2" id="trial-info">'
@@ -148,7 +148,13 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // html += '<div id="trial-counter"> <p2> trial ' + (parseInt(trial.trialNum)+parseInt(1)).toString() + ' of ' + trial.num_trials + '</p2></div>'
 
       // introduce occluder to make the inter-trial transitions less jarring
-      html += '<div id="occluder"> </div>'
+      html += '<div class="occluder" id="occluder-trial">'
+      html += '<div><p>Ready for the next trial? Click anywhere to continue.</p></div>'
+      html += '</div>'
+
+      html += '<div class="occluder" id="occluder-condition">'
+      html += '<div><p>Now build the structure!</p></div>'
+      html += '</div>'
 
       // // display helpful info during debugging
       // if (trial.dev_mode==true) {
@@ -174,24 +180,29 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     }
 
+    var finished_trial = false;
     // call show_display now, which includes a massive occluder that covers everything up
     show_display();
 
     // get html elements
-    var doneButton = document.getElementById("done");
-    var occluder = document.getElementById("occluder");
+    var done_button = document.getElementById("done");
+    var reset_button = document.getElementById("reset");
+    var occluder_trial = document.getElementById("occluder-trial");
+    var occluder_condition = document.getElementById("occluder-condition");
     var condition_heading = document.getElementById("condition-heading");
     var timer_text = document.getElementById("timer-text");
     var env_divs = document.getElementsByClassName("col-md env-div");
     var progressBar = $('#progress-bar');
 
-    occluder.style.display = "none";
+    //occluder_trial.style.display = "none";
+    occluder_condition.style.display = "none";
 
 
     function pre_build() {
-      doneButton.style.display = "none";
+      done_button.style.display = "none";
       // mental or physical exploration
       if (trial.condition == "mental") {
+        reset_button.style.display = "none";
         p5stim, p5env = simulate(trial.targetBlocks); //create p5 instances for this trial phase
         //Update trial appearance 
         condition_heading.textContent = "Think about how you will build the structure"
@@ -215,15 +226,16 @@ jsPsych.plugins["block-silhouette"] = (function () {
       p5stim, p5env = buildStage(trial.targetBlocks); //create p5 instances for this trial phase
 
       //Update trial appearance 
-      doneButton.style.display = "inline-block";
+      done_button.style.display = "inline-block";
+      reset_button.style.display = "inline-block";
       condition_heading.textContent = "Now build that structure!";
       Array.prototype.forEach.call(env_divs, env_div => {
         env_div.style.backgroundColor = "#75E559";
       });
     }
 
-    pre_build();
 
+    var timers = [];
     // start timing
     var start_time = Date.now();
     var time_bonus = 0;
@@ -231,42 +243,98 @@ jsPsych.plugins["block-silhouette"] = (function () {
     var widthPct = 100 // starts at 105% b/c of the 1000ms delay above before occluder disappears
     var seconds_passed = 0;
 
-    function timer(time_left, callback = null){interval = setInterval(function () {
-      seconds_passed += 1;
+    function timer(time_left, callback = null) {
+      interval = setInterval(function () {
+        timers.push(interval);
+        seconds_passed += 1;
+
+        //widthPct -= pct_per_sec;
+        //progressBar.animate({ width: widthPct + '%' }, 1000, "linear");
+
+        // if (widthPct <= 0) {
+        //   clearInterval(interval);
+        // }
+
+        time_left -= 1;
+        minutes = parseInt(time_left / 60, 10);
+        seconds = parseInt(time_left % 60, 10);
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+        timer_text.textContent = minutes + ':' + seconds;
+
+        if (time_left < 1) {
+          clearInterval(interval)
+          callback();
+        }
+      }, 1000);
+    }
+
+    function resetPressed() {
+      /* Called to clear building environment window. 
+      Works by resetting variables then building a new p5 instance.
+      */
+      resetEnv();
+      p5env = new p5(setupEnvironment, 'environment-canvas');
+      // update reset counter
+
+    }
+
+    function donePressed() {
+      finished_trial = true;
+      occluder_trial.style.display = "block"; // show occluder
       
-      //widthPct -= pct_per_sec;
-      //progressBar.animate({ width: widthPct + '%' }, 1000, "linear");
+      clearP5Envs();
+      clear_display_move_on(trial_data); // Move on jsPsych
+    }
 
-      // if (widthPct <= 0) {
-      //   clearInterval(interval);
-      // }
+    function clearP5Envs() {
+      // Removes P5 environments to start new experiment phase or trial
 
-      time_left -= 1;
+      p5env.remove(); // remove environment display
+      p5stim.remove();// remove stimulus display
 
-      minutes = parseInt(time_left / 60, 10);
-      seconds = parseInt(time_left % 60, 10);
+      blocks = [];
+      blockKinds = [];
+      isPlacingObject = false;
+      rotated = false;
+      selectedBlockKind = null;
 
-      minutes = minutes < 10 ? "0" + minutes : minutes;
-      seconds = seconds < 10 ? "0" + seconds : seconds;
+    }
+    // Set up button event listeners
+    done_button.addEventListener('click', donePressed);
+    reset_button.addEventListener('click', resetPressed);
 
-      timer_text.textContent = minutes + ':' + seconds;
+    // Start the experiment!
 
-      if (time_left < 1) {
-        clearInterval(interval)
+    // EXPLORATION PHASE
+    pre_build(); //Setup exploration phase
+    occluder_trial.addEventListener('click', event => { //SHOW OCCLUDER
+      occluder_trial.style.display = "none";
+
+      timer(explore_time_limit, function () { //set timer for exploration phase
+        //START TIMERS?
         clearP5Envs();
-        callback();
-      }
-    }, 1000);}
 
-    timer(explore_time_limit, function(){
-      build();
-      timer(build_time_limit, function(){
-        //end trial //MAKE SURE DATA SENT HERE
-        clearP5Envs();
-        // Move on jsPsych
-        jsPsych.finishTrial();
-      }); 
+        // BUILD PHASE
+        build(); // Setup build phase
+        occluder_condition.style.display = "block";
+
+        occluder_condition.addEventListener('click', event => { //SHOW OCCLUDER
+          occluder_condition.style.display = "none";
+          
+          //START TIMERS?
+          timer(build_time_limit, function () { //set timer for build phase
+            //end trial //MAKE SURE DATA SENT HERE
+            occluder_trial.style.display = "block";
+            clearP5Envs(); // Clear everything in P5
+
+            if(!finished_trial){
+              clear_display_move_on();  // Move on jsPsych
+            }
+          });
+        });
       });
+    });
 
 
     // wait for a little bit, then remove the occluder, which should be safely after everything has been rendered
@@ -335,7 +403,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       // score the built structure against the target
 
-      
+
 
       // gather the data to store for the trial
       if (trial.dev_mode == true) {
@@ -387,6 +455,13 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     // 
     function clear_display_move_on(trial_data) {
+
+      //clear all timers
+      timers.forEach(interval => {
+        console.log('clearing interval');
+        clearInterval(interval);
+      });
+
       // clear the display
       display_element.innerHTML = '';
 
