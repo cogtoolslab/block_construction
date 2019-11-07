@@ -118,6 +118,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       html += '<div class="container pt-1" id="experiment">'
       html += '<div class="container" id="text-bar">'
+      html += '<p id="bonus-meter">Bonus: $0.00 </p>'
       html += '<p id="condition-heading">Build that structure!</p>'
       html += '<p id="timer-text">00:00</p>'
       html += '</div>'
