@@ -73,12 +73,54 @@ function printWorld(image, imsize) {
 
 }
 
+function getPixelSum(im) {
+  return math.sum(Array.from(im))
+}
+
+function getPrecision(im1, im2) {
+  // im1 is the target image
+  // im2 is the reconstruction
+  arr1 = Array.from(im1);
+  arr2 = Array.from(im2);
+  prod = math.dotMultiply(arr1,arr2);
+  fp = math.subtract(arr2,prod); // false positives = reconstruction minus matches
+  numerator = math.sum(prod);  
+  denominator = math.sum(numerator,fp);
+  score = math.divide(numerator,denominator);
+  return score;
+} 
+
+function getRecall(im1, im2) {
+  // im1 is the target image
+  // im2 is the reconstruction  
+  arr1 = Array.from(im1);
+  arr2 = Array.from(im2);
+  prod = math.dotMultiply(arr1,arr2);
+  fn = math.subtract(arr1,prod); // false negatives = all target pixels minus matches
+  numerator = math.sum(prod);
+  denominator = math.sum(prod,fn);
+  score = math.divide(numerator,denominator);
+  return score;  
+} 
+
 function F1Score(im1,im2) {
+  // im1 is the target image
+  // im2 is the reconstruction  
   // see: https://en.wikipedia.org/wiki/F1_score
+  // f1 = 2 * (precision * recall) / (precision + recall)
+  recall = getRecall(im1,im2);
+  precision = getPrecision(im1,im2);
+  numerator = math.multiply(precision, recall);
+  denominator = math.sum(precision, recall);
+  quotient = math.divide(numerator,denominator);
+  score = math.multiply(2,quotient);
+  return score
 }
 
 function matchScore(im1, im2) {
-  // supersimple: multiples the two images together and sums up the result
+  // supersimple: multiplies the two images together and sums up the result
+  // im1 is the target image
+  // im2 is the reconstruction    
   arr1 = Array.from(im1);
   arr2 = Array.from(im2);
   prod = math.dotMultiply(arr1,arr2);
@@ -88,9 +130,6 @@ function matchScore(im1, im2) {
   return score;
 }
 
-function getPixelSum(im) {
-  return math.sum(Array.from(im))
-}
 
 function getMatchScore(canvas0, canvas1, imsize) {
   // canvas0 is ID of canvas element 0, e.g., 'defaultCanvas0'
