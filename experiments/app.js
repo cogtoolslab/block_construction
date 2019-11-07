@@ -16,10 +16,10 @@ var researchers = ['A4SSYO0HDVD4E', 'A1BOIDKD33QSDK', 'A1MMCS8S8CTWKU','A1MMCS8S
 var blockResearcher = false;
 
 if(argv.gameport) {
-  let gameport = argv.gameport;
+  var gameport = argv.gameport;
   console.log('using port ' + gameport);
 } else {
-  gameport = 8888;
+  var gameport = 8888;
   console.log('no gameport specified: using 8888\nUse the --gameport flag to change');
 }
 
