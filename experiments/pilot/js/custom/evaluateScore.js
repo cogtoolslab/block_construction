@@ -70,7 +70,6 @@ function printWorld(image, imsize) {
     }
     console.log(`${(row+'').padStart(3, '0')} ${str}`);
   }
-
 }
 
 function getPixelSum(im) {
@@ -99,7 +98,7 @@ function getRecall(im1, im2) {
   fn = math.subtract(arr1,prod); // false negatives = all target pixels minus matches
   numerator = math.sum(prod);
   denominator = math.sum(math.sum(prod),math.sum(fn));
-  score = math.divide(numerator,denominator);
+  score = math.divide(numerator,denominator);  
   return score;  
 } 
 
