@@ -17,6 +17,19 @@ body {
     margin-right: 15px;
 }
 
+
+#condition-heading {
+    display: inline-block;
+    text-align: center;
+}
+
+#timer-text {
+    display: block;
+    float: right;
+    text-align: right;
+}
+
+
 #defaultCanvas0, #defaultCanvas1 {
     padding-left: 0;
     padding-right: 0;
@@ -25,14 +38,18 @@ body {
     display: block;
 }
 
-#stimulus-window {
+.env-div {
+    background-color: aquamarine;
+}
+
+/* #stimulus-window {
     background-color: aquamarine;
 
-}
+} */
 
-#environment-window {
+/* #environment-window {
     background-color: bisque;
-}
+} */
 
 #experiment .col-md{
     padding: 20px;
