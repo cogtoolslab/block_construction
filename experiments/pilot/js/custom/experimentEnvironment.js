@@ -232,8 +232,8 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
                                 // TODO: add WORLD information
                                 };            
                     console.log('block_data',block_data);
-                    currMatchScore = getMatchScore('defaultCanvas0', 'defaultCanvas1', 64);
-                    console.log('current match score = ',currMatchScore);
+                    currScore = getScore('defaultCanvas0', 'defaultCanvas1', 64);
+                    console.log('current F1 score = ',currScore);
                     socket.emit('block',block_data);
                     
                 }

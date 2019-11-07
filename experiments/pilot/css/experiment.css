@@ -29,6 +29,11 @@ body {
     text-align: right;
 }
 
+#bonus-meter {
+    display: block;
+    float: left;
+    text-align: left;
+}
 
 #defaultCanvas0, #defaultCanvas1 {
     padding-left: 0;
