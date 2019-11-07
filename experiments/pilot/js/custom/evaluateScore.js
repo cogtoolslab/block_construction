@@ -85,7 +85,7 @@ function getPrecision(im1, im2) {
   prod = math.dotMultiply(arr1,arr2);
   fp = math.subtract(arr2,prod); // false positives = reconstruction minus matches
   numerator = math.sum(prod);  
-  denominator = math.sum(numerator,fp);
+  denominator = math.sum(numerator,math.sum(fp));
   score = math.divide(numerator,denominator);
   return score;
 } 
@@ -98,7 +98,7 @@ function getRecall(im1, im2) {
   prod = math.dotMultiply(arr1,arr2);
   fn = math.subtract(arr1,prod); // false negatives = all target pixels minus matches
   numerator = math.sum(prod);
-  denominator = math.sum(prod,fn);
+  denominator = math.sum(math.sum(prod),math.sum(fn));
   score = math.divide(numerator,denominator);
   return score;  
 } 
