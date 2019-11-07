@@ -10,8 +10,9 @@
  **/
 
 var score = 0; // initial score set to 0
-var time_limit = 5; // time limit in seconds
-var pct_per_sec = (1 / time_limit) * 100; // if time_limit==20, that means that progress bar goes down by 5% each unit time
+var explore_time_limit = 5; // time limit in seconds
+var build_time_limit = 10; // time limit in seconds
+//var pct_per_sec = (1 / explore_time_limit) * 100; // if time_limit==20, that means that progress bar goes down by 5% each unit time
 
 jsPsych.plugins["block-silhouette"] = (function () {
 
@@ -115,12 +116,15 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       var html = ''
 
-      html += '<div class="container pt-5" id="experiment">'
-      html += '<div class="container" id="text-bar"><p id="Condition Info">Build that structure!</p></div>'
-      html += '<div class="row">'
-      html += '<div class="col-md" id="stimulus-window">'
+      html += '<div class="container pt-1" id="experiment">'
+      html += '<div class="container" id="text-bar">'
+      html += '<p id="condition-heading">Build that structure!</p>'
+      html += '<p id="timer-text">00:00</p>'
       html += '</div>'
-      html += '<div class="col-md" id="environment-window">'
+      html += '<div class="row">'
+      html += '<div class="col-md env-div" id="stimulus-window">'
+      html += '</div>'
+      html += '<div class="col-md env-div" id="environment-window">'
       html += '</div>'
       html += '</div>'
       html += '<div class="row pt-2" id="experiment-button-col">'
@@ -131,7 +135,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       html += '</div>'
       html += '<div class="row pt-2" id="trial-info">'
       html += '<div class="col align-text-center" id="trial-number">'
-      html += '<div class="progress"><div id="progress-bar"></div></div>'
+      //html += '<div class="progress"><div id="progress-bar"></div></div>'
       html += `<p>Trial ${trial.trialNum + 1} of ${trial.num_trials}</p>`
       html += '</div>'
       html += '</div>'
@@ -173,26 +177,49 @@ jsPsych.plugins["block-silhouette"] = (function () {
     // call show_display now, which includes a massive occluder that covers everything up
     show_display();
 
+    // get html elements
     var doneButton = document.getElementById("done");
-    var progressBar = $('#progress-bar');
     var occluder = document.getElementById("occluder");
+    var condition_heading = document.getElementById("condition-heading");
+    var timer_text = document.getElementById("timer-text");
+    var env_divs = document.getElementsByClassName("col-md env-div");
+    var progressBar = $('#progress-bar');
+
     occluder.style.display = "none";
+
 
     function pre_build() {
       doneButton.style.display = "none";
       // mental or physical exploration
       if (trial.condition == "mental") {
-        p5stim, p5env = simulate(trial.targetBlocks);
+        p5stim, p5env = simulate(trial.targetBlocks); //create p5 instances for this trial phase
+        //Update trial appearance 
+        condition_heading.textContent = "Think about how you will build the structure"
+        Array.prototype.forEach.call(env_divs, env_div => {
+          env_div.style.backgroundColor = "#FE5D26";
+        });
+
       }
       else if (trial.condition == "physical") {
-        p5stim, p5env = explore(trial.targetBlocks);
+        p5stim, p5env = explore(trial.targetBlocks); //create p5 instances for this trial phase
+        //Update trial appearance 
+        condition_heading.textContent = "Practice building the structure";
+        Array.prototype.forEach.call(env_divs, env_div => {
+          env_div.style.backgroundColor = "#6DEBFF";
+        });
       }
     }
 
     function build() {
-      doneButton.style.display = "inline-block";
       // actual building phase (same for everyone)
-      p5stim, p5env = buildStage(trial.targetBlocks);
+      p5stim, p5env = buildStage(trial.targetBlocks); //create p5 instances for this trial phase
+
+      //Update trial appearance 
+      doneButton.style.display = "inline-block";
+      condition_heading.textContent = "Now build that structure!";
+      Array.prototype.forEach.call(env_divs, env_div => {
+        env_div.style.backgroundColor = "#75E559";
+      });
     }
 
     pre_build();
@@ -200,25 +227,46 @@ jsPsych.plugins["block-silhouette"] = (function () {
     // start timing
     var start_time = Date.now();
     var time_bonus = 0;
-    
+
     var widthPct = 100 // starts at 105% b/c of the 1000ms delay above before occluder disappears
     var seconds_passed = 0;
-    var interval = setInterval(function () {
-      seconds_passed += 1;
 
+    function timer(time_left, callback = null){interval = setInterval(function () {
+      seconds_passed += 1;
+      
       //widthPct -= pct_per_sec;
       //progressBar.animate({ width: widthPct + '%' }, 1000, "linear");
 
-      if (widthPct <= 0) {
-        clearInterval(interval);
-      }
+      // if (widthPct <= 0) {
+      //   clearInterval(interval);
+      // }
 
-      if (seconds_passed == time_limit) {
+      time_left -= 1;
+
+      minutes = parseInt(time_left / 60, 10);
+      seconds = parseInt(time_left % 60, 10);
+
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      seconds = seconds < 10 ? "0" + seconds : seconds;
+
+      timer_text.textContent = minutes + ':' + seconds;
+
+      if (time_left < 1) {
         clearInterval(interval)
         clearP5Envs();
-        build();
+        callback();
       }
-    }, 1000);
+    }, 1000);}
+
+    timer(explore_time_limit, function(){
+      build();
+      timer(build_time_limit, function(){
+        //end trial //MAKE SURE DATA SENT HERE
+        clearP5Envs();
+        // Move on jsPsych
+        jsPsych.finishTrial();
+      }); 
+      });
 
 
     // wait for a little bit, then remove the occluder, which should be safely after everything has been rendered
@@ -360,6 +408,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
         end_trial();
       }, trial.trial_duration);
     }
+
+
 
   };
 
