@@ -108,12 +108,15 @@ function F1Score(im1,im2) {
   // im2 is the reconstruction  
   // see: https://en.wikipedia.org/wiki/F1_score
   // f1 = 2 * (precision * recall) / (precision + recall)
-  recall = getRecall(im1,im2);
-  precision = getPrecision(im1,im2);
-  numerator = math.multiply(precision, recall);
-  denominator = math.sum(precision, recall);
-  quotient = math.divide(numerator,denominator);
-  score = math.multiply(2,quotient);
+    recall = getRecall(im1,im2);
+    precision = getPrecision(im1,im2);
+    numerator = math.multiply(precision, recall);
+    denominator = math.sum(precision, recall);
+    quotient = math.divide(numerator,denominator);
+    //console.log('recall = ', recall);
+    //console.log('precision = ', precision);
+    //console.log('quotient = ', quotient);  
+    score = math.multiply(2,quotient);
   return score
 }
 
