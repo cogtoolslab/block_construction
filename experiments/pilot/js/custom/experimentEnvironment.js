@@ -1,7 +1,7 @@
 // Experiment frame, with Matter canvas and surrounding buttons
 
 var imagePath = '../img/';
-const  socket = io.connect();
+const socket = io.connect();
 
 // TEMPORARY VARIABLES TO BE READ IN
 
@@ -31,8 +31,8 @@ const iterationName = 'testing';
 // Stimulus Display
 var stimCanvasX = canvasX;
 var stimCanvasY = canvasY;
-var stimX = stimCanvasX/2;
-var stimY = stimCanvasY/2;
+var stimX = stimCanvasX / 2;
+var stimY = stimCanvasY / 2;
 
 // p5 instances
 var p5stim;
@@ -76,7 +76,7 @@ var blockDims = [
 var setupEnvironment = function (env, disabledEnvironment = false) {
 
     // Processing JS Function, defines initial environment.
-    env.setup = function() {
+    env.setup = function () {
 
         // Create Experiment Canvas
         environmentCanvas = env.createCanvas(canvasX, canvasY); // creates a P5 canvas (which is a wrapper for an HTML canvas)
@@ -101,7 +101,7 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
 
 
         // Create block kinds that will appear in environment/menu. Later on this will need to be represented in each task.
-        
+
         var block_color = [15, 139, 141, 200];
         if (disabledEnvironment) {
             block_color = [100, 100, 100, 30];
@@ -117,7 +117,7 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
         blockMenu = new BlockMenu(menuHeight, blockKinds);
 
         // Add things to the physics engine world
-        ground = new Boundary(canvasX/2, (environmentCanvas.height - menuHeight)*1.15, canvasX*1.5, canvasY/3);
+        ground = new Boundary(canvasX / 2, (environmentCanvas.height - menuHeight) * 1.15, canvasX * 1.5, canvasY / 3);
         //box1 = new Box(200, 100, 30, 30);
 
         // Runner- use instead of line above if changes to game loop needed
@@ -145,7 +145,7 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
     }
 
 
-    env.draw = function() { // Called continuously by Processing JS 
+    env.draw = function () { // Called continuously by Processing JS 
         env.background(220);
         ground.show(env);
 
@@ -177,12 +177,12 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
             sleeping = blocks.filter((block) => block.body.isSleeping); // Would rather not be calculating this constantly.. update to eventlistener?
             allSleeping = sleeping.length == blocks.length;
 
-            selectedBlockKind.showGhost(env,env.mouseX, env.mouseY, rotated, diabled = !allSleeping);
+            selectedBlockKind.showGhost(env, env.mouseX, env.mouseY, rotated, diabled = !allSleeping);
         }
 
     }
 
-    env.mouseClicked = function() {
+    env.mouseClicked = function () {
         //check to see if in env
 
         /* //Is clicking in top right of environment
@@ -190,9 +190,9 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
             rotated = !rotated;
         }
         */
-        
-        if (!disabledEnvironment){ //environment will be disabled in some conditions
-            
+
+        if (!disabledEnvironment) { //environment will be disabled in some conditions
+
             // if mouse in main environment
             if (env.mouseY > 0 && (env.mouseY < canvasY - menuHeight) && (env.mouseX > 0 && env.mouseX < canvasX)) {
                 if (isPlacingObject) {
@@ -200,12 +200,12 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
                     sleeping = blocks.filter((block) => block.body.isSleeping);
                     allSleeping = sleeping.length == blocks.length;
 
-                    if(allSleeping){
+                    if (allSleeping) {
                         //test whether there is a block underneath this area
                         test_block = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated, testing_placement = true);
-                        if(test_block.can_be_placed()){
+                        if (test_block.can_be_placed()) {
                             newBlock = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated);
-                            blocks.push(newBlock);                        
+                            blocks.push(newBlock);
                             // blocks.push(new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated));
                             selectedBlockKind = null;
                             env.cursor();
@@ -213,26 +213,24 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
                             blocks.forEach(b => {
                                 Sleeping.set(b.body, false);
                             });
-                        }  
 
-                    }                                      
-                    
-                    // test out sending newBlock info to server/mongodb
-                    propertyList = Object.keys(newBlock.body); // extract block properties;
-                    propertyList = _.pullAll(propertyList,['parts','plugin','vertices','parent']);  // omit self-referential properties that cause max call stack exceeded error
-                    blockProperties = _.pick(newBlock['body'],propertyList); // pick out all and only the block body properties in the property list
+                            // test out sending newBlock info to server/mongodb
+                            propertyList = Object.keys(newBlock.body); // extract block properties;
+                            propertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
+                            blockProperties = _.pick(newBlock['body'], propertyList); // pick out all and only the block body properties in the property list
 
-                    // custom de-borkification
-                    vertices = _.map(newBlock.body.vertices, function(key,value) {return _.pick(key,['x','y'])});                    
-                    
-                    block_data = {dbname: dbname,
+                            // custom de-borkification
+                            vertices = _.map(newBlock.body.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
+
+                            block_data = {
+                                dbname: dbname,
                                 colname: colname,
                                 iterationName: iterationName,
                                 dataType: 'block',
                                 timePoint: 'initial', // initial block placement decision vs. final block resting position.
                                 gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
                                 time: performance.now(), // time since session began
-                                timeAbsolute: Date.now(),  
+                                timeAbsolute: Date.now(),
                                 blockWidth: newBlock['w'],
                                 blockHeight: newBlock['h'],
                                 blockCenterX: newBlock['body']['position']['x'],
@@ -240,21 +238,26 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
                                 blockVertices: vertices,
                                 blockBodyProperties: blockProperties
                                 // TODO: add WORLD information
-                                };            
-                    console.log('block_data',block_data);
-                    currScore = getScore('defaultCanvas0', 'defaultCanvas1', 64);
-                    console.log('current F1 score = ',currScore);
-                    socket.emit('block',block_data);
-                    
+                            };
+                            console.log('block_data', block_data);
+                            currScore = getScore('defaultCanvas0', 'defaultCanvas1', 64);
+                            console.log('current F1 score = ', currScore);
+                            socket.emit('block', block_data);
+
+                        }
+
+                    }
+
+
                 }
             }
-            else if (env.mouseY > 0 && (env.mouseY < canvasY) && (env.mouseX > 0 && env.mouseX < canvasX)){ //or if in menu then update selected blockkind
+            else if (env.mouseY > 0 && (env.mouseY < canvasY) && (env.mouseX > 0 && env.mouseX < canvasX)) { //or if in menu then update selected blockkind
 
                 // is mouse clicking a block?
                 newSelectedBlockKind = blockMenu.hasClickedButton(env.mouseX, env.mouseY, selectedBlockKind);
                 if (newSelectedBlockKind) {
                     if (newSelectedBlockKind == selectedBlockKind) {
-                        
+
                         //rotated = !rotated; // uncomment to allow rotation by re-selecting block from menu
                     } else {
                         rotated = false;
@@ -262,7 +265,7 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
                     selectedBlockKind = newSelectedBlockKind;
                     isPlacingObject = true;
                 }
-            
+
             }
         }
     }
@@ -273,24 +276,24 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
 var setupStimulus = function (p5stim, stimBlocks) {
 
     p5stim.setup = function () {
-        stimulusCanvas = p5stim.createCanvas(stimCanvasX,stimCanvasX);
+        stimulusCanvas = p5stim.createCanvas(stimCanvasX, stimCanvasX);
         stimulusCanvas.parent('stimulus-window'); // add parent div 
     };
 
     p5stim.draw = function () {
         p5stim.background(220);
         var testStim = stimBlocks;
-        showStimulus(p5stim,testStim);
+        showStimulus(p5stim, testStim);
         showFloor(p5stim);
     };
 
 };
 
-var trial = function(condition='external') {
-    if (condition=='external'){
+var trial = function (condition = 'external') {
+    if (condition == 'external') {
         explore()
     }
-    else if (condition=='internal'){
+    else if (condition == 'internal') {
         simulate()
     }
     else {
@@ -327,7 +330,7 @@ var explore = function (targetBlocks) {
 
 var buildStage = function (targetBlocks) {
     p5stim = new p5((env) => {
-        setupStimulus(env,targetBlocks)
+        setupStimulus(env, targetBlocks)
     }, 'stimulus-canvas');
     p5env = new p5((env) => {
         setupEnvironment(env, disabledEnvironment = false)
@@ -335,11 +338,11 @@ var buildStage = function (targetBlocks) {
     return p5stim, p5env
 }
 
-var resetEnv = function(){
-    
+var resetEnv = function () {
+
     // remove environment
-    p5env.remove(); 
-    
+    p5env.remove();
+
     // Update variables
     blocks = [];
     blockKinds = [];
@@ -349,9 +352,9 @@ var resetEnv = function(){
     // setup new environment   
 }
 
-var resetStimWindow = function(){
+var resetStimWindow = function () {
     // remove environment
-    p5stim.remove(); 
+    p5stim.remove();
 
 }
 
@@ -360,7 +363,7 @@ var resetStimWindow = function(){
 //         var envButtons = document.getElementById("env-buttons");
 //         envButtons.style.display = "none";
 //     };
-    
+
 // }
 
 // function hideDoneButton() {
@@ -368,7 +371,7 @@ var resetStimWindow = function(){
 //         var envButtons = document.getElementById("done");
 //         envButtons.style.display = "none";
 //     };
-    
+
 // }
 
 // function revealEnvButtons() {

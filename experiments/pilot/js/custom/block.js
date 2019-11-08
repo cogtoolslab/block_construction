@@ -49,7 +49,6 @@ function Block(blockKind, x, y, rotated, testing_placement = false){
         }
         */
         env.rect(0,0,this.w,this.h);
-
         env.pop();
         
 

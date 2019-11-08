@@ -459,7 +459,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       //clear all timers
       timers.forEach(interval => {
-        console.log('clearing interval');
         clearInterval(interval);
       });
 
