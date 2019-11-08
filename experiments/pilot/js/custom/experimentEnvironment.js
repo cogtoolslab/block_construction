@@ -16,12 +16,19 @@ var Engine = Matter.Engine,
     Runner = Matter.Runner;
 
 // Parameters
-var menuHeight = 100;
-var menuWidth = 500;
-let rotateIcon;
-var floorY = 50;
-var canvasY = 500;
-var canvasX = 500;
+// var menuHeight = 100;
+// var menuWidth = 500;
+// let rotateIcon;
+// var floorY = 50;
+// var canvasY = 500;
+// var canvasX = 500;
+var canvasY = 450; //actually height
+var canvasX = 450; //actually width
+var menuHeight = canvasY/5;
+var menuWidth = canvasX;
+var floorY = (canvasY - menuHeight);
+var floorHeight = canvasY / 3;
+
 
 // Metavariables
 const dbname = 'block_construction';
@@ -117,7 +124,7 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
         blockMenu = new BlockMenu(menuHeight, blockKinds);
 
         // Add things to the physics engine world
-        ground = new Boundary(canvasX / 2, (environmentCanvas.height - menuHeight) * 1.15, canvasX * 1.5, canvasY / 3);
+        ground = new Boundary(canvasX / 2, floorY, canvasX * 1.5, floorHeight);
         //box1 = new Box(200, 100, 30, 30);
 
         // Runner- use instead of line above if changes to game loop needed
