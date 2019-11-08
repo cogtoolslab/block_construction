@@ -40,7 +40,7 @@ var p5env;
 
 // Scaling values
 var sF = 20; //scaling factor to change appearance of blocks
-var worldScale = 2; //scaling factor within matterjs
+var worldScale = 2.2; //scaling factor within matterjs
 var stim_scale = sF; //scale of stimulus silhouette
 
 // Global Variables
@@ -173,7 +173,11 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
         }*/
         if (isPlacingObject) {
             env.noCursor(); //feel like this is horribly ineffecient...
-            selectedBlockKind.showGhost(env,env.mouseX, env.mouseY, rotated);
+
+            sleeping = blocks.filter((block) => block.body.isSleeping); // Would rather not be calculating this constantly.. update to eventlistener?
+            allSleeping = sleeping.length == blocks.length;
+
+            selectedBlockKind.showGhost(env,env.mouseX, env.mouseY, rotated, diabled = !allSleeping);
         }
 
     }
@@ -192,20 +196,26 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
             // if mouse in main environment
             if (env.mouseY > 0 && (env.mouseY < canvasY - menuHeight) && (env.mouseX > 0 && env.mouseX < canvasX)) {
                 if (isPlacingObject) {
-                    
-                    test_block = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated, testing_placement = true)
-                    if(test_block.can_be_placed()){
-                        newBlock = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated);
-                        blocks.push(newBlock);                        
-                        // blocks.push(new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated));
-                        selectedBlockKind = null;
-                        env.cursor();
-                        isPlacingObject = false;
+                    // test whether all blocks are sleeping
+                    sleeping = blocks.filter((block) => block.body.isSleeping);
+                    allSleeping = sleeping.length == blocks.length;
 
-                        blocks.forEach(b => {
-                            Sleeping.set(b.body, false);
-                        });
-                    }                                        
+                    if(allSleeping){
+                        //test whether there is a block underneath this area
+                        test_block = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated, testing_placement = true);
+                        if(test_block.can_be_placed()){
+                            newBlock = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated);
+                            blocks.push(newBlock);                        
+                            // blocks.push(new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated));
+                            selectedBlockKind = null;
+                            env.cursor();
+                            isPlacingObject = false;
+                            blocks.forEach(b => {
+                                Sleeping.set(b.body, false);
+                            });
+                        }  
+
+                    }                                      
                     
                     // test out sending newBlock info to server/mongodb
                     propertyList = Object.keys(newBlock.body); // extract block properties;
@@ -239,6 +249,7 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
                 }
             }
             else if (env.mouseY > 0 && (env.mouseY < canvasY) && (env.mouseX > 0 && env.mouseX < canvasX)){ //or if in menu then update selected blockkind
+
                 // is mouse clicking a block?
                 newSelectedBlockKind = blockMenu.hasClickedButton(env.mouseX, env.mouseY, selectedBlockKind);
                 if (newSelectedBlockKind) {
@@ -251,6 +262,7 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
                     selectedBlockKind = newSelectedBlockKind;
                     isPlacingObject = true;
                 }
+            
             }
         }
     }
