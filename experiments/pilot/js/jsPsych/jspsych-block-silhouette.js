@@ -13,9 +13,9 @@
 var deltaScore = 0; // diff in score btw end and start of phase
 var nullScore = 0; // reconstruction score for blank reconstruction
 var scoreGap = 0; // difference between nullScore and perfect score (F1 = 1)
-var currScore = 0; // initial score set to 0
 var rawScore = 0; // raw F1 score after phase end
-var cumulScore = 0; // cumulative score in experiment
+var currBonus = 0; // current bonus increment 
+var cumulBonus = 0; // cumulative bonus earned in experiment
 
 // Timing parameters
 var explore_time_limit = 5; // time limit in seconds
@@ -126,7 +126,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       html += '<div class="container pt-1" id="experiment">'
       html += '<div class="container" id="text-bar">'
-      html += '<p id="bonus-meter">Bonus: $0.00 </p>'
+      html += `<p id="bonus-meter">Bonus: $${cumulBonus.toFixed(2)} </p>`
       html += '<p id="condition-heading">Build that structure!</p>'
       html += '<p id="timer-text">00:00</p>'
       html += '</div>'
@@ -371,7 +371,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
         
         // calculate bonus earned
         rawScore = getCurrScore();
-        getBonusEarned(rawScore, nullScore, scoreGap);
+        currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
+        cumulBonus += currBonus;
 
         sendData(dataType="final");
         //START TIMERS?
@@ -389,7 +390,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
           // calculate bonus earned
           rawScore = getCurrScore();
-          getBonusEarned(rawScore, nullScore, scoreGap);
+          currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
+          cumulBonus += currBonus;          
 
             //end trial //MAKE SURE DATA SENT HERE
             occluder_trial.style.display = "block";
