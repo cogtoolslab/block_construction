@@ -259,6 +259,35 @@ jsPsych.plugins["block-silhouette"] = (function () {
       return score;      
     }
 
+    function getNormedScore(rawScore, nullScore, scoreGap) {
+      // compute relative change in score
+      deltaScore = math.subtract(rawScore,nullScore);
+      normedScore = math.divide(deltaScore,scoreGap);
+      console.log('deltaScore = ',deltaScore.toFixed(2));
+      console.log('normedScore = ',normedScore.toFixed(2));  
+      return normedScore;    
+    }
+
+    function convertNormedScoreToBonus(normedScore) {
+      // convert normedScore (ranges between 0 and 1)
+      // to bonus amount (in cents)      
+      highThresh = 0.5; 
+      midThresh = 0.2;
+      lowThresh = 0.1;
+      if (normedScore > highThresh) {bonus = 0.05;} 
+      else if (normedScore > midThresh) {bonus = 0.03;} 
+      else if (normedScore > lowThresh) {bonus = 0.01;}
+      else {bonus = 0; console.log('No bonus earned.')}
+      return bonus;
+    }
+
+    function getBonusEarned(rawScore, nullScore, scoreGap) {
+      normedScore = getNormedScore(rawScore, nullScore, scoreGap);
+      bonus = convertNormedScoreToBonus(normedScore);
+      console.log('bonus earned = ', bonus);
+      return bonus;
+    }
+
     var timers = [];
     // start timing
     var start_time = Date.now();
@@ -338,15 +367,12 @@ jsPsych.plugins["block-silhouette"] = (function () {
     occluder_trial.addEventListener('click', event => { //SHOW OCCLUDER
       occluder_trial.style.display = "none";
 
-      timer(explore_time_limit, function () { //set timer for exploration phase
+      timer(explore_time_limit, function () { //set timer for exploration phase    
         
-        // compute relative change in score
+        // calculate bonus earned
         rawScore = getCurrScore();
-        deltaScore = math.subtract(rawScore,nullScore);
-        normedScore = math.divide(deltaScore,scoreGap);
-        console.log('deltaScore = ',deltaScore.toFixed(2));
-        console.log('normedScore = ',normedScore.toFixed(2));
-        
+        getBonusEarned(rawScore, nullScore, scoreGap);
+
         sendData(dataType="final");
         //START TIMERS?
         clearP5Envs();
@@ -360,6 +386,11 @@ jsPsych.plugins["block-silhouette"] = (function () {
           
           //START TIMERS?
           timer(build_time_limit, function () { //set timer for build phase
+
+          // calculate bonus earned
+          rawScore = getCurrScore();
+          getBonusEarned(rawScore, nullScore, scoreGap);
+
             //end trial //MAKE SURE DATA SENT HERE
             occluder_trial.style.display = "block";
             clearP5Envs(); // Clear everything in P5
