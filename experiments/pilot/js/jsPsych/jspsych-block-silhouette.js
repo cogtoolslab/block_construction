@@ -12,6 +12,7 @@
 // Task performance
 var deltaScore = 0; // diff in score btw end and start of phase
 var nullScore = 0; // reconstruction score for blank reconstruction
+var normedScore = 0; // reconstruction score for blank reconstruction
 var scoreGap = 0; // difference between nullScore and perfect score (F1 = 1)
 var rawScore = 0; // raw F1 score after phase end
 var currBonus = 0; // current bonus increment 
@@ -231,7 +232,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // get null score
       nullScore = callback();
       scoreGap = math.subtract(1,nullScore);        
-      console.log('nullScore = ', nullScore);      
+      // console.log('nullScore = ', nullScore);      
     }
 
     function build(callback) {
@@ -263,8 +264,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // compute relative change in score
       deltaScore = math.subtract(rawScore,nullScore);
       normedScore = math.divide(deltaScore,scoreGap);
-      console.log('deltaScore = ',deltaScore.toFixed(2));
-      console.log('normedScore = ',normedScore.toFixed(2));  
+      // console.log('deltaScore = ',deltaScore.toFixed(2));
+      // console.log('normedScore = ',normedScore.toFixed(2));  
       return normedScore;    
     }
 
@@ -372,7 +373,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
         // calculate bonus earned
         rawScore = getCurrScore();
         currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
-        cumulBonus += currBonus;
+        cumulBonus += currBonus; // TODO: this cumulBonus needs to be bundled into data sent to mongo
 
         sendData(dataType="final");
         //START TIMERS?
