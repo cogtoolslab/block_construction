@@ -18,8 +18,8 @@ var rawScore = 0; // raw F1 score after phase end
 var cumulScore = 0; // cumulative score in experiment
 
 // Timing parameters
-var explore_time_limit = 10; // time limit in seconds
-var build_time_limit = 20; // time limit in seconds
+var explore_time_limit = 5; // time limit in seconds
+var build_time_limit = 5; // time limit in seconds
 //var pct_per_sec = (1 / explore_time_limit) * 100; // if time_limit==20, that means that progress bar goes down by 5% each unit time
 
 jsPsych.plugins["block-silhouette"] = (function () {
@@ -207,7 +207,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     occluder_condition.style.display = "none";
 
 
-    function pre_build(callback) {
+    function pre_build(baseline) {
       done_button.style.display = "none";
       // mental or physical exploration
       if (trial.condition == "mental") {
@@ -229,12 +229,12 @@ jsPsych.plugins["block-silhouette"] = (function () {
         });
       }
       // get null score
-      nullScore = callback();
+      nullScore = baseline();
       scoreGap = math.subtract(1,nullScore);        
       console.log('nullScore = ', nullScore);      
     }
 
-    function build(callback) {
+    function build(baseline) {
       // actual building phase (same for everyone)
       p5stim, p5env = buildStage(trial.targetBlocks); //create p5 instances for this trial phase
 
@@ -246,7 +246,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
         env_div.style.backgroundColor = "#75E559";
       });
       // get null score
-	    nullScore = callback();
+	    nullScore = baseline();
       scoreGap = math.subtract(1,nullScore);              
 	    console.log('nullScore = ', nullScore);
     }
