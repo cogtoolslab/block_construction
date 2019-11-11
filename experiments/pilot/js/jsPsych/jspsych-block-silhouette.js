@@ -222,7 +222,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       }
     }
 
-    function build() {
+    function build(callback) {
       // actual building phase (same for everyone)
       p5stim, p5env = buildStage(trial.targetBlocks); //create p5 instances for this trial phase
 
@@ -233,8 +233,15 @@ jsPsych.plugins["block-silhouette"] = (function () {
       Array.prototype.forEach.call(env_divs, env_div => {
         env_div.style.backgroundColor = "#75E559";
       });
+      // get null score
+	nullScore = callback();
+	console.log('nullScore = ', nullScore);
     }
 
+    function getNullScore() { // get F1 score for target vs. blank at beginning of trial
+      score = getScore('defaultCanvas0', 'defaultCanvas1', 64);
+      return score;
+    } 
 
     var timers = [];
     // start timing
@@ -318,7 +325,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
         clearP5Envs();
 
         // BUILD PHASE
-        build(); // Setup build phase
+        build(getNullScore); // Setup build phase
         occluder_condition.style.display = "block";
 
         occluder_condition.addEventListener('click', event => { //SHOW OCCLUDER
