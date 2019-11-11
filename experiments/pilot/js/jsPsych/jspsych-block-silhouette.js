@@ -14,6 +14,7 @@ var deltaScore = 0; // diff in score btw end and start of phase
 var nullScore = 0; // reconstruction score for blank reconstruction
 var scoreGap = 0; // difference between nullScore and perfect score (F1 = 1)
 var currScore = 0; // initial score set to 0
+var rawScore = 0; // raw F1 score after phase end
 var cumulScore = 0; // cumulative score in experiment
 
 // Timing parameters
@@ -339,8 +340,9 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       timer(explore_time_limit, function () { //set timer for exploration phase
         
-        // compute relative change in score against null reconstruction baseline
-        deltaScore = math.subtract(getCurrScore(),nullScore);
+        // compute relative change in score
+        rawScore = getCurrScore();
+        deltaScore = math.subtract(rawScore,nullScore);
         normedScore = math.divide(deltaScore,scoreGap);
         console.log('deltaScore = ',deltaScore.toFixed(2));
         console.log('normedScore = ',normedScore.toFixed(2));
