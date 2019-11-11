@@ -18,9 +18,9 @@ function showBlock(p5stim, block){
     y_top = y_bottom - height;
 
     p5stim.push(); //saves the current drawing style settings and transformations
-    p5stim.translate(stimX + stim_scale*x_center, (canvasY - menuHeight)*1.15 - (canvasY/3) + stim_scale*y_center + 6);
+    p5stim.translate(stimX + stim_scale*x_center, (canvasY - floorHeight) - (canvasY - floorY) + stim_scale*y_center - 2);
     p5stim.rectMode(p5stim.CENTER);
-    p5stim.stroke(20)
+    p5stim.noStroke();
     p5stim.fill(20);
     p5stim.rect(0,0,stim_scale*width,stim_scale*height);
     p5stim.pop();

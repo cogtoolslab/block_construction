@@ -1,7 +1,7 @@
 // Experiment frame, with Matter canvas and surrounding buttons
 
 var imagePath = '../img/';
-const  socket = io.connect();
+const socket = io.connect();
 
 // TEMPORARY VARIABLES TO BE READ IN
 
@@ -16,23 +16,31 @@ var Engine = Matter.Engine,
     Runner = Matter.Runner;
 
 // Parameters
-var menuHeight = 100;
-var menuWidth = 500;
-let rotateIcon;
-var floorY = 50;
-var canvasY = 500;
-var canvasX = 500;
+// var menuHeight = 100;
+// var menuWidth = 500;
+// let rotateIcon;
+// var floorY = 50;
+// var canvasY = 500;
+// var canvasX = 500;
+var canvasY = 450; //actually height
+var canvasX = 450; //actually width
+var menuHeight = canvasY/5;
+var menuWidth = canvasX;
+var floorY = (canvasY - menuHeight);
+var floorHeight = canvasY / 3;
+
 
 // Metavariables
 const dbname = 'block_construction';
 const colname = 'silhouette';
 const iterationName = 'testing';
+var phase = 'build';
 
 // Stimulus Display
 var stimCanvasX = canvasX;
 var stimCanvasY = canvasY;
-var stimX = stimCanvasX/2;
-var stimY = stimCanvasY/2;
+var stimX = stimCanvasX / 2;
+var stimY = stimCanvasY / 2;
 
 // p5 instances
 var p5stim;
@@ -40,7 +48,7 @@ var p5env;
 
 // Scaling values
 var sF = 20; //scaling factor to change appearance of blocks
-var worldScale = 2; //scaling factor within matterjs
+var worldScale = 2.2; //scaling factor within matterjs
 var stim_scale = sF; //scale of stimulus silhouette
 
 // Global Variables
@@ -73,10 +81,12 @@ var blockDims = [
     [4, 2]
 ];
 
-var setupEnvironment = function (env, disabledEnvironment = false) {
+var setupEnvironment = function (env, disabledEnvironment = false, phaseType = 'build') {
+
+    phase = phaseType;
 
     // Processing JS Function, defines initial environment.
-    env.setup = function() {
+    env.setup = function () {
 
         // Create Experiment Canvas
         environmentCanvas = env.createCanvas(canvasX, canvasY); // creates a P5 canvas (which is a wrapper for an HTML canvas)
@@ -101,7 +111,7 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
 
 
         // Create block kinds that will appear in environment/menu. Later on this will need to be represented in each task.
-        
+
         var block_color = [15, 139, 141, 200];
         if (disabledEnvironment) {
             block_color = [100, 100, 100, 30];
@@ -117,7 +127,7 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
         blockMenu = new BlockMenu(menuHeight, blockKinds);
 
         // Add things to the physics engine world
-        ground = new Boundary(canvasX/2, (environmentCanvas.height - menuHeight)*1.15, canvasX*1.5, canvasY/3);
+        ground = new Boundary(canvasX / 2, floorY, canvasX * 1.5, floorHeight);
         //box1 = new Box(200, 100, 30, 30);
 
         // Runner- use instead of line above if changes to game loop needed
@@ -145,7 +155,7 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
     }
 
 
-    env.draw = function() { // Called continuously by Processing JS 
+    env.draw = function () { // Called continuously by Processing JS 
         env.background(220);
         ground.show(env);
 
@@ -173,12 +183,16 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
         }*/
         if (isPlacingObject) {
             env.noCursor(); //feel like this is horribly ineffecient...
-            selectedBlockKind.showGhost(env,env.mouseX, env.mouseY, rotated);
+
+            sleeping = blocks.filter((block) => block.body.isSleeping); // Would rather not be calculating this constantly.. update to eventlistener?
+            allSleeping = sleeping.length == blocks.length;
+
+            selectedBlockKind.showGhost(env, env.mouseX, env.mouseY, rotated, diabled = !allSleeping);
         }
 
     }
 
-    env.mouseClicked = function() {
+    env.mouseClicked = function () {
         //check to see if in env
 
         /* //Is clicking in top right of environment
@@ -186,64 +200,52 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
             rotated = !rotated;
         }
         */
-        
-        if (!disabledEnvironment){ //environment will be disabled in some conditions
-            
+
+        if (!disabledEnvironment) { //environment will be disabled in some conditions
+
             // if mouse in main environment
             if (env.mouseY > 0 && (env.mouseY < canvasY - menuHeight) && (env.mouseX > 0 && env.mouseX < canvasX)) {
                 if (isPlacingObject) {
-                    
-                    test_block = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated, testing_placement = true)
-                    if(test_block.can_be_placed()){
-                        newBlock = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated);
-                        blocks.push(newBlock);                        
-                        // blocks.push(new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated));
-                        selectedBlockKind = null;
-                        env.cursor();
-                        isPlacingObject = false;
+                    // test whether all blocks are sleeping
+                    sleeping = blocks.filter((block) => block.body.isSleeping);
+                    allSleeping = sleeping.length == blocks.length;
 
-                        blocks.forEach(b => {
-                            Sleeping.set(b.body, false);
-                        });
-                    }                                        
-                    
-                    // test out sending newBlock info to server/mongodb
-                    propertyList = Object.keys(newBlock.body); // extract block properties;
-                    propertyList = _.pullAll(propertyList,['parts','plugin','vertices','parent']);  // omit self-referential properties that cause max call stack exceeded error
-                    blockProperties = _.pick(newBlock['body'],propertyList); // pick out all and only the block body properties in the property list
+                    if (allSleeping) {
+                        // SEND WORLD DATA AFTER PREVIOUS BLOCK HAS SETTLED
+                        // Sends information about the state of the world prior to next block being placed
+                        if (blocks.length != 0) { //if a block has already been placed, send settled world state
+                            sendData(eventType = 'settled');
+                        }
 
-                    // custom de-borkification
-                    vertices = _.map(newBlock.body.vertices, function(key,value) {return _.pick(key,['x','y'])});                    
-                    
-                    block_data = {dbname: dbname,
-                                colname: colname,
-                                iterationName: iterationName,
-                                dataType: 'block',
-                                timePoint: 'initial', // initial block placement decision vs. final block resting position.
-                                gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
-                                time: performance.now(), // time since session began
-                                timeAbsolute: Date.now(),  
-                                blockWidth: newBlock['w'],
-                                blockHeight: newBlock['h'],
-                                blockCenterX: newBlock['body']['position']['x'],
-                                blockCenterY: newBlock['body']['position']['y'],
-                                blockVertices: vertices,
-                                blockBodyProperties: blockProperties
-                                // TODO: add WORLD information
-                                };            
-                    console.log('block_data',block_data);
-                    currScore = getScore('defaultCanvas0', 'defaultCanvas1', 64);
-                    console.log('current F1 score = ',currScore);
-                    socket.emit('block',block_data);
-                    
+                        //test whether there is a block underneath this area
+                        test_block = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated, testing_placement = true);
+                        if (test_block.can_be_placed()) {
+                            newBlock = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated);
+                            blocks.push(newBlock);
+                            // blocks.push(new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated));
+                            selectedBlockKind = null;
+                            env.cursor();
+                            isPlacingObject = false;
+                            blocks.forEach(b => {
+                                Sleeping.set(b.body, false);
+                            });
+
+                            sendData(eventType = 'initial', newBlock = newBlock);
+
+                        }
+
+                    }
+
+
                 }
             }
-            else if (env.mouseY > 0 && (env.mouseY < canvasY) && (env.mouseX > 0 && env.mouseX < canvasX)){ //or if in menu then update selected blockkind
+            else if (env.mouseY > 0 && (env.mouseY < canvasY) && (env.mouseX > 0 && env.mouseX < canvasX)) { //or if in menu then update selected blockkind
+
                 // is mouse clicking a block?
                 newSelectedBlockKind = blockMenu.hasClickedButton(env.mouseX, env.mouseY, selectedBlockKind);
                 if (newSelectedBlockKind) {
                     if (newSelectedBlockKind == selectedBlockKind) {
-                        
+
                         //rotated = !rotated; // uncomment to allow rotation by re-selecting block from menu
                     } else {
                         rotated = false;
@@ -251,34 +253,34 @@ var setupEnvironment = function (env, disabledEnvironment = false) {
                     selectedBlockKind = newSelectedBlockKind;
                     isPlacingObject = true;
                 }
+
             }
         }
     }
 
 }
 
-// Sketch Two
 var setupStimulus = function (p5stim, stimBlocks) {
 
     p5stim.setup = function () {
-        stimulusCanvas = p5stim.createCanvas(stimCanvasX,stimCanvasX);
+        stimulusCanvas = p5stim.createCanvas(stimCanvasX, stimCanvasX);
         stimulusCanvas.parent('stimulus-window'); // add parent div 
     };
 
     p5stim.draw = function () {
         p5stim.background(220);
         var testStim = stimBlocks;
-        showStimulus(p5stim,testStim);
+        showStimulus(p5stim, testStim);
         showFloor(p5stim);
     };
 
 };
 
-var trial = function(condition='external') {
-    if (condition=='external'){
+var trial = function (condition = 'external') {
+    if (condition == 'external') {
         explore()
     }
-    else if (condition=='internal'){
+    else if (condition == 'internal') {
         simulate()
     }
     else {
@@ -293,41 +295,41 @@ var trial = function(condition='external') {
     //resetStimWindow()
 
 }
-var simulate = function (targetBlocks) {
+var exploreMental = function (targetBlocks) {
     p5stim = new p5((env) => {
         setupStimulus(env, targetBlocks)
     }, 'stimulus-canvas');
     p5env = new p5((env) => {
-        setupEnvironment(env, disabledEnvironment = true)
+        setupEnvironment(env, disabledEnvironment = true, phaseType = 'mental')
     }, 'environment-canvas');
     return p5stim, p5env
 }
 
-var explore = function (targetBlocks) {
+var explorePhysical = function (targetBlocks) {
     p5stim = new p5((env) => {
         setupStimulus(env, targetBlocks)
     }, 'stimulus-canvas');
     p5env = new p5((env) => {
-        setupEnvironment(env, disabledEnvironment = false)
+        setupEnvironment(env, disabledEnvironment = false, phaseType = 'physical')
     }, 'environment-canvas');
     return p5stim, p5env
 }
 
 var buildStage = function (targetBlocks) {
     p5stim = new p5((env) => {
-        setupStimulus(env,targetBlocks)
+        setupStimulus(env, targetBlocks)
     }, 'stimulus-canvas');
     p5env = new p5((env) => {
-        setupEnvironment(env, disabledEnvironment = false)
+        setupEnvironment(env, disabledEnvironment = false, phaseType = 'build')
     }, 'environment-canvas');
     return p5stim, p5env
 }
 
-var resetEnv = function(){
-    
+var resetEnv = function () {
+
     // remove environment
-    p5env.remove(); 
-    
+    p5env.remove();
+
     // Update variables
     blocks = [];
     blockKinds = [];
@@ -337,18 +339,119 @@ var resetEnv = function(){
     // setup new environment   
 }
 
-var resetStimWindow = function(){
+var resetStimWindow = function () {
     // remove environment
-    p5stim.remove(); 
+    p5stim.remove();
 
 }
 
+// Not implemented yet- contents copied from block placement
+var sendData = function(eventType = 'none', newBlock = null) {
+    /** eventType one of:
+     *  - initial, first placement of block. Sends data of type:
+     *      - blockData (note that state of world can be inferred from previous settled state)
+     *  - settled, state of world when that block has been placed. Sends data of type:
+     *      - worldData (note that block placement can be inferred from previous settled state)
+     *  - phaseEnd, state of world after last block has been placed. Sends data of type:
+     *      - worldData
+     *  - reset, when reset button pressed and world emptied. Sends data of type:
+     *      - resetData
+     *  - expEnd, state of game when final trial over. Sends data of type:
+     *      - gameData
+    */
+
+    if(eventType == 'none'){
+        console.log('Error: Null eventType sent')
+    }
+
+    console.log('Trying to send ' + eventType + ' data from ' + phase + ' phase');
+
+    if (eventType =='initial'){
+        // Send data about initial placement of a block
+        // Could be in Build 
+
+        // test out sending newBlock info to server/mongodb
+        propertyList = Object.keys(newBlock.body); // extract block properties;
+        propertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
+        blockProperties = _.pick(newBlock['body'], propertyList); // pick out all and only the block body properties in the property list
+
+        // custom de-borkification
+        vertices = _.map(newBlock.body.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
+
+        block_data = {
+            dbname: dbname,
+            colname: colname,
+            iterationName: iterationName,
+            dataType: 'block',
+            eventType: 'initial', // initial block placement decision vs. final block resting position.
+            phase: phase,
+            gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
+            time: performance.now(), // time since session began
+            timeAbsolute: Date.now(),
+            blockWidth: newBlock['w'],
+            blockHeight: newBlock['h'],
+            blockCenterX: newBlock['body']['position']['x'],
+            blockCenterY: newBlock['body']['position']['y'],
+            blockVertices: vertices,
+            blockBodyProperties: blockProperties
+            // TODO: add WORLD information
+        };
+        console.log('block_data', block_data);
+        currScore = getScore('defaultCanvas0', 'defaultCanvas1', 64);
+        console.log('current F1 score = ', currScore);
+        socket.emit('block', block_data);
+    }
+    else if (eventType =='settled'){
+
+        // A world is, primarily, a list of blocks and locations
+        // Get this list of blocks
+
+
+        world.bodies.forEach(body => {
+            // test out sending newBlock info to server/mongodb
+            propertyList = Object.keys(body); // extract block properties;
+            propertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
+            blockProperties = _.pick(newBlock['body'], propertyList); // pick out all and only the block body properties in the property list
+            
+            // FIND FLOOR?
+
+        });
+
+        // GET LAST PLACED BLOCK
+        //
+ 
+
+        world_data = {
+            dbname: dbname,
+            colname: colname,
+            iterationName: iterationName,
+            dataType: 'world',
+            eventType: eventType, // initial block placement decision vs. final block resting position.
+            phase: phase,
+            gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
+            time: performance.now(), // time since session began
+            timeAbsolute: Date.now(),
+            lastBlockPlaced: 'null' // Get last block placed for easy check of where settled
+            // TODO: add WORLD information
+            // Enough to extract location of every block, including looking up blocks by id
+        };
+        console.log('world_data', world_data);
+        currScore = getScore('defaultCanvas0', 'defaultCanvas1', 64);
+        console.log('current F1 score = ', currScore);
+        socket.emit('world', world_data);
+    }
+        
+}
+
+
+
+// Now covered in jsPsych plugin
 // function hideEnvButtons() {
 //     window.onload = function(){
 //         var envButtons = document.getElementById("env-buttons");
 //         envButtons.style.display = "none";
 //     };
-    
+
 // }
 
 // function hideDoneButton() {
@@ -356,7 +459,7 @@ var resetStimWindow = function(){
 //         var envButtons = document.getElementById("done");
 //         envButtons.style.display = "none";
 //     };
-    
+
 // }
 
 // function revealEnvButtons() {

@@ -24,14 +24,16 @@ function BlockKind(w,h,blockColor){
 
     }
 
-    this.showGhost = function(env, mouseX, mouseY, rotated) {
+    this.showGhost = function(env, mouseX, mouseY, rotated, disabled = false) {
 
         // update to include scrolling to rotate? https://p5js.org/reference/#/p5/mouseWheel
         env.push();
         env.translate(mouseX, mouseY);
         env.rectMode(env.CENTER);
         env.stroke(200);
-        env.fill(blockColor);
+        fillColor = disabled ? [100, 100, 100, 100] : blockColor;
+        env.fill(fillColor);
+
         if(rotated){
             env.rect(0,0,this.h*sF,this.w*sF);
         } else {

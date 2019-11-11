@@ -10,8 +10,8 @@
  **/
 
 var score = 0; // initial score set to 0
-var explore_time_limit = 5; // time limit in seconds
-var build_time_limit = 10; // time limit in seconds
+var explore_time_limit = 10; // time limit in seconds
+var build_time_limit = 20; // time limit in seconds
 //var pct_per_sec = (1 / explore_time_limit) * 100; // if time_limit==20, that means that progress bar goes down by 5% each unit time
 
 jsPsych.plugins["block-silhouette"] = (function () {
@@ -154,7 +154,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       html += '</div>'
 
       html += '<div class="occluder" id="occluder-condition">'
-      html += '<div><p>Now build the structure!</p></div>'
+      html += '<div><p>Now build the structure! Click anywhere to continue.</p></div>'
       html += '</div>'
 
       // // display helpful info during debugging
@@ -204,7 +204,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // mental or physical exploration
       if (trial.condition == "mental") {
         reset_button.style.display = "none";
-        p5stim, p5env = simulate(trial.targetBlocks); //create p5 instances for this trial phase
+        p5stim, p5env = exploreMental(trial.targetBlocks); //create p5 instances for this trial phase
         //Update trial appearance 
         condition_heading.textContent = "Think about how you will build the structure"
         Array.prototype.forEach.call(env_divs, env_div => {
@@ -213,7 +213,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       }
       else if (trial.condition == "physical") {
-        p5stim, p5env = explore(trial.targetBlocks); //create p5 instances for this trial phase
+        p5stim, p5env = explorePhysical(trial.targetBlocks); //create p5 instances for this trial phase
         //Update trial appearance 
         condition_heading.textContent = "Practice building the structure";
         Array.prototype.forEach.call(env_divs, env_div => {
@@ -274,6 +274,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       /* Called to clear building environment window. 
       Works by resetting variables then building a new p5 instance.
       */
+      sendData(dataType="reset");
       resetEnv();
       p5env = new p5(setupEnvironment, 'environment-canvas');
       // update reset counter
@@ -283,9 +284,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
     function donePressed() {
       finished_trial = true;
       occluder_trial.style.display = "block"; // show occluder
-      
-      clearP5Envs();
       clear_display_move_on(trial_data); // Move on jsPsych
+      clearP5Envs();
     }
 
     function clearP5Envs() {
@@ -313,6 +313,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       occluder_trial.style.display = "none";
 
       timer(explore_time_limit, function () { //set timer for exploration phase
+        sendData(dataType="final");
         //START TIMERS?
         clearP5Envs();
 
@@ -457,9 +458,10 @@ jsPsych.plugins["block-silhouette"] = (function () {
     // 
     function clear_display_move_on(trial_data) {
 
+      sendData(dataType="final");
+
       //clear all timers
       timers.forEach(interval => {
-        console.log('clearing interval');
         clearInterval(interval);
       });
 

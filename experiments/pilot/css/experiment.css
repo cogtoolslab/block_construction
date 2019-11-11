@@ -17,6 +17,9 @@ body {
     margin-right: 15px;
 }
 
+.row{
+    break-inside: avoid-column;
+}
 
 #condition-heading {
     display: inline-block;
