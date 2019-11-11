@@ -37,11 +37,11 @@ class BlockMenu {
         env.rectMode(env.CORNER);
         env.stroke(200);
         env.fill(120);
-        env.rect(0,canvasY-this.h,canvasX,this.h);
+        env.rect(0,canvasHeight-this.h,canvasWidth,this.h);
         
         var i;
         for (i = 0; i < blockKinds.length; i++) { 
-            blockKinds[i].showMenuItem(env,((i+1)*(menuWidth/(blockKinds.length+1))),canvasY - menuHeight/2);
+            blockKinds[i].showMenuItem(env,((i+1)*(menuWidth/(blockKinds.length+1))),canvasHeight - menuHeight/2);
         } 
         env.pop();
 

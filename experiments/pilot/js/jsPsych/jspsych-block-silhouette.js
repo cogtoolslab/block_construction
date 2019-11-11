@@ -9,7 +9,15 @@
  * 
  **/
 
-var score = 0; // initial score set to 0
+// Task performance
+var deltaScore = 0; // diff in score btw end and start of phase
+var nullScore = 0; // reconstruction score for blank reconstruction
+var scoreGap = 0; // difference between nullScore and perfect score (F1 = 1)
+var currScore = 0; // initial score set to 0
+var rawScore = 0; // raw F1 score after phase end
+var cumulScore = 0; // cumulative score in experiment
+
+// Timing parameters
 var explore_time_limit = 10; // time limit in seconds
 var build_time_limit = 20; // time limit in seconds
 //var pct_per_sec = (1 / explore_time_limit) * 100; // if time_limit==20, that means that progress bar goes down by 5% each unit time
@@ -199,7 +207,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     occluder_condition.style.display = "none";
 
 
-    function pre_build() {
+    function pre_build(callback) {
       done_button.style.display = "none";
       // mental or physical exploration
       if (trial.condition == "mental") {
@@ -220,9 +228,13 @@ jsPsych.plugins["block-silhouette"] = (function () {
           env_div.style.backgroundColor = "#6DEBFF";
         });
       }
+      // get null score
+      nullScore = callback();
+      scoreGap = math.subtract(1,nullScore);        
+      console.log('nullScore = ', nullScore);      
     }
 
-    function build() {
+    function build(callback) {
       // actual building phase (same for everyone)
       p5stim, p5env = buildStage(trial.targetBlocks); //create p5 instances for this trial phase
 
@@ -233,8 +245,48 @@ jsPsych.plugins["block-silhouette"] = (function () {
       Array.prototype.forEach.call(env_divs, env_div => {
         env_div.style.backgroundColor = "#75E559";
       });
+      // get null score
+	    nullScore = callback();
+      scoreGap = math.subtract(1,nullScore);              
+	    console.log('nullScore = ', nullScore);
     }
 
+    function getCurrScore() {
+      // call this to get: 
+      // (1) F1 score for target vs. blank at beginning of each phase
+      // (2) F1 score for target vs. blank at end of each phase
+      score = getScore('defaultCanvas0', 'defaultCanvas1', 64);
+      return score;      
+    }
+
+    function getNormedScore(rawScore, nullScore, scoreGap) {
+      // compute relative change in score
+      deltaScore = math.subtract(rawScore,nullScore);
+      normedScore = math.divide(deltaScore,scoreGap);
+      console.log('deltaScore = ',deltaScore.toFixed(2));
+      console.log('normedScore = ',normedScore.toFixed(2));  
+      return normedScore;    
+    }
+
+    function convertNormedScoreToBonus(normedScore) {
+      // convert normedScore (ranges between 0 and 1)
+      // to bonus amount (in cents)      
+      highThresh = 0.5; 
+      midThresh = 0.2;
+      lowThresh = 0.1;
+      if (normedScore > highThresh) {bonus = 0.05;} 
+      else if (normedScore > midThresh) {bonus = 0.03;} 
+      else if (normedScore > lowThresh) {bonus = 0.01;}
+      else {bonus = 0; console.log('No bonus earned.')}
+      return bonus;
+    }
+
+    function getBonusEarned(rawScore, nullScore, scoreGap) {
+      normedScore = getNormedScore(rawScore, nullScore, scoreGap);
+      bonus = convertNormedScoreToBonus(normedScore);
+      console.log('bonus earned = ', bonus);
+      return bonus;
+    }
 
     var timers = [];
     // start timing
@@ -307,18 +359,26 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     // Start the experiment!
 
+    if (trial.trialNum == 0) {
+      sendData(eventType = 'expStart');
+    }
     // EXPLORATION PHASE
-    pre_build(); //Setup exploration phase
+    pre_build(getCurrScore); //Setup exploration phase
     occluder_trial.addEventListener('click', event => { //SHOW OCCLUDER
       occluder_trial.style.display = "none";
 
-      timer(explore_time_limit, function () { //set timer for exploration phase
+      timer(explore_time_limit, function () { //set timer for exploration phase    
+        
+        // calculate bonus earned
+        rawScore = getCurrScore();
+        getBonusEarned(rawScore, nullScore, scoreGap);
+
         sendData(dataType="final");
         //START TIMERS?
         clearP5Envs();
 
         // BUILD PHASE
-        build(); // Setup build phase
+        build(getCurrScore); // Setup build phase
         occluder_condition.style.display = "block";
 
         occluder_condition.addEventListener('click', event => { //SHOW OCCLUDER
@@ -326,6 +386,11 @@ jsPsych.plugins["block-silhouette"] = (function () {
           
           //START TIMERS?
           timer(build_time_limit, function () { //set timer for build phase
+
+          // calculate bonus earned
+          rawScore = getCurrScore();
+          getBonusEarned(rawScore, nullScore, scoreGap);
+
             //end trial //MAKE SURE DATA SENT HERE
             occluder_trial.style.display = "block";
             clearP5Envs(); // Clear everything in P5
@@ -458,7 +523,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
     // 
     function clear_display_move_on(trial_data) {
 
-      sendData(dataType="final");
+      sendData(eventType="settled");
+      sendData(eventType="phaseEnd");
 
       //clear all timers
       timers.forEach(interval => {
