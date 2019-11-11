@@ -20,14 +20,14 @@ var Engine = Matter.Engine,
 // var menuWidth = 500;
 // let rotateIcon;
 // var floorY = 50;
-// var canvasY = 500;
-// var canvasX = 500;
-var canvasY = 450; //actually height
-var canvasX = 450; //actually width
-var menuHeight = canvasY/5;
-var menuWidth = canvasX;
-var floorY = (canvasY - menuHeight);
-var floorHeight = canvasY / 3;
+// var canvasHeight = 500;
+// var canvasWidth = 500;
+var canvasHeight = 450; //actually height
+var canvasWidth = 450; //actually width
+var menuHeight = canvasHeight / 5;
+var menuWidth = canvasWidth;
+var floorY = (canvasHeight - menuHeight);
+var floorHeight = canvasHeight / 3;
 
 // Metavariables
 const dbname = 'block_construction';
@@ -36,10 +36,10 @@ const iterationName = 'testing';
 var phase = 'build';
 
 // Stimulus Display
-var stimCanvasX = canvasX;
-var stimCanvasY = canvasY;
-var stimX = stimCanvasX / 2;
-var stimY = stimCanvasY / 2;
+var stimCanvasWidth = canvasWidth;
+var stimCanvasHeight = canvasHeight;
+var stimX = stimCanvasWidth / 2;
+var stimY = stimCanvasHeight / 2;
 
 // p5 instances
 var p5stim;
@@ -88,7 +88,7 @@ var setupEnvironment = function (env, disabledEnvironment = false, phaseType = '
     env.setup = function () {
 
         // Create Experiment Canvas
-        environmentCanvas = env.createCanvas(canvasX, canvasY); // creates a P5 canvas (which is a wrapper for an HTML canvas)
+        environmentCanvas = env.createCanvas(canvasWidth, canvasHeight); // creates a P5 canvas (which is a wrapper for an HTML canvas)
         environmentCanvas.parent('environment-window'); // add parent div 
 
         // Set up Matter Physics Engine
@@ -126,7 +126,7 @@ var setupEnvironment = function (env, disabledEnvironment = false, phaseType = '
         blockMenu = new BlockMenu(menuHeight, blockKinds);
 
         // Add things to the physics engine world
-        ground = new Boundary(canvasX / 2, floorY, canvasX * 1.5, floorHeight);
+        ground = new Boundary(canvasWidth / 2, floorY, canvasWidth * 1.5, floorHeight);
         //box1 = new Box(200, 100, 30, 30);
 
         // Runner- use instead of line above if changes to game loop needed
@@ -164,9 +164,9 @@ var setupEnvironment = function (env, disabledEnvironment = false, phaseType = '
         // Rotate button
         env.noFill();
         env.stroke(200);
-        env.arc(canvasX - 50, 50, 50, 50, env.TWO_PI, env.PI + 3 * env.QUARTER_PI);
-        env.line(canvasX - 50 + 25, 50 - 23, canvasX - 50 + 25, 40);
-        env.line(canvasX - 50 + 12, 40, canvasX - 50 + 25, 40);
+        env.arc(canvasWidth - 50, 50, 50, 50, env.TWO_PI, env.PI + 3 * env.QUARTER_PI);
+        env.line(canvasWidth - 50 + 25, 50 - 23, canvasWidth - 50 + 25, 40);
+        env.line(canvasWidth - 50 + 12, 40, canvasWidth - 50 + 25, 40);
         */
 
         blocks.forEach(b => {
@@ -195,7 +195,7 @@ var setupEnvironment = function (env, disabledEnvironment = false, phaseType = '
         //check to see if in env
 
         /* //Is clicking in top right of environment
-        if (env.mouseY < 80 && env.mouseX > canvasX - 80 && isPlacingObject) {
+        if (env.mouseY < 80 && env.mouseX > canvasWidth - 80 && isPlacingObject) {
             rotated = !rotated;
         }
         */
@@ -203,7 +203,7 @@ var setupEnvironment = function (env, disabledEnvironment = false, phaseType = '
         if (!disabledEnvironment) { //environment will be disabled in some conditions
 
             // if mouse in main environment
-            if (env.mouseY > 0 && (env.mouseY < canvasY - menuHeight) && (env.mouseX > 0 && env.mouseX < canvasX)) {
+            if (env.mouseY > 0 && (env.mouseY < canvasHeight - menuHeight) && (env.mouseX > 0 && env.mouseX < canvasWidth)) {
                 if (isPlacingObject) {
                     // test whether all blocks are sleeping
                     sleeping = blocks.filter((block) => block.body.isSleeping);
@@ -238,7 +238,7 @@ var setupEnvironment = function (env, disabledEnvironment = false, phaseType = '
 
                 }
             }
-            else if (env.mouseY > 0 && (env.mouseY < canvasY) && (env.mouseX > 0 && env.mouseX < canvasX)) { //or if in menu then update selected blockkind
+            else if (env.mouseY > 0 && (env.mouseY < canvasHeight) && (env.mouseX > 0 && env.mouseX < canvasWidth)) { //or if in menu then update selected blockkind
 
                 // is mouse clicking a block?
                 newSelectedBlockKind = blockMenu.hasClickedButton(env.mouseX, env.mouseY, selectedBlockKind);
@@ -262,7 +262,7 @@ var setupEnvironment = function (env, disabledEnvironment = false, phaseType = '
 var setupStimulus = function (p5stim, stimBlocks) {
 
     p5stim.setup = function () {
-        stimulusCanvas = p5stim.createCanvas(stimCanvasX, stimCanvasX);
+        stimulusCanvas = p5stim.createCanvas(stimCanvasWidth, stimCanvasWidth);
         stimulusCanvas.parent('stimulus-window'); // add parent div 
     };
 
@@ -345,8 +345,10 @@ var resetStimWindow = function () {
 }
 
 // Not implemented yet- contents copied from block placement
-var sendData = function(eventType = 'none', newBlock = null) {
+var sendData = function (eventType = 'none', newBlock = null) {
     /** eventType one of:
+     *  - expStart, general details about set up of experiment and matter environment. Sends data of type:
+     *      - gameInit
      *  - initial, first placement of block. Sends data of type:
      *      - blockData (note that state of world can be inferred from previous settled state)
      *  - settled, state of world when that block has been placed. Sends data of type:
@@ -359,13 +361,13 @@ var sendData = function(eventType = 'none', newBlock = null) {
      *      - gameData
     */
 
-    if(eventType == 'none'){
-        console.log('Error: Null eventType sent')
+    if (eventType == 'none') {
+        console.log('Error: Null eventType sent');
     }
 
     console.log('Trying to send ' + eventType + ' data from ' + phase + ' phase');
 
-    if (eventType =='initial'){
+    if (eventType == 'initial') {
         // Send data about initial placement of a block
         // Could be in Build 
 
@@ -400,26 +402,22 @@ var sendData = function(eventType = 'none', newBlock = null) {
         console.log('current F1 score = ', currScore);
         socket.emit('block', block_data);
     }
-    else if (eventType =='settled'){
+    else if (eventType == 'settled') {
 
         // A world is, primarily, a list of blocks and locations
         // Get this list of blocks
 
-
-        world.bodies.forEach(body => {
+        var bodiesForSending = blocks.map(block => {
             // test out sending newBlock info to server/mongodb
-            propertyList = Object.keys(body); // extract block properties;
+            propertyList = Object.keys(block.body); // extract block properties;
             propertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
-            blockProperties = _.pick(newBlock['body'], propertyList); // pick out all and only the block body properties in the property list
-            
-            // FIND FLOOR?
-
+            propertyList = _.pullAll(propertyList, ['collisionFilter', 'constraintImpulse', 'density', 'force', 'friction', 'frictionAir', 'frictionStatic','isSensor','label','render','restitution','sleepCounter','sleepThreshold','slop','timeScale','type']);  // omit extraneus matter properties
+            blockProperties = _.pick(block.body, propertyList); // pick out all and only the block body properties in the property list
+            return blockProperties
         });
 
-        // GET LAST PLACED BLOCK
-        //
- 
-
+        console.log(bodiesForSending);
+        
         world_data = {
             dbname: dbname,
             colname: colname,
@@ -430,19 +428,92 @@ var sendData = function(eventType = 'none', newBlock = null) {
             gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
             time: performance.now(), // time since session began
             timeAbsolute: Date.now(),
-            lastBlockPlaced: 'null' // Get last block placed for easy check of where settled
-            // TODO: add WORLD information
+            allBlockBodyProperties: bodiesForSending, // matter information about bodies of each block. Order is order of block placement
+            numBlocks: bodiesForSending.length
             // Enough to extract location of every block, including looking up blocks by id
         };
         console.log('world_data', world_data);
         currScore = getScore('defaultCanvas0', 'defaultCanvas1', 64);
-        console.log('current F1 score = ', currScore);
+        //console.log('current F1 score = ', currScore);
         socket.emit('world', world_data);
     }
+    else if (eventType == 'reset') {
+
+        // Event to show that reset has occurred
+        // We can infer from the existence of this event that the world is empty
+
+        // Do we calculate anything about the reset?
+
+        reset_data = {
+            dbname: dbname,
+            colname: colname,
+            iterationName: iterationName,
+            dataType: 'world',
+            eventType: eventType, // initial block placement decision vs. final block resting position.
+            phase: phase,
+            gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
+            time: performance.now(), // time since session began
+            timeAbsolute: Date.now(),
+            numBlocks: blocks.length //number of blocks before reset pressed
+        };
+
+        console.log('reset_data', reset_data);
+        socket.emit('reset', reset_data);
+
+    }
+    else if (eventType == 'expStart') {
         
+        // Send data about initial setup of experiment
+
+        exp_data = {
+            dbname: dbname,
+            colname: colname,
+            iterationName: iterationName,
+            dataType: 'block',
+            eventType: 'initial', // initial block placement decision vs. final block resting position.
+            phase: phase,
+            gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
+            time: performance.now(), // time since session began
+            timeAbsolute: Date.now(),
+            canvasHeight: canvasHeight,
+            canvasWidth: canvasWidth,
+            menuHeight: menuHeight,
+            menuWidth: menuWidth,
+            floorY: floorY,
+            stimCanvasWidth: stimCanvasWidth,
+            stimCanvasHeight: stimCanvasHeight,
+            stimX: stimX,
+            stimY: stimY,
+            scalingFactor: sF,
+            worldScale: worldScale,
+            stim_scale: stim_scale,
+            blockDims: [
+                [1, 2],
+                [2, 1],
+                [2, 2],
+                [2, 4],
+                [4, 2]
+            ],
+            worldWidthUnits: 8,
+            worldHeightUnits: 8,
+            blockOptions: { //update if changed in block
+                friction: 0.9,
+                frictionStatic: 1.4,
+                density: 0.0035,
+                restitution: 0.001,
+                sleepThreshold: 30
+            },
+            floorOptions: {
+                isStatic: true, // static i.e. not affected by gravity
+                friction: 0.9,
+                frictionStatic: 2
+            }
+        };
+        console.log('exp_data', exp_data);
+        socket.emit('experiment', exp_data);
+    }
+
 }
-
-
 
 // Now covered in jsPsych plugin
 // function hideEnvButtons() {
