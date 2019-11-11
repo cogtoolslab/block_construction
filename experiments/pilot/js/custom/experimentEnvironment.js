@@ -397,8 +397,6 @@ var sendData = function (eventType = 'none', newBlock = null) {
             blockBodyProperties: blockProperties
         };
         console.log('block_data', block_data);
-        ///currScore = getScore('defaultCanvas0', 'defaultCanvas1', 64);
-        //console.log('current F1 score = ', currScore);
         socket.emit('block', block_data);
     }
     else if (eventType == 'settled') {
@@ -431,8 +429,6 @@ var sendData = function (eventType = 'none', newBlock = null) {
             numBlocks: bodiesForSending.length
         };
         console.log('world_data', world_data);
-        //currScore = getScore('defaultCanvas0', 'defaultCanvas1', 64);
-        //console.log('current F1 score = ', currScore);
         socket.emit('world', world_data);
     }
     else if (eventType == 'reset') {
