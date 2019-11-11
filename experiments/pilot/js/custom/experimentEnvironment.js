@@ -29,7 +29,6 @@ var menuWidth = canvasX;
 var floorY = (canvasY - menuHeight);
 var floorHeight = canvasY / 3;
 
-
 // Metavariables
 const dbname = 'block_construction';
 const colname = 'silhouette';
