@@ -10,7 +10,7 @@
  **/
 
 // Task performance
-var diffScore = 0; // diff in score btw end and start of phase
+var deltaScore = 0; // diff in score btw end and start of phase
 var nullScore = 0; // reconstruction score for blank reconstruction
 var currScore = 0; // initial score set to 0
 var cumulScore = 0; // cumulative score in experiment
@@ -332,8 +332,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
       occluder_trial.style.display = "none";
 
       timer(explore_time_limit, function () { //set timer for exploration phase
-        diffScore = math.subtract(getCurrScore(),nullScore);
-        console.log('diffscore = ',diffScore);
+        deltaScore = math.subtract(getCurrScore(),nullScore);        
+        console.log('deltaScore = ',deltaScore);
         sendData(dataType="final");
         //START TIMERS?
         clearP5Envs();
