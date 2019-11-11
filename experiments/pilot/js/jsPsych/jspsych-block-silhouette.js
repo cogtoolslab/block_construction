@@ -10,7 +10,7 @@
  **/
 
 var score = 0; // initial score set to 0
-var explore_time_limit = 10; // time limit in seconds
+var explore_time_limit = 1; // time limit in seconds
 var build_time_limit = 20; // time limit in seconds
 //var pct_per_sec = (1 / explore_time_limit) * 100; // if time_limit==20, that means that progress bar goes down by 5% each unit time
 
@@ -307,6 +307,9 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     // Start the experiment!
 
+    if (trial.trialNum == 0) {
+      sendData(eventType = 'expStart');
+    }
     // EXPLORATION PHASE
     pre_build(); //Setup exploration phase
     occluder_trial.addEventListener('click', event => { //SHOW OCCLUDER
@@ -458,7 +461,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
     // 
     function clear_display_move_on(trial_data) {
 
-      sendData(dataType="final");
+      sendData(eventType="settled");
+      sendData(eventType="phaseEnd");
 
       //clear all timers
       timers.forEach(interval => {

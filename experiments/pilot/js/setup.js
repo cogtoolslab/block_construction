@@ -66,6 +66,7 @@ function setupGame () {
 
   // number of trials to fetch from database is defined in ./app.js
   var socket = io.connect();
+  
 
   // on_finish is called at the very very end of the experiment
   var on_finish = function(data) {
