@@ -1,6 +1,8 @@
 // Wrappers for Matter Bodies that instantiate a particular BlockKind
 function Block(blockKind, x, y, rotated, testing_placement = false){
 
+    this.blockKind = blockKind;
+
     if(rotated){
         this.w = blockKind.h * sF;
         this.h = blockKind.w * sF;

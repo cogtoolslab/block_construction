@@ -154,7 +154,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       html += '</div>'
 
       html += '<div class="occluder" id="occluder-condition">'
-      html += '<div><p>Now build the structure!</p></div>'
+      html += '<div><p>Now build the structure! Click anywhere to continue.</p></div>'
       html += '</div>'
 
       // // display helpful info during debugging

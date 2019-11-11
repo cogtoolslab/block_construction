@@ -214,7 +214,7 @@ var setupEnvironment = function (env, disabledEnvironment = false, phaseType = '
                         // SEND WORLD DATA AFTER PREVIOUS BLOCK HAS SETTLED
                         // Sends information about the state of the world prior to next block being placed
                         if (blocks.length != 0) { //if a block has already been placed, send settled world state
-                            sendData(dataType = 'settled');
+                            sendData(eventType = 'settled');
                         }
 
                         //test whether there is a block underneath this area
@@ -230,7 +230,7 @@ var setupEnvironment = function (env, disabledEnvironment = false, phaseType = '
                                 Sleeping.set(b.body, false);
                             });
 
-                            sendData(dataType = 'initial', newBlock = newBlock);
+                            sendData(eventType = 'initial', newBlock = newBlock);
 
                         }
 
@@ -346,17 +346,29 @@ var resetStimWindow = function () {
 }
 
 // Not implemented yet- contents copied from block placement
-var sendData = function(dataType = 'final', newBlock = null) {
-    /** Datatype one of:
-     *  - initial, first placement of block
-     *  - settled, state of world when that block has been placed
-     *  - finalWorld, state of world after last block has been placed
-     *  - reset, when reset button pressed and world emptied
+var sendData = function(eventType = 'none', newBlock = null) {
+    /** eventType one of:
+     *  - initial, first placement of block. Sends data of type:
+     *      - blockData (note that state of world can be inferred from previous settled state)
+     *  - settled, state of world when that block has been placed. Sends data of type:
+     *      - worldData (note that block placement can be inferred from previous settled state)
+     *  - phaseEnd, state of world after last block has been placed. Sends data of type:
+     *      - worldData
+     *  - reset, when reset button pressed and world emptied. Sends data of type:
+     *      - resetData
+     *  - expEnd, state of game when final trial over. Sends data of type:
+     *      - gameData
     */
 
-    console.log('Trying to send ' + dataType + ' data from ' + phase + ' phase');
+    if(eventType == 'none'){
+        console.log('Error: Null eventType sent')
+    }
 
-    if (dataType =='initial'){
+    console.log('Trying to send ' + eventType + ' data from ' + phase + ' phase');
+
+    if (eventType =='initial'){
+        // Send data about initial placement of a block
+        // Could be in Build 
 
         // test out sending newBlock info to server/mongodb
         propertyList = Object.keys(newBlock.body); // extract block properties;
@@ -371,7 +383,8 @@ var sendData = function(dataType = 'final', newBlock = null) {
             colname: colname,
             iterationName: iterationName,
             dataType: 'block',
-            timePoint: 'initial', // initial block placement decision vs. final block resting position.
+            eventType: 'initial', // initial block placement decision vs. final block resting position.
+            phase: phase,
             gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
             time: performance.now(), // time since session began
             timeAbsolute: Date.now(),
@@ -387,6 +400,45 @@ var sendData = function(dataType = 'final', newBlock = null) {
         currScore = getScore('defaultCanvas0', 'defaultCanvas1', 64);
         console.log('current F1 score = ', currScore);
         socket.emit('block', block_data);
+    }
+    else if (eventType =='settled'){
+
+        // A world is, primarily, a list of blocks and locations
+        // Get this list of blocks
+
+
+        world.bodies.forEach(body => {
+            // test out sending newBlock info to server/mongodb
+            propertyList = Object.keys(body); // extract block properties;
+            propertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
+            blockProperties = _.pick(newBlock['body'], propertyList); // pick out all and only the block body properties in the property list
+            
+            // FIND FLOOR?
+
+        });
+
+        // GET LAST PLACED BLOCK
+        //
+ 
+
+        world_data = {
+            dbname: dbname,
+            colname: colname,
+            iterationName: iterationName,
+            dataType: 'world',
+            eventType: eventType, // initial block placement decision vs. final block resting position.
+            phase: phase,
+            gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
+            time: performance.now(), // time since session began
+            timeAbsolute: Date.now(),
+            lastBlockPlaced: 'null' // Get last block placed for easy check of where settled
+            // TODO: add WORLD information
+            // Enough to extract location of every block, including looking up blocks by id
+        };
+        console.log('world_data', world_data);
+        currScore = getScore('defaultCanvas0', 'defaultCanvas1', 64);
+        console.log('current F1 score = ', currScore);
+        socket.emit('world', world_data);
     }
         
 }
