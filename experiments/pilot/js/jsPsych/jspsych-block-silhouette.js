@@ -12,6 +12,7 @@
 // Task performance
 var deltaScore = 0; // diff in score btw end and start of phase
 var nullScore = 0; // reconstruction score for blank reconstruction
+var scoreGap = 0; // difference between nullScore and perfect score (F1 = 1)
 var currScore = 0; // initial score set to 0
 var cumulScore = 0; // cumulative score in experiment
 
@@ -228,6 +229,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       }
       // get null score
       nullScore = callback();
+      scoreGap = math.subtract(1,nullScore);        
       console.log('nullScore = ', nullScore);      
     }
 
@@ -244,6 +246,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       });
       // get null score
 	    nullScore = callback();
+      scoreGap = math.subtract(1,nullScore);              
 	    console.log('nullScore = ', nullScore);
     }
 
@@ -335,8 +338,13 @@ jsPsych.plugins["block-silhouette"] = (function () {
       occluder_trial.style.display = "none";
 
       timer(explore_time_limit, function () { //set timer for exploration phase
-        deltaScore = math.subtract(getCurrScore(),nullScore);        
-        console.log('deltaScore = ',deltaScore);
+        
+        // compute relative change in score against null reconstruction baseline
+        deltaScore = math.subtract(getCurrScore(),nullScore);
+        normedScore = math.divide(deltaScore,scoreGap);
+        console.log('deltaScore = ',deltaScore.toFixed(2));
+        console.log('normedScore = ',normedScore.toFixed(2));
+        
         sendData(dataType="final");
         //START TIMERS?
         clearP5Envs();
