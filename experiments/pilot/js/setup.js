@@ -1,6 +1,6 @@
 var callback;
 var score = 0;
-var numTrials = 12;
+var numTrials = 16;
 var shuffleTrials = false; // set to False to preserve order in db; set to True if you want to shuffle trials from db (scrambled10)
 
 function sendData() {
