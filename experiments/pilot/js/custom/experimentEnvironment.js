@@ -395,11 +395,10 @@ var sendData = function (eventType = 'none', newBlock = null) {
             blockCenterY: newBlock['body']['position']['y'],
             blockVertices: vertices,
             blockBodyProperties: blockProperties
-            // TODO: add WORLD information
         };
         console.log('block_data', block_data);
-        currScore = getScore('defaultCanvas0', 'defaultCanvas1', 64);
-        console.log('current F1 score = ', currScore);
+        ///currScore = getScore('defaultCanvas0', 'defaultCanvas1', 64);
+        //console.log('current F1 score = ', currScore);
         socket.emit('block', block_data);
     }
     else if (eventType == 'settled') {
@@ -430,15 +429,13 @@ var sendData = function (eventType = 'none', newBlock = null) {
             timeAbsolute: Date.now(),
             allBlockBodyProperties: bodiesForSending, // matter information about bodies of each block. Order is order of block placement
             numBlocks: bodiesForSending.length
-            // Enough to extract location of every block, including looking up blocks by id
         };
         console.log('world_data', world_data);
-        currScore = getScore('defaultCanvas0', 'defaultCanvas1', 64);
+        //currScore = getScore('defaultCanvas0', 'defaultCanvas1', 64);
         //console.log('current F1 score = ', currScore);
         socket.emit('world', world_data);
     }
     else if (eventType == 'reset') {
-
         // Event to show that reset has occurred
         // We can infer from the existence of this event that the world is empty
 
@@ -462,7 +459,6 @@ var sendData = function (eventType = 'none', newBlock = null) {
 
     }
     else if (eventType == 'expStart') {
-        
         // Send data about initial setup of experiment
 
         exp_data = {
@@ -514,27 +510,3 @@ var sendData = function (eventType = 'none', newBlock = null) {
     }
 
 }
-
-// Now covered in jsPsych plugin
-// function hideEnvButtons() {
-//     window.onload = function(){
-//         var envButtons = document.getElementById("env-buttons");
-//         envButtons.style.display = "none";
-//     };
-
-// }
-
-// function hideDoneButton() {
-//     window.onload = function(){
-//         var envButtons = document.getElementById("done");
-//         envButtons.style.display = "none";
-//     };
-
-// }
-
-// function revealEnvButtons() {
-//     window.onload = function(){
-//         var envButtons = document.getElementById("env-buttons");
-//         envButtons.style.display = "inline-block";
-//     };
-// }
