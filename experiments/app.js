@@ -60,6 +60,26 @@ io.on('connection', function (socket) {
       writeDataToMongo(data);      
   });
 
+  socket.on('world', function(data) {
+    console.log('world data received: ' + JSON.stringify(_.omit(data,'bitmap')));
+    writeDataToMongo(data);      
+  });
+  
+  socket.on('reset', function(data) {
+    console.log('reset data received: ' + JSON.stringify(_.omit(data,'bitmap')));
+    writeDataToMongo(data);      
+  });
+  
+  socket.on('start', function(data) {
+    console.log('start data received: ' + JSON.stringify(_.omit(data,'bitmap')));
+    writeDataToMongo(data);      
+  });
+
+  socket.on('end', function(data) {
+    console.log('end data received: ' + JSON.stringify(_.omit(data,'bitmap')));
+    writeDataToMongo(data);      
+  });
+
 });
 
 var serveFile = function(req, res) {

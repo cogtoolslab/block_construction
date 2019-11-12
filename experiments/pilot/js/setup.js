@@ -54,6 +54,13 @@ var previewTrial = {
   allow_keys: false  
 }
 
+var comments_trial = {
+  type: 'survey-text',
+  questions: [
+    {prompt: "Thank you for participating in our study! Any comments?",rows: 5, columns: 40, placeholder: "How was that for you? Did you notice any issues?"}
+  ],
+};
+
 // define trial object with boilerplate
 function Trial () {
   this.type = 'block-silhouette';
@@ -107,7 +114,8 @@ function setupGame () {
     } else {
       trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
     }
-    trials.push(goodbyeTrial);
+
+    trials.push(comments_trial); // add comments box at end
 
     // print out trial list    
     //console.log(trials);

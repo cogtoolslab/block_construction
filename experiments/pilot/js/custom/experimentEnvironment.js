@@ -402,7 +402,7 @@ var sendData = function (eventType = 'none', newBlock = null, trialObj = null) {
             colname: colname,
             iterationName: iterationName,
             dataType: 'block',
-            eventType: 'initial', // initial block placement decision vs. final block resting position.
+            eventType: eventType, // initial block placement decision vs. final block resting position.
             phase: phase,
             gameID: gameid,
             version: version,
@@ -445,6 +445,7 @@ var sendData = function (eventType = 'none', newBlock = null, trialObj = null) {
             timeAbsolute: Date.now(),
             allBlockBodyProperties: bodiesForSending, // matter information about bodies of each block. Order is order of block placement
             numBlocks: bodiesForSending.length
+            // need to add bonuses
         };
         console.log('world_data', world_data);
         socket.emit('world', world_data);
@@ -459,7 +460,7 @@ var sendData = function (eventType = 'none', newBlock = null, trialObj = null) {
             dbname: dbname,
             colname: colname,
             iterationName: iterationName,
-            dataType: 'world',
+            dataType: 'reset',
             eventType: eventType, // initial block placement decision vs. final block resting position.
             phase: phase,
             gameID: gameid,
@@ -473,7 +474,7 @@ var sendData = function (eventType = 'none', newBlock = null, trialObj = null) {
         socket.emit('reset', reset_data);
 
     }
-    else if (eventType == 'expStart') {
+    else if (eventType == 'start') {
         // Send data about initial setup of experiment
 
         floorBody = ground.body
@@ -485,11 +486,11 @@ var sendData = function (eventType = 'none', newBlock = null, trialObj = null) {
         // custom de-borkification
         vertices = _.map(floorBody.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
 
-        exp_data = {
+        start_data = {
             dbname: dbname,
             colname: colname,
             iterationName: iterationName,
-            dataType: 'block',
+            dataType: 'gameInit',
             eventType: 'initial', // initial block placement decision vs. final block resting position.
             phase: phase,
             gameID: gameid,
@@ -532,8 +533,30 @@ var sendData = function (eventType = 'none', newBlock = null, trialObj = null) {
             floorProperties: floorProperties, //properties of floor body
             vertices: vertices
         };
-        console.log('exp_data', exp_data);
-        socket.emit('experiment', exp_data);
+        console.log('start', start_data);
+        socket.emit('start', start_data);
+    }
+
+    else if (eventType == 'end') {
+        // Send data about initial setup of experiment
+    
+        start_data = {
+            dbname: dbname,
+            colname: colname,
+            iterationName: iterationName,
+            dataType: 'gameInit',
+            eventType: 'initial', // initial block placement decision vs. final block resting position.
+            phase: phase,
+            gameID: gameid,
+            version: version,
+            time: performance.now(), // time since session began
+            timeAbsolute: Date.now()
+            // need to add bonuses
+        };
+
+        console.log('end', end_data);
+        socket.emit('end', end_data);
+
     }
 
 }

@@ -31,7 +31,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
   var plugin = {};
 
-  jsPsych.pluginAPI.registerPreload('block-silhouette', 'image');
+  jsPsych.pluginAPI.registerPreload('block-silhouette', 'stimulus', 'image');
 
   plugin.info = {
     name: 'block-silhouette',
@@ -124,12 +124,11 @@ jsPsych.plugins["block-silhouette"] = (function () {
       html += '<div class="row pt-2" id="trial-info">'
       html += '<div class="col align-text-center" id="trial-number">'
       //html += '<div class="progress"><div id="progress-bar"></div></div>'
-      html += `<p>Trial ${trial.trialNum + 1} of ${trial.num_trials}</p>`
       html += '</div>'
       html += '</div>'
       html += '</div>'
+      html += '<div id="trial-counter"> <p2> trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + ' of ' + trial.num_trials + '</p2></div>'
 
-      html += '<div id="trial-counter"> <p2> trial ' + (parseInt(trial.trialNum)+parseInt(1)).toString() + ' of ' + trial.num_trials + '</p2></div>'
 
       // introduce occluder to make the inter-trial transitions less jarring
       html += '<div class="occluder" id="occluder-trial">'
@@ -209,8 +208,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
       }
       // get null score
       nullScore = baseline();
-      scoreGap = math.subtract(1,nullScore);        
-      console.log('nullScore = ', nullScore);      
+      scoreGap = math.subtract(1, nullScore);
+      console.log('nullScore = ', nullScore);
     }
 
     function build(baseline) {
@@ -225,39 +224,39 @@ jsPsych.plugins["block-silhouette"] = (function () {
         env_div.style.backgroundColor = "#75E559";
       });
       // get null score
-	    nullScore = baseline();
-      scoreGap = math.subtract(1,nullScore);              
-	    console.log('nullScore = ', nullScore);
+      nullScore = baseline();
+      scoreGap = math.subtract(1, nullScore);
+      console.log('nullScore = ', nullScore);
     }
 
     function getCurrScore() {
       // call this to get: 
       // (1) F1 score for target vs. blank at beginning of each phase
       // (2) F1 score for target vs. blank at end of each phase
-      score = getScore('defaultCanvas0', 'defaultCanvas1', 0.8 , 64);
-      return score;      
+      score = getScore('defaultCanvas0', 'defaultCanvas1', 0.8, 64);
+      return score;
     }
 
     function getNormedScore(rawScore, nullScore, scoreGap) {
       // compute relative change in score
-      deltaScore = math.subtract(rawScore,nullScore);
-      normedScore = math.divide(deltaScore,scoreGap);
-      console.log('scoreGap = ',scoreGap.toFixed(2));
-      console.log('deltaScore = ',deltaScore.toFixed(2));
-      console.log('normedScore = ',normedScore.toFixed(2));  
-      return normedScore;    
+      deltaScore = math.subtract(rawScore, nullScore);
+      normedScore = math.divide(deltaScore, scoreGap);
+      console.log('scoreGap = ', scoreGap.toFixed(2));
+      console.log('deltaScore = ', deltaScore.toFixed(2));
+      console.log('normedScore = ', normedScore.toFixed(2));
+      return normedScore;
     }
 
     function convertNormedScoreToBonus(normedScore) {
       // convert normedScore (ranges between 0 and 1)
       // to bonus amount (in cents)      
-      highThresh = 0.5; 
+      highThresh = 0.5;
       midThresh = 0.2;
       lowThresh = 0.1;
-      if (normedScore > highThresh) {bonus = 0.05;} 
-      else if (normedScore > midThresh) {bonus = 0.03;} 
-      else if (normedScore > lowThresh) {bonus = 0.01;}
-      else {bonus = 0; console.log('No bonus earned.')}
+      if (normedScore > highThresh) { bonus = 0.05; }
+      else if (normedScore > midThresh) { bonus = 0.03; }
+      else if (normedScore > lowThresh) { bonus = 0.01; }
+      else { bonus = 0; console.log('No bonus earned.') }
       return bonus;
     }
 
@@ -306,7 +305,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       /* Called to clear building environment window. 
       Works by resetting variables then building a new p5 instance.
       */
-      sendData(dataType="reset");
+      sendData(dataType = "reset");
       resetEnv();
       p5env = new p5(setupEnvironment, 'environment-canvas');
       // update reset counter
@@ -341,22 +340,22 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     // EXPLORATION PHASE
     pre_build(getCurrScore); //Setup exploration phase
-    
+
     if (trial.trialNum == 0) {
-      sendData(eventType = 'expStart');
+      sendData(eventType = 'start');
     }
 
     occluder_trial.addEventListener('click', event => { //SHOW OCCLUDER
       occluder_trial.style.display = "none";
 
       timer(explore_time_limit, function () { //set timer for exploration phase    
-        
+
         // calculate bonus earned
         rawScore = getCurrScore();
         currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
         cumulBonus += currBonus; // TODO: this cumulBonus needs to be bundled into data sent to mongo
 
-        sendData(dataType="final");
+        sendData(dataType = "final");
         //START TIMERS?
         clearP5Envs();
 
@@ -366,20 +365,20 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
         occluder_condition.addEventListener('click', event => { //SHOW OCCLUDER
           occluder_condition.style.display = "none";
-          
+
           //START TIMERS?
           timer(build_time_limit, function () { //set timer for build phase
 
-          // calculate bonus earned
-          rawScore = getCurrScore();
-          currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
-          cumulBonus += currBonus;          
+            // calculate bonus earned
+            rawScore = getCurrScore();
+            currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
+            cumulBonus += currBonus;
 
             //end trial //MAKE SURE DATA SENT HERE
             occluder_trial.style.display = "block";
             clearP5Envs(); // Clear everything in P5
 
-            if(!finished_trial){
+            if (!finished_trial) {
               clear_display_move_on();  // Move on jsPsych
             }
           });
@@ -494,8 +493,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
     // 
     function clear_display_move_on(trial_data) {
 
-      sendData(eventType="settled");
-      sendData(eventType="phaseEnd");
+      sendData(eventType = "settled");
+      sendData(eventType = "phaseEnd");
 
       //clear all timers
       timers.forEach(interval => {
@@ -527,6 +526,5 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
 
   };
-
   return plugin;
 })();

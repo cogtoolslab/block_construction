@@ -19,6 +19,7 @@ function BlockKind(w,h,blockColor){
         env.push();
         env.rectMode(env.CENTER);
         env.fill(this.blockColor);
+        env.stroke(100);
         env.rect(x,y,this.w*sF,this.h*sF)
         env.pop();
 
@@ -30,7 +31,7 @@ function BlockKind(w,h,blockColor){
         env.push();
         env.translate(mouseX, mouseY);
         env.rectMode(env.CENTER);
-        env.stroke(150);
+        env.stroke(100);
         fillColor = disabled ? [100, 100, 100, 100] : [...this.blockColor];
         fillColor[3] = 130;
         env.fill(fillColor);
