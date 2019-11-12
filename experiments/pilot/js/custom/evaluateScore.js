@@ -137,12 +137,12 @@ function getScore(canvas0, canvas1, agprop, imsize) {
   // imsize is size of rescaled canvas, e.g., 64
 
   target = document.getElementById(canvas0);
-  targ = extractBitmap(target, agprop, imsize);
+  targ = extractBitmap(target, imsize);
   // printWorld(targ, imsize);
   targs = subsetWorld(targ, 50, imsize, imsize);
 
   reconstruction = document.getElementById(canvas1);
-  recon = extractBitmap(reconstruction, agprop, imsize);
+  recon = extractBitmap(reconstruction, imsize);
   // printWorld(recon, imsize);
   recons = subsetWorld(recon, 50, imsize, imsize);
 
