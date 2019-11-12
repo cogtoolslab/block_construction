@@ -27,7 +27,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
   var plugin = {};
 
-  jsPsych.pluginAPI.registerPreload('block-silhouette', 'button_html', 'image');
+  jsPsych.pluginAPI.registerPreload('block-silhouette', 'image');
 
   plugin.info = {
     name: 'block-silhouette',
@@ -44,13 +44,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
         pretty_name: 'Block Collection (JSON String)',
         default: undefined,
         description: 'nickname for target structure'
-      },
-      button_html: {
-        type: jsPsych.plugins.parameterType.IMAGE,
-        pretty_name: 'Button HTML',
-        default: '<img src="%imageURL%" height="224" width="224">',
-        array: true,
-        description: 'The html of the button. Can create own style.'
       },
       prompt: {
         type: jsPsych.plugins.parameterType.STRING,
