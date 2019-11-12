@@ -184,7 +184,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     occluder_condition.style.display = "none";
 
 
-    function pre_build(callback) {
+    function pre_build(baseline) {
       done_button.style.display = "none";
       // mental or physical exploration
       if (trial.condition == "mental") {
@@ -206,12 +206,12 @@ jsPsych.plugins["block-silhouette"] = (function () {
         });
       }
       // get null score
-      nullScore = callback();
+      nullScore = baseline();
       scoreGap = math.subtract(1,nullScore);        
       // console.log('nullScore = ', nullScore);      
     }
 
-    function build(callback) {
+    function build(baseline) {
       // actual building phase (same for everyone)
       p5stim, p5env = buildStage(trial.targetBlocks); //create p5 instances for this trial phase
 
@@ -223,7 +223,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
         env_div.style.backgroundColor = "#75E559";
       });
       // get null score
-	    nullScore = callback();
+	    nullScore = baseline();
       scoreGap = math.subtract(1,nullScore);              
 	    console.log('nullScore = ', nullScore);
     }
