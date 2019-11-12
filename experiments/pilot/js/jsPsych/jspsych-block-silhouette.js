@@ -5,7 +5,7 @@
  *
  * documentation: docs.jspsych.org
  *
- * created by Will McCarthy & Judy Fan (wmccarth@ucsd.edu) Oct 2019
+ * created by Will McCarthy (wmccarth@ucsd.edu) & Judy Fan (jefan@ucsd.edu) Oct 2019
  * 
  **/
 
@@ -17,6 +17,10 @@ var scoreGap = 0; // difference between nullScore and perfect score (F1 = 1)
 var rawScore = 0; // raw F1 score after phase end
 var currBonus = 0; // current bonus increment 
 var cumulBonus = 0; // cumulative bonus earned in experiment
+
+// Metadata
+var gameid = 'GAMEID_PLACEHOLDER';
+var version = 'VERSION_PLACEHOLDER';
 
 // Timing parameters
 var explore_time_limit = 1; // time limit in seconds
@@ -91,6 +95,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     }
 
     console.log('trial: ', trial);
+
 
     // wrapper function to show everything, call this when you've waited what you
     // reckon is long enough for the data to come back from the db
@@ -172,6 +177,10 @@ jsPsych.plugins["block-silhouette"] = (function () {
     var timer_text = document.getElementById("timer-text");
     var env_divs = document.getElementsByClassName("col-md env-div");
     var progressBar = $('#progress-bar');
+
+    // update these global metadata vars with actual values for this trial  
+    gameid = trial.gameid;
+    version = trial.version;
 
     //occluder_trial.style.display = "none";
     occluder_condition.style.display = "none";
@@ -296,7 +305,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       /* Called to clear building environment window. 
       Works by resetting variables then building a new p5 instance.
       */
-      sendData(trial, dataType="reset");
+      sendData(dataType="reset");
       resetEnv();
       p5env = new p5(setupEnvironment, 'environment-canvas');
       // update reset counter
@@ -333,7 +342,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     pre_build(getCurrScore); //Setup exploration phase
     
     if (trial.trialNum == 0) {
-      sendData(trial, eventType = 'expStart');
+      sendData(eventType = 'expStart');
     }
 
     occluder_trial.addEventListener('click', event => { //SHOW OCCLUDER
@@ -346,7 +355,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
         currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
         cumulBonus += currBonus; // TODO: this cumulBonus needs to be bundled into data sent to mongo
 
-        sendData(trial, dataType="final");
+        sendData(dataType="final");
         //START TIMERS?
         clearP5Envs();
 
@@ -466,14 +475,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
         console.log('correct?  ', trial_correct);
       }
 
-      // // get location index of target
-      // target_index = _.indexOf(prettyChoices, trial.target.shapenetid);
-      // response_index = _.indexOf(prettyChoices, response.button);
-      // if (trial.dev_mode == true) {
-      //   console.log('target_index: ', target_index); 
-      //   console.log('response_index: ', response_index); 
-      // }
-
       // // show feedback
       // if (trial_correct==true) {
       //  // show feedback by drawing GREEN box around TARGET if selected CORRECTLY    
@@ -492,8 +493,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
     // 
     function clear_display_move_on(trial_data) {
 
-      sendData(trial, eventType="settled");
-      sendData(trial, eventType="phaseEnd");
+      sendData(eventType="settled");
+      sendData(eventType="phaseEnd");
 
       //clear all timers
       timers.forEach(interval => {
