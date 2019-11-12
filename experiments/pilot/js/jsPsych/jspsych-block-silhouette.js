@@ -5,22 +5,33 @@
  *
  * documentation: docs.jspsych.org
  *
- * created by Will McCarthy & Judy Fan (wmccarth@ucsd.edu) Oct 2019
+ * created by Will McCarthy (wmccarth@ucsd.edu) & Judy Fan (jefan@ucsd.edu) Oct 2019
  * 
  **/
 
-var rawScore = 0; // initial raw score set to 0
-var currentBonus = 0; // initial bonus set to 0
-var cumulativeBonus = 0; // cumulative bonus initialized at 0
-var explore_time_limit = 5; // time limit in seconds
-var build_time_limit = 10; // time limit in seconds
+// Task performance
+var deltaScore = 0; // diff in score btw end and start of phase
+var nullScore = 0; // reconstruction score for blank reconstruction
+var normedScore = 0; // reconstruction score for blank reconstruction
+var scoreGap = 0; // difference between nullScore and perfect score (F1 = 1)
+var rawScore = 0; // raw F1 score after phase end
+var currBonus = 0; // current bonus increment 
+var cumulBonus = 0; // cumulative bonus earned in experiment
+
+// Metadata
+var gameid = 'GAMEID_PLACEHOLDER';
+var version = 'VERSION_PLACEHOLDER';
+
+// Timing parameters
+var explore_time_limit = 1; // time limit in seconds
+var build_time_limit = 20; // time limit in seconds
 //var pct_per_sec = (1 / explore_time_limit) * 100; // if time_limit==20, that means that progress bar goes down by 5% each unit time
 
 jsPsych.plugins["block-silhouette"] = (function () {
 
   var plugin = {};
 
-  jsPsych.pluginAPI.registerPreload('block-silhouette', 'button_html', 'image');
+  jsPsych.pluginAPI.registerPreload('block-silhouette', 'image');
 
   plugin.info = {
     name: 'block-silhouette',
@@ -37,13 +48,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
         pretty_name: 'Block Collection (JSON String)',
         default: undefined,
         description: 'nickname for target structure'
-      },
-      button_html: {
-        type: jsPsych.plugins.parameterType.IMAGE,
-        pretty_name: 'Button HTML',
-        default: '<img src="%imageURL%" height="224" width="224">',
-        array: true,
-        description: 'The html of the button. Can create own style.'
       },
       prompt: {
         type: jsPsych.plugins.parameterType.STRING,
@@ -90,37 +94,22 @@ jsPsych.plugins["block-silhouette"] = (function () {
       console.error('Required parameter "target" missing in block-silhouette');
     }
 
-    console.log(trial);
+    console.log('trial: ', trial);
+
 
     // wrapper function to show everything, call this when you've waited what you
     // reckon is long enough for the data to come back from the db
     function show_display() {
 
-      // //display buttons
-      // var buttons = [];
-      // if (Array.isArray(trial.button_html)) {
-      //   if (trial.button_html.length == trial.choices.length) {
-      //     buttons = trial.button_html;
-      //   } else {
-      //     console.error('Error in block-silhouette plugin. The length of the button_html array does not equal the length of the choices array');
-      //   }
-      // } else {
-      //   for (var i = 0; i < trial.choices.length; i++) {
-      //     buttons.push(trial.button_html);
-      //   }
-      // }
-
-      //show prompt if there is one
-      // if (trial.prompt !== null) {
-      //   var html = '<div id="prompt">' +trial.prompt + '</div>';
-      // }
-
-
-      var html = ''
+      var html = '';
 
       html += '<div class="container pt-1" id="experiment">'
       html += '<div class="container" id="text-bar">'
+<<<<<<< HEAD
       html += `<p id="bonus-meter">Bonus: ${cumulativeBonus.toFixed(2)} </p>`
+=======
+      html += `<p id="bonus-meter">Bonus: $${cumulBonus.toFixed(2)} </p>`
+>>>>>>> f7e524a251cdcd37434adff678292eb8d0a24b9c
       html += '<p id="condition-heading">Build that structure!</p>'
       html += '<p id="timer-text">00:00</p>'
       html += '</div>'
@@ -132,8 +121,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
       html += '</div>'
       html += '<div class="row pt-2" id="experiment-button-col">'
       html += '<div class="col-auto ml-auto button-col" id="env-buttons">'
-      html += '<button type="button" class="btn btn-success" id="done" value="done" onclick="donePressed();">Done</button>'
-      html += '<button type="button" class="btn btn-danger" id="reset" value="reset" onclick="resetPressed();">Reset</button>'
+      html += '<button type="button" class="btn btn-success" id="done" value="done">Done</button>'
+      html += '<button type="button" class="btn btn-danger" id="reset" value="reset">Reset</button>'
       html += '</div>'
       html += '</div>'
       html += '<div class="row pt-2" id="trial-info">'
@@ -144,14 +133,16 @@ jsPsych.plugins["block-silhouette"] = (function () {
       html += '</div>'
       html += '</div>'
 
-
-
-      // // display score earned so far
-      // html += '<div id="score"> <p2> bonus earned: ' + parseFloat(score).toFixed(3) + '</p2></div>'
-      // html += '<div id="trial-counter"> <p2> trial ' + (parseInt(trial.trialNum)+parseInt(1)).toString() + ' of ' + trial.num_trials + '</p2></div>'
+      html += '<div id="trial-counter"> <p2> trial ' + (parseInt(trial.trialNum)+parseInt(1)).toString() + ' of ' + trial.num_trials + '</p2></div>'
 
       // introduce occluder to make the inter-trial transitions less jarring
-      html += '<div id="occluder"> </div>'
+      html += '<div class="occluder" id="occluder-trial">'
+      html += '<div><p>Ready for the next trial? Click anywhere to continue.</p></div>'
+      html += '</div>'
+
+      html += '<div class="occluder" id="occluder-condition">'
+      html += '<div><p>Now build the structure! Click anywhere to continue.</p></div>'
+      html += '</div>'
 
       // // display helpful info during debugging
       // if (trial.dev_mode==true) {
@@ -177,25 +168,34 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     }
 
+    var finished_trial = false;
     // call show_display now, which includes a massive occluder that covers everything up
     show_display();
 
     // get html elements
-    var doneButton = document.getElementById("done");
-    var occluder = document.getElementById("occluder");
+    var done_button = document.getElementById("done");
+    var reset_button = document.getElementById("reset");
+    var occluder_trial = document.getElementById("occluder-trial");
+    var occluder_condition = document.getElementById("occluder-condition");
     var condition_heading = document.getElementById("condition-heading");
     var timer_text = document.getElementById("timer-text");
     var env_divs = document.getElementsByClassName("col-md env-div");
     var progressBar = $('#progress-bar');
 
-    occluder.style.display = "none";
+    // update these global metadata vars with actual values for this trial  
+    gameid = trial.gameid;
+    version = trial.version;
+
+    //occluder_trial.style.display = "none";
+    occluder_condition.style.display = "none";
 
 
-    function pre_build() {
-      doneButton.style.display = "none";
+    function pre_build(baseline) {
+      done_button.style.display = "none";
       // mental or physical exploration
       if (trial.condition == "mental") {
-        p5stim, p5env = simulate(trial.targetBlocks); //create p5 instances for this trial phase
+        reset_button.style.display = "none";
+        p5stim, p5env = exploreMental(trial.targetBlocks); //create p5 instances for this trial phase
         //Update trial appearance 
         condition_heading.textContent = "Think about how you will build the structure"
         Array.prototype.forEach.call(env_divs, env_div => {
@@ -204,29 +204,75 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       }
       else if (trial.condition == "physical") {
-        p5stim, p5env = explore(trial.targetBlocks); //create p5 instances for this trial phase
+        p5stim, p5env = explorePhysical(trial.targetBlocks); //create p5 instances for this trial phase
         //Update trial appearance 
         condition_heading.textContent = "Practice building the structure";
         Array.prototype.forEach.call(env_divs, env_div => {
           env_div.style.backgroundColor = "#6DEBFF";
         });
       }
+      // get null score
+      nullScore = baseline();
+      scoreGap = math.subtract(1,nullScore);        
+      console.log('nullScore = ', nullScore);      
     }
 
-    function build() {
+    function build(baseline) {
       // actual building phase (same for everyone)
       p5stim, p5env = buildStage(trial.targetBlocks); //create p5 instances for this trial phase
 
       //Update trial appearance 
-      doneButton.style.display = "inline-block";
+      done_button.style.display = "inline-block";
+      reset_button.style.display = "inline-block";
       condition_heading.textContent = "Now build that structure!";
       Array.prototype.forEach.call(env_divs, env_div => {
         env_div.style.backgroundColor = "#75E559";
       });
+      // get null score
+	    nullScore = baseline();
+      scoreGap = math.subtract(1,nullScore);              
+	    console.log('nullScore = ', nullScore);
     }
 
-    pre_build();
+    function getCurrScore() {
+      // call this to get: 
+      // (1) F1 score for target vs. blank at beginning of each phase
+      // (2) F1 score for target vs. blank at end of each phase
+      score = getScore('defaultCanvas0', 'defaultCanvas1', 0.8 , 64);
+      return score;      
+    }
 
+    function getNormedScore(rawScore, nullScore, scoreGap) {
+      // compute relative change in score
+      deltaScore = math.subtract(rawScore,nullScore);
+      normedScore = math.divide(deltaScore,scoreGap);
+      console.log('scoreGap = ',scoreGap.toFixed(2));
+      console.log('deltaScore = ',deltaScore.toFixed(2));
+      console.log('normedScore = ',normedScore.toFixed(2));  
+      return normedScore;    
+    }
+
+    function convertNormedScoreToBonus(normedScore) {
+      // convert normedScore (ranges between 0 and 1)
+      // to bonus amount (in cents)      
+      highThresh = 0.5; 
+      midThresh = 0.2;
+      lowThresh = 0.1;
+      if (normedScore > highThresh) {bonus = 0.05;} 
+      else if (normedScore > midThresh) {bonus = 0.03;} 
+      else if (normedScore > lowThresh) {bonus = 0.01;}
+      else {bonus = 0; console.log('No bonus earned.')}
+      return bonus;
+    }
+
+    function getBonusEarned(rawScore, nullScore, scoreGap) {
+      normedScore = getNormedScore(rawScore, nullScore, scoreGap);
+      bonus = convertNormedScoreToBonus(normedScore);
+      console.log('bonus earned = ', bonus);
+      return bonus;
+    }
+
+    var timers = [];
     // start timing
     var start_time = Date.now();
     var time_bonus = 0;
@@ -234,42 +280,116 @@ jsPsych.plugins["block-silhouette"] = (function () {
     var widthPct = 100 // starts at 105% b/c of the 1000ms delay above before occluder disappears
     var seconds_passed = 0;
 
-    function timer(time_left, callback = null){interval = setInterval(function () {
-      seconds_passed += 1;
-      
-      //widthPct -= pct_per_sec;
-      //progressBar.animate({ width: widthPct + '%' }, 1000, "linear");
+    function timer(time_left, callback = null) {
+      interval = setInterval(function () {
+        timers.push(interval);
+        seconds_passed += 1;
 
-      // if (widthPct <= 0) {
-      //   clearInterval(interval);
-      // }
+        //widthPct -= pct_per_sec;
+        //progressBar.animate({ width: widthPct + '%' }, 1000, "linear");
 
-      time_left -= 1;
+        // if (widthPct <= 0) {
+        //   clearInterval(interval);
+        // }
 
-      minutes = parseInt(time_left / 60, 10);
-      seconds = parseInt(time_left % 60, 10);
+        time_left -= 1;
+        minutes = parseInt(time_left / 60, 10);
+        seconds = parseInt(time_left % 60, 10);
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+        timer_text.textContent = minutes + ':' + seconds;
 
-      minutes = minutes < 10 ? "0" + minutes : minutes;
-      seconds = seconds < 10 ? "0" + seconds : seconds;
+        if (time_left < 1) {
+          clearInterval(interval)
+          callback();
+        }
+      }, 1000);
+    }
 
-      timer_text.textContent = minutes + ':' + seconds;
+    function resetPressed() {
+      /* Called to clear building environment window. 
+      Works by resetting variables then building a new p5 instance.
+      */
+      sendData(dataType="reset");
+      resetEnv();
+      p5env = new p5(setupEnvironment, 'environment-canvas');
+      // update reset counter
 
-      if (time_left < 1) {
-        clearInterval(interval)
+    }
+
+    function donePressed() {
+      finished_trial = true;
+      occluder_trial.style.display = "block"; // show occluder
+      clear_display_move_on(trial_data); // Move on jsPsych
+      clearP5Envs();
+    }
+
+    function clearP5Envs() {
+      // Removes P5 environments to start new experiment phase or trial
+
+      p5env.remove(); // remove environment display
+      p5stim.remove();// remove stimulus display
+
+      blocks = [];
+      blockKinds = [];
+      isPlacingObject = false;
+      rotated = false;
+      selectedBlockKind = null;
+
+    }
+    // Set up button event listeners
+    done_button.addEventListener('click', donePressed);
+    reset_button.addEventListener('click', resetPressed);
+
+    // Start the experiment!
+
+    // EXPLORATION PHASE
+    pre_build(getCurrScore); //Setup exploration phase
+    
+    if (trial.trialNum == 0) {
+      sendData(eventType = 'expStart');
+    }
+
+    occluder_trial.addEventListener('click', event => { //SHOW OCCLUDER
+      occluder_trial.style.display = "none";
+
+      timer(explore_time_limit, function () { //set timer for exploration phase    
+        
+        // calculate bonus earned
+        rawScore = getCurrScore();
+        currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
+        cumulBonus += currBonus; // TODO: this cumulBonus needs to be bundled into data sent to mongo
+
+        sendData(dataType="final");
+        //START TIMERS?
         clearP5Envs();
-        callback();
-      }
-    }, 1000);}
 
-    timer(explore_time_limit, function(){
-      build();
-      timer(build_time_limit, function(){
-        //end trial //MAKE SURE DATA SENT HERE
-        clearP5Envs();
-        // Move on jsPsych
-        jsPsych.finishTrial();
-      }); 
+        // BUILD PHASE
+        build(getCurrScore); // Setup build phase
+        occluder_condition.style.display = "block";
+
+        occluder_condition.addEventListener('click', event => { //SHOW OCCLUDER
+          occluder_condition.style.display = "none";
+          
+          //START TIMERS?
+          timer(build_time_limit, function () { //set timer for build phase
+
+          // calculate bonus earned
+          rawScore = getCurrScore();
+          currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
+          cumulBonus += currBonus;          
+
+            //end trial //MAKE SURE DATA SENT HERE
+            occluder_trial.style.display = "block";
+            clearP5Envs(); // Clear everything in P5
+
+            if(!finished_trial){
+              clear_display_move_on();  // Move on jsPsych
+            }
+          });
+        });
       });
+    });
 
 
     // wait for a little bit, then remove the occluder, which should be safely after everything has been rendered
@@ -338,7 +458,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       // score the built structure against the target
 
-      
+
 
       // gather the data to store for the trial
       if (trial.dev_mode == true) {
@@ -347,16 +467,11 @@ jsPsych.plugins["block-silhouette"] = (function () {
       var trial_data = _.extend(_.omit(trial, 'on_finish'), {
         dbname: 'block_construction',
         colname: 'silhouette',
-        // rt: response.rt,
-        // correct: trial_correct,
-        // numCorrectSoFar: numCorrect,
-        // original_correct: trial.outcome,
-        // stim_mongo_id: trial._id,
-        // response: response.button,
-        // score: score,
-        // workerId: turkInfo.workerId,
-        // hitID: turkInfo.hitId,
-        // aID: turkInfo.assignmentId,
+        gameID: trial.gameid,
+        // rt: response.rt,        
+        workerId: turkInfo.workerId,
+        hitID: turkInfo.hitId,
+        aID: turkInfo.assignmentId,
         timestamp: Date.now()
       });
 
@@ -364,14 +479,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
         console.log('trial data: ', trial_data);
         console.log('correct?  ', trial_correct);
       }
-
-      // // get location index of target
-      // target_index = _.indexOf(prettyChoices, trial.target.shapenetid);
-      // response_index = _.indexOf(prettyChoices, response.button);
-      // if (trial.dev_mode == true) {
-      //   console.log('target_index: ', target_index); 
-      //   console.log('response_index: ', response_index); 
-      // }
 
       // // show feedback
       // if (trial_correct==true) {
@@ -390,6 +497,15 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     // 
     function clear_display_move_on(trial_data) {
+
+      sendData(eventType="settled");
+      sendData(eventType="phaseEnd");
+
+      //clear all timers
+      timers.forEach(interval => {
+        clearInterval(interval);
+      });
+
       // clear the display
       display_element.innerHTML = '';
 

@@ -1,6 +1,6 @@
 var callback;
 var score = 0;
-var numTrials = 12;
+var numTrials = 16;
 var shuffleTrials = false; // set to False to preserve order in db; set to True if you want to shuffle trials from db (scrambled10)
 
 function sendData() {
@@ -20,9 +20,9 @@ var goodbyeTrial = {
 
 var consentHTML = {
   'str1' : '<p>In this HIT, you will see some gnarly shapes. For each shape, you will try to reconstruct it from a set of blocks. For really good reconstructions, you will receive a bonus. </p>',
-  'str2' : '<p>We expect the average game to last approximately 10 minutes, including the time it takes to read instructions.</p>',
+  'str2' : '<p>Your total time commitment is expected to last approximately 35 minutes, including the time it takes to read these instructions. For your participation in this study, you will be paid approximately $6/hour. For very accurate performance, you may be paid an additional bonus on top of this base amount. If you begin but choose not to complete the study, please contact the researcher directly to receive prorated compensation. </p>',
   'str3' : ["<u><p id='legal'>Consenting to Participate:</p></u>",
-	    "<p id='legal'>By completing this HIT, you are participating in a study being performed by cognitive scientists in the UC San Diego Department of Psychology. If you have questions about this research, please contact the <b>Sketchloop Admin</b> at <b><a href='mailto://sketchloop@gmail.com'>sketchloop@gmail.com</a> </b>. You must be at least 18 years old to participate. Your participation in this research is voluntary. You may decline to answer any or all of the following questions. You may decline further participation, at any time, without adverse consequences. Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you.</p>"].join(' ')
+	    "<p id='legal'>By completing this HIT, you are participating in a study being performed by cognitive scientists in the UC San Diego Department of Psychology. The purpose of this research is to find out more about how people solve problems. You must be at least 18 years old to participate. There are neither specific benefits nor anticipated risks associated with participation in this study. Your participation in this study is completely voluntary and you can withdraw at any time by simply exiting the study. You may decline to answer any or all of the following questions. Choosing not to participate or withdrawing will result in no penalty. Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you. If you have questions about this research, please contact the researchers by sending an email to <b><a href='mailto://sketchloop@gmail.com'>sketchloop@gmail.com</a> </b>. These researchers will do their best to communicate with you in a timely, professional, and courteous manner. If you have questions regarding your rights as a research subject, or if problems arise which you do not feel you can discuss with the researchers, please contact the UC San Diego Institutional Review Board. </p>"].join(' ')
 }
 
 // add welcome page
@@ -66,6 +66,7 @@ function setupGame () {
 
   // number of trials to fetch from database is defined in ./app.js
   var socket = io.connect();
+  
 
   // on_finish is called at the very very end of the experiment
   var on_finish = function(data) {

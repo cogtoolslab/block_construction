@@ -28,7 +28,7 @@ function Boundary(x, y, w, h){
         env.rectMode(env.CENTER);
         env.rotate(angle);
         env.stroke(100);
-        env.fill(20);
+        env.fill([12,27,36]);
         env.rect(0,0,this.w,this.h);
         env.pop();
 

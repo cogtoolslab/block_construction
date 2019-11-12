@@ -17,6 +17,9 @@ body {
     margin-right: 15px;
 }
 
+.row{
+    flex-wrap: nowrap;
+}
 
 #condition-heading {
     display: inline-block;
@@ -73,7 +76,7 @@ body {
     padding: 100px;
 }
 
-#occluder {
+.occluder {
   float: middle;
   border:solid 1px #7F7F7F;
   height: 100vh;
@@ -83,6 +86,30 @@ body {
   background: #7F7F7F;
   position: absolute;
   z-index: 12;
+  opacity: 0.9;
+  color: black;
+}
+
+.occluder div{
+    float: middle;
+    border:solid 1px #7F7F7F;
+    height: 80vh;
+    width: 90vw;
+    margin: auto;
+    top: 40px; bottom: auto; left:0; right: 0;
+    background: #FFFFFF;
+    position: absolute;
+    z-index: 12;
+    color: black;
+}
+
+.occluder p{
+    float: middle;
+    margin: auto;
+    top: auto; bottom: auto; left:0; right: 0;
+    position: absolute;
+    color: black;
+    line-height: 80vh;
 }
 
 #progress-bar {

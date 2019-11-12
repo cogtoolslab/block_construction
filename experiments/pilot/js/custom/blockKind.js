@@ -4,7 +4,7 @@ function BlockKind(w,h,blockColor){
     // BlockKind width and height should be given in small integers. They are scaled in the block class.
     this.w = w;
     this.h = h;
-    this.color = blockColor;
+    this.blockColor = blockColor;
     
     var x;
     var y;
@@ -18,20 +18,23 @@ function BlockKind(w,h,blockColor){
         this.y = y;
         env.push();
         env.rectMode(env.CENTER);
-        env.fill(this.color);
+        env.fill(this.blockColor);
         env.rect(x,y,this.w*sF,this.h*sF)
         env.pop();
 
     }
 
-    this.showGhost = function(env, mouseX, mouseY, rotated) {
+    this.showGhost = function(env, mouseX, mouseY, rotated, disabled = false) {
 
         // update to include scrolling to rotate? https://p5js.org/reference/#/p5/mouseWheel
         env.push();
         env.translate(mouseX, mouseY);
         env.rectMode(env.CENTER);
-        env.stroke(200);
-        env.fill(blockColor);
+        env.stroke(150);
+        fillColor = disabled ? [100, 100, 100, 100] : [...this.blockColor];
+        fillColor[3] = 130;
+        env.fill(fillColor);
+
         if(rotated){
             env.rect(0,0,this.h*sF,this.w*sF);
         } else {

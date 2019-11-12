@@ -1,7 +1,7 @@
 // This file contains helper functions for computing the error between 
 // the target and the structure built by the participant.
 
-function extractBitmap(sketch,imsize) {
+function extractBitmap(sketch, imsize) {
 
   // rescale image to be close to 64x64
   var scaleFactor = imsize/sketch.width;
@@ -61,15 +61,26 @@ var resize = function( img, scale ) {
     return scaled;
 }
 
-function printWorld(image, imsize) {
+function printWorld(image, rowLim, colLim, imsize) {
   // Print the image
-  for (let row = 0; row < imsize; row++) {
+  for (let row = 0; row < rowLim; row++) {
     let str = '';
-    for (let col = 0; col < imsize; col++) {
+    for (let col = 0; col < colLim; col++) {
       str += image[row * imsize + col] === 1 ? 'x' : ' ';
     }
     console.log(`${(row+'').padStart(3, '0')} ${str}`);
   }
+}
+
+function subsetWorld(image, rowLim, colLim, imsize) {
+  // get subset of image
+  let subset = []; 
+  for (let row = 0; row < rowLim; row++) {
+    for (let col = 0; col < colLim; col++) {
+      subset.push(image[row * imsize + col]);
+    }
+  }  
+  return subset;
 }
 
 function getPixelSum(im) {
@@ -107,66 +118,38 @@ function F1Score(im1,im2) {
   // im2 is the reconstruction  
   // see: https://en.wikipedia.org/wiki/F1_score
   // f1 = 2 * (precision * recall) / (precision + recall)
-  recall = getRecall(im1,im2);
-  precision = getPrecision(im1,im2);
-  numerator = math.multiply(precision, recall);
-  denominator = math.sum(precision, recall);
-  quotient = math.divide(numerator,denominator);
-  score = math.multiply(2,quotient);
+    recall = getRecall(im1,im2);
+    precision = getPrecision(im1,im2);
+    numerator = math.multiply(precision, recall);
+    denominator = math.sum(precision, recall);
+    quotient = math.divide(numerator,denominator);
+    //console.log('recall = ', recall);
+    //console.log('precision = ', precision);
+    //console.log('quotient = ', quotient);  
+    score = math.multiply(2,quotient);
   return score
 }
 
-function getScore(canvas0, canvas1, imsize) {
+function getScore(canvas0, canvas1, agprop, imsize) {
   // canvas0 is ID of canvas element 0, e.g., 'defaultCanvas0'
   // canvas1 is ID of canvas element 1, e.g., 'defaultCanvas1'
+  // agprop is proportion of canvas height that is above the floor, 'above ground prop'
   // imsize is size of rescaled canvas, e.g., 64
 
   target = document.getElementById(canvas0);
-  targ = extractBitmap(target,imsize);
-  // printWorld(targ, imsize);
+  targ = extractBitmap(target, imsize);
+  // printWorld(targ, 50, imsize, imsize);
+  targs = subsetWorld(targ, 50, imsize, imsize);
 
   reconstruction = document.getElementById(canvas1);
-  recon = extractBitmap(reconstruction,imsize);
-  // printWorld(env, imsize);
+  recon = extractBitmap(reconstruction, imsize);
+  // printWorld(recon, 50, imsize, imsize);
+  recons = subsetWorld(recon, 50, imsize, imsize);
 
-  t = Array.from(targ);
-  r = Array.from(recon);
+  t = Array.from(targs);
+  r = Array.from(recons);
 
   score = F1Score(t,r);
   return score;
 
-}
-
-// TODO: Get rid of below ... 
-
-function matchScore(im1, im2) {
-  // supersimple: multiplies the two images together and sums up the result
-  // im1 is the target image
-  // im2 is the reconstruction    
-  arr1 = Array.from(im1);
-  arr2 = Array.from(im2);
-  prod = math.dotMultiply(arr1,arr2);
-  numerator = math.sum(prod);
-  denominator = getPixelSum(im1);
-  score = math.divide(numerator,denominator);
-  return score;
-}
-
-function getMatchScore(canvas0, canvas1, imsize) {
-  // canvas0 is ID of canvas element 0, e.g., 'defaultCanvas0'
-  // canvas1 is ID of canvas element 1, e.g., 'defaultCanvas1'
-  // imsize is size of rescaled canvas, e.g., 64
-
-  target = document.getElementById(canvas0);
-  targ = extractBitmap(target,imsize);
-  // printWorld(targ, imsize);
-
-  environment = document.getElementById(canvas1);
-  env = extractBitmap(environment,imsize);
-  // printWorld(env, imsize);
-
-  t = Array.from(targ);
-  e = Array.from(env);
-  score = matchScore(t,e);    
-  return score;
 }
