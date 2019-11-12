@@ -242,8 +242,9 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // compute relative change in score
       deltaScore = math.subtract(rawScore,nullScore);
       normedScore = math.divide(deltaScore,scoreGap);
-      // console.log('deltaScore = ',deltaScore.toFixed(2));
-      // console.log('normedScore = ',normedScore.toFixed(2));  
+      console.log('scoreGap = ',scoreGap.toFixed(2));
+      console.log('deltaScore = ',deltaScore.toFixed(2));
+      console.log('normedScore = ',normedScore.toFixed(2));  
       return normedScore;    
     }
 
