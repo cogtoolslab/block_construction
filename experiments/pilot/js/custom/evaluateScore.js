@@ -138,12 +138,12 @@ function getScore(canvas0, canvas1, agprop, imsize) {
 
   target = document.getElementById(canvas0);
   targ = extractBitmap(target, imsize);
-  printWorld(targ, 50, imsize, imsize);
+  // printWorld(targ, 50, imsize, imsize);
   targs = subsetWorld(targ, 50, imsize, imsize);
 
   reconstruction = document.getElementById(canvas1);
   recon = extractBitmap(reconstruction, imsize);
-  printWorld(recon, 50, imsize, imsize);
+  // printWorld(recon, 50, imsize, imsize);
   recons = subsetWorld(recon, 50, imsize, imsize);
 
   t = Array.from(targs);
