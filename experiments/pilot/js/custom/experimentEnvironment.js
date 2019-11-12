@@ -352,7 +352,7 @@ var resetStimWindow = function () {
 }
 
 // Not implemented yet- contents copied from block placement
-var sendData = function (eventType = 'none', trialObj = null, newBlock = null) {
+var sendData = function (trialObj, eventType = 'none', newBlock = null) {
     /** eventType one of:
      *  - expStart, general details about set up of experiment and matter environment. Sends data of type:
      *      - gameInit

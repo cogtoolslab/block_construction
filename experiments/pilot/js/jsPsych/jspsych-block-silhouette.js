@@ -303,7 +303,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       /* Called to clear building environment window. 
       Works by resetting variables then building a new p5 instance.
       */
-      sendData(dataType="reset");
+      sendData(trial, dataType="reset");
       resetEnv();
       p5env = new p5(setupEnvironment, 'environment-canvas');
       // update reset counter
@@ -340,7 +340,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     pre_build(getCurrScore); //Setup exploration phase
     
     if (trial.trialNum == 0) {
-      sendData(eventType = 'expStart');
+      sendData(trial, eventType = 'expStart');
     }
 
     occluder_trial.addEventListener('click', event => { //SHOW OCCLUDER
@@ -353,7 +353,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
         currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
         cumulBonus += currBonus; // TODO: this cumulBonus needs to be bundled into data sent to mongo
 
-        sendData(dataType="final");
+        sendData(trial, dataType="final");
         //START TIMERS?
         clearP5Envs();
 
@@ -499,8 +499,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
     // 
     function clear_display_move_on(trial_data) {
 
-      sendData(eventType="settled");
-      sendData(eventType="phaseEnd");
+      sendData(trial, eventType="settled");
+      sendData(trial, eventType="phaseEnd");
 
       //clear all timers
       timers.forEach(interval => {
