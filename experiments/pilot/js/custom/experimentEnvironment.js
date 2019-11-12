@@ -352,7 +352,7 @@ var resetStimWindow = function () {
 }
 
 // Not implemented yet- contents copied from block placement
-var sendData = function (eventType = 'none', newBlock = null) {
+var sendData = function (eventType = 'none', trialObj = null, newBlock = null) {
     /** eventType one of:
      *  - expStart, general details about set up of experiment and matter environment. Sends data of type:
      *      - gameInit
@@ -393,7 +393,8 @@ var sendData = function (eventType = 'none', newBlock = null) {
             dataType: 'block',
             eventType: 'initial', // initial block placement decision vs. final block resting position.
             phase: phase,
-            gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
+            gameID: trialObj.gameid,
+            version: trialObj.version,
             time: performance.now(), // time since session began
             timeAbsolute: Date.now(),
             blockWidth: newBlock['w'],
@@ -427,7 +428,8 @@ var sendData = function (eventType = 'none', newBlock = null) {
             dataType: 'world',
             eventType: eventType, // initial block placement decision vs. final block resting position.
             phase: phase,
-            gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
+            gameID: trialObj.gameid,
+            version: trialObj.version,
             time: performance.now(), // time since session began
             timeAbsolute: Date.now(),
             allBlockBodyProperties: bodiesForSending, // matter information about bodies of each block. Order is order of block placement
@@ -449,7 +451,8 @@ var sendData = function (eventType = 'none', newBlock = null) {
             dataType: 'world',
             eventType: eventType, // initial block placement decision vs. final block resting position.
             phase: phase,
-            gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
+            gameID: trialObj.gameid,
+            version: trialObj.version,
             time: performance.now(), // time since session began
             timeAbsolute: Date.now(),
             numBlocks: blocks.length //number of blocks before reset pressed
@@ -478,7 +481,8 @@ var sendData = function (eventType = 'none', newBlock = null) {
             dataType: 'block',
             eventType: 'initial', // initial block placement decision vs. final block resting position.
             phase: phase,
-            gameID: 'GAMEID_PLACEHOLDER', // TODO: generate this on server and send to client when session is created
+            gameID: trialObj.gameid,
+            version: trialObj.version,
             time: performance.now(), // time since session began
             timeAbsolute: Date.now(),
             canvasHeight: canvasHeight,
