@@ -18,7 +18,7 @@ var rawScore = 0; // raw F1 score after phase end
 var cumulScore = 0; // cumulative score in experiment
 
 // Timing parameters
-var explore_time_limit = 10; // time limit in seconds
+var explore_time_limit = 1; // time limit in seconds
 var build_time_limit = 20; // time limit in seconds
 //var pct_per_sec = (1 / explore_time_limit) * 100; // if time_limit==20, that means that progress bar goes down by 5% each unit time
 
@@ -359,11 +359,13 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     // Start the experiment!
 
+    // EXPLORATION PHASE
+    pre_build(getCurrScore); //Setup exploration phase
+    
     if (trial.trialNum == 0) {
       sendData(eventType = 'expStart');
     }
-    // EXPLORATION PHASE
-    pre_build(getCurrScore); //Setup exploration phase
+
     occluder_trial.addEventListener('click', event => { //SHOW OCCLUDER
       occluder_trial.style.display = "none";
 
