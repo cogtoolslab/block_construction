@@ -253,7 +253,6 @@ var setupEnvironment = function (env, disabledEnvironment = false, phaseType = '
 
                     }
 
-
                 }
             }
             else if (env.mouseY > 0 && (env.mouseY < canvasHeight) && (env.mouseX > 0 && env.mouseX < canvasWidth)) { //or if in menu then update selected blockkind
