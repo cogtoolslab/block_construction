@@ -61,7 +61,7 @@ var resize = function( img, scale ) {
     return scaled;
 }
 
-function printWorld(image, imsize) {
+function printWorld(image, rowLim, colLim, imsize) {
   // Print the image
   for (let row = 0; row < imsize; row++) {
     let str = '';
@@ -138,12 +138,12 @@ function getScore(canvas0, canvas1, agprop, imsize) {
 
   target = document.getElementById(canvas0);
   targ = extractBitmap(target, imsize);
-  // printWorld(targ, imsize);
+  printWorld(targ, 50, imsize, imsize);
   targs = subsetWorld(targ, 50, imsize, imsize);
 
   reconstruction = document.getElementById(canvas1);
   recon = extractBitmap(reconstruction, imsize);
-  // printWorld(recon, imsize);
+  printWorld(recon, 50, imsize, imsize);
   recons = subsetWorld(recon, 50, imsize, imsize);
 
   t = Array.from(targs);
