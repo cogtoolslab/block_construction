@@ -1,12 +1,12 @@
 // This file contains helper functions for computing the error between 
 // the target and the structure built by the participant.
 
-function extractBitmap(sketch, agprop, imsize) {
+function extractBitmap(sketch, imsize) {
 
   // rescale image to be close to 64x64
   var scaleFactor = imsize/sketch.width;
   var rescaled = resize(sketch, scaleFactor);
-  var imgData = rescaled.getContext('2d').getImageData(0, 0, imsize, imsize / agprop);
+  var imgData = rescaled.getContext('2d').getImageData(0, 0, imsize, imsize);
 
   // now go through and get all filled in pixels in R channel
   var pixels  = imgData.data;
@@ -72,6 +72,17 @@ function printWorld(image, imsize) {
   }
 }
 
+function subsetWorld(image, rowLim, colLim, imsize) {
+  // get subset of image
+  let subset = []; 
+  for (let row = 0; row < rowLim; row++) {
+    for (let col = 0; col < colLim; col++) {
+      subset.push(image[row * imsize + col]);
+    }
+  }  
+  return subset;
+}
+
 function getPixelSum(im) {
   return math.sum(Array.from(im))
 }
@@ -127,50 +138,18 @@ function getScore(canvas0, canvas1, agprop, imsize) {
 
   target = document.getElementById(canvas0);
   targ = extractBitmap(target, agprop, imsize);
-  printWorld(targ, imsize);
+  // printWorld(targ, imsize);
+  targs = subsetWorld(targ, 50, imsize, imsize);
 
   reconstruction = document.getElementById(canvas1);
   recon = extractBitmap(reconstruction, agprop, imsize);
-  printWorld(recon, imsize);
+  // printWorld(recon, imsize);
+  recons = subsetWorld(recon, 50, imsize, imsize);
 
-  t = Array.from(targ);
-  r = Array.from(recon);
+  t = Array.from(targs);
+  r = Array.from(recons);
 
   score = F1Score(t,r);
   return score;
 
-}
-
-// TODO: Get rid of below ... 
-
-function matchScore(im1, im2) {
-  // supersimple: multiplies the two images together and sums up the result
-  // im1 is the target image
-  // im2 is the reconstruction    
-  arr1 = Array.from(im1);
-  arr2 = Array.from(im2);
-  prod = math.dotMultiply(arr1,arr2);
-  numerator = math.sum(prod);
-  denominator = getPixelSum(im1);
-  score = math.divide(numerator,denominator);
-  return score;
-}
-
-function getMatchScore(canvas0, canvas1, imsize) {
-  // canvas0 is ID of canvas element 0, e.g., 'defaultCanvas0'
-  // canvas1 is ID of canvas element 1, e.g., 'defaultCanvas1'
-  // imsize is size of rescaled canvas, e.g., 64
-
-  target = document.getElementById(canvas0);
-  targ = extractBitmap(target,imsize);
-  // printWorld(targ, imsize);
-
-  environment = document.getElementById(canvas1);
-  env = extractBitmap(environment,imsize);
-  // printWorld(env, imsize);
-
-  t = Array.from(targ);
-  e = Array.from(env);
-  score = matchScore(t,e);    
-  return score;
 }
