@@ -1,12 +1,12 @@
 // This file contains helper functions for computing the error between 
 // the target and the structure built by the participant.
 
-function extractBitmap(sketch,imsize) {
+function extractBitmap(sketch, agprop, imsize) {
 
   // rescale image to be close to 64x64
   var scaleFactor = imsize/sketch.width;
   var rescaled = resize(sketch, scaleFactor);
-  var imgData = rescaled.getContext('2d').getImageData(0, 0, imsize, imsize);
+  var imgData = rescaled.getContext('2d').getImageData(0, 0, imsize, imsize / agprop);
 
   // now go through and get all filled in pixels in R channel
   var pixels  = imgData.data;
@@ -119,18 +119,19 @@ function F1Score(im1,im2) {
   return score
 }
 
-function getScore(canvas0, canvas1, imsize) {
+function getScore(canvas0, canvas1, agprop, imsize) {
   // canvas0 is ID of canvas element 0, e.g., 'defaultCanvas0'
   // canvas1 is ID of canvas element 1, e.g., 'defaultCanvas1'
+  // agprop is proportion of canvas height that is above the floor, 'above ground prop'
   // imsize is size of rescaled canvas, e.g., 64
 
   target = document.getElementById(canvas0);
-  targ = extractBitmap(target,imsize);
-  //printWorld(targ, imsize);
+  targ = extractBitmap(target, agprop, imsize);
+  printWorld(targ, imsize);
 
   reconstruction = document.getElementById(canvas1);
-  recon = extractBitmap(reconstruction,imsize);
-  //printWorld(recon, imsize);
+  recon = extractBitmap(reconstruction, agprop, imsize);
+  printWorld(recon, imsize);
 
   t = Array.from(targ);
   r = Array.from(recon);
