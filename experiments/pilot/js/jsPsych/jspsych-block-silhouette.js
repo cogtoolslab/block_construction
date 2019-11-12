@@ -5,7 +5,7 @@
  *
  * documentation: docs.jspsych.org
  *
- * created by Will McCarthy & Judy Fan (wmccarth@ucsd.edu) Oct 2019
+ * created by Will McCarthy (wmccarth@ucsd.edu) & Judy Fan (jefan@ucsd.edu) Oct 2019
  * 
  **/
 
@@ -18,6 +18,10 @@ var rawScore = 0; // raw F1 score after phase end
 var currBonus = 0; // current bonus increment 
 var cumulBonus = 0; // cumulative bonus earned in experiment
 
+// Metadata
+var gameid = 'GAMEID_PLACEHOLDER';
+var version = 'VERSION_PLACEHOLDER';
+
 // Timing parameters
 var explore_time_limit = 1; // time limit in seconds
 var build_time_limit = 20; // time limit in seconds
@@ -27,7 +31,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
   var plugin = {};
 
-  jsPsych.pluginAPI.registerPreload('block-silhouette', 'button_html', 'image');
+  jsPsych.pluginAPI.registerPreload('block-silhouette', 'image');
 
   plugin.info = {
     name: 'block-silhouette',
@@ -44,13 +48,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
         pretty_name: 'Block Collection (JSON String)',
         default: undefined,
         description: 'nickname for target structure'
-      },
-      button_html: {
-        type: jsPsych.plugins.parameterType.IMAGE,
-        pretty_name: 'Button HTML',
-        default: '<img src="%imageURL%" height="224" width="224">',
-        array: true,
-        description: 'The html of the button. Can create own style.'
       },
       prompt: {
         type: jsPsych.plugins.parameterType.STRING,
@@ -98,6 +95,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     }
 
     console.log('trial: ', trial);
+
 
     // wrapper function to show everything, call this when you've waited what you
     // reckon is long enough for the data to come back from the db
@@ -180,6 +178,10 @@ jsPsych.plugins["block-silhouette"] = (function () {
     var env_divs = document.getElementsByClassName("col-md env-div");
     var progressBar = $('#progress-bar');
 
+    // update these global metadata vars with actual values for this trial  
+    gameid = trial.gameid;
+    version = trial.version;
+
     //occluder_trial.style.display = "none";
     occluder_condition.style.display = "none";
 
@@ -208,7 +210,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // get null score
       nullScore = baseline();
       scoreGap = math.subtract(1,nullScore);        
-      // console.log('nullScore = ', nullScore);      
+      console.log('nullScore = ', nullScore);      
     }
 
     function build(baseline) {
@@ -232,7 +234,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // call this to get: 
       // (1) F1 score for target vs. blank at beginning of each phase
       // (2) F1 score for target vs. blank at end of each phase
-      score = getScore('defaultCanvas0', 'defaultCanvas1', 64);
+      score = getScore('defaultCanvas0', 'defaultCanvas1', 0.8 , 64);
       return score;      
     }
 
@@ -240,8 +242,9 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // compute relative change in score
       deltaScore = math.subtract(rawScore,nullScore);
       normedScore = math.divide(deltaScore,scoreGap);
-      // console.log('deltaScore = ',deltaScore.toFixed(2));
-      // console.log('normedScore = ',normedScore.toFixed(2));  
+      console.log('scoreGap = ',scoreGap.toFixed(2));
+      console.log('deltaScore = ',deltaScore.toFixed(2));
+      console.log('normedScore = ',normedScore.toFixed(2));  
       return normedScore;    
     }
 
@@ -472,14 +475,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
         console.log('trial data: ', trial_data);
         console.log('correct?  ', trial_correct);
       }
-
-      // // get location index of target
-      // target_index = _.indexOf(prettyChoices, trial.target.shapenetid);
-      // response_index = _.indexOf(prettyChoices, response.button);
-      // if (trial.dev_mode == true) {
-      //   console.log('target_index: ', target_index); 
-      //   console.log('response_index: ', response_index); 
-      // }
 
       // // show feedback
       // if (trial_correct==true) {
