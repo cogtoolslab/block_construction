@@ -80,6 +80,14 @@ var blockDims = [
     [4, 2]
 ];
 
+var block_colors = [
+    [247, 239, 244, 210],
+    [84, 19, 136, 210],
+    [217, 3, 104, 210],
+    [255, 212, 0, 210],
+    [29, 223, 250, 210]]
+    ;
+
 var setupEnvironment = function (env, disabledEnvironment = false, phaseType = 'build') {
 
     phase = phaseType;
@@ -111,15 +119,14 @@ var setupEnvironment = function (env, disabledEnvironment = false, phaseType = '
 
         // Create block kinds that will appear in environment/menu. Later on this will need to be represented in each task.
 
-        var block_color = [15, 139, 141, 200];
-        if (disabledEnvironment) {
-            block_color = [100, 100, 100, 30];
-        }
-
-        blockDims.forEach(dims => {
+        blockDims.forEach((dims, i) => {
             w = dims[0]
             h = dims[1]
-            blockKinds.push(new BlockKind(w, h, block_color));
+            if (disabledEnvironment) {
+                blockKinds.push(new BlockKind(w, h, [100, 100, 100, 30]));
+            } else {
+                blockKinds.push(new BlockKind(w, h, block_colors[i]));
+            }
         });
 
         // Create Block Menu
@@ -408,13 +415,11 @@ var sendData = function (eventType = 'none', newBlock = null) {
             // test out sending newBlock info to server/mongodb
             propertyList = Object.keys(block.body); // extract block properties;
             propertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
-            propertyList = _.pullAll(propertyList, ['collisionFilter', 'constraintImpulse', 'density', 'force', 'friction', 'frictionAir', 'frictionStatic','isSensor','label','render','restitution','sleepCounter','sleepThreshold','slop','timeScale','type']);  // omit extraneus matter properties
+            propertyList = _.pullAll(propertyList, ['collisionFilter', 'constraintImpulse', 'density', 'force', 'friction', 'frictionAir', 'frictionStatic', 'isSensor', 'label', 'render', 'restitution', 'sleepCounter', 'sleepThreshold', 'slop', 'timeScale', 'type']);  // omit extraneus matter properties
             blockProperties = _.pick(block.body, propertyList); // pick out all and only the block body properties in the property list
             return blockProperties
         });
 
-        console.log(bodiesForSending);
-        
         world_data = {
             dbname: dbname,
             colname: colname,
@@ -456,6 +461,15 @@ var sendData = function (eventType = 'none', newBlock = null) {
     }
     else if (eventType == 'expStart') {
         // Send data about initial setup of experiment
+
+        floorBody = ground.body
+        // test out sending newBlock info to server/mongodb
+        floorPropertyList = Object.keys(floorBody); // extract block properties;
+        floorPropertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
+        floorProperties = _.pick(floorBody['body'], propertyList); // pick out all and only the block body properties in the property list
+
+        // custom de-borkification
+        vertices = _.map(floorBody.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
 
         exp_data = {
             dbname: dbname,
@@ -499,7 +513,9 @@ var sendData = function (eventType = 'none', newBlock = null) {
                 isStatic: true, // static i.e. not affected by gravity
                 friction: 0.9,
                 frictionStatic: 2
-            }
+            },
+            floorProperties: floorProperties, //properties of floor body
+            vertices: vertices
         };
         console.log('exp_data', exp_data);
         socket.emit('experiment', exp_data);

@@ -44,7 +44,7 @@ function Block(blockKind, x, y, rotated, testing_placement = false){
         env.rectMode(env.CENTER);
         env.rotate(angle);
         env.stroke(30);
-        env.fill(30);
+        env.fill(this.blockKind.blockColor);
         /*
         if(this.body.isSleeping) {
             env.fill(100);

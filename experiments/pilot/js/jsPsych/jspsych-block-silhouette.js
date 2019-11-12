@@ -12,14 +12,15 @@
 // Task performance
 var deltaScore = 0; // diff in score btw end and start of phase
 var nullScore = 0; // reconstruction score for blank reconstruction
+var normedScore = 0; // reconstruction score for blank reconstruction
 var scoreGap = 0; // difference between nullScore and perfect score (F1 = 1)
 var rawScore = 0; // raw F1 score after phase end
 var currBonus = 0; // current bonus increment 
 var cumulBonus = 0; // cumulative bonus earned in experiment
 
 // Timing parameters
-var explore_time_limit = 5; // time limit in seconds
-var build_time_limit = 5; // time limit in seconds
+var explore_time_limit = 1; // time limit in seconds
+var build_time_limit = 20; // time limit in seconds
 //var pct_per_sec = (1 / explore_time_limit) * 100; // if time_limit==20, that means that progress bar goes down by 5% each unit time
 
 jsPsych.plugins["block-silhouette"] = (function () {
@@ -231,7 +232,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // get null score
       nullScore = baseline();
       scoreGap = math.subtract(1,nullScore);        
-      console.log('nullScore = ', nullScore);      
+      // console.log('nullScore = ', nullScore);      
     }
 
     function build(baseline) {
@@ -263,8 +264,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // compute relative change in score
       deltaScore = math.subtract(rawScore,nullScore);
       normedScore = math.divide(deltaScore,scoreGap);
-      console.log('deltaScore = ',deltaScore.toFixed(2));
-      console.log('normedScore = ',normedScore.toFixed(2));  
+      // console.log('deltaScore = ',deltaScore.toFixed(2));
+      // console.log('normedScore = ',normedScore.toFixed(2));  
       return normedScore;    
     }
 
@@ -359,11 +360,13 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     // Start the experiment!
 
+    // EXPLORATION PHASE
+    pre_build(getCurrScore); //Setup exploration phase
+    
     if (trial.trialNum == 0) {
       sendData(eventType = 'expStart');
     }
-    // EXPLORATION PHASE
-    pre_build(getCurrScore); //Setup exploration phase
+
     occluder_trial.addEventListener('click', event => { //SHOW OCCLUDER
       occluder_trial.style.display = "none";
 
@@ -372,7 +375,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
         // calculate bonus earned
         rawScore = getCurrScore();
         currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
-        cumulBonus += currBonus;
+        cumulBonus += currBonus; // TODO: this cumulBonus needs to be bundled into data sent to mongo
 
         sendData(dataType="final");
         //START TIMERS?

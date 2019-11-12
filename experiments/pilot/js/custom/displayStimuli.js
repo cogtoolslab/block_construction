@@ -22,7 +22,7 @@ function showBlock(p5stim, block){
     p5stim.rectMode(p5stim.CENTER);
     p5stim.noStroke();
 
-    p5stim.fill(20);
+    p5stim.fill([12,27,36]);
     p5stim.rect(0,0,stim_scale*width,stim_scale*height);
     p5stim.pop();
     
@@ -39,7 +39,7 @@ function showFloor(p5stim){
     p5stim.translate(floorX, floorY);
     p5stim.rectMode(p5stim.CENTER);
     p5stim.stroke(200);
-    p5stim.fill(20);
+    p5stim.fill([12,27,36]);
     p5stim.rect(0,0,floorWidth,floorHeight);
     p5stim.pop();
 }
