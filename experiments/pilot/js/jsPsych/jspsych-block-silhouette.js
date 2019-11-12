@@ -97,33 +97,13 @@ jsPsych.plugins["block-silhouette"] = (function () {
       console.error('Required parameter "target" missing in block-silhouette');
     }
 
-    console.log(trial);
+    console.log('trial: ', trial);
 
     // wrapper function to show everything, call this when you've waited what you
     // reckon is long enough for the data to come back from the db
     function show_display() {
 
-      // //display buttons
-      // var buttons = [];
-      // if (Array.isArray(trial.button_html)) {
-      //   if (trial.button_html.length == trial.choices.length) {
-      //     buttons = trial.button_html;
-      //   } else {
-      //     console.error('Error in block-silhouette plugin. The length of the button_html array does not equal the length of the choices array');
-      //   }
-      // } else {
-      //   for (var i = 0; i < trial.choices.length; i++) {
-      //     buttons.push(trial.button_html);
-      //   }
-      // }
-
-      //show prompt if there is one
-      // if (trial.prompt !== null) {
-      //   var html = '<div id="prompt">' +trial.prompt + '</div>';
-      // }
-
-
-      var html = ''
+      var html = '';
 
       html += '<div class="container pt-1" id="experiment">'
       html += '<div class="container" id="text-bar">'
@@ -151,11 +131,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       html += '</div>'
       html += '</div>'
 
-
-
-      // // display score earned so far
-      // html += '<div id="score"> <p2> bonus earned: ' + parseFloat(score).toFixed(3) + '</p2></div>'
-      // html += '<div id="trial-counter"> <p2> trial ' + (parseInt(trial.trialNum)+parseInt(1)).toString() + ' of ' + trial.num_trials + '</p2></div>'
+      html += '<div id="trial-counter"> <p2> trial ' + (parseInt(trial.trialNum)+parseInt(1)).toString() + ' of ' + trial.num_trials + '</p2></div>'
 
       // introduce occluder to make the inter-trial transitions less jarring
       html += '<div class="occluder" id="occluder-trial">'
@@ -484,16 +460,11 @@ jsPsych.plugins["block-silhouette"] = (function () {
       var trial_data = _.extend(_.omit(trial, 'on_finish'), {
         dbname: 'block_construction',
         colname: 'silhouette',
-        // rt: response.rt,
-        // correct: trial_correct,
-        // numCorrectSoFar: numCorrect,
-        // original_correct: trial.outcome,
-        // stim_mongo_id: trial._id,
-        // response: response.button,
-        // score: score,
-        // workerId: turkInfo.workerId,
-        // hitID: turkInfo.hitId,
-        // aID: turkInfo.assignmentId,
+        gameID: trial.gameid,
+        // rt: response.rt,        
+        workerId: turkInfo.workerId,
+        hitID: turkInfo.hitId,
+        aID: turkInfo.assignmentId,
         timestamp: Date.now()
       });
 
