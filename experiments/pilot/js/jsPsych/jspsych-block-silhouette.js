@@ -234,7 +234,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // call this to get: 
       // (1) F1 score for target vs. blank at beginning of each phase
       // (2) F1 score for target vs. blank at end of each phase
-      score = getScore('defaultCanvas0', 'defaultCanvas1', 64);
+      score = getScore('defaultCanvas0', 'defaultCanvas1', 0.8 , 64);
       return score;      
     }
 

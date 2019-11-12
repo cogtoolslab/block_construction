@@ -28,6 +28,7 @@ var menuHeight = canvasHeight / 5;
 var menuWidth = canvasWidth;
 var floorY = (canvasHeight - menuHeight);
 var floorHeight = canvasHeight / 3;
+var aboveGroundProp = floorY / canvasHeight;
 
 // Metavariables
 const dbname = 'block_construction';
