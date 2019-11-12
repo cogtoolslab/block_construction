@@ -18,7 +18,7 @@ body {
 }
 
 .row{
-    break-inside: avoid-column;
+    flex-wrap: nowrap;
 }
 
 #condition-heading {
