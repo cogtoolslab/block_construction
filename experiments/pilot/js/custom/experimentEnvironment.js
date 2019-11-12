@@ -80,12 +80,22 @@ var blockDims = [
     [4, 2]
 ];
 
+/*
 var block_colors = [
     [247, 239, 244, 210],
     [84, 19, 136, 210],
     [217, 3, 104, 210],
     [255, 212, 0, 210],
     [29, 223, 250, 210]]
+    ;
+*/
+
+var block_colors = [
+    [179, 47, 10, 210],
+    [179, 47, 10, 210],
+    [179, 47, 10, 210],
+    [179, 47, 10, 210],
+    [179, 47, 10, 210]]
     ;
 
 var setupEnvironment = function (env, disabledEnvironment = false, phaseType = 'build') {
