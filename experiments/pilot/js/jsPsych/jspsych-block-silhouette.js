@@ -210,7 +210,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // get null score
       nullScore = baseline();
       scoreGap = math.subtract(1,nullScore);        
-      // console.log('nullScore = ', nullScore);      
+      console.log('nullScore = ', nullScore);      
     }
 
     function build(baseline) {
