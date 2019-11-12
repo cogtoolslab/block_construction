@@ -63,9 +63,9 @@ var resize = function( img, scale ) {
 
 function printWorld(image, rowLim, colLim, imsize) {
   // Print the image
-  for (let row = 0; row < imsize; row++) {
+  for (let row = 0; row < rowLim; row++) {
     let str = '';
-    for (let col = 0; col < imsize; col++) {
+    for (let col = 0; col < colLim; col++) {
       str += image[row * imsize + col] === 1 ? 'x' : ' ';
     }
     console.log(`${(row+'').padStart(3, '0')} ${str}`);
