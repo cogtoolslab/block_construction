@@ -24,8 +24,8 @@ var version = 'VERSION_PLACEHOLDER';
 
 // Timing parameters
 var explore_time_limit = 1; // time limit in seconds
-var build_time_limit = 20; // time limit in seconds
-var practice_time_limit = 10;
+var build_time_limit = 1; // time limit in seconds
+var practice_time_limit = 1;
 //var pct_per_sec = (1 / explore_time_limit) * 100; // if time_limit==20, that means that progress bar goes down by 5% each unit time
 
 jsPsych.plugins["block-silhouette"] = (function () {
