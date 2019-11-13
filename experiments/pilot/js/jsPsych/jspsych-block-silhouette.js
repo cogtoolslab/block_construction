@@ -26,6 +26,7 @@ var version = 'VERSION_PLACEHOLDER';
 var explore_time_limit = 1; // time limit in seconds
 var build_time_limit = 1; // time limit in seconds
 var practice_time_limit = 1;
+
 //var pct_per_sec = (1 / explore_time_limit) * 100; // if time_limit==20, that means that progress bar goes down by 5% each unit time
 
 jsPsych.plugins["block-silhouette"] = (function () {
@@ -317,8 +318,11 @@ jsPsych.plugins["block-silhouette"] = (function () {
       Works by resetting variables then building a new p5 instance.
       */
       sendData(dataType = "reset");
+      resetStimWindow();
       resetEnv();
-      p5env = new p5(setupEnvironment, 'environment-canvas');
+
+      restoreEnvs(trial.condition, trial.targetBlocks);
+      
       // update reset counter
 
     }

@@ -4,7 +4,7 @@ var numTrials = 16;
 var shuffleTrials = false; // set to False to preserve order in db; set to True if you want to shuffle trials from db (scrambled10)
 
 function sendData() {
-  console.log('sending data to mturk! score = ', score);
+  console.log('attempting to send data to mturk! score = ', score);
   jsPsych.turk.submitToTurk({'score':score});
 }
 
@@ -75,7 +75,7 @@ function PracticeTrial () {
   this.prompt = "Please reconstruct the tower using as few blocks as possible.";
   this.dev_mode = false;
   this.condition = 'practice';
-  this.targetBlocks = [];
+  this.targetBlocks = practice_structure.blocks;
   this.targetName = 'any';
 };
 
