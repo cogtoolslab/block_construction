@@ -366,7 +366,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
           // calculate bonus earned
           rawScore = getCurrScore();
           currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
-          cumulBonus += currBonus; // TODO: this cumulBonus needs to be bundled into data sent to mongo
+          cumulBonus += parseFloat(currBonus.toFixed(2)); // TODO: this cumulBonus needs to be bundled into data sent to mongo
 
           sendData(dataType = "final");
           //START TIMERS?
@@ -500,7 +500,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       if (trial.dev_mode == true) {
         console.log('trial data: ', trial_data);
-        console.log('correct?  ', trial_correct);
       }
 
       // // show feedback
