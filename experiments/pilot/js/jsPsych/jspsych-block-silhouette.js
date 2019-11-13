@@ -128,8 +128,9 @@ jsPsych.plugins["block-silhouette"] = (function () {
       html += '</div>'
       html += '</div>'
       html += '</div>'
-      html += '<div id="trial-counter"> <p2> trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + ' of ' + trial.num_trials + '</p2></div>'
-
+      if (trial.condition != 'practice'){
+        html += '<div id="trial-counter"> <p2> trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + ' of ' + trial.num_trials + '</p2></div>'
+      }
 
       // introduce occluder to make the inter-trial transitions less jarring
       html += '<div class="occluder" id="occluder-trial">'
@@ -335,15 +336,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     function clearP5Envs() {
       // Removes P5 environments to start new experiment phase or trial
-
-      p5env.remove(); // remove environment display
-      p5stim.remove();// remove stimulus display
-
-      blocks = [];
-      blockKinds = [];
-      isPlacingObject = false;
-      rotated = false;
-      selectedBlockKind = null;
+      resetEnv();
+      resetStimWindow();
 
     }
     // Set up button event listeners
