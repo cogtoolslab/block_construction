@@ -4,7 +4,7 @@ var numTrials = 16;
 var shuffleTrials = false; // set to False to preserve order in db; set to True if you want to shuffle trials from db (scrambled10)
 
 function sendData() {
-  console.log('sending data to mturk');
+  console.log('sending data to mturk! score = ', score);
   jsPsych.turk.submitToTurk({'score':score});
 }
 
@@ -86,8 +86,9 @@ function setupGame () {
   
 
   // on_finish is called at the very very end of the experiment
-  var on_finish = function(data) {
+  var on_finish = function(data) {    
     score = data.score ? data.score : score; // updates the score variable
+    console.log('updated global score to: ', score);
   };
 
   // Start once server initializes us
