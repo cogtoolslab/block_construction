@@ -341,6 +341,16 @@ var buildStage = function (targetBlocks) {
     return p5stim, p5env
 }
 
+var practice = function () {
+    p5stim = new p5((env) => {
+        setupStimulus(env, []) //setup blank stimulus
+    }, 'stimulus-canvas');
+    p5env = new p5((env) => {
+        setupEnvironment(env, disabledEnvironment = false, phaseType = 'build')
+    }, 'environment-canvas');
+    return p5stim, p5env
+}
+
 var resetEnv = function () {
 
     // remove environment

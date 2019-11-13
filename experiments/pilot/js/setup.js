@@ -69,6 +69,16 @@ function Trial () {
   this.dev_mode = false;
 };
 
+function PracticeTrial () {
+  this.type = 'block-silhouette';
+  this.iterationName = 'testing1';
+  this.prompt = "Please reconstruct the tower using as few blocks as possible.";
+  this.dev_mode = false;
+  this.condition = 'practice';
+  this.targetBlocks = [];
+  this.targetName = 'any';
+};
+
 function setupGame () {
 
   // number of trials to fetch from database is defined in ./app.js
@@ -78,7 +88,7 @@ function setupGame () {
   // on_finish is called at the very very end of the experiment
   var on_finish = function(data) {
     score = data.score ? data.score : score;
-    socket.emit('currentData', data);
+    socket.emit('jspsychFinish', data); //NOT CURRENTLY WORKING
   };
 
   // Start once server initializes us
@@ -107,6 +117,9 @@ function setupGame () {
       });
       return trial
     }));
+
+    var practiceTrial = new PracticeTrial;
+    trials.unshift(practiceTrial);
     
     // Stick welcome trial at beginning & goodbye trial at end
     if (!turkInfo.previewMode) { 
@@ -114,7 +127,6 @@ function setupGame () {
     } else {
       trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
     }
-
     trials.push(comments_trial); // add comments box at end
 
     // print out trial list    

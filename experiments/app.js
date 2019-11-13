@@ -80,6 +80,11 @@ io.on('connection', function (socket) {
     writeDataToMongo(data);      
   });
 
+  socket.on('jspsychFinish', function(data) {
+    console.log('jspsychFinish data received: ' + JSON.stringify(_.omit(data,'bitmap')));
+    writeDataToMongo(data);      
+  });
+
 });
 
 var serveFile = function(req, res) {
