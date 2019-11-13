@@ -133,7 +133,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       // introduce occluder to make the inter-trial transitions less jarring
       html += '<div class="occluder" id="occluder-trial">'
-      html += '<div><p>Ready for the next trial? Click anywhere to continue.</p></div>'
+      html += '<div><p>Ready to proceed? Click anywhere to continue.</p></div>'
       html += '</div>'
 
       html += '<div class="occluder" id="occluder-condition">'
@@ -195,7 +195,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
     }
     occluder_condition.style.display = "none";
     
-
 
     function pre_build(baseline) {
       done_button.style.display = "none";
@@ -370,7 +369,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
           // calculate bonus earned
           rawScore = getCurrScore();
           currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
-          cumulBonus += currBonus; // TODO: this cumulBonus needs to be bundled into data sent to mongo
+          cumulBonus += parseFloat(currBonus.toFixed(2)); // TODO: this cumulBonus needs to be bundled into data sent to mongo
 
           sendData(dataType = "final");
           //START TIMERS?
@@ -486,8 +485,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       // score the built structure against the target
 
-
-
       // gather the data to store for the trial
       if (trial.dev_mode == true) {
         console.log(trial);
@@ -500,12 +497,12 @@ jsPsych.plugins["block-silhouette"] = (function () {
         workerId: turkInfo.workerId,
         hitID: turkInfo.hitId,
         aID: turkInfo.assignmentId,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        score: cumulBonus
       });
 
       if (trial.dev_mode == true) {
         console.log('trial data: ', trial_data);
-        console.log('correct?  ', trial_correct);
       }
 
       // // show feedback
