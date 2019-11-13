@@ -497,7 +497,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
         workerId: turkInfo.workerId,
         hitID: turkInfo.hitId,
         aID: turkInfo.assignmentId,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        score: cumulBonus
       });
 
       if (trial.dev_mode == true) {
