@@ -12,7 +12,7 @@ var goodbyeTrial = {
   type: 'instructions',
   pages: [
     '<p>Thanks for participating in our experiment! You are all done. Please \
-     click the button to submit this HIT. <b> When the popup asks you if you want to leave, please say YES to LEAVE THIS PAGE and submit the HIT.</b></p>'
+     click the button to submit this HIT. <b> If a popup appears asking you if you want to leave, please say YES to LEAVE THIS PAGE and submit the HIT.</b></p>'
   ],
   show_clickable_nav: true,
   on_finish: function() { sendData();}
@@ -54,7 +54,7 @@ var previewTrial = {
   allow_keys: false  
 }
 
-var comments_trial = {
+var surveyTrial = {
   type: 'survey-text',
   questions: [
     {prompt: "Thank you for participating in our study! Any comments?",rows: 5, columns: 40, placeholder: "How was that for you? Did you notice any issues?"}
@@ -87,8 +87,7 @@ function setupGame () {
 
   // on_finish is called at the very very end of the experiment
   var on_finish = function(data) {
-    score = data.score ? data.score : score;
-    socket.emit('jspsychFinish', data); //NOT CURRENTLY WORKING
+    score = data.score ? data.score : score; // updates the score variable
   };
 
   // Start once server initializes us
@@ -123,11 +122,12 @@ function setupGame () {
     
     // Stick welcome trial at beginning & goodbye trial at end
     if (!turkInfo.previewMode) { 
-      //trials.unshift(welcomeTrial);
+      trials.unshift(welcomeTrial);
     } else {
       trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
     }
-    trials.push(comments_trial); // add comments box at end
+    trials.push(surveyTrial); // add debriefing survey
+    trials.push(goodbyeTrial); // goodbye and submit HIT
 
     // print out trial list    
     //console.log(trials);
