@@ -75,7 +75,7 @@ function PracticeTrial () {
   this.prompt = "Please reconstruct the tower using as few blocks as possible.";
   this.dev_mode = false;
   this.condition = 'practice';
-  this.targetBlocks = [];
+  this.targetBlocks = practice_structure.blocks;
   this.targetName = 'any';
 };
 

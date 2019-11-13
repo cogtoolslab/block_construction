@@ -46,6 +46,7 @@ var stimY = stimCanvasHeight / 2;
 var p5stim;
 var p5env;
 
+
 // Scaling values
 var sF = 20; //scaling factor to change appearance of blocks
 var worldScale = 2.2; //scaling factor within matterjs
@@ -99,7 +100,7 @@ var block_colors = [
     [179, 47, 10, 210]]
     ;
 
-var setupEnvironment = function (env, disabledEnvironment = false, phaseType = 'build') {
+var setupEnvironment = function (env, disabledEnvironment = false, phaseType = 'build', ghost_structure = null) {
 
     phase = phaseType;
 
@@ -187,6 +188,10 @@ var setupEnvironment = function (env, disabledEnvironment = false, phaseType = '
         env.line(canvasWidth - 50 + 12, 40, canvasWidth - 50 + 25, 40);
         */
 
+        if (phaseType == 'practice'){
+            showStimulus(env, ghost_structure, individual_blocks = true);
+        }
+
         blocks.forEach(b => {
             b.show(env);
         });
@@ -206,6 +211,7 @@ var setupEnvironment = function (env, disabledEnvironment = false, phaseType = '
 
             selectedBlockKind.showGhost(env, env.mouseX, env.mouseY, rotated, diabled = !allSleeping);
         }
+
 
     }
 
@@ -292,25 +298,19 @@ var setupStimulus = function (p5stim, stimBlocks) {
 
 };
 
-var trial = function (condition = 'external') {
-    if (condition == 'external') {
-        explore()
-    }
-    else if (condition == 'internal') {
-        simulate()
-    }
-    else {
-        console.log('Unrecognised condition type, use `external` or `internal`')
-    }
-    //wait until returned, then
-    /*
-    p5stim = new p5(setupStimulus,'stimulus-canvas');
-    p5env = new p5(setupEnvironment,'environment-canvas');*/
+// var trial = function (condition = 'external') {
+//     if (condition == 'external') {
+//         explore()
+//     }
+//     else if (condition == 'internal') {
+//         simulate()
+//     }
+//     else {
+//         console.log('Unrecognised condition type, use `external` or `internal`')
+//     }
 
-    // then
-    //resetStimWindow()
+// }
 
-}
 var exploreMental = function (targetBlocks) {
     p5stim = new p5((env) => {
         setupStimulus(env, targetBlocks)
@@ -341,12 +341,12 @@ var buildStage = function (targetBlocks) {
     return p5stim, p5env
 }
 
-var practice = function () {
+var practice = function (targetBlocks) {
     p5stim = new p5((env) => {
-        setupStimulus(env, []) //setup blank stimulus
+        setupStimulus(env, targetBlocks); //setup practice structure stimulus
     }, 'stimulus-canvas');
     p5env = new p5((env) => {
-        setupEnvironment(env, disabledEnvironment = false, phaseType = 'build')
+        setupEnvironment(env, disabledEnvironment = false, phaseType = 'practice', ghost_structure = targetBlocks)
     }, 'environment-canvas');
     return p5stim, p5env
 }
@@ -369,6 +369,21 @@ var resetStimWindow = function () {
     // remove environment
     p5stim.remove();
 
+}
+
+var restoreEnvs = function(condition = 'external', targetBlocks){
+    if (phase == 'build'){
+        buildStage(targetBlocks);
+    }
+    else if (condition == 'physical'){
+        explorePhysical(targetBlocks);
+    }
+    else if (condition == 'mental'){
+        //can't press reset
+    }
+    else if (condition='practice') {
+        practice(targetBlocks);
+    }
 }
 
 // Not implemented yet- contents copied from block placement

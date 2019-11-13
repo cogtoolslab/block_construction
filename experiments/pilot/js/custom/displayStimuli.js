@@ -1,13 +1,13 @@
 var worldHeight = 8;
 var worldWidth = 8;
 
-function showStimulus(p5stim,stimulus){
+function showStimulus(p5stim, stimulus, individual_blocks = false){
     Array.prototype.forEach.call(stimulus, block => {
-        showBlock(p5stim, block)
+        showBlock(p5stim, block, individual_blocks = individual_blocks)
     });
 }
 
-function showBlock(p5stim, block){
+function showBlock(p5stim, block, individual_blocks = false){
     width = block.width;
     height = block.height;
     x_left = block.x - worldWidth/2;
@@ -18,11 +18,13 @@ function showBlock(p5stim, block){
     y_top = y_bottom - height;
 
     p5stim.push(); //saves the current drawing style settings and transformations
-    p5stim.translate(stimX + stim_scale*x_center, (canvasHeight - floorHeight) - (canvasHeight - floorY) + stim_scale*y_center - 2);
+    p5stim.translate(stimX + stim_scale*x_center, (canvasHeight - floorHeight) - (canvasHeight - floorY) + stim_scale*y_center - 6);
     p5stim.rectMode(p5stim.CENTER);
     p5stim.noStroke();
-
-    p5stim.fill([12,27,36]);
+    if (individual_blocks) {
+        p5stim.stroke(150);
+    }
+    p5stim.fill([12,27,36,140]);
     p5stim.rect(0,0,stim_scale*width,stim_scale*height);
     p5stim.pop();
     
