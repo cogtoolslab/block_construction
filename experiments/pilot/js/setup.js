@@ -44,7 +44,7 @@ var welcomeTrial = {
 };
 
 var acceptHTML = {
-  'str1' : '<p> Welcome! In this HIT, you will see some sketches of objects. For each sketch, you will try to guess which of the objects is the best match. </p> <p> <b> If you are interested in learning more about this HIT, please first accept the HIT in MTurk before continuing further</b>. </p>'  
+  'str1' : '<p> In this HIT, you will see some gnarly shapes. For each shape, you will try to reconstruct it from a set of blocks. </p> <p> <b> If you are interested in learning more about this HIT, please first accept the HIT in MTurk before continuing further</b>. </p>'  
 }
 
 var previewTrial = {
@@ -87,7 +87,7 @@ function setupGame () {
 
   // on_finish is called at the very very end of the experiment
   var on_finish = function(data) {    
-    score = data.score ? data.score : score; // updates the score variable
+    score = data.score ? data.score : score; // updates the score variable    
     console.log('updated global score to: ', score);
   };
 
