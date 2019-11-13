@@ -28,7 +28,7 @@ var consentHTML = {
 // add welcome page
 var instructionsHTML = {
   'str1' : "<p> Here's how the game will work: On each trial, you will see a block structure appear on the left. Your goal is to use the blocks on the right to reconstruct it using as few blocks as possible. <div><img src='images/task_display.png' id='example_screen'></div>",
-  'str2' : '<p> There are 8 trials in this HIT. For really good reconstructions, you will receive a <b> bonus</b> of X.X cents.</p>',
+  'str2' : '<p> There are 16 trials in this HIT. For really accurate reconstructions, you can receive a <b> bonus</b> of up to $0.05.</p>',
   'str3' : "<p>If you encounter a problem or error, send the researchers an email (sketchloop@gmail.com) to arrange for prorated compensation. Please pay attention and do your best! </p><p> Note: We recommend using Chrome. We have not tested this HIT in other browsers.</p>",  
   'str4' : "<p> Once you are finished, the HIT will be automatically submitted for approval. Please know that you can only perform this HIT one time. Before we begin, you will get some practice with the reconstruction task. On this practice trial, you will be shown the exact locations to place each block. Please do your best on this practice trial to ensure that you have the opportunity to proceed and participate in the experiment.</p>"
 };
