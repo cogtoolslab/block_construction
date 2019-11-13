@@ -196,7 +196,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
     occluder_condition.style.display = "none";
     
 
-
     function pre_build(baseline) {
       done_button.style.display = "none";
       // mental or physical exploration
@@ -482,8 +481,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // }
 
       // score the built structure against the target
-
-
 
       // gather the data to store for the trial
       if (trial.dev_mode == true) {
