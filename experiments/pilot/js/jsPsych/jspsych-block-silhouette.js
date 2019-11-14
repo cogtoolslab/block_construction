@@ -388,7 +388,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     }
     else { // this is a practice trial
       done_button.style.display = "none";
-      p5stim, p5env = practice(trial.targetBlocks); //create p5 instances for this trial phase
+      p5stim, p5env = practice(trial); //create p5 instances for this trial phase
         //Update trial appearance 
       condition_heading.textContent = "Practice building";
       Array.prototype.forEach.call(env_divs, env_div => {
