@@ -74,13 +74,14 @@ function Trial () {
   this.iterationName = 'testing1';
   this.prompt = "Please reconstruct the tower using as few blocks as possible.";
   this.dev_mode = false;
-  this.explore_duration = 1; // time limit in seconds
-  this.build_duration = 1; // time limit in seconds
-  this.practice_duration = 1; // time limit in seconds
+  this.explore_duration = 5; // time limit in seconds
+  this.build_duration = 5; // time limit in seconds
+  this.practice_duration = 5; // time limit in seconds
   this.rawScore = 0; // F1 score
   this.currBonus = 0; // current bonus
   this.score = 0; // cumulative bonus  
   this.trialEndTrigger = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'.
+  this.phase = 'NA';
 };
 
 function PracticeTrial () {

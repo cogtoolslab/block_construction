@@ -100,9 +100,9 @@ var block_colors = [
     [179, 47, 10, 210]]
     ;
 
-var setupEnvironment = function (env, disabledEnvironment = false, phaseType = 'build', trialObj = null) {
+var setupEnvironment = function (env, disabledEnvironment = false, trialObj = null) {
 
-    phase = phaseType;
+    phase = trialObj.phaseType;
 
     // Processing JS Function, defines initial environment.
     env.setup = function () {
@@ -188,7 +188,7 @@ var setupEnvironment = function (env, disabledEnvironment = false, phaseType = '
         env.line(canvasWidth - 50 + 12, 40, canvasWidth - 50 + 25, 40);
         */
 
-        if (phaseType == 'practice'){
+        if (trialObj.condition == 'practice'){
             showStimulus(env, trialObj.targetBlocks, individual_blocks = true);
         }
 
@@ -286,6 +286,8 @@ var setupEnvironment = function (env, disabledEnvironment = false, phaseType = '
 
 var setupStimulus = function (p5stim, stimBlocks) {
 
+    var testStim = stimBlocks;        
+
     p5stim.setup = function () {
         stimulusCanvas = p5stim.createCanvas(stimCanvasWidth, stimCanvasWidth);
         stimulusCanvas.parent('stimulus-window'); // add parent div 
@@ -293,8 +295,6 @@ var setupStimulus = function (p5stim, stimBlocks) {
 
     p5stim.draw = function () {
         p5stim.background(220);
-        var testStim = stimBlocks.blocks;
-        console.log('testStim: ', testStim);        
         showStimulus(p5stim, testStim);
         showFloor(p5stim);
     };
@@ -314,42 +314,16 @@ var setupStimulus = function (p5stim, stimBlocks) {
 
 // }
 
-var exploreMental = function (trialObj) {
+var setupEnvs = function (trialObj){
     p5stim = new p5((env) => {
         setupStimulus(env, trialObj.targetBlocks)
     }, 'stimulus-canvas');
     p5env = new p5((env) => {
-        setupEnvironment(env, disabledEnvironment = true, phaseType = 'mental', trialObj = trialObj)
-    }, 'environment-canvas');
-    return p5stim, p5env
-}
-
-var explorePhysical = function (trialObj) {
-    p5stim = new p5((env) => {
-        setupStimulus(env, trialObj.targetBlocks)
-    }, 'stimulus-canvas');
-    p5env = new p5((env) => {
-        setupEnvironment(env, disabledEnvironment = false, phaseType = 'physical', trialObj = trialObj)
-    }, 'environment-canvas');
-    return p5stim, p5env
-}
-
-var buildStage = function (trialObj) {
-    p5stim = new p5((env) => {
-        setupStimulus(env, trialObj.targetBlocks)
-    }, 'stimulus-canvas');
-    p5env = new p5((env) => {
-        setupEnvironment(env, disabledEnvironment = false, phaseType = 'build', trialObj = trialObj)
-    }, 'environment-canvas');
-    return p5stim, p5env
-}
-
-var practice = function (trialObj) {
-    p5stim = new p5((env) => {
-        setupStimulus(env, trialObj.targetBlocks); //setup practice structure stimulus
-    }, 'stimulus-canvas');
-    p5env = new p5((env) => {
-        setupEnvironment(env, disabledEnvironment = false, phaseType = 'practice', trialObj = trialObj)
+        var disabledEnvironment = false;
+        if (trialObj.phase == 'exploreMental'){
+            disabledEnvironment = true
+        }
+        setupEnvironment(env, disabledEnvironment = disabledEnvironment, trialObj = trialObj)
     }, 'environment-canvas');
     return p5stim, p5env
 }
@@ -374,19 +348,8 @@ var resetStimWindow = function () {
 
 }
 
-var restoreEnvs = function(condition = 'external', targetBlocks){
-    if (phase == 'build'){
-        buildStage(targetBlocks);
-    }
-    else if (condition == 'physical'){
-        explorePhysical(targetBlocks);
-    }
-    else if (condition == 'mental'){
-        //can't press reset
-    }
-    else if (condition='practice') {
-        practice(targetBlocks);
-    }
+var restoreEnvs = function(trialObj){
+    setupEnvs(trialObj);
 }
 
 var sendData = function (eventType, trialObj) {

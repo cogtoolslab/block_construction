@@ -192,10 +192,12 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     function pre_build(baseline) {
       done_button.style.display = "none";
+
       // mental or physical exploration
       if (trial.condition == "mental") {
+        trial.phase = "mentalExplore";
         reset_button.style.display = "none";
-        p5stim, p5env = exploreMental(trial); //create p5 instances for this trial phase
+        //p5stim, p5env = exploreMental(trial); //create p5 instances for this trial phase
         //Update trial appearance 
         condition_heading.textContent = "Think about how you will build the structure"
         Array.prototype.forEach.call(env_divs, env_div => {
@@ -204,13 +206,17 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       }
       else if (trial.condition == "physical") {
-        p5stim, p5env = explorePhysical(trial); //create p5 instances for this trial phase
+        trial.phase = "physicalExplore";
+        //p5stim, p5env = explorePhysical(trial); //create p5 instances for this trial phase
         //Update trial appearance 
         condition_heading.textContent = "Practice building the structure";
         Array.prototype.forEach.call(env_divs, env_div => {
           env_div.style.backgroundColor = "#6DEBFF";
         });
       }
+      // set up p5 envs
+      p5stim, p5env = setupEnvs(trial);
+
       // get null score
       nullScore = baseline();
       scoreGap = math.subtract(1, nullScore);
@@ -218,8 +224,9 @@ jsPsych.plugins["block-silhouette"] = (function () {
     }
 
     function build(baseline) {
+      trial.phase = "build";
       // actual building phase (same for everyone)
-      p5stim, p5env = buildStage(trial); //create p5 instances for this trial phase
+      p5stim, p5env = setupEnvs(trial); //create p5 instances for this trial phase
 
       //Update trial appearance 
       done_button.style.display = "inline-block";
@@ -306,7 +313,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       resetStimWindow();
       resetEnv();
 
-      restoreEnvs(trial.condition, trial.targetBlocks);
+      restoreEnvs(trial);
       
       // update reset counter
 
@@ -388,7 +395,9 @@ jsPsych.plugins["block-silhouette"] = (function () {
     }
     else { // this is a practice trial
       done_button.style.display = "none";
-      p5stim, p5env = practice(trial); //create p5 instances for this trial phase
+      console.log('trial', trial);
+      trial.phase == 'practice'
+      p5stim, p5env = setupEnvs(trial); //create p5 instances for this trial phase
         //Update trial appearance 
       condition_heading.textContent = "Practice building";
       Array.prototype.forEach.call(env_divs, env_div => {
