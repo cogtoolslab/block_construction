@@ -43,6 +43,13 @@ var welcomeTrial = {
   allow_keys: true
 };
 
+var readyTrial = {
+  type: 'instructions',
+  pages: ['Great job! Now you should have a good sense of how this HIT works. Continue when you are ready to begin the experiment.'],
+  show_clickable_nav: true,
+  allow_keys: true  
+}
+
 var acceptHTML = {
   'str1' : '<p> In this HIT, you will see some gnarly shapes. For each shape, you will try to reconstruct it from a set of blocks. </p> <p> <b> If you are interested in learning more about this HIT, please first accept the HIT in MTurk before continuing further</b>. </p>'  
 }
@@ -118,6 +125,10 @@ function setupGame () {
       return trial
     }));
 
+    // insert final instructions page between practice trial and first "real" experimental trial
+    trials.unshift(readyTrial);    
+
+    // insert practice trial before the first "real" experimental trial
     var practiceTrial = new PracticeTrial;
     trials.unshift(practiceTrial);
     
