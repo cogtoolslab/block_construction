@@ -236,9 +236,11 @@ var setupEnvironment = function (env, disabledEnvironment = false, phaseType = '
                     if (allSleeping) {
                         // SEND WORLD DATA AFTER PREVIOUS BLOCK HAS SETTLED
                         // Sends information about the state of the world prior to next block being placed
-                        if (blocks.length != 0) { //if a block has already been placed, send settled world state
-                            sendData(eventType = 'settled');
-                        }
+                        
+                        //// TODO: RECONCILE with sendData below
+                        // if (blocks.length != 0) { //if a block has already been placed, send settled world state
+                        //     sendData(eventType = 'settled');
+                        // }
 
                         //test whether there is a block underneath this area
                         test_block = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated, testing_placement = true);
@@ -253,7 +255,9 @@ var setupEnvironment = function (env, disabledEnvironment = false, phaseType = '
                                 Sleeping.set(b.body, false);
                             });
 
-                            sendData(eventType = 'initial', newBlock = newBlock);
+                            // TODO: RECONCILE with sendData below
+                            // // send initial data about block placement
+                            // sendData('initial');
 
                         }
 
@@ -386,11 +390,10 @@ var restoreEnvs = function(condition = 'external', targetBlocks){
     }
 }
 
-
 var sendData = function (eventType, trialObj) {
     /** eventType one of:
      *  - expStart, general details about set up of experiment and matter environment. Sends data of type:
-     *      - gameInit
+     *      - gameInit -- now bundled into each data packet
      *  - initial, first placement of block. Sends data of type:
      *      - blockData (note that state of world can be inferred from previous settled state)
      *  - settled, state of world when that block has been placed. Sends data of type:

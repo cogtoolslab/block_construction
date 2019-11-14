@@ -336,10 +336,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // EXPLORATION PHASE
       pre_build(getCurrScore); //Setup exploration phase
 
-      if (trial.trialNum == 0) {
-        sendData('start', trial);
-      }
-
       occluder_trial.addEventListener('click', event => { //SHOW OCCLUDER
         occluder_trial.style.display = "none";
 
@@ -507,8 +503,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
     // 
     function clear_display_move_on(trial_data) {
 
+      // send snapshot of world after blocks have all settled
       sendData('settled', trial);
-      sendData('phaseEnd', trial);
 
       //clear all timers
       timers.forEach(interval => {
