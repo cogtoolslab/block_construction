@@ -277,20 +277,12 @@ jsPsych.plugins["block-silhouette"] = (function () {
     var start_time = Date.now();
     var time_bonus = 0;
 
-    var widthPct = 100 // starts at 105% b/c of the 1000ms delay above before occluder disappears
     var seconds_passed = 0;
 
     function timer(time_left, callback = null) {
       interval = setInterval(function () {
         timers.push(interval);
         seconds_passed += 1;
-
-        //widthPct -= pct_per_sec;
-        //progressBar.animate({ width: widthPct + '%' }, 1000, "linear");
-
-        // if (widthPct <= 0) {
-        //   clearInterval(interval);
-        // }
 
         time_left -= 1;
         minutes = parseInt(time_left / 60, 10);
@@ -310,7 +302,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       /* Called to clear building environment window. 
       Works by resetting variables then building a new p5 instance.
       */
-      sendData(dataType = "reset");
+      sendData(dataType = "reset", trialObj = trial);
       resetStimWindow();
       resetEnv();
 
@@ -345,7 +337,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       pre_build(getCurrScore); //Setup exploration phase
 
       if (trial.trialNum == 0) {
-        sendData(eventType = 'start');
+        sendData(eventType = 'start', trialObj = trial);
       }
 
       occluder_trial.addEventListener('click', event => { //SHOW OCCLUDER
@@ -358,7 +350,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
           currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
           cumulBonus += parseFloat(currBonus.toFixed(2)); // TODO: this cumulBonus needs to be bundled into data sent to mongo
 
-          sendData(dataType = "final");
+          sendData(dataType = 'final', trialObj = trial);
           //START TIMERS?
           clearP5Envs();
 
@@ -510,8 +502,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
     // 
     function clear_display_move_on(trial_data) {
 
-      sendData(eventType = "settled");
-      sendData(eventType = "phaseEnd");
+      sendData(eventType = 'settled', trialObj = trial);
+      sendData(eventType = 'phaseEnd', trialObj = trial);
 
       //clear all timers
       timers.forEach(interval => {
