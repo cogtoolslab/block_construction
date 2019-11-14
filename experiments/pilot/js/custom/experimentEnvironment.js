@@ -386,7 +386,7 @@ var restoreEnvs = function(condition = 'external', targetBlocks){
     }
 }
 
-// Not implemented yet- contents copied from block placement
+
 var sendData = function (eventType = 'none', newBlock = null, trialObj = null) {
     /** eventType one of:
      *  - expStart, general details about set up of experiment and matter environment. Sends data of type:
@@ -402,6 +402,26 @@ var sendData = function (eventType = 'none', newBlock = null, trialObj = null) {
      *  - expEnd, state of game when final trial over. Sends data of type:
      *      - gameData
     */
+
+    // get info from mturk
+    var turkInfo = jsPsych.turk.turkInfo();
+
+    // common info to send to mongo
+    var commonInfo = {
+        dbname: dbname,
+        colname: colname,
+        iterationName: iterationName,
+        workerId: turkInfo.workerId,
+        hitID: turkInfo.hitId,
+        aID: turkInfo.assignmentId,  
+        gameID: gameid,  
+        version: version,
+        timeRelative: performance.now(), // time since session began
+        timeAbsolute: Date.now(),
+        trialNum: 'TRIALNUM_PLACEHOLDER'
+    }
+
+    console.log('turkInfo = ', turkInfo);
 
     if (eventType == 'none') {
         console.log('Error: Null eventType sent');
@@ -422,8 +442,8 @@ var sendData = function (eventType = 'none', newBlock = null, trialObj = null) {
         vertices = _.map(newBlock.body.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
 
         block_data = {
-            dbname: dbname,
-            colname: colname,
+            dbname: dbname, //
+            colname: colname, 
             iterationName: iterationName,
             dataType: 'block',
             eventType: eventType, // initial block placement decision vs. final block resting position.
