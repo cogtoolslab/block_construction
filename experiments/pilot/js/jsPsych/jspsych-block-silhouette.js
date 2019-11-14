@@ -22,11 +22,6 @@ var cumulBonus = 0; // cumulative bonus earned in experiment
 var gameid = 'GAMEID_PLACEHOLDER';
 var version = 'VERSION_PLACEHOLDER';
 
-// Timing parameters
-var explore_time_limit = 1; // time limit in seconds
-var build_time_limit = 1; // time limit in seconds
-var practice_time_limit = 1;
-
 //var pct_per_sec = (1 / explore_time_limit) * 100; // if time_limit==20, that means that progress bar goes down by 5% each unit time
 
 jsPsych.plugins["block-silhouette"] = (function () {
@@ -344,7 +339,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     // Start the experiment!
 
-    if (trial.condition != 'practice'){
+    if (trial.condition != 'practice') {
 
       // EXPLORATION PHASE
       pre_build(getCurrScore); //Setup exploration phase
@@ -356,7 +351,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       occluder_trial.addEventListener('click', event => { //SHOW OCCLUDER
         occluder_trial.style.display = "none";
 
-        timer(explore_time_limit, function () { //set timer for exploration phase    
+        timer(trial.explore_duration, function () { //set timer for exploration phase    
 
           // calculate bonus earned
           rawScore = getCurrScore();
@@ -375,7 +370,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
             occluder_condition.style.display = "none";
 
             //START TIMERS?
-            timer(build_time_limit, function () { //set timer for build phase
+            timer(trial.build_duration, function () { //set timer for build phase
 
               // calculate bonus earned
               rawScore = getCurrScore();
@@ -394,7 +389,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
         });
       });
     }
-    else {
+    else { // this is a practice trial
       done_button.style.display = "none";
       p5stim, p5env = practice(trial.targetBlocks); //create p5 instances for this trial phase
         //Update trial appearance 
@@ -404,7 +399,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       });
       occluder_practice.addEventListener('click', event => { //SHOW OCCLUDER
         occluder_practice.style.display = "none";
-        timer(practice_time_limit, function () {
+        timer(trial.practice_duration, function () {
           clearP5Envs();
           clear_display_move_on();
         });

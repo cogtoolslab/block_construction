@@ -74,6 +74,9 @@ function Trial () {
   this.iterationName = 'testing1';
   this.prompt = "Please reconstruct the tower using as few blocks as possible.";
   this.dev_mode = false;
+  this.explore_duration = 1; // time limit in seconds
+  this.build_duration = 1; // time limit in seconds
+  this.practice_duration = 1; // time limit in seconds
 };
 
 function PracticeTrial () {
@@ -84,6 +87,9 @@ function PracticeTrial () {
   this.condition = 'practice';
   this.targetBlocks = practice_structure.blocks;
   this.targetName = 'any';
+  this.explore_duration = 1; // time limit in seconds
+  this.build_duration = 1; // time limit in seconds
+  this.practice_duration = 1; // time limit in seconds  
 };
 
 function setupGame () {
