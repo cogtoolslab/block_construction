@@ -531,19 +531,19 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     };
 
-    // hide image if timing is set
-    if (trial.explore_duration !== null) {
-      jsPsych.pluginAPI.setTimeout(function () {
-        display_element.querySelector('#jspsych-block-silhouette-sketch').style.visibility = 'hidden';
-      }, trial.sketch_duration);
-    }
+    // // hide image if timing is set
+    // if (trial.explore_duration !== null) {
+    //   jsPsych.pluginAPI.setTimeout(function () {
+    //     display_element.querySelector('#jspsych-block-silhouette-sketch').style.visibility = 'hidden';
+    //   }, trial.sketch_duration);
+    // }
 
-    // end trial if time limit is set
-    if (trial.build_duration !== null) {
-      jsPsych.pluginAPI.setTimeout(function () {
-        end_trial();
-      }, trial.trial_duration);
-    }
+    // // end trial if time limit is set
+    // if (trial.build_duration !== null) {
+    //   jsPsych.pluginAPI.setTimeout(function () {
+    //     end_trial();
+    //   }, trial.trial_duration);
+    // }
 
   };
   return plugin;
