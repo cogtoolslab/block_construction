@@ -421,7 +421,7 @@ var sendData = function (eventType = 'none', newBlock = null, trialObj = null) {
         trialNum: 'TRIALNUM_PLACEHOLDER'
     }
 
-    console.log('turkInfo = ', turkInfo);
+    console.log('trialObj = ', trialObj);
 
     if (eventType == 'none') {
         console.log('Error: Null eventType sent');
