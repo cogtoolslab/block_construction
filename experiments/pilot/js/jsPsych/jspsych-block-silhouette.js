@@ -132,15 +132,15 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       // introduce occluder to make the inter-trial transitions less jarring
       html += '<div class="occluder" id="occluder-trial">'
-      html += '<div><p>Ready to proceed? Click anywhere to continue.</p></div>'
+      html += '<div><p>Ready? Click anywhere to begin.</p></div>'
       html += '</div>'
 
       html += '<div class="occluder" id="occluder-condition">'
-      html += '<div><p>Now build the structure! Click anywhere to continue.</p></div>'
+      html += '<div><p>Now build the structure! Click anywhere to begin.</p></div>'
       html += '</div>'
 
       html += '<div class="occluder" id="occluder-practice">'
-      html += '<div><p>Practice using the building environment. Click anywhere to continue.</p></div>'
+      html += '<div><p> Practice using the building environment. Click anywhere to begin.</p></div>'
       html += '</div>'
 
       // // display helpful info during debugging
