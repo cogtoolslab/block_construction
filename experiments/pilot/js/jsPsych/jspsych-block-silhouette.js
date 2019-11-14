@@ -51,24 +51,24 @@ jsPsych.plugins["block-silhouette"] = (function () {
         default: undefined,
         description: 'nickname for target structure'
       },
-      prompt: {
-        type: jsPsych.plugins.parameterType.STRING,
-        pretty_name: 'Prompt',
-        default: null,
-        description: 'Any content here will be displayed under the buttons.'
-      },
-      explore_duration: {
-        type: jsPsych.plugins.parameterType.INT,
-        pretty_name: 'build duration',
-        default: null,
-        description: 'How long participants will explore (or simulate) solutions.'
-      },
-      build_duration: {
-        type: jsPsych.plugins.parameterType.INT,
-        pretty_name: 'Trial duration',
-        default: null,
-        description: 'How long participants can spend building their final version of silhouette.'
-      },
+      // prompt: {
+      //   type: jsPsych.plugins.parameterType.STRING,
+      //   pretty_name: 'Prompt',
+      //   default: null,
+      //   description: 'Any content here will be displayed under the buttons.'
+      // },
+      // explore_duration: {
+      //   type: jsPsych.plugins.parameterType.INT,
+      //   pretty_name: 'build duration',
+      //   default: null,
+      //   description: 'How long participants will explore (or simulate) solutions.'
+      // },
+      // build_duration: {
+      //   type: jsPsych.plugins.parameterType.INT,
+      //   pretty_name: 'Trial duration',
+      //   default: null,
+      //   description: 'How long participants can spend building their final version of silhouette.'
+      // },
       margin_vertical: {
         type: jsPsych.plugins.parameterType.STRING,
         pretty_name: 'Margin vertical',
@@ -444,73 +444,73 @@ jsPsych.plugins["block-silhouette"] = (function () {
       //   $('#jspsych-block-silhouette-button-' + i).off('click');
       // }      
 
-      if (trial.response_ends_trial) {
-        end_trial();
-      }
+      // if (trial.response_ends_trial) {
+      //   end_trial();
+      // }
     };
 
-    // function to end trial when it is time
-    function end_trial() {
+    // // function to end trial when it is time
+    // function end_trial() {
 
-      // kill any remaining setTimeout handlers
-      jsPsych.pluginAPI.clearAllTimeouts();
+    //   // kill any remaining setTimeout handlers
+    //   jsPsych.pluginAPI.clearAllTimeouts();
 
-      // get info from mturk
-      var turkInfo = jsPsych.turk.turkInfo();
+    //   // get info from mturk
+    //   var turkInfo = jsPsych.turk.turkInfo();
 
-      // // prettify choices list
-      // var prettyChoices = new Array;
-      // _.forEach(trial.choices, function(x) {
-      //   prettyChoices.push(x.split('/').slice(-1)[0].split('.')[0]);
-      // });
+    //   // // prettify choices list
+    //   // var prettyChoices = new Array;
+    //   // _.forEach(trial.choices, function(x) {
+    //   //   prettyChoices.push(x.split('/').slice(-1)[0].split('.')[0]);
+    //   // });
 
-      // // check if response matches target, i.e., whether response is correct
-      // var trial_correct;
-      // if (response.button == trial.target.shapenetid) {
-      //   trial_correct = 1;
-      //   increment = accuracy_bonus + parseFloat(time_bonus);
-      //   score+= parseFloat(increment); // increment accuracy bonus and time bonus
-      //   numCorrect += 1; // increment num correct by one
-      // } else {
-      //   trial_correct = 0;
-      // }
+    //   // // check if response matches target, i.e., whether response is correct
+    //   // var trial_correct;
+    //   // if (response.button == trial.target.shapenetid) {
+    //   //   trial_correct = 1;
+    //   //   increment = accuracy_bonus + parseFloat(time_bonus);
+    //   //   score+= parseFloat(increment); // increment accuracy bonus and time bonus
+    //   //   numCorrect += 1; // increment num correct by one
+    //   // } else {
+    //   //   trial_correct = 0;
+    //   // }
 
-      // score the built structure against the target
+    //   // score the built structure against the target
 
-      // gather the data to store for the trial
-      if (trial.dev_mode == true) {
-        console.log(trial);
-      }
-      var trial_data = _.extend(_.omit(trial, 'on_finish'), {
-        dbname: 'block_construction',
-        colname: 'silhouette',
-        gameID: trial.gameid,
-        // rt: response.rt,        
-        workerId: turkInfo.workerId,
-        hitID: turkInfo.hitId,
-        aID: turkInfo.assignmentId,
-        timestamp: Date.now(),
-        score: cumulBonus
-      });
+    //   // gather the data to store for the trial
+    //   if (trial.dev_mode == true) {
+    //     console.log(trial);
+    //   }
+    //   var trial_data = _.extend(_.omit(trial, 'on_finish'), {
+    //     dbname: 'block_construction',
+    //     colname: 'silhouette',
+    //     gameID: trial.gameid,
+    //     // rt: response.rt,        
+    //     workerId: turkInfo.workerId,
+    //     hitID: turkInfo.hitId,
+    //     aID: turkInfo.assignmentId,
+    //     timestamp: Date.now(),
+    //     score: cumulBonus
+    //   });
 
-      if (trial.dev_mode == true) {
-        console.log('trial data: ', trial_data);
-      }
+    //   if (trial.dev_mode == true) {
+    //     console.log('trial data: ', trial_data);
+    //   }
 
-      // // show feedback
-      // if (trial_correct==true) {
-      //  // show feedback by drawing GREEN box around TARGET if selected CORRECTLY    
-      //   display_element.querySelector('#jspsych-block-silhouette-button-' + target_index).style.border = "8px solid #66B03B"
-      //   // also bold/enlarge the score in bottom left corner 
-      //   display_element.querySelector('#score p2').innerHTML = 'bonus earned: ' + parseFloat(score).toFixed(3);
-      //   display_element.querySelector('#score p2').style.fontWeight = 'bold';
-      // } else {
-      //  // draw RED box around INCORRECT response and BLACK box around TARGET
-      //  display_element.querySelector('#jspsych-block-silhouette-button-' + target_index).style.border = "8px solid #282828"      
-      //  display_element.querySelector('#jspsych-block-silhouette-button-' + response_index).style.border = "8px solid #D02B16"      
-      // }
+    //   // // show feedback
+    //   // if (trial_correct==true) {
+    //   //  // show feedback by drawing GREEN box around TARGET if selected CORRECTLY    
+    //   //   display_element.querySelector('#jspsych-block-silhouette-button-' + target_index).style.border = "8px solid #66B03B"
+    //   //   // also bold/enlarge the score in bottom left corner 
+    //   //   display_element.querySelector('#score p2').innerHTML = 'bonus earned: ' + parseFloat(score).toFixed(3);
+    //   //   display_element.querySelector('#score p2').style.fontWeight = 'bold';
+    //   // } else {
+    //   //  // draw RED box around INCORRECT response and BLACK box around TARGET
+    //   //  display_element.querySelector('#jspsych-block-silhouette-button-' + target_index).style.border = "8px solid #282828"      
+    //   //  display_element.querySelector('#jspsych-block-silhouette-button-' + response_index).style.border = "8px solid #D02B16"      
+    //   // }
 
-    };
+    // };
 
     // 
     function clear_display_move_on(trial_data) {
