@@ -96,9 +96,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
       console.error('Required parameter "target" missing in block-silhouette');
     }
 
-    console.log('trial: ', trial);
-
-
     // wrapper function to show everything, call this when you've waited what you
     // reckon is long enough for the data to come back from the db
     function show_display() {
@@ -222,7 +219,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // get null score
       nullScore = baseline();
       scoreGap = math.subtract(1, nullScore);
-      console.log('nullScore = ', nullScore);
+      // console.log('nullScore = ', nullScore);
     }
 
     function build(baseline) {
@@ -239,7 +236,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // get null score
       nullScore = baseline();
       scoreGap = math.subtract(1, nullScore);
-      console.log('nullScore = ', nullScore);
+      // console.log('nullScore = ', nullScore);
     }
 
     function getCurrScore() {
@@ -254,9 +251,9 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // compute relative change in score
       deltaScore = math.subtract(rawScore, nullScore);
       normedScore = math.divide(deltaScore, scoreGap);
-      console.log('scoreGap = ', scoreGap.toFixed(2));
-      console.log('deltaScore = ', deltaScore.toFixed(2));
-      console.log('normedScore = ', normedScore.toFixed(2));
+      // console.log('scoreGap = ', scoreGap.toFixed(2));
+      // console.log('deltaScore = ', deltaScore.toFixed(2));
+      // console.log('normedScore = ', normedScore.toFixed(2));
       return normedScore;
     }
 

@@ -439,7 +439,7 @@ var sendData = function (eventType = 'none', newBlock = null, trialObj = null) {
             blockVertices: vertices,
             blockBodyProperties: blockProperties
         };
-        console.log('block_data', block_data);
+        // console.log('block_data', block_data);
         socket.emit('block', block_data);
     }
     else if (eventType == 'settled') {
@@ -471,7 +471,7 @@ var sendData = function (eventType = 'none', newBlock = null, trialObj = null) {
             numBlocks: bodiesForSending.length
             // need to add bonuses
         };
-        console.log('world_data', world_data);
+        // console.log('world_data', world_data);
         socket.emit('world', world_data);
     }
     else if (eventType == 'reset') {
@@ -494,7 +494,7 @@ var sendData = function (eventType = 'none', newBlock = null, trialObj = null) {
             numBlocks: blocks.length //number of blocks before reset pressed
         };
 
-        console.log('reset_data', reset_data);
+        // console.log('reset_data', reset_data);
         socket.emit('reset', reset_data);
 
     }
@@ -557,7 +557,7 @@ var sendData = function (eventType = 'none', newBlock = null, trialObj = null) {
             floorProperties: floorProperties, //properties of floor body
             vertices: vertices
         };
-        console.log('start', start_data);
+        // console.log('start', start_data);
         socket.emit('start', start_data);
     }
 
@@ -578,7 +578,7 @@ var sendData = function (eventType = 'none', newBlock = null, trialObj = null) {
             // need to add bonuses
         };
 
-        console.log('end', end_data);
+        // console.log('end', end_data);
         socket.emit('end', end_data);
 
     }
