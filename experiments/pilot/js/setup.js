@@ -80,6 +80,7 @@ function Trial () {
   this.rawScore = 0; // F1 score
   this.currBonus = 0; // current bonus
   this.score = 0; // cumulative bonus  
+  this.trialEndTrigger = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'.
 };
 
 function PracticeTrial () {
@@ -96,6 +97,7 @@ function PracticeTrial () {
   this.rawScore = 0; // F1 score
   this.currBonus = 0; // current bonus
   this.score = 0; // cumulative bonus
+  this.trialEndTrigger = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'.  
 };
 
 function setupGame () {

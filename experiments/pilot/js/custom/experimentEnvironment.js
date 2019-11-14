@@ -100,7 +100,7 @@ var block_colors = [
     [179, 47, 10, 210]]
     ;
 
-var setupEnvironment = function (env, disabledEnvironment = false, phaseType = 'build', ghost_structure = null) {
+var setupEnvironment = function (env, disabledEnvironment = false, phaseType = 'build', trialObj = null) {
 
     phase = phaseType;
 
@@ -189,7 +189,7 @@ var setupEnvironment = function (env, disabledEnvironment = false, phaseType = '
         */
 
         if (phaseType == 'practice'){
-            showStimulus(env, ghost_structure, individual_blocks = true);
+            showStimulus(env, trialObj.targetBlocks, individual_blocks = true);
         }
 
         blocks.forEach(b => {
@@ -237,10 +237,9 @@ var setupEnvironment = function (env, disabledEnvironment = false, phaseType = '
                         // SEND WORLD DATA AFTER PREVIOUS BLOCK HAS SETTLED
                         // Sends information about the state of the world prior to next block being placed
                         
-                        //// TODO: RECONCILE with sendData below
-                        // if (blocks.length != 0) { //if a block has already been placed, send settled world state
-                        //     sendData(eventType = 'settled');
-                        // }
+                        if (blocks.length != 0) { //if a block has already been placed, send settled world state
+                            sendData('settled', trialObj);
+                        }
 
                         //test whether there is a block underneath this area
                         test_block = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated, testing_placement = true);
@@ -255,9 +254,8 @@ var setupEnvironment = function (env, disabledEnvironment = false, phaseType = '
                                 Sleeping.set(b.body, false);
                             });
 
-                            // TODO: RECONCILE with sendData below
-                            // // send initial data about block placement
-                            // sendData('initial');
+                            // send initial data about block placement
+                            sendData('initial', trialObj);
 
                         }
 
@@ -315,42 +313,42 @@ var setupStimulus = function (p5stim, stimBlocks) {
 
 // }
 
-var exploreMental = function (targetBlocks) {
+var exploreMental = function (trialObj) {
     p5stim = new p5((env) => {
-        setupStimulus(env, targetBlocks)
+        setupStimulus(env, trialObj.targetBlocks)
     }, 'stimulus-canvas');
     p5env = new p5((env) => {
-        setupEnvironment(env, disabledEnvironment = true, phaseType = 'mental')
+        setupEnvironment(env, disabledEnvironment = true, phaseType = 'mental', trialObj = trialObj)
     }, 'environment-canvas');
     return p5stim, p5env
 }
 
-var explorePhysical = function (targetBlocks) {
+var explorePhysical = function (trialObj) {
     p5stim = new p5((env) => {
-        setupStimulus(env, targetBlocks)
+        setupStimulus(env, trialObj.targetBlocks)
     }, 'stimulus-canvas');
     p5env = new p5((env) => {
-        setupEnvironment(env, disabledEnvironment = false, phaseType = 'physical')
+        setupEnvironment(env, disabledEnvironment = false, phaseType = 'physical', trialObj = trialObj)
     }, 'environment-canvas');
     return p5stim, p5env
 }
 
-var buildStage = function (targetBlocks) {
+var buildStage = function (trialObj) {
     p5stim = new p5((env) => {
-        setupStimulus(env, targetBlocks)
+        setupStimulus(env, trialObj.targetBlocks)
     }, 'stimulus-canvas');
     p5env = new p5((env) => {
-        setupEnvironment(env, disabledEnvironment = false, phaseType = 'build')
+        setupEnvironment(env, disabledEnvironment = false, phaseType = 'build', trialObj = trialObj)
     }, 'environment-canvas');
     return p5stim, p5env
 }
 
-var practice = function (targetBlocks) {
+var practice = function (trialObj) {
     p5stim = new p5((env) => {
-        setupStimulus(env, targetBlocks); //setup practice structure stimulus
+        setupStimulus(env, trialObj.targetBlocks); //setup practice structure stimulus
     }, 'stimulus-canvas');
     p5env = new p5((env) => {
-        setupEnvironment(env, disabledEnvironment = false, phaseType = 'practice', ghost_structure = targetBlocks)
+        setupEnvironment(env, disabledEnvironment = false, phaseType = 'practice', trialObj = trialObj)
     }, 'environment-canvas');
     return p5stim, p5env
 }
@@ -392,18 +390,13 @@ var restoreEnvs = function(condition = 'external', targetBlocks){
 
 var sendData = function (eventType, trialObj) {
     /** eventType one of:
-     *  - expStart, general details about set up of experiment and matter environment. Sends data of type:
-     *      - gameInit -- now bundled into each data packet
      *  - initial, first placement of block. Sends data of type:
      *      - blockData (note that state of world can be inferred from previous settled state)
+     *      - also state of the world
      *  - settled, state of world when that block has been placed. Sends data of type:
      *      - worldData (note that block placement can be inferred from previous settled state)
-     *  - phaseEnd, state of world after last block has been placed. Sends data of type:
-     *      - worldData
      *  - reset, when reset button pressed and world emptied. Sends data of type:
      *      - resetData
-     *  - expEnd, state of game when final trial over. Sends data of type:
-     *      - gameData
     */    
 
     // info from mturk
