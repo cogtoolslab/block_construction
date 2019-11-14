@@ -401,9 +401,9 @@ var sendData = function (eventType, trialObj) {
      *      - resetData
      *  - expEnd, state of game when final trial over. Sends data of type:
      *      - gameData
-    */
+    */    
 
-    // get info from mturk
+    // info from mturk
     var turkInfo = jsPsych.turk.turkInfo();
 
     // common info to send to mongo
@@ -413,19 +413,79 @@ var sendData = function (eventType, trialObj) {
         iterationName: iterationName,
         workerId: turkInfo.workerId,
         hitID: turkInfo.hitId,
-        aID: turkInfo.assignmentId,  
-        gameID: gameid,  
-        version: version,
+        aID: turkInfo.assignmentId, 
         timeRelative: performance.now(), // time since session began
         timeAbsolute: Date.now(),
-        trialNum: 'TRIALNUM_PLACEHOLDER'
-    }
+        phase: phase,
+        gameID: trialObj.gameID,  
+        version: trialObj.versionInd,
+        condition: trialObj.condition,        
+        trialNum: trialObj.trialNum,
+        F1Score: trialObj.F1Score,
+        currBonus: trialObj.currBonus,
+        score: trialObj.score,        
+        numTrials: trialObj.num_trials,
+        targetName: trialObj.targetName,
+        targetBlocks: trialObj.targetBlocks,
+        prompt: trialObj.prompt,
+        practiceDuration: trialObj.practice_duration,
+        exploreDuration: trialObj.explore_duration,
+        buildDuration: trialObj.build_duration,
+        devMode: trialObj.dev_mode            
+    };
 
-    console.log('trialObj = ', trialObj);
+    // general info about world params, bundled into worldInfo
+    floorBody = ground.body;
+    // test out sending newBlock info to server/mongodb
+    floorPropertyList = Object.keys(floorBody); // extract block properties;
+    floorPropertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
+    floorProperties = _.pick(floorBody['body'], propertyList); // pick out all and only the block body properties in the property list    
+    vertices = _.map(floorBody.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });        
+    
+    worldInfo = {
+        canvasHeight: canvasHeight,
+        canvasWidth: canvasWidth,
+        menuHeight: menuHeight,
+        menuWidth: menuWidth,
+        floorY: floorY,
+        stimCanvasWidth: stimCanvasWidth,
+        stimCanvasHeight: stimCanvasHeight,
+        stimX: stimX,
+        stimY: stimY,
+        scalingFactor: sF,
+        worldScale: worldScale,
+        stim_scale: stim_scale,
+        blockDims: [
+            [1, 2],
+            [2, 1],
+            [2, 2],
+            [2, 4],
+            [4, 2]
+        ],
+        worldWidthUnits: 8,
+        worldHeightUnits: 8,
+        blockOptions: { //update if changed in block
+            friction: 0.9,
+            frictionStatic: 1.4,
+            density: 0.0035,
+            restitution: 0.001,
+            sleepThreshold: 30
+        },
+        floorOptions: {
+            isStatic: true, // static i.e. not affected by gravity
+            friction: 0.9,
+            frictionStatic: 2
+        },
+        floorProperties: floorProperties, //properties of floor body
+        vertices: vertices
+    };   
+
+    // glom commonInfo and worldInfo together
+    _.extend(commonInfo, worldInfo);
 
     if (eventType == 'none') {
         console.log('Error: Null eventType sent');
-    }
+    };
 
     console.log('Trying to send ' + eventType + ' data from ' + phase + ' phase');
 
@@ -441,24 +501,18 @@ var sendData = function (eventType, trialObj) {
         // custom de-borkification
         vertices = _.map(newBlock.body.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
 
-        block_data = {
-            dbname: dbname, //
-            colname: colname, 
-            iterationName: iterationName,
+        block_data = _.extend(commonInfo, {
             dataType: 'block',
             eventType: eventType, // initial block placement decision vs. final block resting position.
             phase: phase,
-            gameID: gameid,
-            version: version,
-            time: performance.now(), // time since session began
-            timeAbsolute: Date.now(),
             blockWidth: newBlock['w'],
             blockHeight: newBlock['h'],
             blockCenterX: newBlock['body']['position']['x'],
             blockCenterY: newBlock['body']['position']['y'],
             blockVertices: vertices,
             blockBodyProperties: blockProperties
-        };
+        })
+
         // console.log('block_data', block_data);
         socket.emit('block', block_data);
     }
@@ -476,21 +530,14 @@ var sendData = function (eventType, trialObj) {
             return blockProperties
         });
 
-        world_data = {
-            dbname: dbname,
-            colname: colname,
-            iterationName: iterationName,
+        world_data = _.extend(commonInfo, {
             dataType: 'world',
             eventType: eventType, // initial block placement decision vs. final block resting position.
-            phase: phase,
-            gameID: gameid,
-            version: version,
-            time: performance.now(), // time since session began
-            timeAbsolute: Date.now(),
             allBlockBodyProperties: bodiesForSending, // matter information about bodies of each block. Order is order of block placement
             numBlocks: bodiesForSending.length
             // need to add bonuses
-        };
+        });
+
         // console.log('world_data', world_data);
         socket.emit('world', world_data);
     }
@@ -499,107 +546,14 @@ var sendData = function (eventType, trialObj) {
         // We can infer from the existence of this event that the world is empty
 
         // Do we calculate anything about the reset?
-
-        reset_data = {
-            dbname: dbname,
-            colname: colname,
-            iterationName: iterationName,
+        reset_data = _.extend(commonInfo, {
             dataType: 'reset',
             eventType: eventType, // initial block placement decision vs. final block resting position.
-            phase: phase,
-            gameID: gameid,
-            version: version,
-            time: performance.now(), // time since session began
-            timeAbsolute: Date.now(),
             numBlocks: blocks.length //number of blocks before reset pressed
-        };
+        });
 
         // console.log('reset_data', reset_data);
         socket.emit('reset', reset_data);
-
-    }
-    else if (eventType == 'start') {
-        // Send data about initial setup of experiment
-
-        floorBody = ground.body
-        // test out sending newBlock info to server/mongodb
-        floorPropertyList = Object.keys(floorBody); // extract block properties;
-        floorPropertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
-        floorProperties = _.pick(floorBody['body'], propertyList); // pick out all and only the block body properties in the property list
-
-        // custom de-borkification
-        vertices = _.map(floorBody.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
-
-        start_data = {
-            dbname: dbname,
-            colname: colname,
-            iterationName: iterationName,
-            dataType: 'gameInit',
-            eventType: 'initial', // initial block placement decision vs. final block resting position.
-            phase: phase,
-            gameID: gameid,
-            version: version,
-            time: performance.now(), // time since session began
-            timeAbsolute: Date.now(),
-            canvasHeight: canvasHeight,
-            canvasWidth: canvasWidth,
-            menuHeight: menuHeight,
-            menuWidth: menuWidth,
-            floorY: floorY,
-            stimCanvasWidth: stimCanvasWidth,
-            stimCanvasHeight: stimCanvasHeight,
-            stimX: stimX,
-            stimY: stimY,
-            scalingFactor: sF,
-            worldScale: worldScale,
-            stim_scale: stim_scale,
-            blockDims: [
-                [1, 2],
-                [2, 1],
-                [2, 2],
-                [2, 4],
-                [4, 2]
-            ],
-            worldWidthUnits: 8,
-            worldHeightUnits: 8,
-            blockOptions: { //update if changed in block
-                friction: 0.9,
-                frictionStatic: 1.4,
-                density: 0.0035,
-                restitution: 0.001,
-                sleepThreshold: 30
-            },
-            floorOptions: {
-                isStatic: true, // static i.e. not affected by gravity
-                friction: 0.9,
-                frictionStatic: 2
-            },
-            floorProperties: floorProperties, //properties of floor body
-            vertices: vertices
-        };
-        // console.log('start', start_data);
-        socket.emit('start', start_data);
-    }
-
-    else if (eventType == 'end') {
-        // Send data about initial setup of experiment
-    
-        start_data = {
-            dbname: dbname,
-            colname: colname,
-            iterationName: iterationName,
-            dataType: 'gameInit',
-            eventType: 'initial', // initial block placement decision vs. final block resting position.
-            phase: phase,
-            gameID: gameid,
-            version: version,
-            time: performance.now(), // time since session began
-            timeAbsolute: Date.now()
-            // need to add bonuses
-        };
-
-        // console.log('end', end_data);
-        socket.emit('end', end_data);
 
     }
 

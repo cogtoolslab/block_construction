@@ -350,6 +350,11 @@ jsPsych.plugins["block-silhouette"] = (function () {
           currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
           cumulBonus += parseFloat(currBonus.toFixed(2)); // TODO: this cumulBonus needs to be bundled into data sent to mongo
 
+          // update official bonus tallies
+          trial.F1Score = rawScore; 
+          trial.currBonus = currBonus; // update trial var to reflect current bonus earned
+          trial.score = cumulBonus; // update trial.score var to reflect cumulative bonus
+
           sendData('final',trial);
           //START TIMERS?
           clearP5Envs();

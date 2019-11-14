@@ -77,6 +77,9 @@ function Trial () {
   this.explore_duration = 1; // time limit in seconds
   this.build_duration = 1; // time limit in seconds
   this.practice_duration = 1; // time limit in seconds
+  this.rawScore = 0; // F1 score
+  this.currBonus = 0; // current bonus
+  this.score = 0; // cumulative bonus  
 };
 
 function PracticeTrial () {
@@ -89,7 +92,10 @@ function PracticeTrial () {
   this.targetName = 'any';
   this.explore_duration = 1; // time limit in seconds
   this.build_duration = 1; // time limit in seconds
-  this.practice_duration = 1; // time limit in seconds  
+  this.practice_duration = 1; // time limit in seconds
+  this.rawScore = 0; // F1 score
+  this.currBonus = 0; // current bonus
+  this.score = 0; // cumulative bonus
 };
 
 function setupGame () {
@@ -116,7 +122,7 @@ function setupGame () {
     // extra information to bind to trial list
     var additionalInfo = {
       gameID: d.gameid,
-      version: d.version,
+      version: d.versionInd,
       post_trial_gap: 1000, // add brief ITI between trials
       num_trials : numTrials,
       on_finish : on_finish
