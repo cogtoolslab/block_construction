@@ -293,7 +293,8 @@ var setupStimulus = function (p5stim, stimBlocks) {
 
     p5stim.draw = function () {
         p5stim.background(220);
-        var testStim = stimBlocks;
+        var testStim = stimBlocks.blocks;
+        console.log('testStim: ', testStim);        
         showStimulus(p5stim, testStim);
         showFloor(p5stim);
     };
