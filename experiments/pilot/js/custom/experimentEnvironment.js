@@ -486,6 +486,9 @@ var sendData = function (eventType, trialObj) {
     // glom commonInfo and worldInfo together
     _.extend(commonInfo, worldInfo);
 
+    console.log('commonInfo: ', commonInfo);
+    console.log('trialObj: ', trialObj);
+
     if (eventType == 'none') {
         console.log('Error: Null eventType sent');
     };
