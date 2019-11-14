@@ -387,7 +387,7 @@ var restoreEnvs = function(condition = 'external', targetBlocks){
 }
 
 
-var sendData = function (eventType = 'none', newBlock = null, trialObj = null) {
+var sendData = function (eventType, trialObj) {
     /** eventType one of:
      *  - expStart, general details about set up of experiment and matter environment. Sends data of type:
      *      - gameInit
