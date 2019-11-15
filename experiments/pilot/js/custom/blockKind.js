@@ -27,7 +27,6 @@ function BlockKind(w,h,blockColor){
 
     this.showGhost = function(env, mouseX, mouseY, rotated, disabled = false) {
 
-        // update to include scrolling to rotate? https://p5js.org/reference/#/p5/mouseWheel
         env.push();
         env.translate(mouseX, mouseY);
         env.rectMode(env.CENTER);

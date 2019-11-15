@@ -15,15 +15,9 @@ var Engine = Matter.Engine,
     Sleeping = Matter.Sleeping,
     Runner = Matter.Runner;
 
-// Parameters
-// var menuHeight = 100;
-// var menuWidth = 500;
-// let rotateIcon;
-// var floorY = 50;
-// var canvasHeight = 500;
-// var canvasWidth = 500;
-var canvasHeight = 450; //actually height
-var canvasWidth = 450; //actually width
+// Environment parameters
+var canvasHeight = 450;
+var canvasWidth = 450;
 var menuHeight = canvasHeight / 5;
 var menuWidth = canvasWidth;
 var floorY = (canvasHeight - menuHeight);
@@ -36,7 +30,7 @@ const colname = 'silhouette';
 const iterationName = 'testing';
 var phase = 'build';
 
-// Stimulus Display
+// Stimulus parameters
 var stimCanvasWidth = canvasWidth;
 var stimCanvasHeight = canvasHeight;
 var stimX = stimCanvasWidth / 2;
@@ -46,17 +40,15 @@ var stimY = stimCanvasHeight / 2;
 var p5stim;
 var p5env;
 
-
 // Scaling values
 var sF = 20; //scaling factor to change appearance of blocks
 var worldScale = 2.2; //scaling factor within matterjs
 var stim_scale = sF; //scale of stimulus silhouette
 
-// Global Variables
+// Global Variables for Matter js and custom Matter js wrappers
 var engine;
 var ground;
 var blocks = [];
-var mConstraint; // mouse constraint for moving objects. Will delete?
 var blockMenu;
 var blockKinds = [];
 var propertyList = [];
@@ -68,7 +60,6 @@ var rotated = false;
 var selectedBlockKind = null;
 
 // Task variables
-var targets;
 var block_data; // data to send to mongodb about every block placement
 var trial_data; // data to send to mongodb about every finished block structure
 var newSelectedBlockKind; // init this variable so we can inspect it in the console
@@ -100,7 +91,7 @@ var block_colors = [
     [179, 47, 10, 210]]
     ;
 
-var setupEnvironment = function (env, disabledEnvironment = false, trialObj = null) {
+var setupEnvironment = function (env, trialObj = null) {
 
     phase = trialObj.phaseType;
 
@@ -125,16 +116,13 @@ var setupEnvironment = function (env, disabledEnvironment = false, trialObj = nu
         })
         engine = Engine.create(engineOptions);
         engine.world = world;
-        //engine.world.gravity.y= 2;
-
-
 
         // Create block kinds that will appear in environment/menu. Later on this will need to be represented in each task.
 
         blockDims.forEach((dims, i) => {
             w = dims[0]
             h = dims[1]
-            if (disabledEnvironment) {
+            if (trialObj.phase =='mentalExplore') {
                 blockKinds.push(new BlockKind(w, h, [100, 100, 100, 30]));
             } else {
                 blockKinds.push(new BlockKind(w, h, block_colors[i]));
@@ -149,7 +137,6 @@ var setupEnvironment = function (env, disabledEnvironment = false, trialObj = nu
         //box1 = new Box(200, 100, 30, 30);
 
         // Runner- use instead of line above if changes to game loop needed
-
         runner = Matter.Runner.create({
             isFixed: true
         });
@@ -163,12 +150,6 @@ var setupEnvironment = function (env, disabledEnvironment = false, trialObj = nu
         var options = {
             mouse: canvasMouse // set object to mouse object in canvas
         }
-        /* set up constraint between mouse and block- used to move around blocks with mouse click
-        mConstraint = MouseConstraint.create(engine, options); // Create 'constraint' (like a spring) between mouse and 'body' object. 'body' is defined when mouse clicked.
-        mConstraint.constraint.stiffness = 0.2; // can change properties of mouse interaction by playing with this constraint
-        mConstraint.constraint.angularStiffness = 1;
-        World.add(engine.world, mConstraint); // add the mouse constraint to physics engine world    
-        */
 
     }
 
@@ -195,14 +176,7 @@ var setupEnvironment = function (env, disabledEnvironment = false, trialObj = nu
         blocks.forEach(b => {
             b.show(env);
         });
-        /* For moving blocks with mouse drag
-        if (mConstraint.body) { //if the constraint exists
-            var pos = mConstraint.body.position;
-            var offset = mConstraint.constraint.pointB;
-            var m = mConstraint.mouse.position;
-            stroke(0, 255, 0);
-            line(pos.x + offset.x, pos.y + offset.y, m.x, m.y); // draw line of mouse constraint
-        }*/
+
         if (isPlacingObject) {
             env.noCursor(); //feel like this is horribly ineffecient...
 
@@ -224,7 +198,7 @@ var setupEnvironment = function (env, disabledEnvironment = false, trialObj = nu
         }
         */
 
-        if (!disabledEnvironment) { //environment will be disabled in some conditions
+        if (!(trialObj.phase == 'mentalExplore')) { //environment will be disabled in some conditions
 
             // if mouse in main environment
             if (env.mouseY > 0 && (env.mouseY < canvasHeight - menuHeight) && (env.mouseX > 0 && env.mouseX < canvasWidth)) {
@@ -301,34 +275,17 @@ var setupStimulus = function (p5stim, stimBlocks) {
 
 };
 
-// var trial = function (condition = 'external') {
-//     if (condition == 'external') {
-//         explore()
-//     }
-//     else if (condition == 'internal') {
-//         simulate()
-//     }
-//     else {
-//         console.log('Unrecognised condition type, use `external` or `internal`')
-//     }
-
-// }
-
 var setupEnvs = function (trialObj){
     p5stim = new p5((env) => {
         setupStimulus(env, trialObj.targetBlocks)
     }, 'stimulus-canvas');
     p5env = new p5((env) => {
-        var disabledEnvironment = false;
-        if (trialObj.phase == 'exploreMental'){
-            disabledEnvironment = true
-        }
-        setupEnvironment(env, disabledEnvironment = disabledEnvironment, trialObj = trialObj)
+        setupEnvironment(env, trialObj = trialObj)
     }, 'environment-canvas');
     return p5stim, p5env
 }
 
-var resetEnv = function () {
+var removeEnv = function () {
 
     // remove environment
     p5env.remove();
@@ -342,15 +299,12 @@ var resetEnv = function () {
     // setup new environment   
 }
 
-var resetStimWindow = function () {
+var removeStimWindow = function () {
     // remove environment
     p5stim.remove();
 
 }
 
-var restoreEnvs = function(trialObj){
-    setupEnvs(trialObj);
-}
 
 var sendData = function (eventType, trialObj) {
     /** eventType one of:
@@ -443,14 +397,14 @@ var sendData = function (eventType, trialObj) {
     // glom commonInfo and worldInfo together
     _.extend(commonInfo, worldInfo);
 
-    console.log('commonInfo: ', commonInfo);
-    console.log('trialObj: ', trialObj);
+    //console.log('commonInfo: ', commonInfo);
+    //console.log('trialObj: ', trialObj);
 
     if (eventType == 'none') {
         console.log('Error: Null eventType sent');
     };
 
-    console.log('Trying to send ' + eventType + ' data from ' + phase + ' phase');
+    //console.log('Trying to send ' + eventType + ' data from ' + phase + ' phase');
 
     if (eventType == 'initial') {
         // Send data about initial placement of a block
