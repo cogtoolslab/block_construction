@@ -328,6 +328,7 @@ var sendData = function (eventType, trialObj) {
         workerId: turkInfo.workerId,
         hitID: turkInfo.hitId,
         aID: turkInfo.assignmentId, 
+        randID: trialObj.randID,
         timeRelative: performance.now(), // time since session began
         timeAbsolute: Date.now(),
         phase: phase,
@@ -345,7 +346,7 @@ var sendData = function (eventType, trialObj) {
         practiceDuration: trialObj.practice_duration,
         exploreDuration: trialObj.explore_duration,
         buildDuration: trialObj.build_duration,
-        devMode: trialObj.dev_mode            
+        devMode: trialObj.dev_mode          
     };
 
     // general info about world params, bundled into worldInfo

@@ -80,7 +80,7 @@ body {
   float: middle;
   border:solid 1px #FFFFFF;
   height: 100vh;
-  width: 100vw;
+  width: 100%;
   margin: auto;
   top: 40px; bottom: auto; left:0; right: 0;
   background: #FFFFFF;
@@ -93,23 +93,17 @@ body {
 .occluder div{
     float: middle;
     border:solid 1px #FFFFFF;
+    width: 50%;
     height: 80vh;
-    width: 90vw;
     margin: auto;
-    top: 40px; bottom: auto; left:0; right: 0;
+    top: 50px; bottom: auto; left:0; right: 0;
     background: #FFFFFF;
-    position: absolute;
     z-index: 12;
     color: black;
 }
 
 .occluder p{
-    float: middle;
-    margin: auto;
-    top: auto; bottom: auto; left:0; right: 0;
-    position: absolute;
-    color: black;
-    line-height: 80vh;
+    padding-top: 45%;
 }
 
 #progress-bar {

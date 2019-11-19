@@ -171,8 +171,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
     var physical_explore_text = 'Now practice building the given structure. Click anywhere to begin.';
     var mental_explore_text = 'Now think about how you will build the given structure. Click anywhere to begin.';
     var build_text = 'Now build the structure! Click anywhere to begin.';
-    var feedback_text = 'This is feedback!';
-    var practice_text = 'Practice using the building environment. Click anywhere to begin.';
+    var feedback_text = '[Feedback contingent on success in practice]!';
+    var practice_text = 'This is a practice trial. Copy the silhouette by placing blocks on the right. We have placed guides to help you with this one. Click anywhere to begin.';
 
     // call show_display now, which includes a massive occluder that covers everything up
     show_display();
@@ -207,7 +207,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
     occluder.style.display = "block";
 
     function pre_build(baseline) {
-      console.log('pre build called');
       done_button.style.display = "none";
 
       // mental or physical exploration
@@ -216,7 +215,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
         reset_button.style.display = "none";
         //p5stim, p5env = exploreMental(trial); //create p5 instances for this trial phase
         //Update trial appearance 
-        occluder_text.textContent = mental_explore_text;
+        occluder_text.textContent = 'Trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + ". " + mental_explore_text;
         condition_heading.textContent = "Think about how you will build the structure"
         Array.prototype.forEach.call(env_divs, env_div => {
           env_div.style.backgroundColor = "#FE5D26";
@@ -227,7 +226,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
         trial.phase = "physicalExplore";
         //p5stim, p5env = explorePhysical(trial); //create p5 instances for this trial phase
         //Update trial appearance 
-        occluder_text.textContent = physical_explore_text;
+        occluder_text.textContent = 'Trial '+ (parseInt(trial.trialNum) + parseInt(1)).toString() + ". " + physical_explore_text;
         condition_heading.textContent = "Practice building the structure";
         Array.prototype.forEach.call(env_divs, env_div => {
           env_div.style.backgroundColor = "#6DEBFF";
@@ -243,7 +242,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     }
 
     function build(baseline) {
-      console.log('build called for trial ' + trial.trialNum);
+
       trial.phase = "build";
       // actual building phase (same for everyone)
       p5stim, p5env = setupEnvs(trial); //create p5 instances for this trial phase
@@ -319,8 +318,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
         seconds = seconds < 10 ? "0" + seconds : seconds;
         timer_text.textContent = minutes + ':' + seconds;
 
-        console.log('timer '+ interval +' for trial ' + trial.trialNum + ': ' +time_left + 's');
-
         if (time_left == 0) { // should happen once per timer
           clearInterval(interval)
           callback();
@@ -333,6 +330,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       /* Called to clear building environment window. 
       Works by resetting variables then building a new p5 instance.
       */
+      trial.resets += 1;
       sendData('reset', trial);
       clearP5Envs();
       setupEnvs(trial);
@@ -344,9 +342,17 @@ jsPsych.plugins["block-silhouette"] = (function () {
     function donePressed() {
 
       if (trial.condition == 'practice') {
+        // if practice score is bad:
         occluder_text.textContent = feedback_text;
         occluder.style.display = "block";
-        // fill in
+        occluder.addEventListener('click', resumePractice);
+        
+        // if practice score is good:
+        // move on
+        trial.completed = true;
+        endTrial();
+        clear_display_move_on();
+        
       }
       else {
         trial.completed = true;
@@ -426,6 +432,22 @@ jsPsych.plugins["block-silhouette"] = (function () {
       });
     }
 
+    var startPractice = function () {
+      occluder.style.display = "none";
+        console.log('timer starting for practice');
+        timer(trial.practice_duration, function () {
+          clearP5Envs();
+          trial.trialEndTrigger = 'timeOut';
+          clear_display_move_on();
+        });
+      occluder.removeEventListener('click', startPractice);
+    };
+
+    var resumePractice = function() {
+      occluder.style.display = "none";
+      occluder.removeEventListener('click', resumePractice);
+    }
+
 
     // Set up button event listeners
     done_button.addEventListener('click', donePressed);
@@ -449,20 +471,13 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       occluder_text.textContent = practice_text;
       //Update trial appearance 
-      condition_heading.textContent = "Practice building";
+      condition_heading.textContent = "Place blocks over the guides on the right";
       Array.prototype.forEach.call(env_divs, env_div => {
-        env_div.style.backgroundColor = "#6DEBFF";
+        env_div.style.backgroundColor = "#FFFF25";
       });
-      occluder.addEventListener('click', event => { //SHOW OCCLUDER
-        occluder.style.display = "none";
-        console.log('timer starting for practice');
-        timer(trial.practice_duration, function () {
-          clearP5Envs();
-          trial.trialEndTrigger = 'timeOut';
-          clear_display_move_on();
-        });
-      });
+      occluder.addEventListener('click', startPractice);
     };
+
 
     // wait for a little bit, then remove the occluder, which should be safely after everything has been rendered
     //jsPsych.pluginAPI.setTimeout(function () { $('#occluder').hide(); }, 1000);

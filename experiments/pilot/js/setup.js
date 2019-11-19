@@ -3,6 +3,12 @@ var score = 0;
 var numTrials = 16;
 var shuffleTrials = false; // set to False to preserve order in db; set to True if you want to shuffle trials from db (scrambled10)
 
+var practice_duration = 60;
+var explore_duration = 30;
+var build_duration = 60;
+
+var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+console.log('randID: ' + randID);
 function sendData() {
   console.log('attempting to send data to mturk! score = ', score);
   jsPsych.turk.submitToTurk({'score':score});
@@ -28,7 +34,7 @@ var consentHTML = {
 // add welcome page
 var instructionsHTML = {
   'str1' : "<p> Here's how the game will work: On each trial, you will see a block structure appear on the left. Your goal is to use the blocks on the right to reconstruct it using as few blocks as possible. <div><img src='assets/task_display.png' id='example_screen'></div>",
-  'str2' : '<p> There are 16 trials in this HIT. For really accurate reconstructions, you can receive a <b> bonus</b> of up to $0.05.</p>',
+  'str2' : '<p> There are 16 trials in this HIT. For really accurate reconstructions, you can receive a <b> bonus</b> of up to $0.05 per trial.</p>',
   'str3' : "<p>If you encounter a problem or error, send the researchers an email (sketchloop@gmail.com) to arrange for prorated compensation. Please pay attention and do your best! </p><p> Note: We recommend using Chrome. We have not tested this HIT in other browsers.</p>",  
   'str4' : "<p> Once you are finished, the HIT will be automatically submitted for approval. Please know that you can only perform this HIT one time. Before we begin, you will get some practice with the reconstruction task. On this practice trial, you will be shown the exact locations to place each block. Please do your best on this practice trial to ensure that you have the opportunity to proceed and participate in the experiment.</p>"
 };
@@ -70,22 +76,25 @@ var surveyTrial = {
 
 // define trial object with boilerplate
 function Trial () {
+  this.randID = randID;
   this.type = 'block-silhouette';
   this.iterationName = 'testing1';
   this.prompt = "Please reconstruct the tower using as few blocks as possible.";
   this.dev_mode = false;
-  this.explore_duration = 2; // time limit in seconds
-  this.build_duration = 5; // time limit in seconds
-  this.practice_duration = 1; // time limit in seconds
+  this.explore_duration = explore_duration; // time limit in seconds
+  this.build_duration = build_duration; // time limit in seconds
+  this.practice_duration = practice_duration; // time limit in seconds
   this.rawScore = 0; // F1 score
   this.currBonus = 0; // current bonus
   this.score = 0; // cumulative bonus  
   this.trialEndTrigger = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'.
   this.phase = 'NA';
   this.completed = false;
+  this.resets = 0;
 };
 
 function PracticeTrial () {
+  this.randID = randID;
   this.type = 'block-silhouette';
   this.iterationName = 'testing1';
   this.prompt = "Please reconstruct the tower using as few blocks as possible.";
@@ -93,13 +102,14 @@ function PracticeTrial () {
   this.condition = 'practice';
   this.targetBlocks = practice_structure.blocks;
   this.targetName = 'any';
-  this.explore_duration = 5; // time limit in seconds
-  this.build_duration = 5; // time limit in seconds
-  this.practice_duration = 1; // time limit in seconds
+  this.explore_duration = explore_duration; // time limit in seconds
+  this.build_duration = build_duration; // time limit in seconds
+  this.practice_duration = practice_duration; // time limit in seconds
   this.rawScore = 0; // F1 score
   this.currBonus = 0; // current bonus
   this.score = 0; // cumulative bonus
-  this.trialEndTrigger = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'.  
+  this.trialEndTrigger = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'. 
+  this.resets = 0; 
 };
 
 function setupGame () {
@@ -142,7 +152,7 @@ function setupGame () {
     }));
 
     // insert final instructions page between practice trial and first "real" experimental trial
-    //trials.unshift(readyTrial);    
+    trials.unshift(readyTrial);    
 
     // insert practice trial before the first "real" experimental trial
     var practiceTrial = new PracticeTrial;
@@ -150,9 +160,9 @@ function setupGame () {
     
     // Stick welcome trial at beginning & goodbye trial at end
     if (!turkInfo.previewMode) { 
-      //trials.unshift(welcomeTrial);
+      trials.unshift(welcomeTrial);
     } else {
-      //trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
+      trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
     }
     trials.push(surveyTrial); // add debriefing survey
     trials.push(goodbyeTrial); // goodbye and submit HIT
