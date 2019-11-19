@@ -18,7 +18,7 @@ var Engine = Matter.Engine,
 // Environment parameters
 var canvasHeight = 450;
 var canvasWidth = 450;
-var menuHeight = canvasHeight / 5;
+var menuHeight = canvasHeight / 4.2;
 var menuWidth = canvasWidth;
 var floorY = (canvasHeight - menuHeight);
 var floorHeight = canvasHeight / 3;
@@ -40,8 +40,10 @@ var stimY = stimCanvasHeight / 2;
 var p5stim;
 var p5env;
 
+var scoring = false;
+
 // Scaling values
-var sF = 20; //scaling factor to change appearance of blocks
+var sF = 25; //scaling factor to change appearance of blocks
 var worldScale = 2.2; //scaling factor within matterjs
 var stim_scale = sF; //scale of stimulus silhouette
 
@@ -169,7 +171,7 @@ var setupEnvironment = function (env, trialObj = null) {
         env.line(canvasWidth - 50 + 12, 40, canvasWidth - 50 + 25, 40);
         */
 
-        if (trialObj.condition == 'practice'){
+        if (trialObj.condition == 'practice' && !scoring){
             showStimulus(env, trialObj.targetBlocks, individual_blocks = true);
         }
 

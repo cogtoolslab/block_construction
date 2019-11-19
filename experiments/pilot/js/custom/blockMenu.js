@@ -41,7 +41,7 @@ class BlockMenu {
         
         var i;
         for (i = 0; i < blockKinds.length; i++) { 
-            blockKinds[i].showMenuItem(env,((i+1)*(menuWidth/(blockKinds.length+1))),canvasHeight - menuHeight/2);
+            blockKinds[i].showMenuItem(env,((i+1)*(menuWidth/(blockKinds.length+1)))+blockKinds[i].w*sF/2.2 - worldWidth*sF/5,canvasHeight - menuHeight/2);
         } 
         env.pop();
 

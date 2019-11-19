@@ -18,13 +18,14 @@ function showBlock(p5stim, block, individual_blocks = false){
     y_top = y_bottom - height;
 
     p5stim.push(); //saves the current drawing style settings and transformations
-    p5stim.translate(stimX + stim_scale*x_center, (canvasHeight - floorHeight) - (canvasHeight - floorY) + stim_scale*y_center - 6);
+    p5stim.translate(stimX + stim_scale*x_center, (canvasHeight - floorHeight) - (canvasHeight - floorY) + stim_scale*y_center - 26);
     p5stim.rectMode(p5stim.CENTER);
     p5stim.noStroke();
+    p5stim.fill([12,27,36,140]);
     if (individual_blocks) {
         p5stim.stroke(150);
+        p5stim.fill([200,200,200,200]);
     }
-    p5stim.fill([12,27,36,140]);
     p5stim.rect(0,0,stim_scale*width,stim_scale*height);
     p5stim.pop();
     

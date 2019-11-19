@@ -147,8 +147,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
     var mental_explore_text = 'Now think about how you will build the given structure. Click anywhere to begin.';
     var build_text = 'Now build the structure! Click anywhere to begin.';
     var practice_feedback_text = {
-      'success' : 'Great! Now on to the first trial.',
-      'failure' : 'To move on to the first trial, copy the structure on the left by placing blocks over the guides on the right.'
+      'success': 'Great! Now on to the first trial.',
+      'failure': 'To move on to the first trial, copy the structure on the left by placing blocks over the guides on the right.'
     }
     var practice_text = 'This is a practice trial. Copy the silhouette by placing blocks on the right. We have placed guides to help you with this one. Click anywhere to begin.';
 
@@ -194,7 +194,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
         trial.phase = "physicalExplore";
         //p5stim, p5env = explorePhysical(trial); //create p5 instances for this trial phase
         //Update trial appearance 
-        occluder_text.textContent = 'Trial '+ (parseInt(trial.trialNum) + parseInt(1)).toString() + ". " + physical_explore_text;
+        occluder_text.textContent = 'Trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + ". " + physical_explore_text;
         condition_heading.textContent = "Practice building the structure";
         Array.prototype.forEach.call(env_divs, env_div => {
           env_div.style.backgroundColor = "#6DEBFF";
@@ -231,21 +231,21 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     var startPractice = function () {
       occluder.style.display = "none";
-        timer(trial.practice_duration, function () {
-          clearP5Envs();
-          trial.trialEndTrigger = 'timeOut';
-          clear_display_move_on();
-        });
+      timer(trial.practice_duration, function () {
+        clearP5Envs();
+        trial.trialEndTrigger = 'timeOut';
+        clear_display_move_on();
+      });
       occluder.removeEventListener('click', startPractice);
     };
 
-    var resumePractice = function() {
+    var resumePractice = function () {
       occluder.style.display = "none";
       occluder.removeEventListener('click', resumePractice);
     }
 
 
-    
+
     // **** SCORING **** 
 
     function getCurrScore() {
@@ -295,7 +295,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     var seconds_passed = 0;
 
     function timer(time_left, callback = null) {
-      
+
       var interval = setInterval(function () {
         // happens every second
         seconds_passed += 1;
@@ -330,8 +330,15 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     function donePressed() {
 
+      scoring = true;
+
       if (trial.condition == 'practice') {
-        
+
+        jsPsych.pluginAPI.setTimeout(function () { // temporarily hide guides in build env
+          console.log(getCurrScore()); 
+          scoring = false;
+        }, 100);
+
         // if-statements to be added here. Plus something that prevents multiple failures.
 
         // if practice score is bad:
@@ -339,7 +346,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
         trial.attempts += 1;
         occluder_text.textContent = practice_feedback_text['failure'];
         occluder.addEventListener('click', resumePractice);
-        
+
         // if practice score is good:
         // move on
         occluder_text.textContent = practice_feedback_text['success'];
@@ -353,7 +360,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       else { // if a normal trial, must be build phase, so move on trial
         trial.completed = true;
         endTrial();
-        clear_display_move_on(); 
+        clear_display_move_on();
       }
 
     }
@@ -384,12 +391,12 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     }
 
-    var moveOnToBuild = function() { //Function needed for removeEventListener
+    var moveOnToBuild = function () { //Function needed for removeEventListener
       occluder.style.display = "none";
       occluder.removeEventListener('click', moveOnToBuild);
       console.log('timer starting for pre');
       timer(trial.explore_duration, function () { //set timer for exploration phase    
-        
+
         // calculate bonus earned
         rawScore = getCurrScore();
         currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
@@ -401,7 +408,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
         trial.score = cumulBonus; // update trial.score var to reflect cumulative bonus
 
         sendData('final', trial);
-        
+
         clearP5Envs();
 
         // BUILD PHASE
