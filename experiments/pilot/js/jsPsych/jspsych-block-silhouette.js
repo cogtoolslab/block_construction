@@ -132,18 +132,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
       html += '<div><p id="occluder-text"></p></div>'
       html += '</div>'
 
-      // html += '<div class="occluder" id="occluder-condition">'
-      // html += '<div><p>Now build the structure! Click anywhere to begin.</p></div>'
-      // html += '</div>'
-
-      // html += '<div class="occluder" id="occluder-practice">'
-      // html += '<div><p> Practice using the building environment. Click anywhere to begin.</p></div>'
-      // html += '</div>'
-
-      // html += '<div class="occluder" id="occluder-feedback">'
-      // html += '<div><p id="feedback"></p></div>'
-      // html += '</div>'
-
       // // display helpful info during debugging
       // if (trial.dev_mode==true) {
       //   html += '<div id="repetition"> <p> repetition: ' + trial.repetition + '</p></div>'
@@ -152,26 +140,16 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       // actually assign html to display_element.innerHTML
       display_element.innerHTML = html;
-      //wait to screen and moving onto next trial until you show feedback
-      // jsPsych.pluginAPI.setTimeout(function () {
-      //   clearP5Envs();
-      //   build();
-      // }, 5000);
-
-      // // add click event listener to the image response buttons
-      // for (var i = 0; i < trial.choices.length; i++) {
-      //   $('#jspsych-block-silhouette-button-' + i).on('click', function(e) {
-      //     var choice = e.currentTarget.getAttribute('data-choice'); // don't use dataset for jsdom compatibility
-      //     after_response(choice);
-      //   });      
-      // }      
 
     }
 
     var physical_explore_text = 'Now practice building the given structure. Click anywhere to begin.';
     var mental_explore_text = 'Now think about how you will build the given structure. Click anywhere to begin.';
     var build_text = 'Now build the structure! Click anywhere to begin.';
-    var feedback_text = '[Feedback contingent on success in practice]!';
+    var practice_feedback_text = {
+      'success' : 'Great! Now on to the first trial.',
+      'failure' : 'To move on to the first trial, copy the structure on the left by placing blocks over the guides on the right.'
+    }
     var practice_text = 'This is a practice trial. Copy the silhouette by placing blocks on the right. We have placed guides to help you with this one. Click anywhere to begin.';
 
     // call show_display now, which includes a massive occluder that covers everything up
@@ -182,9 +160,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
     var reset_button = document.getElementById("reset");
     var occluder = document.getElementById("occluder");
     var occluder_text = document.getElementById("occluder-text");
-    //var occluder_trial = document.getElementById("occluder-trial");
-    //var occluder_condition = document.getElementById("occluder-condition");
-    //var occluder_feedback = document.getElementById("occluder-feedback");
     var condition_heading = document.getElementById("condition-heading");
     var timer_text = document.getElementById("timer-text");
     var env_divs = document.getElementsByClassName("col-md env-div");
@@ -195,16 +170,9 @@ jsPsych.plugins["block-silhouette"] = (function () {
     gameid = trial.gameid;
     version = trial.version;
 
-    // if (trial.condition=='practice'){
-    //   occluder_trial.style.display = "none";
-    //   done_button.style.display = "inline-block";
-    // }
-    // else{
-    //   occluder_practice.style.display = "none";
-    // }
-    // occluder_condition.style.display = "none";
-    // occluder_feedback.style.display = "none";
     occluder.style.display = "block";
+
+    // **** PHASES OF TRIAL ****
 
     function pre_build(baseline) {
       done_button.style.display = "none";
@@ -261,6 +229,25 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // console.log('nullScore = ', nullScore);
     }
 
+    var startPractice = function () {
+      occluder.style.display = "none";
+        timer(trial.practice_duration, function () {
+          clearP5Envs();
+          trial.trialEndTrigger = 'timeOut';
+          clear_display_move_on();
+        });
+      occluder.removeEventListener('click', startPractice);
+    };
+
+    var resumePractice = function() {
+      occluder.style.display = "none";
+      occluder.removeEventListener('click', resumePractice);
+    }
+
+
+    
+    // **** SCORING **** 
+
     function getCurrScore() {
       // call this to get: 
       // (1) F1 score for target vs. blank at beginning of each phase
@@ -298,6 +285,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
       console.log('bonus earned = ', bonus);
       return bonus;
     }
+
+    // ****  TIMERS, EVENT HANDLERS **** 
 
     // start timing
     var start_time = Date.now();
@@ -342,30 +331,34 @@ jsPsych.plugins["block-silhouette"] = (function () {
     function donePressed() {
 
       if (trial.condition == 'practice') {
+        
+        // if-statements to be added here. Plus something that prevents multiple failures.
+
         // if practice score is bad:
-        occluder_text.textContent = feedback_text;
-        occluder.style.display = "block";
+        // show occluder
+        trial.attempts += 1;
+        occluder_text.textContent = practice_feedback_text['failure'];
         occluder.addEventListener('click', resumePractice);
         
         // if practice score is good:
         // move on
-        trial.completed = true;
-        endTrial();
-        clear_display_move_on();
-        
+        occluder_text.textContent = practice_feedback_text['success'];
+        occluder.addEventListener('click', event => {
+          trial.completed = true;
+          endTrial();
+          clear_display_move_on();
+        });
+        occluder.style.display = "block";
       }
-      else {
+      else { // if a normal trial, must be build phase, so move on trial
         trial.completed = true;
         endTrial();
-        clear_display_move_on();  // Move on jsPsych
-        // occluder_text.textContent = '';
-        // occluder.style.display = "block"; // show occluder
-        // trial.trialEndTrigger = 'donePressed';
-        // clear_display_move_on(); // Move on jsPsych
-        // clearP5Envs();
+        clear_display_move_on(); 
       }
 
     }
+
+    // ****  CLEAN UP FUNCTIONS **** 
 
     function clearP5Envs() {
       // Removes P5 environments to start new experiment phase or trial
@@ -432,28 +425,11 @@ jsPsych.plugins["block-silhouette"] = (function () {
       });
     }
 
-    var startPractice = function () {
-      occluder.style.display = "none";
-        console.log('timer starting for practice');
-        timer(trial.practice_duration, function () {
-          clearP5Envs();
-          trial.trialEndTrigger = 'timeOut';
-          clear_display_move_on();
-        });
-      occluder.removeEventListener('click', startPractice);
-    };
-
-    var resumePractice = function() {
-      occluder.style.display = "none";
-      occluder.removeEventListener('click', resumePractice);
-    }
-
+    // ****  BEGINNING OF TRIAL TIMELINE **** 
 
     // Set up button event listeners
     done_button.addEventListener('click', donePressed);
     reset_button.addEventListener('click', resetPressed);
-
-    // Experiment Timeline
 
     if (trial.condition != 'practice') {
 
@@ -477,11 +453,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
       });
       occluder.addEventListener('click', startPractice);
     };
-
-
-    // wait for a little bit, then remove the occluder, which should be safely after everything has been rendered
-    //jsPsych.pluginAPI.setTimeout(function () { $('#occluder').hide(); }, 1000);
-
 
     // store response
     var response = {

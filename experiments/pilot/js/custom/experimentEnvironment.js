@@ -328,7 +328,7 @@ var sendData = function (eventType, trialObj) {
         workerId: turkInfo.workerId,
         hitID: turkInfo.hitId,
         aID: turkInfo.assignmentId, 
-        randID: trialObj.randID,
+        randID: trialObj.randID, // additional random ID in case none assigned from other sources
         timeRelative: performance.now(), // time since session began
         timeAbsolute: Date.now(),
         phase: phase,

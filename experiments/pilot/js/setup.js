@@ -4,11 +4,11 @@ var numTrials = 16;
 var shuffleTrials = false; // set to False to preserve order in db; set to True if you want to shuffle trials from db (scrambled10)
 
 var practice_duration = 60;
-var explore_duration = 30;
-var build_duration = 60;
+var explore_duration = 10;
+var build_duration = 10;
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-console.log('randID: ' + randID);
+
 function sendData() {
   console.log('attempting to send data to mturk! score = ', score);
   jsPsych.turk.submitToTurk({'score':score});
@@ -35,15 +35,16 @@ var consentHTML = {
 var instructionsHTML = {
   'str1' : "<p> Here's how the game will work: On each trial, you will see a block structure appear on the left. Your goal is to use the blocks on the right to reconstruct it using as few blocks as possible. <div><img src='assets/task_display.png' id='example_screen'></div>",
   'str2' : '<p> There are 16 trials in this HIT. For really accurate reconstructions, you can receive a <b> bonus</b> of up to $0.05 per trial.</p>',
-  'str3' : "<p>If you encounter a problem or error, send the researchers an email (sketchloop@gmail.com) to arrange for prorated compensation. Please pay attention and do your best! </p><p> Note: We recommend using Chrome. We have not tested this HIT in other browsers.</p>",  
-  'str4' : "<p> Once you are finished, the HIT will be automatically submitted for approval. Please know that you can only perform this HIT one time. Before we begin, you will get some practice with the reconstruction task. On this practice trial, you will be shown the exact locations to place each block. Please do your best on this practice trial to ensure that you have the opportunity to proceed and participate in the experiment.</p>"
+  'str3' : "<p> If you encounter a problem or error, send the researchers an email (sketchloop@gmail.com) to arrange for prorated compensation. Please pay attention and do your best! </p><p> Note: We recommend using Chrome. We have not tested this HIT in other browsers.</p>",  
+  'str4' : "<p> Once you are finished, the HIT will be automatically submitted for approval. Please know that you can only perform this HIT one time. Before we begin, you will get some practice with the reconstruction task. On this practice trial, you will be shown the exact locations to place each block. Please do your best on this practice trial to ensure that you have the opportunity to proceed and participate in the experiment.</p>",
+  'str5' : "<p> Now you will have an opportunity to practice. It's similar to a build phase of a normal trial, except we've placed guides on the building environment to help you. Have a play, then try to accurately place the correct shape blocks on top of these guides to build the structure.</p>"
 };
 
 var welcomeTrial = {
   type: 'instructions',
   pages: [
     consentHTML.str1, consentHTML.str2, consentHTML.str3, 
-    instructionsHTML.str1, instructionsHTML.str2, instructionsHTML.str3, instructionsHTML.str4
+    instructionsHTML.str1, instructionsHTML.str2, instructionsHTML.str3, instructionsHTML.str4, instructionsHTML.str5
   ],
   show_clickable_nav: true,
   allow_keys: true
@@ -110,6 +111,7 @@ function PracticeTrial () {
   this.score = 0; // cumulative bonus
   this.trialEndTrigger = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'. 
   this.resets = 0; 
+  this.practiceAttempts = 0;
 };
 
 function setupGame () {
@@ -160,9 +162,9 @@ function setupGame () {
     
     // Stick welcome trial at beginning & goodbye trial at end
     if (!turkInfo.previewMode) { 
-      trials.unshift(welcomeTrial);
+      //trials.unshift(welcomeTrial);
     } else {
-      trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
+      //trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
     }
     trials.push(surveyTrial); // add debriefing survey
     trials.push(goodbyeTrial); // goodbye and submit HIT
