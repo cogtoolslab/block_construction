@@ -3,8 +3,8 @@ var score = 0;
 var numTrials = 16;
 var shuffleTrials = false; // set to False to preserve order in db; set to True if you want to shuffle trials from db (scrambled10)
 
-var practice_duration = 60;
-var explore_duration = 1;
+var practice_duration = 600;
+var explore_duration = 5;
 var build_duration = 60;
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -33,12 +33,18 @@ var consentHTML = {
 
 // add welcome page
 var instructionsHTML = {
-  'str1' : "<p> Here's how the game will work: On each trial, you will see a block structure appear on the left. Your goal is to use the blocks on the right to reconstruct it using as few blocks as possible. <div><img src='assets/task_display.png' id='example_screen'></div>",
-  'str2' : '<p> There are 16 trials in this HIT. For really accurate reconstructions, you can receive a <b> bonus</b> of up to $0.05 per trial.</p>',
+  'str1' : "<p> Here's how the game will work: On each trial, you will see the silhouette of a block structure appear on the left. Your goal is to use the blocks on the right to reconstruct it using as few blocks as possible. <div><img src='assets/task_display.png' id='example_screen'></div>",
+  'str2' : "<p> There are 16 trials in this HIT. For really accurate reconstructions, you can receive a <b> bonus</b> of up to $0.05 per trial.</p>",
   'str3' : "<p> If you encounter a problem or error, send the researchers an email (sketchloop@gmail.com) to arrange for prorated compensation. Please pay attention and do your best! </p><p> Note: We recommend using Chrome. We have not tested this HIT in other browsers.</p>",  
-  'str4' : "<p> Once you are finished, the HIT will be automatically submitted for approval. Please know that you can only perform this HIT one time. Before we begin, you will get some practice with the reconstruction task. On this practice trial, you will be shown the exact locations to place each block. Please do your best on this practice trial to ensure that you have the opportunity to proceed and participate in the experiment.</p>",
-  'str5' : "<p> Now you will have an opportunity to practice. It's similar to a build phase of a normal trial, except we've placed guides on the building environment to help you. Have a play, then try to accurately place the correct shape blocks on top of these guides to build the structure.</p>"
+  'str4' : "<p> Once you are finished, the HIT will be automatically submitted for approval. Please know that you can only perform this HIT one time.</p>",
+  'str5' : "<p> Before we begin, you will get some practice with the reconstruction task. On this practice trial, you will be shown the exact locations to place each block. Please do your best on this practice trial to ensure that you have the opportunity to proceed and participate in the experiment. Also, you might notice that you can't place blocks or press 'Done' until all the blocks have come to rest.</p>"
 };
+
+var secondInstructionsHTML = {
+  'str1' : "<p> Great job! If you make a structure that good in the following trials then you will earn a bonus! Remember that in these ones there will be no guides to help you.</p>",
+  'str2' : "<p> There is another difference between the real trials and the practice. Before reconstructing the silhouette, you will have the opportunity to think about the structure you are going to build.</p><p>In some trials the border will go <b><font color='#FE5D26'>red</font></b>, meaning you should think about how best to make the structure.</p><p>In other trials, the border will go <b><font color='#6DEBFF'>blue</font></b>. This means that you can also test out structures.</p><p>After you have either tested structures or thought about what you are going to do the trial will advance to the reconstruction stage. Here the border will go <b><font color='#75E559'>green</font></b>, and you will have a limited time to build the structure. Its only in this stage that your structure will be evaluated for a bonus. You'll get feedback after you press 'Done'.</p>",
+  'str3' : "<p> To summarize: there will be two stages in each trial- where first you plan (either by thinking or by building), and then you build for real. There will be reminders throughout. </p><p> Continue when you are ready to begin the experiment.</p>"
+}
 
 var welcomeTrial = {
   type: 'instructions',
@@ -52,7 +58,7 @@ var welcomeTrial = {
 
 var readyTrial = {
   type: 'instructions',
-  pages: ['Great job! Now you should have a good sense of how this HIT works. Continue when you are ready to begin the experiment.'],
+  pages: [secondInstructionsHTML.str1, secondInstructionsHTML.str2, secondInstructionsHTML.str3],
   show_clickable_nav: true,
   allow_keys: true  
 }
@@ -172,13 +178,13 @@ function setupGame () {
 
     // insert practice trial before the first "real" experimental trial
     var practiceTrial = new PracticeTrial;
-    trials.unshift(practiceTrial);
+    //trials.unshift(practiceTrial);
     
     // Stick welcome trial at beginning & goodbye trial at end
     if (!turkInfo.previewMode) { 
-      //trials.unshift(welcomeTrial);
+      trials.unshift(welcomeTrial);
     } else {
-      //trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
+      trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
     }
     trials.push(surveyTrial); // add debriefing survey
     trials.push(goodbyeTrial); // goodbye and submit HIT

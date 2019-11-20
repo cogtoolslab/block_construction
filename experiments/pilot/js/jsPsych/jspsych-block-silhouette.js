@@ -345,7 +345,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
           //   scoring = false;
           // }, 100);
 
-          
+
           trial.nPracticeAttempts += 1;
           sendData(eventType = 'end', trial);
           trial.practiceAttempt += 1;
@@ -383,12 +383,13 @@ jsPsych.plugins["block-silhouette"] = (function () {
         };
       } else {
         done_button.textContent = 'Wait';
-        setInterval(function(){ 
+        setInterval(function () {
           sleeping = blocks.filter((block) => block.body.isSleeping);
           allSleeping = sleeping.length == blocks.length;
-          if (allSleeping){
+          if (allSleeping) {
             done_button.textContent = 'Done';
-          }}, 500);
+          }
+        }, 500);
       }
 
     }
@@ -406,16 +407,20 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       //calculate bonus earned
       rawScore = getCurrScore();
-      currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
-      cumulBonus += parseFloat(currBonus.toFixed(2)); // TODO: this cumulBonus needs to be bundled into data sent to mongo
+
+      if (trial.condition != 'practice') {
+        currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
+        cumulBonus += parseFloat(currBonus.toFixed(2)); // TODO: this cumulBonus needs to be bundled into data sent to mongo
+      }
+
       normedScore = getNormedScore(rawScore, nullScore, scoreGap);
 
       // update official bonus tallies
       trial.F1Score = rawScore;
-      trial.currBonus = currBonus; // update trial var to reflect current bonus earned
-      trial.score = cumulBonus; // update trial.score var to reflect cumulative bonus
       trial.endReason = endReason;
       trial.normedScore = normedScore;
+      trial.currBonus = currBonus; // update trial var to reflect current bonus earned
+      trial.score = cumulBonus; // update trial.score var to reflect cumulative bonus
 
       console.log('raw: ' + rawScore);
       console.log('null: ' + nullScore);
@@ -425,30 +430,32 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
 
       occluder.style.fontSize = 'large';
-      if (currBonus == 0.05){
+      if (currBonus == 0.05) {
         occluder_text.textContent = '🤩 Amazing! 0.05 bonus!';
-      } else if (currBonus == 0.03){
+      } else if (currBonus == 0.03) {
         occluder_text.textContent = '😃 Great job! 0.03 bonus!';
-      } else if (currBonus == 0.01){
+      } else if (currBonus == 0.01) {
         occluder_text.textContent = '🙂 Not bad! 0.01 bonus!';
       } else {
         occluder_text.textContent = '😐 No bonus this round!';
       }
 
       sendData(eventType = 'end', trial);
-
-      jsPsych.pluginAPI.setTimeout(function () {
-        if (currBonus > 0) {
-          // show feedback by drawing GREEN box around TARGET if selected CORRECTLY    
-          display_element.querySelector('#bonus-meter').style.backgroundColor = "#66B03B";
-          // also bold/enlarge the score in bottom left corner 
-          //display_element.querySelector('#score p2').innerHTML = 'bonus earned: ' + parseFloat(currBonus).toFixed(3);
-          //display_element.querySelector('#score p2').style.fontWeight = 'bold';
-        } else {
-          // draw RED box around INCORRECT response and BLACK box around TARGET
-          display_element.querySelector('#bonus-meter').style.backgroundColor = "#AAAAAA";
-        }
-      }, 4000);
+      
+      if (trial.condition != 'practice') {
+        jsPsych.pluginAPI.setTimeout(function () {
+          if (currBonus > 0) {
+            // show feedback by drawing GREEN box around TARGET if selected CORRECTLY    
+            display_element.querySelector('#bonus-meter').style.backgroundColor = "#75E559";
+            // also bold/enlarge the score in bottom left corner 
+            //display_element.querySelector('#score p2').innerHTML = 'bonus earned: ' + parseFloat(currBonus).toFixed(3);
+            //display_element.querySelector('#score p2').style.fontWeight = 'bold';
+          } else {
+            // draw RED box around INCORRECT response and BLACK box around TARGET
+            display_element.querySelector('#bonus-meter').style.backgroundColor = "#FFFFFF";
+          }
+        }, 4000);
+      };
 
       occluder.style.display = "block";
       clearP5Envs(); // Clear everything in P5
@@ -474,21 +481,23 @@ jsPsych.plugins["block-silhouette"] = (function () {
         build(getCurrScore); // Setup build phase
         occluder.style.display = "block";
 
+        occluder.addEventListener('click', startBuildPhase());
+      });
+    }
 
-        occluder.addEventListener('click', event => { //SHOW OCCLUDER
-          trial.buildStartTime = Date.now()
-          occluder.style.display = "none";
-          //console.log('timer starting for build');
-          timer(trial.build_duration, function () { //set timer for build phase
-            if (trial.completed == false) {
-              trial.completed = true;
-              endTrial(endReason = 'timeout'); // calculate bonuses and clear envs
-              jsPsych.pluginAPI.setTimeout(function () {
-                clear_display_move_on();
-              }, 2500);
-            }
-          });
-        });
+    function startBuildPhase() {
+      trial.buildStartTime = Date.now()
+      occluder.style.display = "none";
+      occluder.removeEventListener('click', startBuildPhase());
+      //console.log('timer starting for build');
+      timer(trial.build_duration, function () { //set timer for build phase
+        if (trial.completed == false) {
+          trial.completed = true;
+          endTrial(endReason = 'timeout'); // calculate bonuses and clear envs
+          jsPsych.pluginAPI.setTimeout(function () {
+            clear_display_move_on();
+          }, 2500);
+        }
       });
     }
 
