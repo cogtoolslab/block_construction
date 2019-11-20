@@ -20,8 +20,9 @@ function showBlock(p5stim, block, individual_blocks = false){
     p5stim.push(); //saves the current drawing style settings and transformations
     p5stim.translate(stimX + stim_scale*x_center, (canvasHeight - floorHeight) - (canvasHeight - floorY) + stim_scale*y_center - 26);
     p5stim.rectMode(p5stim.CENTER);
-    p5stim.noStroke();
-    p5stim.fill([12,27,36,140]);
+    //p5stim.noStroke();
+    p5stim.stroke([28,54,62]);
+    p5stim.fill([28,54,62]);
     if (individual_blocks) {
         p5stim.stroke(150);
         p5stim.fill([200,200,200,200]);
@@ -41,8 +42,17 @@ function showFloor(p5stim){
     p5stim.push();
     p5stim.translate(floorX, floorY);
     p5stim.rectMode(p5stim.CENTER);
-    p5stim.stroke(200);
+    p5stim.stroke(220);
     p5stim.fill([12,27,36]);
     p5stim.rect(0,0,floorWidth,floorHeight);
+    p5stim.pop();
+    showMarker(p5stim);
+}
+
+function showMarker(p5stim){
+    p5stim.push();
+    p5stim.stroke(220);
+    p5stim.strokeWeight(1)
+    p5stim.line(canvasWidth/2,canvasHeight-floorHeight+10,canvasWidth/2,canvasHeight-floorHeight+35);
     p5stim.pop();
 }

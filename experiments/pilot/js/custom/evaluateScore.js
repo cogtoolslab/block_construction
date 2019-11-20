@@ -123,9 +123,9 @@ function F1Score(im1,im2) {
     numerator = math.multiply(precision, recall);
     denominator = math.sum(precision, recall);
     quotient = math.divide(numerator,denominator);
-    //console.log('recall = ', recall);
-    //console.log('precision = ', precision);
-    //console.log('quotient = ', quotient);  
+    // console.log('recall = ', recall);
+    // console.log('precision = ', precision);
+    // console.log('quotient = ', quotient);  
     score = math.multiply(2,quotient);
   return score
 }
@@ -138,13 +138,13 @@ function getScore(canvas0, canvas1, agprop, imsize) {
 
   target = document.getElementById(canvas0);
   targ = extractBitmap(target, imsize);
-  printWorld(targ, 46, imsize, imsize);
-  targs = subsetWorld(targ, 46, imsize, imsize);
+  //printWorld(targ, 47, imsize, imsize);
+  targs = subsetWorld(targ, 47, imsize, imsize);
 
   reconstruction = document.getElementById(canvas1);
   recon = extractBitmap(reconstruction, imsize);
-  printWorld(recon, 46, imsize, imsize);
-  recons = subsetWorld(recon, 46, imsize, imsize);
+  //printWorld(recon, 47, imsize, imsize);
+  recons = subsetWorld(recon, 47, imsize, imsize);
 
   t = Array.from(targs);
   r = Array.from(recons);

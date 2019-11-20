@@ -339,6 +339,7 @@ var sendData = function (eventType, trialObj) {
         condition: trialObj.condition,        
         trialNum: trialObj.trialNum,
         F1Score: trialObj.F1Score,
+        normedScore: trialObj.normedScore,
         currBonus: trialObj.currBonus,
         score: trialObj.score,        
         numTrials: trialObj.num_trials,
@@ -348,7 +349,8 @@ var sendData = function (eventType, trialObj) {
         practiceDuration: trialObj.practice_duration,
         exploreDuration: trialObj.explore_duration,
         buildDuration: trialObj.build_duration,
-        devMode: trialObj.dev_mode          
+        devMode: trialObj.dev_mode
+              
     };
 
     // general info about world params, bundled into worldInfo

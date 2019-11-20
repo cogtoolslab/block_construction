@@ -27,11 +27,11 @@ function Boundary(x, y, w, h){
         env.translate(pos.x/worldScale, pos.y/worldScale);
         env.rectMode(env.CENTER);
         env.rotate(angle);
-        env.stroke(100);
+        env.stroke(220);
         env.fill([12,27,36]);
         env.rect(0,0,this.w,this.h);
         env.pop();
-
+        showMarker(env)
     }
 
 }
