@@ -4,7 +4,7 @@ var numTrials = 16;
 var shuffleTrials = false; // set to False to preserve order in db; set to True if you want to shuffle trials from db (scrambled10)
 
 var practice_duration = 600;
-var explore_duration = 5;
+var explore_duration = 30;
 var build_duration = 60;
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -33,17 +33,17 @@ var consentHTML = {
 
 // add welcome page
 var instructionsHTML = {
-  'str1' : "<p> Here's how the game will work: On each trial, you will see the silhouette of a block structure appear on the left. Your goal is to use the blocks on the right to reconstruct it using as few blocks as possible. <div><img src='assets/task_display.png' id='example_screen'></div>",
-  'str2' : "<p> There are 16 trials in this HIT. For really accurate reconstructions, you can receive a <b> bonus</b> of up to $0.05 per trial.</p>",
-  'str3' : "<p> If you encounter a problem or error, send the researchers an email (sketchloop@gmail.com) to arrange for prorated compensation. Please pay attention and do your best! </p><p> Note: We recommend using Chrome. We have not tested this HIT in other browsers.</p>",  
-  'str4' : "<p> Once you are finished, the HIT will be automatically submitted for approval. Please know that you can only perform this HIT one time.</p>",
-  'str5' : "<p> Before we begin, you will get some practice with the reconstruction task. On this practice trial, you will be shown the exact locations to place each block. Please do your best on this practice trial to ensure that you have the opportunity to proceed and participate in the experiment. Also, you might notice that you can't place blocks or press 'Done' until all the blocks have come to rest.</p>"
+  'str1' : "<p> Here's how the game will work: On each trial, you will see the silhouette of a block structure appear on the left. Your goal is to <b>use the blocks on the right to reconstruct it</b>, while using <b>as few blocks as possible</b>. Select blocks from the menu and place them in the world. You can use a block from the menu as many times as you want. But be careful because you <b>can't move a block once its been placed</b>, and there is <b>no way to 'undo' the placement of a block</b>. They will also <b>fall</b> if the structure is unstable. If this happens, you <b>can reset the whole environment</b>. But watch out for running out of time! You have <b> 60 seconds to build each structure</b><div><img src='assets/task_display.png' id='example_screen'></div>",
+  'str2' : "<p> There are 16 trials in this HIT- 16 structures to build. In each trial, if you produce a really accurate reconstruction, you can receive a <b> bonus</b> of up to $0.05</p>",
+  'str3' : "<p> Once you are finished, the HIT will be automatically submitted for approval. Please know that you can only perform this HIT one time.</p><p> Note: We recommend using Chrome. We have not tested this HIT in other browsers.</p>",
+  'str4' : "<p> Before we begin, let's <b>practice with the reconstruction task</b>. On this practice trial, you will be shown the exact locations to place each block. Please place the blocks precisely over these guides to ensure that you have the opportunity to proceed and participate in the experiment. Also, you might notice that you can't place blocks or press 'Done' until all the blocks have come to rest. This is also the case in the main trials.</p>",
+  'str5' : "<p> Please pay attention and do your best!</p>"
 };
 
 var secondInstructionsHTML = {
-  'str1' : "<p> Great job! If you make a structure that good in the following trials then you will earn a bonus! Remember that in these ones there will be no guides to help you.</p>",
-  'str2' : "<p> There is another difference between the real trials and the practice. Before reconstructing the silhouette, you will have the opportunity to think about the structure you are going to build.</p><p>In some trials the border will go <b><font color='#FE5D26'>red</font></b>, meaning you should think about how best to make the structure.</p><p>In other trials, the border will go <b><font color='#6DEBFF'>blue</font></b>. This means that you can also test out structures.</p><p>After you have either tested structures or thought about what you are going to do the trial will advance to the reconstruction stage. Here the border will go <b><font color='#75E559'>green</font></b>, and you will have a limited time to build the structure. Its only in this stage that your structure will be evaluated for a bonus. You'll get feedback after you press 'Done'.</p>",
-  'str3' : "<p> To summarize: there will be two stages in each trial- where first you plan (either by thinking or by building), and then you build for real. There will be reminders throughout. </p><p> Continue when you are ready to begin the experiment.</p>"
+  'str1' : "<p> Great job! If you make a structure that accurate in the following trials then you will earn a bonus! Remember that in these ones there will be no guides to help you, apart from a small mark on the center of the floor to help you know where to build.</p>",
+  'str2' : "<p> There is another difference between the real trials and the practice. <b>Before</b> reconstructing the silhouette, you will have the <b>opportunity to think about the structure</b> you are going to build.</p><p>In some trials the border will go <b><font color='#FE5D26'>red</font></b>, meaning you should <b><font color='#FE5D26'>think</font></b> about how best to make the structure.</p><p>In other trials, the border will go <b><font color='#6DEBFF'>blue</font></b>. This means that you can also <b><font color='#6DEBFF'>test structures</font></b> in the building window.</p><p>After you have thought about what you are going to do, or tested structures, the trial will advance to the <b><font color='#75E559'>reconstruction stage</font></b>. Here the border will go <b><font color='#75E559'>green</font></b>, and you will have a limited time to build the structure. Its <b>only in this final stage of a trial that your structure will be evaluated for a bonus</b>. You'll get feedback after you press 'Done' or you run out of time.</p>",
+  'str3' : "<p> To summarize, there will be two stages in each trial:</p><p><ul style='list-style: none;'><li> 1. <b>Plan.</b> Either by <b><font color='#FE5D26'>thinking</font></b> or by <b><font color='#6DEBFF'>building</font></b>.</li><li>2. <b><font color='#75E559'>Build</font></b> for real.</li></ul><p> There will be reminders throughout. Continue when you are ready to begin the experiment.</p>"
 }
 
 var welcomeTrial = {
