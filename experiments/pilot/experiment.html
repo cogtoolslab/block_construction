@@ -1,73 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link rel="shortcut icon" type="image/png" href="img/favicon.png"/>
-
     <title>Build that structure!</title>
     
     <!-- Libraries -->
-    <script type="text/javascript" src="../lib/socket.io.js"></script>
-    <script src="libraries/matter.js"></script>
-    <script src="libraries/p5.js"></script>
-    <script src="libraries/jsPsych/jspsych.js"></script>
-    <script src="libraries/setup.js"></script>
+    <script src="js/socket.io.js"></script>    
+    <script src="js/matter.js"></script>
+    <script src="js/p5.js"></script>
+    <script src="js/jsPsych/jspsych.js"></script>
+    <script src="js/setup.js"></script>
+    <script src="js/jquery.min.js"></script>    
+    <script src="js/jquery-ui.min.js"></script>
     <script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="style/bootstrap/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/6.2.2/math.min.js"></script>
     
     <!-- CSS -->
-    <link rel="stylesheet" href="style/experiment.css">
-    <link rel="stylesheet" href="libraries/jsPsych/jspsych.css">    
-    <link rel="stylesheet" href="style/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/experiment.css">
+    <link rel="stylesheet" href="css/jspsych.css">    
+    <link rel="stylesheet" href="css/bootstrap.css">   
 
     <!-- Custom Scripts -->
-    <script src="scripts/boundary.js"></script>
-    <script src="scripts/blockMenu.js"></script>
-    <script src="scripts/block.js"></script>
-    <script src="scripts/blockKind.js"></script>
-    <script src="scripts/canvasInteraction.js"></script>
-    <script src="scripts/displayStimuli.js"></script>
-    <script src="scripts/experimentEnvironment.js"></script>
-  </head>
+    <script src="js/custom/boundary.js"></script>
+    <script src="js/custom/blockMenu.js"></script>
+    <script src="js/custom/block.js"></script>
+    <script src="js/custom/blockKind.js"></script>
+    <script src="js/custom/canvasInteraction.js"></script>
+    <script src="js/custom/displayStimuli.js"></script>
+    <script src="js/custom/experimentEnvironment.js"></script>
+    <script src="js/custom/evaluateScore.js"></script>
 
-  <body>
-    <div class="container pt-5" id="experiment">
-        <div class="row">
-          <div class="col-md" id="stimulus-window">
+    <!-- Custom JsPsych Plugins -->
+    <script src="js/jsPsych/jspsych.js"></script>    
+    <script src="js/jsPsych/jspsych-block-silhouette.js"></script>
+    <script src="js/jsPsych/jspsych-instructions.js"></script>
+    <script src="js/jsPsych/jspsych-survey-text.js"></script>
+    <script src="js/jsPsych/jspsych-survey-multi-choice.js"></script>
+    <script src="js/jsPsych/jspsych-survey-likert.js"></script>
 
-          </div>
-          <div class="col-md" id="environment-window">
-            
-          </div>
-        </div>
-        <div class="row pt-2" id="experiment-button-col">
-            <div class="col-auto mr-auto button-col">
-                <button type="something" class="btn btn-primary" id="something" value="something" onclick="">Something</button>
-            </div>
-            <div class="col-auto button-col" id="env-buttons">
-                <button type="button" class="btn btn-success" id="done" value="done" onclick="donePressed();">Done</button>
-                <button type="button" class="btn btn-danger" id="reset" value="reset" onclick="resetPressed();">Reset</button>
-            </div>
-        </div>
-        <div class="row pt-2" id="trial-info">
-          <div class="col align-text-center" id="trial-number">
-            <p>Trial 1 of 1</p>
-          </div>
-        </div>
-    </div>
+    <!-- Assets -->
+    <script src="assets/practice_structure.js"></script> 
 
-<!-- TODO: Move all of the above stuff to setup.js once things are more in place -->
-<!--     <script>
+    <!-- TODO: Move all of the above stuff to setup.js once things are more in place -->
+    <script>
       window.onload = function() {
         setupGame();
       }
 
-      window.onbeforeunload = function() {
-        return "Data will be lost if you leave the page, are you sure?";
-      };
+      // window.onbeforeunload = function() {
+      //   return "Data will be lost if you leave the page, are you sure?";
+      // };
 
-    </script> -->
+    </script>
+
+  </head>
+
+  <body>
 
   </body>
 </html>

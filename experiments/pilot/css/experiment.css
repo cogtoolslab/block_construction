@@ -1,0 +1,112 @@
+* {
+    box-sizing: border-box;
+  }
+
+body {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    margin: 100;
+    padding: 0;
+}
+
+.btn{
+    margin-right: 15px;
+}
+
+.row{
+    flex-wrap: nowrap;
+}
+
+#condition-heading {
+    display: inline-block;
+    text-align: center;
+}
+
+#timer-text {
+    display: block;
+    float: right;
+    text-align: right;
+}
+
+#bonus-meter {
+    display: block;
+    float: left;
+    text-align: left;
+}
+
+#defaultCanvas0, #defaultCanvas1 {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.env-div {
+    background-color: aquamarine;
+}
+
+/* #stimulus-window {
+    background-color: aquamarine;
+
+} */
+
+/* #environment-window {
+    background-color: bisque;
+} */
+
+#experiment .col-md{
+    padding: 20px;
+}
+
+#trial-number{
+    float: none;
+    margin: auto;
+}
+
+#trial-number p{
+    text-align: center;
+}
+
+#experiment-buttons .col-auto{
+    padding: 100px;
+}
+
+.occluder {
+  float: middle;
+  border:solid 1px #FFFFFF;
+  height: 100vh;
+  width: 100%;
+  margin: auto;
+  top: 40px; bottom: auto; left:0; right: 0;
+  background: #FFFFFF;
+  position: absolute;
+  z-index: 12;
+  opacity: 1;
+  color: black;
+}
+
+.occluder div{
+    float: middle;
+    border:solid 1px #FFFFFF;
+    width: 50%;
+    height: 80vh;
+    margin: auto;
+    top: 50px; bottom: auto; left:0; right: 0;
+    background: #FFFFFF;
+    z-index: 12;
+    color: black;
+}
+
+.occluder p{
+    padding-top: 45%;
+}
+
+#progress-bar {
+    background-color: blue;
+    width: 100%;
+}
