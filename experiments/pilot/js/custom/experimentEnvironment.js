@@ -435,7 +435,7 @@ var sendData = function (eventType, trialObj) {
         })
 
         // console.log('block_data', block_data);
-        socket.emit('block', block_data);
+        socket.emit('currentData', block_data);
     }
     else if (eventType == 'settled') {
 
@@ -460,7 +460,7 @@ var sendData = function (eventType, trialObj) {
         });
 
         //console.log('world_data', world_data);
-        socket.emit('world', world_data);
+        socket.emit('currentData', world_data);
     }
     else if (eventType == 'reset') {
         // Event to show that reset has occurred
@@ -474,7 +474,7 @@ var sendData = function (eventType, trialObj) {
         });
 
         console.log('reset_data', reset_data);
-        socket.emit('reset', reset_data);
+        socket.emit('currentData', reset_data);
 
     } else if (eventType == 'end') {
         // End of trial information
@@ -517,7 +517,7 @@ var sendData = function (eventType, trialObj) {
         });
 
         console.log('end_data: ', end_data);
-        socket.emit('end', end_data);
+        socket.emit('currentData', end_data);
 
     }
 

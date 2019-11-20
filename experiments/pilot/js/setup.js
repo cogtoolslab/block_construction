@@ -8,7 +8,7 @@ var explore_duration = 5;
 var build_duration = 60;
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-
+console.log(randID);
 function submit2AMT() {
   console.log('attempting to send data to mturk! score = ', score);
   jsPsych.turk.submitToTurk({'score':score});

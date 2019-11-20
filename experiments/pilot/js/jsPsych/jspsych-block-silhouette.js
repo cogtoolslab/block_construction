@@ -485,10 +485,10 @@ jsPsych.plugins["block-silhouette"] = (function () {
       });
     }
 
-    function startBuildPhase() {
+    var startBuildPhase = function () {
       trial.buildStartTime = Date.now()
       occluder.style.display = "none";
-      occluder.removeEventListener('click', startBuildPhase());
+      occluder.removeEventListener('click', startBuildPhase);
       //console.log('timer starting for build');
       timer(trial.build_duration, function () { //set timer for build phase
         if (trial.completed == false) {
