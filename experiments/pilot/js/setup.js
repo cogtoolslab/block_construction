@@ -4,7 +4,7 @@ var numTrials = 16;
 var shuffleTrials = false; // set to False to preserve order in db; set to True if you want to shuffle trials from db (scrambled10)
 
 var practice_duration = 60;
-var explore_duration = 1;
+var explore_duration = 5;
 var build_duration = 60;
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -159,7 +159,7 @@ function setupGame () {
 
     // insert practice trial before the first "real" experimental trial
     var practiceTrial = new PracticeTrial;
-    trials.unshift(practiceTrial);
+    //trials.unshift(practiceTrial);
     
     // Stick welcome trial at beginning & goodbye trial at end
     if (!turkInfo.previewMode) { 

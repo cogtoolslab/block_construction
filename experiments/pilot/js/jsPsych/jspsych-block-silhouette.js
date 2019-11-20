@@ -356,15 +356,18 @@ jsPsych.plugins["block-silhouette"] = (function () {
           occluder.addEventListener('click', event => {
             trial.completed = true;
             endTrial();
+
             clear_display_move_on();
-         });
+          });
         }
         occluder.style.display = "block";
       }
       else { // if a normal trial, must be build phase, so move on trial
         trial.completed = true;
         endTrial(end_reason = 'done-pressed');
-        clear_display_move_on();
+        jsPsych.pluginAPI.setTimeout(function () {
+          clear_display_move_on();
+        }, 2000);
       }
 
     }
@@ -383,7 +386,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
       cumulBonus += parseFloat(currBonus.toFixed(2)); // TODO: this cumulBonus needs to be bundled into data sent to mongo
       normedScore = getNormedScore(rawScore, nullScore, scoreGap);
-      
+
       // update official bonus tallies
       trial.F1Score = rawScore;
       trial.currBonus = currBonus; // update trial var to reflect current bonus earned
@@ -397,7 +400,36 @@ jsPsych.plugins["block-silhouette"] = (function () {
       console.log(end_reason + '. Normed Score: ' + normedScore);
       console.log(end_reason + '. Bonus: ' + currBonus);
 
-      occluder_text.textContent = "";
+
+      occluder.style.fontSize = 'large';
+      if (currBonus == 0.05){
+        occluder_text.textContent = '🤩 Amazing job! 0.05 bonus!';
+      } else if (currBonus == 0.03){
+        occluder_text.textContent = '😃 Great job! 0.03 bonus!';
+      } else if (currBonus == 0.01){
+        occluder_text.textContent = '🙂 Not bad! 0.01 bonus!';
+      } else {
+        occluder_text.textContent = '😐 No bonus this round!';
+      }
+
+      jsPsych.pluginAPI.setTimeout(function () {
+        if (currBonus > 0) {
+          // show feedback by drawing GREEN box around TARGET if selected CORRECTLY    
+          display_element.querySelector('#bonus-meter').style.backgroundColor = "#66B03B";
+          // also bold/enlarge the score in bottom left corner 
+          //display_element.querySelector('#score p2').innerHTML = 'bonus earned: ' + parseFloat(currBonus).toFixed(3);
+          //display_element.querySelector('#score p2').style.fontWeight = 'bold';
+        } else {
+          // draw RED box around INCORRECT response and BLACK box around TARGET
+          display_element.querySelector('#bonus-meter').style.backgroundColor = "#FFFFFF";
+        }
+
+        jsPsych.pluginAPI.setTimeout(function () {
+            display_element.querySelector('#bonus-meter').style.backgroundColor = "#FFFFFF";
+        }, 3000);
+
+      }, 4000);
+
       occluder.style.display = "block";
       clearP5Envs(); // Clear everything in P5
       sendData('settled', trial);
@@ -431,7 +463,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
         });
       });
     }
-    
+
 
     // ****  BEGINNING OF TRIAL TIMELINE **** 
 
@@ -453,7 +485,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       occluder_text.textContent = practice_text;
 
       p5stim, p5env = setupEnvs(trial); //create p5 instances for practice phase
-      
+
       //Update trial appearance 
       condition_heading.textContent = "Place blocks over the guides on the right";
 
