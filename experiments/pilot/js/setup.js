@@ -4,7 +4,7 @@ var numTrials = 16;
 var shuffleTrials = false; // set to False to preserve order in db; set to True if you want to shuffle trials from db (scrambled10)
 
 var practice_duration = 60;
-var explore_duration = 5;
+var explore_duration = 10;
 var build_duration = 60;
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -92,6 +92,9 @@ function Trial () {
   this.phase = 'NA';
   this.completed = false;
   this.resets = 0;
+  this.exploreStartTime = 0;
+  this.buildStartTime = 0;
+  this.buildFinishTime = 0;
 };
 
 function PracticeTrial () {

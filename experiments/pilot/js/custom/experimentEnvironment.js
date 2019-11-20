@@ -477,6 +477,21 @@ var sendData = function (eventType, trialObj) {
         // console.log('reset_data', reset_data);
         socket.emit('reset', reset_data);
 
+    } else if (eventType == 'trialEnd') {
+        // Event to show that reset has occurred
+        // We can infer from the existence of this event that the world is empty
+
+        // Do we calculate anything about the reset?
+        end_data = _.extend(commonInfo, {
+            dataType: 'end',
+            eventType: eventType, // initial block placement decision vs. final block resting position.
+            numBlocks: blocks.length //number of blocks before reset pressed
+            
+        });
+
+        // console.log('reset_data', reset_data);
+        socket.emit('end', end_data);
+
     }
 
 }
