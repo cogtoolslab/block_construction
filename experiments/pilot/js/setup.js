@@ -9,7 +9,7 @@ var build_duration = 60;
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
-function sendData() {
+function submit2AMT() {
   console.log('attempting to send data to mturk! score = ', score);
   jsPsych.turk.submitToTurk({'score':score});
 }
@@ -21,7 +21,7 @@ var goodbyeTrial = {
      click the button to submit this HIT. <b> If a popup appears asking you if you want to leave, please say YES to LEAVE THIS PAGE and submit the HIT.</b></p>'
   ],
   show_clickable_nav: true,
-  on_finish: function() { sendData();}
+  on_finish: function() { submit2AMT();}
 };
 
 var consentHTML = {
