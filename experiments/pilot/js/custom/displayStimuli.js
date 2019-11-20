@@ -51,7 +51,7 @@ function showFloor(p5stim){
 
 function showMarker(p5stim){
     p5stim.push();
-    p5stim.stroke(220);
+    p5stim.stroke([255,0,0]);
     p5stim.strokeWeight(1)
     p5stim.line(canvasWidth/2,canvasHeight-floorHeight+10,canvasWidth/2,canvasHeight-floorHeight+35);
     p5stim.pop();
