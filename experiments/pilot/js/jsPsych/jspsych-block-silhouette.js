@@ -87,6 +87,9 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
   plugin.trial = function (display_element, trial) {
 
+    // Make target a stonehenge
+    // trial.targetBlocks = [{"x": 1, "y": 0, "width": 2, "height": 4}, {"x": 5, "y": 0, "width": 2, "height": 4}, {"x": 2, "y": 4, "width": 4, "height": 2}];
+
     var timers = [];
 
     if (typeof trial.targetBlocks === 'undefined') {
@@ -147,7 +150,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     var mental_explore_text = 'Now think about how you will build the given structure. Click anywhere to begin.';
     var build_text = 'Now build the structure! Click anywhere to begin.';
     var practice_feedback_text = {
-      'success': 'Success! Now on to the first trial.',
+      'success': 'Success! Now on to the real experiment.',
       'failure': 'To move on to the first trial, copy the structure on the left by placing blocks over the guides on the right.'
     }
     var practice_text = 'This is a practice trial. Copy the silhouette by placing blocks on the right. We have placed guides to help you with this one. Click anywhere to begin.';
