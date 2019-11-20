@@ -509,7 +509,7 @@ var sendData = function (eventType, trialObj) {
             F1Score: trialObj.F1Score, // raw score
             normedScore: trialObj.normedScore,
             currBonus: trialObj.currBonus,
-            cumulBonus: trialObj.score,
+            score: trialObj.score,
             endReason: trialObj.endReason,
             resets: trialObj.resets,
             nPracticeAttempts: trialObj.nPracticeAttempts,

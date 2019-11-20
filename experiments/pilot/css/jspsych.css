@@ -123,3 +123,13 @@
 #jspsych-data-display {
   text-align: left;
 }
+
+input[type=radio  ]{
+  width   : 28px;
+  margin  : 2px;
+  height: 1.2em;
+}
+
+p {
+  font-size: larger;
+}

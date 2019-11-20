@@ -76,18 +76,58 @@ var previewTrial = {
   allow_keys: true  
 }
 
-var surveyTrial = {
+var multi_choice_page = {
+  type: 'survey-multi-choice',
+  questions: [
+    {
+      prompt: "What is your sex?", 
+      options: ["Male", "Female"], 
+      horizontal: true,
+      required: true,
+      name: 'sex'
+    }, 
+    {
+      prompt: "Which of the following did you use for this experiment?", 
+      options: ["Mouse", "Trackpad", "Other"], 
+      horizontal: true,
+      required: true,
+      name: 'inputDevice'
+    },
+    {
+      prompt: "From 1-7, how difficult did you find this experiment? (1: very easy, 7: very hard)", 
+      options: ["1","2","3","4","5","6","7"], 
+      horizontal: true,
+      required: true,
+      name: 'difficulty'
+    },
+    {
+      prompt: "From 1-7, how much fun was this experiment? (1: not fun at all, 7: very fun)", 
+      options: ["1","2","3","4","5","6","7"],
+      horizontal: true,
+      required: true,
+      name: 'fun'
+    }    
+  ], 
+  randomize_question_order: true
+};
+
+var text_page = {
   type: 'survey-text',
   questions: [
-    {prompt: "Thank you for participating in our study! Any comments?",rows: 5, columns: 40, placeholder: "How was that for you? Did you notice any issues?"}
+    {name: 'comments', prompt: "Thank you for participating in our study! Any comments?", rows: 5, columns: 40, placeholder: "How was that for you? Did you notice any issues?"},
+    {name: 'age', prompt: "How old are you?", placeholder: ""}, 
+    {name: 'strategies', prompt: "Did you use any strategies?", rows: 5, columns: 50,  placeholder: ""}
   ],
+  on_finish: function(data){
+    console.log(data)
+  }
 };
 
 // define trial object with boilerplate
 function Trial () {
   this.randID = randID;
   this.type = 'block-silhouette';
-  this.iterationName = 'testing1';
+  this.iterationName = 'willjudytest';
   this.prompt = "Please reconstruct the tower using as few blocks as possible.";
   this.dev_mode = false;
   this.explore_duration = explore_duration; // time limit in seconds
@@ -96,7 +136,6 @@ function Trial () {
   this.F1Score = 0; // F1 score
   this.normedScore = 0;
   this.currBonus = 0; // current bonus
-  this.cumulBonus = 0; // cumulative bonus  
   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'.
   this.phase = 'NA';
   this.completed = false;
@@ -105,7 +144,7 @@ function Trial () {
   this.buildStartTime = 0;
   this.buildFinishTime = 0;
   this.trialBonus = 0;
-  this.cumulBonus = 0;
+  this.score = 0;
   this.nPracticeAttempts = NaN;
   this.practiceAttempt = 0;
 };
@@ -113,7 +152,7 @@ function Trial () {
 function PracticeTrial () {
   this.randID = randID;
   this.type = 'block-silhouette';
-  this.iterationName = 'testing1';
+  this.iterationName = 'willjudytest';
   this.prompt = "Please reconstruct the tower using as few blocks as possible.";
   this.dev_mode = false;
   this.condition = 'practice';
@@ -125,7 +164,7 @@ function PracticeTrial () {
   this.F1Score = 0; // F1 score
   this.normedScore = 0; // WANT TO RECORD THIS FOR EVERY ATTEMPT IN PRACTICE
   this.currBonus = 0; // current bonus
-  this.cumulBonus = 0; // cumulative bonus 
+  this.score = 0; // cumulative bonus 
   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'. 
   this.resets = 0; 
   this.nPracticeAttempts = 0;
@@ -188,11 +227,16 @@ function setupGame () {
     } else {
       trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
     }
-    trials.push(surveyTrial); // add debriefing survey
     trials.push(goodbyeTrial); // goodbye and submit HIT
 
     // print out trial list    
     //console.log(trials);
+
+    trials.push(multi_choice_page);
+    trials.push(text_page);
+
+    //trials.unshift(multi_choice_page);
+    //trials.unshift(text_page)
       
     jsPsych.init({
       timeline: trials,
