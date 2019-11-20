@@ -99,6 +99,7 @@ function Trial () {
   this.trialBonus = 0;
   this.cumulBonus = 0;
   this.nPracticeAttempts = NaN;
+  this.practiceAttempt = 0;
 };
 
 function PracticeTrial () {
@@ -119,12 +120,12 @@ function PracticeTrial () {
   this.cumulBonus = 0; // cumulative bonus 
   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'. 
   this.resets = 0; 
-  this.practiceAttempts = 0;
+  this.nPracticeAttempts = 0;
+  this.practiceAttempt = 0; // indexing starts at 0.
   this.trialNum = NaN;
   this.exploreStartTime = 0;
   this.buildStartTime = 0;
   this.buildFinishTime = 0;
-  this.nPracticeAttempts = 0;
 };
 
 function setupGame () {
@@ -171,7 +172,7 @@ function setupGame () {
 
     // insert practice trial before the first "real" experimental trial
     var practiceTrial = new PracticeTrial;
-    //trials.unshift(practiceTrial);
+    trials.unshift(practiceTrial);
     
     // Stick welcome trial at beginning & goodbye trial at end
     if (!turkInfo.previewMode) { 

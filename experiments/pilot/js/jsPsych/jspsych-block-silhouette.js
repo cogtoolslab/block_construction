@@ -340,10 +340,15 @@ jsPsych.plugins["block-silhouette"] = (function () {
         if (trial.condition == 'practice') {
 
           rawScore = getCurrScore();
-          normedScore = getNormedScore(rawScore, nullScore, scoreGap)
+          normedScore = getNormedScore(rawScore, nullScore, scoreGap);
           // jsPsych.pluginAPI.setTimeout(function () { // temporarily hide guides in build env
           //   scoring = false;
           // }, 100);
+
+          
+          trial.nPracticeAttempts += 1;
+          sendData(eventType = 'end', trial);
+          trial.practiceAttempt += 1;
 
           // if-statements to be added here. Plus something that prevents multiple failures.
           practiceThreshold = 0.98;

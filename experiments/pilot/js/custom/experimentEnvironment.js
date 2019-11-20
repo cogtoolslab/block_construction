@@ -459,7 +459,7 @@ var sendData = function (eventType, trialObj) {
             // need to add bonuses
         });
 
-        console.log('world_data', world_data);
+        //console.log('world_data', world_data);
         socket.emit('world', world_data);
     }
     else if (eventType == 'reset') {
@@ -513,6 +513,7 @@ var sendData = function (eventType, trialObj) {
             endReason: trialObj.endReason,
             resets: trialObj.resets,
             nPracticeAttempts: trialObj.nPracticeAttempts,
+            practiceAttempt: trialObj.practiceAttempt,
         });
 
         console.log('end_data: ', end_data);
