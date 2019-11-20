@@ -350,7 +350,6 @@ var sendData = function (eventType, trialObj) {
         exploreDuration: trialObj.explore_duration,
         buildDuration: trialObj.build_duration,
         devMode: trialObj.dev_mode
-              
     };
 
     // general info about world params, bundled into worldInfo
@@ -460,7 +459,7 @@ var sendData = function (eventType, trialObj) {
             // need to add bonuses
         });
 
-        // console.log('world_data', world_data);
+        console.log('world_data', world_data);
         socket.emit('world', world_data);
     }
     else if (eventType == 'reset') {
@@ -474,22 +473,49 @@ var sendData = function (eventType, trialObj) {
             numBlocks: blocks.length //number of blocks before reset pressed
         });
 
-        // console.log('reset_data', reset_data);
+        console.log('reset_data', reset_data);
         socket.emit('reset', reset_data);
 
-    } else if (eventType == 'trialEnd') {
-        // Event to show that reset has occurred
-        // We can infer from the existence of this event that the world is empty
+    } else if (eventType == 'end') {
+        // End of trial information
 
-        // Do we calculate anything about the reset?
-        end_data = _.extend(commonInfo, {
-            dataType: 'end',
-            eventType: eventType, // initial block placement decision vs. final block resting position.
-            numBlocks: blocks.length //number of blocks before reset pressed
-            
+        var bodiesForSending = blocks.map(block => {
+            // test out sending newBlock info to server/mongodb
+            propertyList = Object.keys(block.body); // extract block properties;
+            propertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
+            propertyList = _.pullAll(propertyList, ['collisionFilter', 'constraintImpulse', 'density', 'force', 'friction', 'frictionAir', 'frictionStatic', 'isSensor', 'label', 'render', 'restitution', 'sleepCounter', 'sleepThreshold', 'slop', 'timeScale', 'type']);  // omit extraneus matter properties
+            blockProperties = _.pick(block.body, propertyList); // pick out all and only the block body properties in the property list
+            return blockProperties
         });
 
-        // console.log('reset_data', reset_data);
+        world_data = _.extend(commonInfo, {
+            dataType: 'world',
+            eventType: eventType, // initial block placement decision vs. final block resting position.
+            allBlockBodyProperties: bodiesForSending, // matter information about bodies of each block. Order is order of block placement
+            numBlocks: bodiesForSending.length
+            // need to add bonuses
+        });
+
+        // Do we calculate anything about the reset?
+        end_data = _.extend(commonInfo, world_data, {
+            dataType: 'end',
+            eventType: eventType, // initial block placement decision vs. final block resting position.
+            numBlocks: blocks.length, //number of blocks before reset pressed
+            exploreStartTime: trialObj.exploreStartTime,
+            buildStartTime: trialObj.buildStartTime,
+            buildFinishTime: trialObj.buildFinishTime,
+            endReason: trialObj.endReason,
+            completed: trialObj.completed,
+            F1Score: trialObj.F1Score, // raw score
+            normedScore: trialObj.normedScore,
+            currBonus: trialObj.currBonus,
+            cumulBonus: trialObj.score,
+            endReason: trialObj.endReason,
+            resets: trialObj.resets,
+            nPracticeAttempts: trialObj.nPracticeAttempts,
+        });
+
+        console.log('end_data: ', end_data);
         socket.emit('end', end_data);
 
     }

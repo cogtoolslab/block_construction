@@ -335,6 +335,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       if (allSleeping) {
 
+        sendData(eventType = 'settled', trial);
+
         if (trial.condition == 'practice') {
 
           rawScore = getCurrScore();
@@ -349,7 +351,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
             // if practice score is bad:
             // show occluder
-            trial.attempts += 1;
+            trial.nPracticeAttempts += 1;
             occluder_text.textContent = practice_feedback_text['failure'];
             occluder.addEventListener('click', resumePractice);
             resetPressed();
@@ -428,6 +430,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
         occluder_text.textContent = '😐 No bonus this round!';
       }
 
+      sendData(eventType = 'end', trial);
+
       jsPsych.pluginAPI.setTimeout(function () {
         if (currBonus > 0) {
           // show feedback by drawing GREEN box around TARGET if selected CORRECTLY    
@@ -443,7 +447,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       occluder.style.display = "block";
       clearP5Envs(); // Clear everything in P5
-      sendData('settled', trial);
 
     }
 

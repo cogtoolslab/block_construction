@@ -4,7 +4,7 @@ var numTrials = 16;
 var shuffleTrials = false; // set to False to preserve order in db; set to True if you want to shuffle trials from db (scrambled10)
 
 var practice_duration = 60;
-var explore_duration = 10;
+var explore_duration = 1;
 var build_duration = 60;
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -85,16 +85,20 @@ function Trial () {
   this.explore_duration = explore_duration; // time limit in seconds
   this.build_duration = build_duration; // time limit in seconds
   this.practice_duration = practice_duration; // time limit in seconds
-  this.rawScore = 0; // F1 score
+  this.F1Score = 0; // F1 score
+  this.normedScore = 0;
   this.currBonus = 0; // current bonus
-  this.score = 0; // cumulative bonus  
-  this.trialEndTrigger = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'.
+  this.cumulBonus = 0; // cumulative bonus  
+  this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'.
   this.phase = 'NA';
   this.completed = false;
   this.resets = 0;
   this.exploreStartTime = 0;
   this.buildStartTime = 0;
   this.buildFinishTime = 0;
+  this.trialBonus = 0;
+  this.cumulBonus = 0;
+  this.nPracticeAttempts = NaN;
 };
 
 function PracticeTrial () {
@@ -109,13 +113,18 @@ function PracticeTrial () {
   this.explore_duration = explore_duration; // time limit in seconds
   this.build_duration = build_duration; // time limit in seconds
   this.practice_duration = practice_duration; // time limit in seconds
-  this.rawScore = 0; // F1 score
+  this.F1Score = 0; // F1 score
+  this.normedScore = 0; // WANT TO RECORD THIS FOR EVERY ATTEMPT IN PRACTICE
   this.currBonus = 0; // current bonus
-  this.score = 0; // cumulative bonus
-  this.trialEndTrigger = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'. 
+  this.cumulBonus = 0; // cumulative bonus 
+  this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'. 
   this.resets = 0; 
   this.practiceAttempts = 0;
   this.trialNum = NaN;
+  this.exploreStartTime = 0;
+  this.buildStartTime = 0;
+  this.buildFinishTime = 0;
+  this.nPracticeAttempts = 0;
 };
 
 function setupGame () {
