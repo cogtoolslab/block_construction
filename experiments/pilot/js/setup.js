@@ -124,7 +124,7 @@ var text_page = {
 function Trial () {
   this.randID = randID;
   this.type = 'block-silhouette';
-  this.iterationName = 'willjudytest';
+  this.iterationName = 'dataTesting';
   this.prompt = "Please build the tower using as few blocks as possible.";
   this.dev_mode = false;
   this.explore_duration = explore_duration; // time limit in seconds
@@ -149,7 +149,7 @@ function Trial () {
 function PracticeTrial () {
   this.randID = randID;
   this.type = 'block-silhouette';
-  this.iterationName = 'willjudytest';
+  this.iterationName = 'dataTesting';
   this.prompt = "Please build your tower using as few blocks as possible.";
   this.dev_mode = false;
   this.condition = 'practice';
@@ -212,17 +212,17 @@ function setupGame () {
     }));
 
     // insert final instructions page between practice trial and first "real" experimental trial
-    trials.unshift(readyTrial);    
+    //trials.unshift(readyTrial);    
 
     // insert practice trial before the first "real" experimental trial
     var practiceTrial = new PracticeTrial;
-    trials.unshift(practiceTrial);
+    //trials.unshift(practiceTrial);
     
     // Stick welcome trial at beginning & goodbye trial at end
     if (!turkInfo.previewMode) { 
-      trials.unshift(welcomeTrial);
+      //trials.unshift(welcomeTrial);
     } else {
-      trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
+      //trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
     }
     trials.push(goodbyeTrial); // goodbye and submit HIT
 
