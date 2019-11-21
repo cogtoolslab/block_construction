@@ -105,7 +105,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       html += '<div class="container pt-1" id="experiment">'
       html += '<div class="container" id="text-bar">'
       html += `<p id="bonus-meter">Bonus: $${cumulBonus.toFixed(2)} </p>`
-      html += '<p id="condition-heading">Build that structure!</p>'
+      html += '<p id="condition-heading">Build that tower!</p>'
       html += '<p id="timer-text">00:00</p>'
       html += '</div>'
       html += '<div class="row">'
@@ -187,7 +187,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
         //p5stim, p5env = exploreMental(trial); //create p5 instances for this trial phase
         //Update trial appearance 
         occluder_text.textContent = 'Trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + ". " + mental_explore_text;
-        condition_heading.textContent = "Think about how you will build the tower."
+        condition_heading.textContent = "THINK"
         Array.prototype.forEach.call(env_divs, env_div => {
           env_div.style.backgroundColor = "#FE5D26";
         });
@@ -198,7 +198,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
         //p5stim, p5env = explorePhysical(trial); //create p5 instances for this trial phase
         //Update trial appearance 
         occluder_text.textContent = 'Trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + ". " + physical_explore_text;
-        condition_heading.textContent = "Practice building the tower.";
+        condition_heading.textContent = "PRACTICE";
         Array.prototype.forEach.call(env_divs, env_div => {
           env_div.style.backgroundColor = "#6DEBFF";
         });
@@ -221,7 +221,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       done_button.style.display = "inline-block";
       reset_button.style.display = "inline-block";
       occluder_text.textContent = build_text;
-      condition_heading.textContent = "Now build that structure!";
+      condition_heading.textContent = "BUILD";
       Array.prototype.forEach.call(env_divs, env_div => {
         env_div.style.backgroundColor = "#75E559";
       });
@@ -526,7 +526,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       p5stim, p5env = setupEnvs(trial); //create p5 instances for practice phase
 
       //Update trial appearance 
-      condition_heading.textContent = "Place blocks over the guides on the right";
+      condition_heading.textContent = "Practice placing each block where indicated.";
 
       Array.prototype.forEach.call(env_divs, env_div => {
         env_div.style.backgroundColor = "#FFFF25";

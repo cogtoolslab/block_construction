@@ -24,6 +24,7 @@ body {
 #condition-heading {
     display: inline-block;
     text-align: center;
+    font-family: 'Patrick Hand', cursive;
 }
 
 #timer-text {
