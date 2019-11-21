@@ -19,7 +19,7 @@ var currBonus = 0; // current bonus increment
 var cumulBonus = 0; // cumulative bonus earned in experiment
 
 // Metadata
-var gameid = 'GAMEID_PLACEHOLDER';
+var gameID = 'GAMEID_PLACEHOLDER';
 var version = 'VERSION_PLACEHOLDER';
 
 //var pct_per_sec = (1 / explore_time_limit) * 100; // if time_limit==20, that means that progress bar goes down by 5% each unit time
@@ -105,7 +105,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       html += '<div class="container pt-1" id="experiment">'
       html += '<div class="container" id="text-bar">'
       html += `<p id="bonus-meter">Bonus: $${cumulBonus.toFixed(2)} </p>`
-      html += '<p id="condition-heading">Build that structure!</p>'
+      html += '<p id="condition-heading">Build that tower!</p>'
       html += '<p id="timer-text">00:00</p>'
       html += '</div>'
       html += '<div class="row">'
@@ -146,14 +146,14 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     }
 
-    var physical_explore_text = 'Now practice building the given structure. Click anywhere to begin.';
-    var mental_explore_text = 'Now think about how you will build the given structure. Click anywhere to begin.';
-    var build_text = 'Now build the structure! Click anywhere to begin.';
+    var physical_explore_text = 'Now practice building the tower. Click anywhere to begin.';
+    var mental_explore_text = 'Now think about how you will build the tower. Click anywhere to begin.';
+    var build_text = 'Now build the tower! Click anywhere to begin.';
     var practice_feedback_text = {
-      'success': 'Success! Now on to the real experiment.',
-      'failure': 'Nice try! But your reconstruction was not quite accurate enough to proceed. Please click anywhere to try again.'
+      'success': 'Success! Now onto the real experiment. Click anywhere to continue.',
+      'failure': 'Nice try! But your tower was not quite a close enough match. Please click anywhere to try again.'
     }
-    var practice_text = 'This is a practice trial. Please try reconstructing the practice block tower by placing each block as precisely as you can in the corresponding location in the righthand environment. We have placed guides to help you with this one. Click anywhere to begin.';
+    var practice_text = 'Click anywhere to begin.';
 
     // call show_display now, which includes a massive occluder that covers everything up
     show_display();
@@ -170,7 +170,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
 
     // update these global metadata vars with actual values for this trial  
-    gameid = trial.gameid;
+    gameID = trial.gameID;
     version = trial.version;
 
     occluder.style.display = "block";
@@ -179,26 +179,24 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     function pre_build(baseline) {
       done_button.style.display = "none";
-
+      trial.phase = 'explore';
       // mental or physical exploration
       if (trial.condition == "mental") {
-        trial.phase = "mentalExplore";
         reset_button.style.display = "none";
         //p5stim, p5env = exploreMental(trial); //create p5 instances for this trial phase
         //Update trial appearance 
         occluder_text.textContent = 'Trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + ". " + mental_explore_text;
-        condition_heading.textContent = "Think about how you will build the structure"
+        condition_heading.textContent = "THINK"
         Array.prototype.forEach.call(env_divs, env_div => {
           env_div.style.backgroundColor = "#FE5D26";
         });
 
       }
       else if (trial.condition == "physical") {
-        trial.phase = "physicalExplore";
         //p5stim, p5env = explorePhysical(trial); //create p5 instances for this trial phase
         //Update trial appearance 
         occluder_text.textContent = 'Trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + ". " + physical_explore_text;
-        condition_heading.textContent = "Practice building the structure";
+        condition_heading.textContent = "PRACTICE";
         Array.prototype.forEach.call(env_divs, env_div => {
           env_div.style.backgroundColor = "#6DEBFF";
         });
@@ -209,6 +207,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // set null score for normed score calculation
       nullScore = baseline();
       scoreGap = math.subtract(1, nullScore);
+      trial.nullScore = nullScore;
+      trial.scoreGap = scoreGap;
     }
 
     function build(baseline) {
@@ -221,14 +221,16 @@ jsPsych.plugins["block-silhouette"] = (function () {
       done_button.style.display = "inline-block";
       reset_button.style.display = "inline-block";
       occluder_text.textContent = build_text;
-      condition_heading.textContent = "Now build that structure!";
+      condition_heading.textContent = "BUILD";
       Array.prototype.forEach.call(env_divs, env_div => {
         env_div.style.backgroundColor = "#75E559";
       });
 
       // set null score for normed score calculation
-      nullScore = baseline();
-      scoreGap = math.subtract(1, nullScore);
+      // nullScore = baseline();
+      // scoreGap = math.subtract(1, nullScore);
+      // trial.nullScore = nullScore;
+      // trial.scoreGap = scoreGap;
     }
 
     var startPractice = function () {
@@ -270,7 +272,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     function convertNormedScoreToBonus(normedScore) {
       // convert normedScore (ranges between 0 and 1)
       // to bonus amount (in cents)      
-      highThresh = 0.97;
+      highThresh = 0.93;
       midThresh = 0.85;
       lowThresh = 0.7;
       if (normedScore > highThresh) { bonus = 0.05; }
@@ -286,6 +288,11 @@ jsPsych.plugins["block-silhouette"] = (function () {
       console.log('bonus earned = ', bonus);
       return bonus;
     }
+
+    // hacky solution to obtaining scores at every block-settle event
+    trial.getCurrScore = getCurrScore;
+    trial.getNormedScore = (rawScore) => getNormedScore(rawScore, nullScore, scoreGap);
+
 
     // ****  TIMERS, EVENT HANDLERS **** 
 
@@ -320,7 +327,11 @@ jsPsych.plugins["block-silhouette"] = (function () {
       /* Called to clear building environment window. 
       Works by resetting variables then building a new p5 instance.
       */
-      trial.resets += 1;
+      if (trial.phase == 'explore'){
+        trial.exploreResets += 1;
+      } else {
+        trial.buildResets += 1;
+      }
       sendData('reset', trial);
       clearP5Envs();
       setupEnvs(trial);
@@ -344,6 +355,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
           rawScore = getCurrScore();
           normedScore = getNormedScore(rawScore, nullScore, scoreGap);
+          
           // jsPsych.pluginAPI.setTimeout(function () { // temporarily hide guides in build env
           //   scoring = false;
           // }, 100);
@@ -362,16 +374,21 @@ jsPsych.plugins["block-silhouette"] = (function () {
             trial.nPracticeAttempts += 1;
             occluder_text.textContent = practice_feedback_text['failure'];
             occluder.addEventListener('click', resumePractice);
-            resetPressed();
+
+            trial.practiceSuccess = false;
+            sendData('practice_attempt', trial);
+            clearP5Envs();
+            setupEnvs(trial);
 
           } else {
             // if practice score is good:
             // move on
+            trial.practiceSuccess = true;
+            sendData('practice_attempt', trial);
             occluder_text.textContent = practice_feedback_text['success'];
             occluder.addEventListener('click', event => {
               trial.completed = true;
-              endTrial();
-
+              endTrial(endReason = 'practice_success');
               clear_display_move_on();
             });
           }
@@ -406,7 +423,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
     }
 
     function endTrial(endReason = 'end_of_phase') {
-      trial.buildFinishTime = Date.now()
+
+      trial.buildFinishTime = Date.now();
 
       //calculate bonus earned
       rawScore = getCurrScore();
@@ -423,39 +441,40 @@ jsPsych.plugins["block-silhouette"] = (function () {
       trial.endReason = endReason;
       trial.normedScore = normedScore;
       trial.currBonus = currBonus; // update trial var to reflect current bonus earned
-      trial.score = cumulBonus; // update trial.score var to reflect cumulative bonus
-
+      trial.score = cumulBonus; // update trial.score var to reflect cumulative bonustrial.nullScore = nullScore;
+      sendData('settled', trial);
+      
       console.log('raw: ' + rawScore);
       console.log('null: ' + nullScore);
       console.log('scoregap: ' + scoreGap);
       console.log(endReason + '. Normed Score: ' + normedScore);
       console.log(endReason + '. Bonus: ' + currBonus);
 
-
       occluder.style.fontSize = 'large';
       if (currBonus == 0.05) {
-        occluder_text.textContent = '🤩 Amazing! 0.05 bonus!';
+        occluder_text.textContent = '🤩 Amazing! $0.05 bonus!';
       } else if (currBonus == 0.03) {
-        occluder_text.textContent = '😃 Great job! 0.03 bonus!';
+        occluder_text.textContent = '😃 Great job! $0.03 bonus!';
       } else if (currBonus == 0.01) {
-        occluder_text.textContent = '🙂 Not bad! 0.01 bonus!';
+        occluder_text.textContent = '🙂 Not bad! $0.01 bonus!';
       } else {
         occluder_text.textContent = '😐 No bonus this round!';
       }
-
-      sendData(eventType = 'end', trial);
       
       if (trial.condition != 'practice') {
+        
+        sendData(eventType='build_end', trial);
+
         jsPsych.pluginAPI.setTimeout(function () {
           if (currBonus > 0) {
             // show feedback by drawing GREEN box around TARGET if selected CORRECTLY    
-            display_element.querySelector('#bonus-meter').style.backgroundColor = "#75E559";
+            display_element.querySelector('#bonus-meter').style.border = "8px solid #66B03B"; 
             // also bold/enlarge the score in bottom left corner 
             //display_element.querySelector('#score p2').innerHTML = 'bonus earned: ' + parseFloat(currBonus).toFixed(3);
             //display_element.querySelector('#score p2').style.fontWeight = 'bold';
           } else {
             // draw RED box around INCORRECT response and BLACK box around TARGET
-            display_element.querySelector('#bonus-meter').style.backgroundColor = "#FFFFFF";
+            display_element.querySelector('#bonus-meter').style.border = "#FFFFFF";
           }
         }, 4000);
       };
@@ -477,7 +496,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       //console.log('timer starting for pre');
       timer(trial.explore_duration, function () { //set timer for exploration phase    
 
-        sendData('final', trial);
+        sendData('explore_end', trial);
         clearP5Envs();
 
         // BUILD PHASE
@@ -527,7 +546,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       p5stim, p5env = setupEnvs(trial); //create p5 instances for practice phase
 
       //Update trial appearance 
-      condition_heading.textContent = "Place blocks over the guides on the right";
+      condition_heading.textContent = "PRACTICE";
 
       Array.prototype.forEach.call(env_divs, env_div => {
         env_div.style.backgroundColor = "#FFFF25";
@@ -536,6 +555,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // set null score for normed score calculation
       nullScore = getCurrScore();
       scoreGap = math.subtract(1, nullScore);
+      trial.nullScore = nullScore;
+      trial.scoreGap = scoreGap;
 
       occluder.addEventListener('click', startPractice);
     };
