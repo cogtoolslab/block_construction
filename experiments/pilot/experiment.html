@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link rel="shortcut icon" type="image/png" href="img/favicon.png"/>
-
-    <title>Build that structure!</title>
+    <title>Build that tower!</title>
     
     <!-- Libraries -->
     <script src="js/socket.io.js"></script>    
@@ -14,11 +12,13 @@
     <script src="js/jquery.min.js"></script>    
     <script src="js/jquery-ui.min.js"></script>
     <script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/6.2.2/math.min.js"></script>
     
     <!-- CSS -->
     <link rel="stylesheet" href="css/experiment.css">
     <link rel="stylesheet" href="css/jspsych.css">    
-    <link rel="stylesheet" href="css/bootstrap.css">   
+    <link rel="stylesheet" href="css/bootstrap.css">  
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 
     <!-- Custom Scripts -->
     <script src="js/custom/boundary.js"></script>
@@ -28,11 +28,18 @@
     <script src="js/custom/canvasInteraction.js"></script>
     <script src="js/custom/displayStimuli.js"></script>
     <script src="js/custom/experimentEnvironment.js"></script>
+    <script src="js/custom/evaluateScore.js"></script>
 
     <!-- Custom JsPsych Plugins -->
     <script src="js/jsPsych/jspsych.js"></script>    
     <script src="js/jsPsych/jspsych-block-silhouette.js"></script>
     <script src="js/jsPsych/jspsych-instructions.js"></script>
+    <script src="js/jsPsych/jspsych-survey-text.js"></script>
+    <script src="js/jsPsych/jspsych-survey-multi-choice.js"></script>
+    <script src="js/jsPsych/jspsych-survey-likert.js"></script>
+
+    <!-- Assets -->
+    <script src="assets/practice_structure.js"></script> 
 
     <!-- TODO: Move all of the above stuff to setup.js once things are more in place -->
     <script>
@@ -49,30 +56,6 @@
   </head>
 
   <body>
-    <div class="container pt-5" id="experiment">
-        <div class="row">
-          <div class="col-md" id="stimulus-window">
-
-          </div>
-          <div class="col-md" id="environment-window">
-            
-          </div>
-        </div>
-        <div class="row pt-2" id="experiment-button-col">
-            <div class="col-auto mr-auto button-col">
-                <button type="something" class="btn btn-primary" id="something" value="something" onclick="">Something</button>
-            </div>
-            <div class="col-auto button-col" id="env-buttons">
-                <button type="button" class="btn btn-success" id="done" value="done" onclick="donePressed();">Done</button>
-                <button type="button" class="btn btn-danger" id="reset" value="reset" onclick="resetPressed();">Reset</button>
-            </div>
-        </div>
-        <div class="row pt-2" id="trial-info">
-          <div class="col align-text-center" id="trial-number">
-            <p>Trial 1 of 1</p>
-          </div>
-        </div>
-    </div>
 
   </body>
 </html>

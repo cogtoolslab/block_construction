@@ -17,6 +17,41 @@ body {
     margin-right: 15px;
 }
 
+.row{
+    flex-wrap: nowrap;
+}
+
+#condition-heading {
+    display: inline-block;
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    font-size: 28px;
+}
+
+#occluder-text {
+    display: inline-block;
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    font-size: 28px;
+    line-height: 1.8em;
+}
+
+#timer-text {
+    display: block;
+    float: right;
+    text-align: right;
+    font-family: 'Roboto', sans-serif;
+    font-size: 28px;    
+}
+
+#bonus-meter {
+    display: block;
+    float: left;
+    text-align: left;
+    font-family: 'Roboto', sans-serif;
+    font-size: 28px;    
+}
+
 #defaultCanvas0, #defaultCanvas1 {
     padding-left: 0;
     padding-right: 0;
@@ -25,14 +60,18 @@ body {
     display: block;
 }
 
-#stimulus-window {
+.env-div {
+    background-color: aquamarine;
+}
+
+/* #stimulus-window {
     background-color: aquamarine;
 
-}
+} */
 
-#environment-window {
+/* #environment-window {
     background-color: bisque;
-}
+} */
 
 #experiment .col-md{
     padding: 20px;
@@ -51,14 +90,37 @@ body {
     padding: 100px;
 }
 
-#occluder {
+.occluder {
   float: middle;
-  border:solid 1px #7F7F7F;
+  border:solid 1px #FFFFFF;
   height: 100vh;
-  width: 100vw;
+  width: 100%;
   margin: auto;
   top: 40px; bottom: auto; left:0; right: 0;
-  background: #7F7F7F;
+  background: #FFFFFF;
   position: absolute;
   z-index: 12;
+  opacity: 1;
+  color: black;
+}
+
+.occluder div{
+    float: middle;
+    border:solid 1px #FFFFFF;
+    width: 50%;
+    height: 80vh;
+    margin: auto;
+    top: 50px; bottom: auto; left:0; right: 0;
+    background: #FFFFFF;
+    z-index: 12;
+    color: black;
+}
+
+.occluder p{
+    padding-top: 45%;
+}
+
+#progress-bar {
+    background-color: blue;
+    width: 100%;
 }
