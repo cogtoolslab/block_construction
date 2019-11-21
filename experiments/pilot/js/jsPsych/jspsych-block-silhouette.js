@@ -431,7 +431,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
       console.log(endReason + '. Normed Score: ' + normedScore);
       console.log(endReason + '. Bonus: ' + currBonus);
 
-
       occluder.style.fontSize = 'large';
       if (currBonus == 0.05) {
         occluder_text.textContent = '🤩 Amazing! $0.05 bonus!';
