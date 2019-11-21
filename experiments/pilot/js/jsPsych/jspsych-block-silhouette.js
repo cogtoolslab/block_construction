@@ -151,9 +151,9 @@ jsPsych.plugins["block-silhouette"] = (function () {
     var build_text = 'Now build the structure! Click anywhere to begin.';
     var practice_feedback_text = {
       'success': 'Success! Now on to the real experiment.',
-      'failure': 'To move on to the first trial, copy the structure on the left by placing blocks over the guides on the right.'
+      'failure': 'Nice try! But your reconstruction was not quite accurate enough to proceed. Please click anywhere to try again.'
     }
-    var practice_text = 'This is a practice trial. Copy the silhouette by placing blocks on the right. We have placed guides to help you with this one. Click anywhere to begin.';
+    var practice_text = 'This is a practice trial. Please try reconstructing the practice block tower by placing each block as precisely as you can in the corresponding location in the righthand environment. We have placed guides to help you with this one. Click anywhere to begin.';
 
     // call show_display now, which includes a massive occluder that covers everything up
     show_display();

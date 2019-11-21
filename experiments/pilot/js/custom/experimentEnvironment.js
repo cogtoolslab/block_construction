@@ -422,7 +422,7 @@ var sendData = function (eventType, trialObj) {
         // custom de-borkification
         vertices = _.map(newBlock.body.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
 
-        block_data = _.extend(commonInfo, {
+        block_data = _.extend({}, commonInfo, {
             dataType: 'block',
             eventType: eventType, // initial block placement decision vs. final block resting position.
             phase: phase,
@@ -451,7 +451,7 @@ var sendData = function (eventType, trialObj) {
             return blockProperties
         });
 
-        world_data = _.extend(commonInfo, {
+        world_data = _.extend({}, commonInfo, {
             dataType: 'world',
             eventType: eventType, // initial block placement decision vs. final block resting position.
             allBlockBodyProperties: bodiesForSending, // matter information about bodies of each block. Order is order of block placement
@@ -467,7 +467,7 @@ var sendData = function (eventType, trialObj) {
         // We can infer from the existence of this event that the world is empty
 
         // Do we calculate anything about the reset?
-        reset_data = _.extend(commonInfo, {
+        reset_data = _.extend({}, commonInfo, {
             dataType: 'reset',
             eventType: eventType, // initial block placement decision vs. final block resting position.
             numBlocks: blocks.length //number of blocks before reset pressed
@@ -488,7 +488,7 @@ var sendData = function (eventType, trialObj) {
             return blockProperties
         });
 
-        world_data = _.extend(commonInfo, {
+        world_data = _.extend({}, commonInfo, {
             dataType: 'world',
             eventType: eventType, // initial block placement decision vs. final block resting position.
             allBlockBodyProperties: bodiesForSending, // matter information about bodies of each block. Order is order of block placement
@@ -497,7 +497,7 @@ var sendData = function (eventType, trialObj) {
         });
 
         // Do we calculate anything about the reset?
-        end_data = _.extend(commonInfo, world_data, {
+        end_data = _.extend({}, commonInfo, world_data, {
             dataType: 'end',
             eventType: eventType, // initial block placement decision vs. final block resting position.
             numBlocks: blocks.length, //number of blocks before reset pressed
