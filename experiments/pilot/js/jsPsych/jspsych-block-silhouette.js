@@ -448,13 +448,13 @@ jsPsych.plugins["block-silhouette"] = (function () {
         jsPsych.pluginAPI.setTimeout(function () {
           if (currBonus > 0) {
             // show feedback by drawing GREEN box around TARGET if selected CORRECTLY    
-            display_element.querySelector('#bonus-meter').style.backgroundColor = "#75E559";
+            display_element.querySelector('#bonus-meter').style.border = "8px solid #66B03B"; 
             // also bold/enlarge the score in bottom left corner 
             //display_element.querySelector('#score p2').innerHTML = 'bonus earned: ' + parseFloat(currBonus).toFixed(3);
             //display_element.querySelector('#score p2').style.fontWeight = 'bold';
           } else {
             // draw RED box around INCORRECT response and BLACK box around TARGET
-            display_element.querySelector('#bonus-meter').style.backgroundColor = "#FFFFFF";
+            display_element.querySelector('#bonus-meter').style.border = "#FFFFFF";
           }
         }, 4000);
       };
