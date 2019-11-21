@@ -437,6 +437,11 @@ var sendData = function (eventType, trialObj) {
     }
     else if (eventType == 'settled') {
 
+        //hacky solution to get current score from trial object
+        //console.log('CurrScore: ' + trialObj.getCurrScore());
+        //console.log('NormedScore: ' + trialObj.getNormedScore(trialObj.getCurrScore()));
+        var incrementalScore = trialObj.getCurrScore()
+        var normedIncrementalScore = trialObj.getNormedScore(trialObj.getCurrScore());
         // A world is, primarily, a list of blocks and locations
         // Get this list of blocks
 
@@ -453,7 +458,9 @@ var sendData = function (eventType, trialObj) {
             dataType: 'world',
             eventType: eventType, // initial block placement decision vs. final block resting position.
             allBlockBodyProperties: bodiesForSending, // matter information about bodies of each block. Order is order of block placement
-            numBlocks: bodiesForSending.length
+            numBlocks: bodiesForSending.length,
+            incrementalScore: incrementalScore,
+            normedIncrementalScore: normedIncrementalScore
             // need to add bonuses
         });
 

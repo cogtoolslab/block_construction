@@ -285,6 +285,11 @@ jsPsych.plugins["block-silhouette"] = (function () {
       return bonus;
     }
 
+    // hacky solution to obtaining scores at every block-settle event
+    trial.getCurrScore = getCurrScore;
+    trial.getNormedScore = (rawScore) => getNormedScore(rawScore, nullScore, scoreGap);
+
+
     // ****  TIMERS, EVENT HANDLERS **** 
 
     // start timing
