@@ -66,7 +66,7 @@ var readyTrial = {
 }
 
 var acceptHTML = {
-  'str1' : '<p>Welcome! In this HIT, you will play a fun game in which you aim to reconstruct various block towers from a set of blocks. </p> <p> <b> If you are interested in learning more about this HIT, please first accept the HIT in MTurk before continuing further</b>. </p>'  
+  'str1' : '<p>Welcome! In this HIT, you will play a fun game in which you build block towers. </p> <p> <b> If you are interested in learning more about this HIT, please first accept the HIT in MTurk by clicking the Accept button below</b>. </p>'  
 }
 
 var previewTrial = {
