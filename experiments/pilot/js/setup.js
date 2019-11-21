@@ -136,7 +136,8 @@ function Trial () {
   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'.
   this.phase = 'NA';
   this.completed = false;
-  this.resets = 0;
+  this.buildResets = 0;
+  this.exploreResets = 0;
   this.exploreStartTime = 0;
   this.buildStartTime = 0;
   this.buildFinishTime = 0;
@@ -163,7 +164,8 @@ function PracticeTrial () {
   this.currBonus = 0; // current bonus
   this.score = 0; // cumulative bonus 
   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'. 
-  this.resets = 0; 
+  this.buildResets = 0; 
+  this.exploreResets = 0;
   this.nPracticeAttempts = 0;
   this.practiceAttempt = 0; // indexing starts at 0.
   this.trialNum = NaN;
@@ -199,7 +201,8 @@ function setupGame () {
       version: d.versionInd,
       post_trial_gap: 1000, // add brief ITI between trials
       num_trials : numTrials,
-      on_finish : on_finish
+      on_finish : on_finish,
+      trialList: d.trials,
     };
     
     // Bind trial data with boilerplate
@@ -215,8 +218,11 @@ function setupGame () {
     //trials.unshift(readyTrial);    
 
     // insert practice trial before the first "real" experimental trial
-    var practiceTrial = new PracticeTrial;
-    //trials.unshift(practiceTrial);
+    var practiceTrial = _.extend(new PracticeTrial, additionalInfo, {
+      trialNum : NaN
+    });;
+
+    trials.unshift(practiceTrial);
     
     // Stick welcome trial at beginning & goodbye trial at end
     if (!turkInfo.previewMode) { 
