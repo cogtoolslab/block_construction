@@ -458,7 +458,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       } else if (currBonus == 0.01) {
         occluder_text.textContent = '🙂 Not bad! $0.01 bonus!';
       } else {
-        occluder_text.textContent = '😐 No bonus this round!';
+        occluder_text.textContent = '😐 Sorry, no bonus this round.';
       }
       
       if (trial.condition != 'practice') {
