@@ -150,7 +150,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     var mental_explore_text = 'Now think about how you will build the given structure. Click anywhere to begin.';
     var build_text = 'Now build the structure! Click anywhere to begin.';
     var practice_feedback_text = {
-      'success': 'Success! Now on to the real experiment.',
+      'success': 'Success! Now on to the real experiment. Click anywhere to continue.',
       'failure': 'Nice try! But your reconstruction was not quite accurate enough to proceed. Please click anywhere to try again.'
     }
     var practice_text = 'This is a practice trial. Please try reconstructing the practice block tower by placing each block as precisely as you can in the corresponding location in the righthand environment. We have placed guides to help you with this one. Click anywhere to begin.';
@@ -187,7 +187,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
         //p5stim, p5env = exploreMental(trial); //create p5 instances for this trial phase
         //Update trial appearance 
         occluder_text.textContent = 'Trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + ". " + mental_explore_text;
-        condition_heading.textContent = "Think about how you will build the structure"
+        condition_heading.textContent = "Think about how you will build the tower."
         Array.prototype.forEach.call(env_divs, env_div => {
           env_div.style.backgroundColor = "#FE5D26";
         });
@@ -198,7 +198,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
         //p5stim, p5env = explorePhysical(trial); //create p5 instances for this trial phase
         //Update trial appearance 
         occluder_text.textContent = 'Trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + ". " + physical_explore_text;
-        condition_heading.textContent = "Practice building the structure";
+        condition_heading.textContent = "Practice building the tower.";
         Array.prototype.forEach.call(env_divs, env_div => {
           env_div.style.backgroundColor = "#6DEBFF";
         });
@@ -270,7 +270,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     function convertNormedScoreToBonus(normedScore) {
       // convert normedScore (ranges between 0 and 1)
       // to bonus amount (in cents)      
-      highThresh = 0.97;
+      highThresh = 0.93;
       midThresh = 0.85;
       lowThresh = 0.7;
       if (normedScore > highThresh) { bonus = 0.05; }
@@ -434,11 +434,11 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       occluder.style.fontSize = 'large';
       if (currBonus == 0.05) {
-        occluder_text.textContent = '🤩 Amazing! 0.05 bonus!';
+        occluder_text.textContent = '🤩 Amazing! $0.05 bonus!';
       } else if (currBonus == 0.03) {
-        occluder_text.textContent = '😃 Great job! 0.03 bonus!';
+        occluder_text.textContent = '😃 Great job! $0.03 bonus!';
       } else if (currBonus == 0.01) {
-        occluder_text.textContent = '🙂 Not bad! 0.01 bonus!';
+        occluder_text.textContent = '🙂 Not bad! $0.01 bonus!';
       } else {
         occluder_text.textContent = '😐 No bonus this round!';
       }
