@@ -146,14 +146,14 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     }
 
-    var physical_explore_text = 'Now practice building the given structure. Click anywhere to begin.';
-    var mental_explore_text = 'Now think about how you will build the given structure. Click anywhere to begin.';
-    var build_text = 'Now build the structure! Click anywhere to begin.';
+    var physical_explore_text = 'Now practice building the tower. Click anywhere to begin.';
+    var mental_explore_text = 'Now think about how you will build the tower. Click anywhere to begin.';
+    var build_text = 'Now build the tower! Click anywhere to begin.';
     var practice_feedback_text = {
-      'success': 'Success! Now on to the real experiment. Click anywhere to continue.',
-      'failure': 'Nice try! But your reconstruction was not quite accurate enough to proceed. Please click anywhere to try again.'
+      'success': 'Success! Now onto the real experiment. Click anywhere to continue.',
+      'failure': 'Nice try! But your tower was not quite a close enough match. Please click anywhere to try again.'
     }
-    var practice_text = 'This is a practice trial. Please try reconstructing the practice block tower by placing each block as precisely as you can in the corresponding location in the righthand environment. We have placed guides to help you with this one. Click anywhere to begin.';
+    var practice_text = 'This is a practice trial. Try to reconstruct the lefthand tower by placing each block as precisely as you can in the corresponding location on the right. Click anywhere to begin.';
 
     // call show_display now, which includes a massive occluder that covers everything up
     show_display();
