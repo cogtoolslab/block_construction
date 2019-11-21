@@ -52,14 +52,14 @@ var welcomeTrial = {
     instructionsHTML.str1, instructionsHTML.str2, instructionsHTML.str3, instructionsHTML.str4
   ],
   show_clickable_nav: true,
-  allow_keys: true
+  allow_keys: false
 };
 
 var readyTrial = {
   type: 'instructions',
   pages: [secondInstructionsHTML.str1, secondInstructionsHTML.str2, secondInstructionsHTML.str3],
   show_clickable_nav: true,
-  allow_keys: true  
+  allow_keys: false  
 }
 
 var acceptHTML = {
@@ -70,7 +70,7 @@ var previewTrial = {
   type: 'instructions',
   pages: [acceptHTML.str1],
   show_clickable_nav: false,
-  allow_keys: true  
+  allow_keys: false  
 }
 
 var multi_choice_page = {
