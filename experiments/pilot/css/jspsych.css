@@ -43,7 +43,7 @@
 /* fonts and type */
 
 .jspsych-display-element {
-  font-family: 'Open Sans', 'Arial', sans-serif;
+  font-family: 'Roboto', 'Open Sans', 'Arial', sans-serif;
   font-size: 18px;
   line-height: 1.6em;
 }
@@ -51,7 +51,7 @@
 /* Form elements like input fields and buttons */
 
 .jspsych-display-element input[type="text"] {
-  font-family: 'Open Sans', 'Arial', sans-serif;
+  font-family: 'Roboto', 'Open Sans', 'Arial', sans-serif;
   font-size: 14px;
 }
 

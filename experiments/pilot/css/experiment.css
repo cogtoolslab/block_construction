@@ -24,19 +24,24 @@ body {
 #condition-heading {
     display: inline-block;
     text-align: center;
-    font-family: 'Patrick Hand', cursive;
+    font-family: 'Roboto', sans-serif;
+    font-size: 32px;
 }
 
 #timer-text {
     display: block;
     float: right;
     text-align: right;
+    font-family: 'Roboto', sans-serif;
+    font-size: 32px;    
 }
 
 #bonus-meter {
     display: block;
     float: left;
     text-align: left;
+    font-family: 'Roboto', sans-serif;
+    font-size: 32px;    
 }
 
 #defaultCanvas0, #defaultCanvas1 {
