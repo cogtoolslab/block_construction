@@ -526,7 +526,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       p5stim, p5env = setupEnvs(trial); //create p5 instances for practice phase
 
       //Update trial appearance 
-      condition_heading.textContent = "Practice placing each block where indicated.";
+      condition_heading.textContent = "PRACTICE";
 
       Array.prototype.forEach.call(env_divs, env_div => {
         env_div.style.backgroundColor = "#FFFF25";
