@@ -146,8 +146,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     }
 
-    var physical_explore_text = 'Now practice building the tower. Click anywhere to begin.';
-    var mental_explore_text = 'Now think about how you will build the tower. Click anywhere to begin.';
+    var physical_explore_text = 'Practice building the tower. Click anywhere to begin.';
+    var mental_explore_text = ' Think about how you will build the tower. Click anywhere to begin.';
     var build_text = 'Now build the tower! Click anywhere to begin.';
     var practice_feedback_text = {
       'success': 'Success! Now onto the real experiment. Click anywhere to continue.',
