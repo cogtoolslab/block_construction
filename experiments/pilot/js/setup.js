@@ -133,6 +133,8 @@ function Trial () {
   this.F1Score = 0; // F1 score
   this.normedScore = 0;
   this.currBonus = 0; // current bonus
+  this.nullScore = NaN;
+  this.scoreGap = NaN;
   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'.
   this.phase = 'NA';
   this.completed = false;
@@ -144,7 +146,7 @@ function Trial () {
   this.trialBonus = 0;
   this.score = 0;
   this.nPracticeAttempts = NaN;
-  this.practiceAttempt = 0;
+  this.practiceAttempt = 0
 };
 
 function PracticeTrial () {
@@ -163,6 +165,8 @@ function PracticeTrial () {
   this.normedScore = 0; // WANT TO RECORD THIS FOR EVERY ATTEMPT IN PRACTICE
   this.currBonus = 0; // current bonus
   this.score = 0; // cumulative bonus 
+  this.nullScore = NaN;
+  this.scoreGap = NaN;
   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'. 
   this.buildResets = 0; 
   this.exploreResets = 0;
@@ -172,6 +176,8 @@ function PracticeTrial () {
   this.exploreStartTime = 0;
   this.buildStartTime = 0;
   this.buildFinishTime = 0;
+  this.phase = 'practice'
+  
 };
 
 function setupGame () {

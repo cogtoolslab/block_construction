@@ -207,6 +207,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // set null score for normed score calculation
       nullScore = baseline();
       scoreGap = math.subtract(1, nullScore);
+      trial.nullScore = nullScore;
+      trial.scoreGap = scoreGap;
     }
 
     function build(baseline) {
@@ -225,8 +227,10 @@ jsPsych.plugins["block-silhouette"] = (function () {
       });
 
       // set null score for normed score calculation
-      nullScore = baseline();
-      scoreGap = math.subtract(1, nullScore);
+      // nullScore = baseline();
+      // scoreGap = math.subtract(1, nullScore);
+      // trial.nullScore = nullScore;
+      // trial.scoreGap = scoreGap;
     }
 
     var startPractice = function () {
@@ -351,6 +355,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
           rawScore = getCurrScore();
           normedScore = getNormedScore(rawScore, nullScore, scoreGap);
+          
           // jsPsych.pluginAPI.setTimeout(function () { // temporarily hide guides in build env
           //   scoring = false;
           // }, 100);
@@ -436,8 +441,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       trial.endReason = endReason;
       trial.normedScore = normedScore;
       trial.currBonus = currBonus; // update trial var to reflect current bonus earned
-      trial.score = cumulBonus; // update trial.score var to reflect cumulative bonus
-
+      trial.score = cumulBonus; // update trial.score var to reflect cumulative bonustrial.nullScore = nullScore;
       sendData('settled', trial);
       
       console.log('raw: ' + rawScore);
@@ -551,6 +555,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // set null score for normed score calculation
       nullScore = getCurrScore();
       scoreGap = math.subtract(1, nullScore);
+      trial.nullScore = nullScore;
+      trial.scoreGap = scoreGap;
 
       occluder.addEventListener('click', startPractice);
     };

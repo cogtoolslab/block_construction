@@ -320,7 +320,8 @@ var sendData = function (eventType, trialObj) {
 
     // common info to send to mongo
     var commonInfo = {
-        dbname: dbname,
+        // ppt and game info
+        dbname: dbname, 
         colname: colname,
         iterationName: trialObj.iterationName,
         workerId: turkInfo.workerId,
@@ -333,16 +334,21 @@ var sendData = function (eventType, trialObj) {
         timeAbsolute: Date.now(),
         phase: trialObj.phase,
         condition: trialObj.condition,
-        trialNum: trialObj.trialNum,
+        trialNum: trialObj.trialNum, 
+        //scoring
+        nullScore: trialObj.nullScore,
+        scoreGap: trialObj.scoreGap,
         F1Score: trialObj.F1Score,
         normedScore: trialObj.normedScore,
         currBonus: trialObj.currBonus,
         score: trialObj.score,
-        numTrials: trialObj.num_trials,
+        numTrials: trialObj.num_trials, 
+        //trial vars
         trialList: trialObj.trialList,
         targetName: trialObj.targetName,
         targetBlocks: trialObj.targetBlocks,
-        prompt: trialObj.prompt,
+        prompt: trialObj.prompt, 
+        //global vars
         practiceDuration: trialObj.practice_duration,
         exploreDuration: trialObj.explore_duration,
         buildDuration: trialObj.build_duration,
