@@ -27,7 +27,6 @@ var aboveGroundProp = floorY / canvasHeight;
 // Metavariables
 const dbname = 'block_construction';
 const colname = 'silhouette';
-const iterationName = 'testing';
 var phase = 'build';
 
 // Stimulus parameters
@@ -326,7 +325,7 @@ var sendData = function (eventType, trialObj) {
     var commonInfo = {
         dbname: dbname,
         colname: colname,
-        iterationName: iterationName,
+        iterationName: trialObj.iterationName,
         workerId: turkInfo.workerId,
         hitID: turkInfo.hitId,
         aID: turkInfo.assignmentId, 
