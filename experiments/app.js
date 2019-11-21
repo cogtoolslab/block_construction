@@ -12,8 +12,8 @@ const
   sendPostRequest = require('request').post;
 
 var gameport;
-var researchers = ['A4SSYO0HDVD4E', 'A1BOIDKD33QSDK', 'A1MMCS8S8CTWKU', 'A1MMCS8S8CTWKV', 'A1MMCS8S8CTWKS'];
-var blockResearcher = false;
+var researchers = ['A4SSYO0HDVD4E', 'A1BOIDKD33QSDK', 'A1MMCS8S8CTWKU', 'A1MMCS8S8CTWKV', 'A1MMCS8S8CTWKS', 'A1RFS3YXD1ZIKG'];
+var blockResearcher = true;
 
 if (argv.gameport) {
   var gameport = argv.gameport;
