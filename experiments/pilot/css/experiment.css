@@ -28,6 +28,13 @@ body {
     font-size: 32px;
 }
 
+#occluder-text {
+    display: inline-block;
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    font-size: 48px;
+}
+
 #timer-text {
     display: block;
     float: right;
