@@ -37,7 +37,6 @@ var instructionsHTML = {
   'str2' : "<p> There are 16 different block towers you will build in this HIT. For really accurate reconstructions, you will receive a <b> bonus</b> between $0.01 and $0.05.</p>",
   'str3' : "<p> Once you are finished, the HIT will be automatically submitted for approval. Please know that you can only perform this HIT one time.</p><p> Note: We recommend using Chrome. We have not tested this HIT in other browsers.</p>",
   'str4' : "<p> Before we begin, let's get some practice with the building tool. On this practice trial, you will be shown the exact locations to place each block. Please place the blocks as precisely as you can to ensure that you have the opportunity to proceed and participate in the experiment. No bonus can be earned on this practice trial. Please note that after you place a block, you will not be able to select a new block or press 'Done' until all of the blocks have come to rest. </p>",
-  'str5' : "<p> Please pay attention and do your best!</p>"
 };
 
 var secondInstructionsHTML = {
@@ -50,7 +49,7 @@ var welcomeTrial = {
   type: 'instructions',
   pages: [
     consentHTML.str1, consentHTML.str2, consentHTML.str3, 
-    instructionsHTML.str1, instructionsHTML.str2, instructionsHTML.str3, instructionsHTML.str4, instructionsHTML.str5
+    instructionsHTML.str1, instructionsHTML.str2, instructionsHTML.str3, instructionsHTML.str4
   ],
   show_clickable_nav: true,
   allow_keys: true

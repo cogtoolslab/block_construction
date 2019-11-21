@@ -32,7 +32,8 @@ body {
     display: inline-block;
     text-align: center;
     font-family: 'Roboto', sans-serif;
-    font-size: 48px;
+    font-size: 32px;
+    line-height: 1.8em;
 }
 
 #timer-text {

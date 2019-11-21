@@ -153,7 +153,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       'success': 'Success! Now onto the real experiment. Click anywhere to continue.',
       'failure': 'Nice try! But your tower was not quite a close enough match. Please click anywhere to try again.'
     }
-    var practice_text = 'This is a practice trial. Try to reconstruct the lefthand tower by placing each block as precisely as you can in the corresponding location on the right. Click anywhere to begin.';
+    var practice_text = 'Click anywhere to begin.';
 
     // call show_display now, which includes a massive occluder that covers everything up
     show_display();
