@@ -2,6 +2,7 @@ var callback;
 var score = 0;
 var numTrials = 16;
 var shuffleTrials = false; // set to False to preserve order in db; set to True if you want to shuffle trials from db (scrambled10)
+var survey_data = null;
 
 var practice_duration = 600;
 var explore_duration = 30;
@@ -73,9 +74,9 @@ var previewTrial = {
   allow_keys: false  
 }
 
-var multi_choice_page = {
-  type: 'survey-multi-choice',
-  questions: [
+function MultiChoicePage () {
+  this.type = 'survey-multi-choice';
+  this.questions = [
     {
       prompt: "What is your sex?", 
       options: ["Male", "Female"], 
@@ -104,21 +105,19 @@ var multi_choice_page = {
       required: true,
       name: 'fun'
     }    
-  ], 
-  randomize_question_order: true
+  ];
+  this.randomize_question_order = true;
 };
 
-var text_page = {
-  type: 'survey-text',
-  questions: [
+function TextPage () {
+  this.type = 'survey-text';
+  this.questions = [
     {name: 'comments', prompt: "Thank you for participating in our study! Any comments?", rows: 5, columns: 40, placeholder: "How was that for you? Did you notice any issues?"},
     {name: 'age', prompt: "How old are you?", placeholder: ""}, 
     {name: 'strategies', prompt: "Did you use any strategies?", rows: 5, columns: 50,  placeholder: ""}
-  ],
-  on_finish: function(data){
-    console.log(data)
-  }
+  ];
 };
+
 
 // define trial object with boilerplate
 function Trial () {
@@ -144,7 +143,7 @@ function Trial () {
   this.buildStartTime = 0;
   this.buildFinishTime = 0;
   this.trialBonus = 0;
-  this.score = 0;
+  this.score = score;
   this.nPracticeAttempts = NaN;
   this.practiceAttempt = 0
 };
@@ -164,7 +163,7 @@ function PracticeTrial () {
   this.F1Score = 0; // F1 score
   this.normedScore = 0; // WANT TO RECORD THIS FOR EVERY ATTEMPT IN PRACTICE
   this.currBonus = 0; // current bonus
-  this.score = 0; // cumulative bonus 
+  this.score = score; // cumulative bonus 
   this.nullScore = NaN;
   this.scoreGap = NaN;
   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'. 
@@ -241,8 +240,30 @@ function setupGame () {
     // print out trial list    
     //console.log(trials);
 
-    trials.push(multi_choice_page);
-    trials.push(text_page);
+    var multi_choice_page = _.extend(new MultiChoicePage, additionalInfo, {
+      trialNum : NaN,
+      randID: randID,
+      iterationName: 'dataTesting',
+      on_finish: function(data){
+        sendData(eventType = 'survey_data',  _.extend(multi_choice_page, {
+          multi_choice_data: data.responses,
+          text_data: survey_data.responses
+        }));
+        console.log(data.responses);
+      }
+    });;
+
+    var text_page = _.extend(new TextPage, additionalInfo, {
+      trialNum : NaN,
+      randID: randID,
+      iterationName: 'dataTesting',
+      on_finish: function(data){
+        survey_data = data;
+      }
+    });;
+
+    trials.unshift(multi_choice_page);
+    trials.unshift(text_page);
 
     //trials.unshift(multi_choice_page);
     //trials.unshift(text_page)
