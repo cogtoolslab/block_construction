@@ -146,8 +146,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     }
 
-    var physical_explore_text = 'Now practice building the tower. Click anywhere to begin.';
-    var mental_explore_text = 'Now think about how you will build the tower. Click anywhere to begin.';
+    var physical_explore_text = 'Practice building the tower. Click anywhere to begin.';
+    var mental_explore_text = ' Think about how you will build the tower. Click anywhere to begin.';
     var build_text = 'Now build the tower! Click anywhere to begin.';
     var practice_feedback_text = {
       'success': 'Success! Now onto the real experiment. Click anywhere to continue.',
@@ -458,7 +458,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       } else if (currBonus == 0.01) {
         occluder_text.textContent = '🙂 Not bad! $0.01 bonus!';
       } else {
-        occluder_text.textContent = '😐 No bonus this round!';
+        occluder_text.textContent = '😐 Sorry, no bonus this round.';
       }
       
       if (trial.condition != 'practice') {
