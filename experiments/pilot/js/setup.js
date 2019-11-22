@@ -5,7 +5,7 @@ var shuffleTrials = false; // set to False to preserve order in db; set to True 
 var survey_data = null;
 
 var practice_duration = 600;
-var explore_duration = 30;
+var explore_duration = 1;
 var build_duration = 60;
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -118,7 +118,6 @@ function TextPage () {
   ];
 };
 
-
 // define trial object with boilerplate
 function Trial () {
   this.randID = randID;
@@ -227,7 +226,7 @@ function setupGame () {
       trialNum : NaN
     });;
 
-    trials.unshift(practiceTrial);
+    //trials.unshift(practiceTrial);
     
     // Stick welcome trial at beginning & goodbye trial at end
     if (!turkInfo.previewMode) { 
@@ -249,9 +248,8 @@ function setupGame () {
           multi_choice_data: data.responses,
           text_data: survey_data.responses
         }));
-        console.log(data.responses);
       }
-    });;
+    });
 
     var text_page = _.extend(new TextPage, additionalInfo, {
       trialNum : NaN,
@@ -260,13 +258,11 @@ function setupGame () {
       on_finish: function(data){
         survey_data = data;
       }
-    });;
+    });
 
-    trials.unshift(multi_choice_page);
-    trials.unshift(text_page);
-
-    //trials.unshift(multi_choice_page);
-    //trials.unshift(text_page)
+    trials.push(text_page);
+    trials.push(multi_choice_page);
+   
       
     jsPsych.init({
       timeline: trials,

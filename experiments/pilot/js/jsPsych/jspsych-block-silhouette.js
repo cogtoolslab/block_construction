@@ -90,6 +90,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     // Make target a stonehenge
     // trial.targetBlocks = [{"x": 1, "y": 0, "width": 2, "height": 4}, {"x": 5, "y": 0, "width": 2, "height": 4}, {"x": 2, "y": 4, "width": 4, "height": 2}];
 
+    trial.score = cumulBonus;
     var timers = [];
 
     if (typeof trial.targetBlocks === 'undefined') {
@@ -212,7 +213,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
     }
 
     function build(baseline) {
-
       trial.phase = "build";
       // actual building phase (same for everyone)
       p5stim, p5env = setupEnvs(trial); //create p5 instances for this trial phase
@@ -362,7 +362,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
 
           trial.nPracticeAttempts += 1;
-          sendData(eventType = 'end', trial);
+          sendData(eventType = 'trial_end', trial);
           trial.practiceAttempt += 1;
 
           // if-statements to be added here. Plus something that prevents multiple failures.
@@ -463,7 +463,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       
       if (trial.condition != 'practice') {
         
-        sendData(eventType='build_end', trial);
+        sendData(eventType='trial_end', trial);
 
         jsPsych.pluginAPI.setTimeout(function () {
           if (currBonus > 0) {    
@@ -493,7 +493,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       occluder.removeEventListener('click', startExplorePhase);
       //console.log('timer starting for pre');
       timer(trial.explore_duration, function () { //set timer for exploration phase    
-
+        
         sendData('explore_end', trial);
         clearP5Envs();
 

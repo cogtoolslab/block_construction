@@ -58,6 +58,7 @@ var blockProperties = [];
 var isPlacingObject = false;
 var rotated = false;
 var selectedBlockKind = null;
+var disabledBlockPlacement = false;
 
 // Task variables
 var block_data; // data to send to mongodb about every block placement
@@ -83,12 +84,16 @@ var block_colors = [
     ;
 */
 
+var buildColor = [179, 47, 10, 255];
+var exploreColor = [179, 47, 10, 180];
+var disabledColor = [100, 100, 100, 30];
+
 var block_colors = [
-    [179, 47, 10, 210],
-    [179, 47, 10, 210],
-    [179, 47, 10, 210],
-    [179, 47, 10, 210],
-    [179, 47, 10, 210]]
+    [179, 47, 10, 230],
+    [179, 47, 10, 230],
+    [179, 47, 10, 230],
+    [179, 47, 10, 230],
+    [179, 47, 10, 230]]
     ;
 
 var setupEnvironment = function (env, trialObj = null) {
@@ -120,10 +125,14 @@ var setupEnvironment = function (env, trialObj = null) {
         blockDims.forEach((dims, i) => {
             w = dims[0]
             h = dims[1]
-            if (trialObj.phase == 'explore' && trialObj.condition == 'mental') {
-                blockKinds.push(new BlockKind(w, h, [100, 100, 100, 30]));
+            if (trialObj.phase == 'explore') {
+                if (trialObj.condition == 'mental'){ 
+                    blockKinds.push(new BlockKind(w, h, disabledColor));
+                } else {
+                    blockKinds.push(new BlockKind(w, h, exploreColor));
+                }
             } else {
-                blockKinds.push(new BlockKind(w, h, block_colors[i]));
+                blockKinds.push(new BlockKind(w, h, buildColor));
             }
         });
 
@@ -132,6 +141,8 @@ var setupEnvironment = function (env, trialObj = null) {
 
         // Add things to the physics engine world
         ground = new Boundary(canvasWidth / 2, floorY, canvasWidth * 1.5, floorHeight);
+        sideLeft = new Boundary(-30, canvasHeight/2, 60, canvasHeight);
+        sideRight = new Boundary(canvasWidth+30, canvasHeight/2, 60, canvasHeight);
         //box1 = new Box(200, 100, 30, 30);
 
         // Runner- use instead of line above if changes to game loop needed
@@ -181,7 +192,7 @@ var setupEnvironment = function (env, trialObj = null) {
             sleeping = blocks.filter((block) => block.body.isSleeping); // Would rather not be calculating this constantly.. update to eventlistener?
             allSleeping = sleeping.length == blocks.length;
 
-            selectedBlockKind.showGhost(env, env.mouseX, env.mouseY, rotated, diabled = !allSleeping);
+            selectedBlockKind.showGhost(env, env.mouseX, env.mouseY, rotated, disabledBlockPlacement = disabledBlockPlacement);
         }
 
 
@@ -200,6 +211,7 @@ var setupEnvironment = function (env, trialObj = null) {
 
             // if mouse in main environment
             if (env.mouseY > 0 && (env.mouseY < canvasHeight - menuHeight) && (env.mouseX > 0 && env.mouseX < canvasWidth)) {
+                
                 if (isPlacingObject) {
                     // test whether all blocks are sleeping
                     sleeping = blocks.filter((block) => block.body.isSleeping);
@@ -229,7 +241,18 @@ var setupEnvironment = function (env, trialObj = null) {
                             // send initial data about block placement
                             sendData('initial', trialObj);
 
+                        } else {
+                            disabledBlockPlacement = true;
+                            jsPsych.pluginAPI.setTimeout(function () { // change color of bonus back to white
+                                disabledBlockPlacement = false;
+                            }, 200);
                         }
+
+                    } else {
+                        disabledBlockPlacement = true;
+                        jsPsych.pluginAPI.setTimeout(function () { // change color of bonus back to white
+                            disabledBlockPlacement = false;
+                        }, 200);
 
                     }
 
@@ -453,6 +476,27 @@ var sendData = function (eventType, trialObj) {
         }
         else if (eventType == 'settled') {
 
+            lastBlock = newBlock;
+
+            // test out sending newBlock info to server/mongodb
+            propertyList = Object.keys(lastBlock.body); // extract block properties;
+            propertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
+            blockProperties = _.pick(lastBlock['body'], propertyList); // pick out all and only the block body properties in the property list
+
+            // custom de-borkification
+            vertices = _.map(lastBlock.body.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
+
+            last_block_data = {
+                blockDimUnits: [lastBlock.blockKind.w, lastBlock.blockKind.h],
+                blockWidth: lastBlock['w'],
+                blockHeight: lastBlock['h'],
+                blockCenterX: lastBlock['body']['position']['x'],
+                blockCenterY: lastBlock['body']['position']['y'],
+                blockVertices: vertices,
+                blockBodyProperties: blockProperties
+            };
+
+
             //hacky solution to get current score from trial object
             //console.log('CurrScore: ' + trialObj.getCurrScore());
             //console.log('NormedScore: ' + trialObj.getNormedScore(trialObj.getCurrScore()));
@@ -470,10 +514,16 @@ var sendData = function (eventType, trialObj) {
                 return blockProperties
             });
 
-            world_data = _.extend({}, commonInfo, {
+            var allVertices = blocks.map(block => {
+                vertices = _.map(block.body.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
+                return vertices
+            });
+
+            world_data = _.extend({}, commonInfo, last_block_data, {
                 dataType: 'world',
                 eventType: eventType, // initial block placement decision vs. final block resting position.
                 allBlockBodyProperties: bodiesForSending, // matter information about bodies of each block. Order is order of block placement
+                allVertices: allVertices,
                 numBlocks: bodiesForSending.length,
                 incrementalScore: incrementalScore,
                 normedIncrementalScore: normedIncrementalScore
