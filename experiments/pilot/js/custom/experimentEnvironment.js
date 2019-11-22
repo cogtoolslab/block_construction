@@ -84,7 +84,7 @@ var block_colors = [
     ;
 */
 
-var buildColor = [179, 47, 10, 255];
+var buildColor = [179, 47, 10, 230];
 var exploreColor = [179, 47, 10, 180];
 var disabledColor = [100, 100, 100, 30];
 
