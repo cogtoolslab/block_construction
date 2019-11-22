@@ -241,6 +241,11 @@ var setupEnvironment = function (env, trialObj = null) {
                             // send initial data about block placement
                             sendData('initial', trialObj);
 
+                        } else {
+                            disabledBlockPlacement = true;
+                            jsPsych.pluginAPI.setTimeout(function () { // change color of bonus back to white
+                                disabledBlockPlacement = false;
+                            }, 200);
                         }
 
                     } else {
