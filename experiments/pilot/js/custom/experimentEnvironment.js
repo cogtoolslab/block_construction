@@ -58,6 +58,7 @@ var blockProperties = [];
 var isPlacingObject = false;
 var rotated = false;
 var selectedBlockKind = null;
+var disabledBlockPlacement = false;
 
 // Task variables
 var block_data; // data to send to mongodb about every block placement
@@ -191,7 +192,7 @@ var setupEnvironment = function (env, trialObj = null) {
             sleeping = blocks.filter((block) => block.body.isSleeping); // Would rather not be calculating this constantly.. update to eventlistener?
             allSleeping = sleeping.length == blocks.length;
 
-            selectedBlockKind.showGhost(env, env.mouseX, env.mouseY, rotated, diabled = !allSleeping);
+            selectedBlockKind.showGhost(env, env.mouseX, env.mouseY, rotated, disabledBlockPlacement = disabledBlockPlacement);
         }
 
 
@@ -210,6 +211,7 @@ var setupEnvironment = function (env, trialObj = null) {
 
             // if mouse in main environment
             if (env.mouseY > 0 && (env.mouseY < canvasHeight - menuHeight) && (env.mouseX > 0 && env.mouseX < canvasWidth)) {
+                
                 if (isPlacingObject) {
                     // test whether all blocks are sleeping
                     sleeping = blocks.filter((block) => block.body.isSleeping);
@@ -240,6 +242,12 @@ var setupEnvironment = function (env, trialObj = null) {
                             sendData('initial', trialObj);
 
                         }
+
+                    } else {
+                        disabledBlockPlacement = true;
+                        jsPsych.pluginAPI.setTimeout(function () { // change color of bonus back to white
+                            disabledBlockPlacement = false;
+                        }, 200);
 
                     }
 
@@ -464,6 +472,7 @@ var sendData = function (eventType, trialObj) {
         else if (eventType == 'settled') {
 
             lastBlock = newBlock;
+
             // test out sending newBlock info to server/mongodb
             propertyList = Object.keys(lastBlock.body); // extract block properties;
             propertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error

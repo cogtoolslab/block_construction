@@ -25,16 +25,15 @@ function BlockKind(w,h,blockColor){
 
     }
 
-    this.showGhost = function(env, mouseX, mouseY, rotated, disabled = false) {
+    this.showGhost = function(env, mouseX, mouseY, rotated, disabledBlockPlacement = false) {
 
         env.push();
         env.translate(mouseX, mouseY);
         env.rectMode(env.CENTER);
         env.stroke(100);
-        fillColor = disabled ? [100, 100, 100, 100] : [...this.blockColor];
+        fillColor = disabledBlockPlacement ? [100, 100, 100, 100] : [...this.blockColor];
         fillColor[3] = 130;
         env.fill(fillColor);
-
         if(rotated){
             env.rect(0,0,this.h*sF,this.w*sF);
         } else {
