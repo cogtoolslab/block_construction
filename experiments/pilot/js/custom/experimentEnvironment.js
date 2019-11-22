@@ -83,12 +83,16 @@ var block_colors = [
     ;
 */
 
+var buildColor = [179, 47, 10, 255];
+var exploreColor = [179, 47, 10, 180];
+var disabledColor = [100, 100, 100, 30];
+
 var block_colors = [
-    [179, 47, 10, 210],
-    [179, 47, 10, 210],
-    [179, 47, 10, 210],
-    [179, 47, 10, 210],
-    [179, 47, 10, 210]]
+    [179, 47, 10, 230],
+    [179, 47, 10, 230],
+    [179, 47, 10, 230],
+    [179, 47, 10, 230],
+    [179, 47, 10, 230]]
     ;
 
 var setupEnvironment = function (env, trialObj = null) {
@@ -120,10 +124,14 @@ var setupEnvironment = function (env, trialObj = null) {
         blockDims.forEach((dims, i) => {
             w = dims[0]
             h = dims[1]
-            if (trialObj.phase == 'explore' && trialObj.condition == 'mental') {
-                blockKinds.push(new BlockKind(w, h, [100, 100, 100, 30]));
+            if (trialObj.phase == 'explore') {
+                if (trialObj.condition == 'mental'){ 
+                    blockKinds.push(new BlockKind(w, h, disabledColor));
+                } else {
+                    blockKinds.push(new BlockKind(w, h, exploreColor));
+                }
             } else {
-                blockKinds.push(new BlockKind(w, h, block_colors[i]));
+                blockKinds.push(new BlockKind(w, h, buildColor));
             }
         });
 
@@ -132,6 +140,8 @@ var setupEnvironment = function (env, trialObj = null) {
 
         // Add things to the physics engine world
         ground = new Boundary(canvasWidth / 2, floorY, canvasWidth * 1.5, floorHeight);
+        sideLeft = new Boundary(-30, canvasHeight/2, 60, canvasHeight);
+        sideRight = new Boundary(canvasWidth+30, canvasHeight/2, 60, canvasHeight);
         //box1 = new Box(200, 100, 30, 30);
 
         // Runner- use instead of line above if changes to game loop needed

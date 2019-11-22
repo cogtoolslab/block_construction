@@ -212,7 +212,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
     }
 
     function build(baseline) {
-
       trial.phase = "build";
       // actual building phase (same for everyone)
       p5stim, p5env = setupEnvs(trial); //create p5 instances for this trial phase

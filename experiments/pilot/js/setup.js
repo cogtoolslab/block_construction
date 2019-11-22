@@ -5,7 +5,7 @@ var shuffleTrials = false; // set to False to preserve order in db; set to True 
 var survey_data = null;
 
 var practice_duration = 600;
-var explore_duration = 30;
+var explore_duration = 1;
 var build_duration = 60;
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -226,7 +226,7 @@ function setupGame () {
       trialNum : NaN
     });;
 
-    trials.unshift(practiceTrial);
+    //trials.unshift(practiceTrial);
     
     // Stick welcome trial at beginning & goodbye trial at end
     if (!turkInfo.previewMode) { 
