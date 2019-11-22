@@ -45,11 +45,11 @@ function Block(blockKind, x, y, rotated, testing_placement = false){
         env.rotate(angle);
         env.stroke(30);
         env.fill(this.blockKind.blockColor);
-        /*
-        if(this.body.isSleeping) {
-            env.fill(100);
-        }
-        */
+        
+        // if(this.body.isSleeping) {
+        //     env.fill();
+        // }
+        
         env.rect(0,0,this.w,this.h);
         env.pop();
         
