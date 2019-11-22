@@ -27,8 +27,6 @@ var aboveGroundProp = floorY / canvasHeight;
 // Metavariables
 const dbname = 'block_construction';
 const colname = 'silhouette';
-const iterationName = 'testing';
-var phase = 'build';
 
 // Stimulus parameters
 var stimCanvasWidth = canvasWidth;
@@ -95,8 +93,6 @@ var block_colors = [
 
 var setupEnvironment = function (env, trialObj = null) {
 
-    phase = trialObj.phaseType;
-
     // Processing JS Function, defines initial environment.
     env.setup = function () {
 
@@ -124,7 +120,7 @@ var setupEnvironment = function (env, trialObj = null) {
         blockDims.forEach((dims, i) => {
             w = dims[0]
             h = dims[1]
-            if (trialObj.phase =='mentalExplore') {
+            if (trialObj.phase == 'explore' && trialObj.condition == 'mental') {
                 blockKinds.push(new BlockKind(w, h, [100, 100, 100, 30]));
             } else {
                 blockKinds.push(new BlockKind(w, h, block_colors[i]));
@@ -171,7 +167,7 @@ var setupEnvironment = function (env, trialObj = null) {
         env.line(canvasWidth - 50 + 12, 40, canvasWidth - 50 + 25, 40);
         */
 
-        if (trialObj.condition == 'practice' && !scoring){
+        if (trialObj.condition == 'practice' && !scoring) {
             showStimulus(env, trialObj.targetBlocks, individual_blocks = true);
         }
 
@@ -200,7 +196,7 @@ var setupEnvironment = function (env, trialObj = null) {
         }
         */
 
-        if (!(trialObj.phase == 'mentalExplore')) { //environment will be disabled in some conditions
+        if (!(trialObj.phase == 'explore' && trialObj.condition == 'mental')) { //environment will be disabled in some conditions
 
             // if mouse in main environment
             if (env.mouseY > 0 && (env.mouseY < canvasHeight - menuHeight) && (env.mouseX > 0 && env.mouseX < canvasWidth)) {
@@ -212,7 +208,7 @@ var setupEnvironment = function (env, trialObj = null) {
                     if (allSleeping) {
                         // SEND WORLD DATA AFTER PREVIOUS BLOCK HAS SETTLED
                         // Sends information about the state of the world prior to next block being placed
-                        
+
                         if (blocks.length != 0) { //if a block has already been placed, send settled world state
                             sendData('settled', trialObj);
                         }
@@ -262,7 +258,7 @@ var setupEnvironment = function (env, trialObj = null) {
 
 var setupStimulus = function (p5stim, stimBlocks) {
 
-    var testStim = stimBlocks;        
+    var testStim = stimBlocks;
 
     p5stim.setup = function () {
         stimulusCanvas = p5stim.createCanvas(stimCanvasWidth, stimCanvasWidth);
@@ -277,7 +273,7 @@ var setupStimulus = function (p5stim, stimBlocks) {
 
 };
 
-var setupEnvs = function (trialObj){
+var setupEnvs = function (trialObj) {
     p5stim = new p5((env) => {
         setupStimulus(env, trialObj.targetBlocks)
     }, 'stimulus-canvas');
@@ -317,35 +313,42 @@ var sendData = function (eventType, trialObj) {
      *      - worldData (note that block placement can be inferred from previous settled state)
      *  - reset, when reset button pressed and world emptied. Sends data of type:
      *      - resetData
-    */    
+    */
 
     // info from mturk
     var turkInfo = jsPsych.turk.turkInfo();
 
     // common info to send to mongo
     var commonInfo = {
-        dbname: dbname,
+        // ppt and game info
+        dbname: dbname, 
         colname: colname,
-        iterationName: iterationName,
+        iterationName: trialObj.iterationName,
         workerId: turkInfo.workerId,
         hitID: turkInfo.hitId,
-        aID: turkInfo.assignmentId, 
+        aID: turkInfo.assignmentId,
+        gameID: trialObj.gameID,
+        version: trialObj.versionInd,
         randID: trialObj.randID, // additional random ID in case none assigned from other sources
         timeRelative: performance.now(), // time since session began
         timeAbsolute: Date.now(),
-        phase: phase,
-        gameID: trialObj.gameID,  
-        version: trialObj.versionInd,
-        condition: trialObj.condition,        
-        trialNum: trialObj.trialNum,
+        phase: trialObj.phase,
+        condition: trialObj.condition,
+        trialNum: trialObj.trialNum, 
+        //scoring
+        nullScore: trialObj.nullScore,
+        scoreGap: trialObj.scoreGap,
         F1Score: trialObj.F1Score,
         normedScore: trialObj.normedScore,
         currBonus: trialObj.currBonus,
-        score: trialObj.score,        
-        numTrials: trialObj.num_trials,
+        score: trialObj.score,
+        numTrials: trialObj.num_trials, 
+        //trial vars
+        trialList: trialObj.trialList,
         targetName: trialObj.targetName,
         targetBlocks: trialObj.targetBlocks,
-        prompt: trialObj.prompt,
+        prompt: trialObj.prompt, 
+        //global vars
         practiceDuration: trialObj.practice_duration,
         exploreDuration: trialObj.explore_duration,
         buildDuration: trialObj.build_duration,
@@ -358,8 +361,8 @@ var sendData = function (eventType, trialObj) {
     floorPropertyList = Object.keys(floorBody); // extract block properties;
     floorPropertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
     floorProperties = _.pick(floorBody['body'], propertyList); // pick out all and only the block body properties in the property list    
-    vertices = _.map(floorBody.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });        
-    
+    vertices = _.map(floorBody.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
+
     worldInfo = {
         canvasHeight: canvasHeight,
         canvasWidth: canvasWidth,
@@ -373,7 +376,7 @@ var sendData = function (eventType, trialObj) {
         scalingFactor: sF,
         worldScale: worldScale,
         stim_scale: stim_scale,
-        blockDims: [
+        allBlockDims: [
             [1, 2],
             [2, 1],
             [2, 2],
@@ -396,7 +399,7 @@ var sendData = function (eventType, trialObj) {
         },
         floorProperties: floorProperties, //properties of floor body
         vertices: vertices
-    };   
+    };
 
     // glom commonInfo and worldInfo together
     _.extend(commonInfo, worldInfo);
@@ -425,7 +428,8 @@ var sendData = function (eventType, trialObj) {
         block_data = _.extend({}, commonInfo, {
             dataType: 'block',
             eventType: eventType, // initial block placement decision vs. final block resting position.
-            phase: phase,
+            phase: trialObj.phase,
+            blockDimUnits: [newBlock.blockKind.w, newBlock.blockKind.h],
             blockWidth: newBlock['w'],
             blockHeight: newBlock['h'],
             blockCenterX: newBlock['body']['position']['x'],
@@ -439,6 +443,11 @@ var sendData = function (eventType, trialObj) {
     }
     else if (eventType == 'settled') {
 
+        //hacky solution to get current score from trial object
+        //console.log('CurrScore: ' + trialObj.getCurrScore());
+        //console.log('NormedScore: ' + trialObj.getNormedScore(trialObj.getCurrScore()));
+        var incrementalScore = trialObj.getCurrScore()
+        var normedIncrementalScore = trialObj.getNormedScore(trialObj.getCurrScore());
         // A world is, primarily, a list of blocks and locations
         // Get this list of blocks
 
@@ -455,7 +464,9 @@ var sendData = function (eventType, trialObj) {
             dataType: 'world',
             eventType: eventType, // initial block placement decision vs. final block resting position.
             allBlockBodyProperties: bodiesForSending, // matter information about bodies of each block. Order is order of block placement
-            numBlocks: bodiesForSending.length
+            numBlocks: bodiesForSending.length,
+            incrementalScore: incrementalScore,
+            normedIncrementalScore: normedIncrementalScore
             // need to add bonuses
         });
 
@@ -476,9 +487,9 @@ var sendData = function (eventType, trialObj) {
         console.log('reset_data', reset_data);
         socket.emit('currentData', reset_data);
 
-    } else if (eventType == 'end') {
-        // End of trial information
+    } else if (eventType == 'practice_attempt' || eventType == 'explore_end' || eventType == 'explore_end' || eventType == 'trial_end') {
 
+        // Data for all blocks
         var bodiesForSending = blocks.map(block => {
             // test out sending newBlock info to server/mongodb
             propertyList = Object.keys(block.body); // extract block properties;
@@ -488,6 +499,7 @@ var sendData = function (eventType, trialObj) {
             return blockProperties
         });
 
+        // Data for world
         world_data = _.extend({}, commonInfo, {
             dataType: 'world',
             eventType: eventType, // initial block placement decision vs. final block resting position.
@@ -496,29 +508,89 @@ var sendData = function (eventType, trialObj) {
             // need to add bonuses
         });
 
-        // Do we calculate anything about the reset?
-        end_data = _.extend({}, commonInfo, world_data, {
-            dataType: 'end',
-            eventType: eventType, // initial block placement decision vs. final block resting position.
-            numBlocks: blocks.length, //number of blocks before reset pressed
-            exploreStartTime: trialObj.exploreStartTime,
-            buildStartTime: trialObj.buildStartTime,
-            buildFinishTime: trialObj.buildFinishTime,
-            endReason: trialObj.endReason,
-            completed: trialObj.completed,
-            F1Score: trialObj.F1Score, // raw score
-            normedScore: trialObj.normedScore,
-            currBonus: trialObj.currBonus,
-            score: trialObj.score,
-            endReason: trialObj.endReason,
-            resets: trialObj.resets,
-            nPracticeAttempts: trialObj.nPracticeAttempts,
-            practiceAttempt: trialObj.practiceAttempt,
-        });
+        if (eventType == 'practice_attempt') {
+            // Summary data for 
+            trial_end_data = _.extend({}, commonInfo, world_data, {
+                dataType: 'practice_attempt',
+                eventType: eventType, // initial block placement decision vs. final block resting position.
+                numBlocks: blocks.length, //number of blocks before reset pressed
+                exploreStartTime: trialObj.exploreStartTime,
+                completed: trialObj.completed,
+                F1Score: trialObj.F1Score, // raw score
+                normedScore: trialObj.normedScore,
+                currBonus: trialObj.currBonus,
+                score: trialObj.score,
+                success: trialObj.practiceSuccess,
+                exploreResets: trialObj.exploreResets,
+                nPracticeAttempts: trialObj.nPracticeAttempts,
+                practiceAttempt: trialObj.practiceAttempt
+            });
+            console.log('trial_end_data: ', trial_end_data);
+            socket.emit('currentData', trial_end_data);
 
-        console.log('end_data: ', end_data);
-        socket.emit('currentData', end_data);
+        } else if (eventType == 'explore_end') {
+            // Summary data for entire explore phase
+            trial_end_data = _.extend({}, commonInfo, world_data, {
+                dataType: 'explore_end',
+                eventType: eventType, // initial block placement decision vs. final block resting position.
+                numBlocks: blocks.length, //number of blocks before reset pressed
+                exploreStartTime: trialObj.exploreStartTime,
+                completed: trialObj.completed,
+                F1Score: trialObj.F1Score, // raw score
+                normedScore: trialObj.normedScore,
+                currBonus: trialObj.currBonus,
+                score: trialObj.score,
+                exploreResets: trialObj.exploreResets,
+                nPracticeAttempts: trialObj.nPracticeAttempts,
+            });
+            console.log('trial_end_data: ', trial_end_data);
+            socket.emit('currentData', trial_end_data);
 
+        } /* else if (eventType == 'build_end') {
+            // Summary data for 
+            trial_end_data = _.extend({}, commonInfo, world_data, {
+                dataType: 'build_end',
+                eventType: eventType, // initial block placement decision vs. final block resting position.
+                numBlocks: blocks.length, //number of blocks before reset pressed
+                buildStartTime: trialObj.buildStartTime,
+                buildFinishTime: trialObj.buildFinishTime,
+                endReason: trialObj.endReason,
+                completed: trialObj.completed,
+                F1Score: trialObj.F1Score, // raw score
+                normedScore: trialObj.normedScore,
+                currBonus: trialObj.currBonus,
+                score: trialObj.score,
+                endReason: trialObj.endReason,
+                buildResets: trialObj.buildResets,
+                nPracticeAttempts: trialObj.nPracticeAttempts
+            });
+            console.log('trial_end_data: ', trial_end_data);
+            socket.emit('currentData', trial_end_data);
+
+        }*/
+        else if (eventType == 'trial_end') {
+            // Summary data for 
+            trial_end_data = _.extend({}, commonInfo, world_data, {
+                dataType: 'trial_end',
+                eventType: eventType, // initial block placement decision vs. final block resting position.
+                numBlocks: blocks.length, //number of blocks before reset pressed
+                exploreStartTime: trialObj.exploreStartTime,
+                buildStartTime: trialObj.buildStartTime,
+                buildFinishTime: trialObj.buildFinishTime,
+                endReason: trialObj.endReason,
+                completed: trialObj.completed,
+                F1Score: trialObj.F1Score, // raw score
+                normedScore: trialObj.normedScore,
+                currBonus: trialObj.currBonus,
+                score: trialObj.score,
+                buildResets: trialObj.buildResets,
+                exploreResets: trialObj.exploreResets,
+                nPracticeAttempts: trialObj.nPracticeAttempts
+            });
+            console.log('trial_end_data: ', trial_end_data);
+            socket.emit('currentData', trial_end_data);
+
+        }
     }
 
 }

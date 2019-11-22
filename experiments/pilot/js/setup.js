@@ -33,7 +33,7 @@ var consentHTML = {
 
 // add welcome page
 var instructionsHTML = {
-  'str1' : "<p> Here's how the game will work: On each trial, you will see the silhouette of a block tower on the left. Your goal is to reconstruct this tower on the right. You will be given 60 seconds to do this using as few blocks as possible. In other words, when you are finished you want both towers to look alike and in the same spot within their environments (not shifted over to the left or right). </p> <div><img src='assets/buildDemo.gif' id='example_screen'></div> <p> To build your tower, first select a block from the menu by clicking on it and then move your cursor to the building environment above. You can use a block of a specific size as many times as you want. </p> <p> Click to place the block exactly where you want it to rest. Your block will fall if you release it too high. </p>  <p> Your tower is also subject to gravity: it can become unstable and tip over. If this happens, you can clear the whole environment by clicking the Reset button. But try to avoid doing this too many times, because you may run out of time. <p> Note that you cannot move a block once it has been placed, and there is no way to 'undo' the placement of a block. </p>",
+  'str1' : "<p> Here's how the game will work: On each trial, you will see the silhouette of a block tower on the left. Your goal is to reconstruct this tower on the right. You will be given 60 seconds to do this using as few blocks as possible. In other words, when you are finished you want both towers to look alike and in the same spot within their environments (not shifted over to the left or right). </p> <div><img src='assets/buildDemo.gif' id='example_screen'></div> <p> To build your tower, first select a block from the menu by clicking on it and then move your cursor to the building environment above. You can use a block of a specific size as many times as you want. As soon as you are finished, click the Done button. </p> <p> Click to place the block exactly where you want it to rest. Your block will fall if you release it from too high up. </p>  <p> Your tower is also subject to gravity: it can become unstable and tip over. If this happens, you can clear the whole environment by clicking the Reset button. But try to avoid doing this too many times, because you may run out of time. <p> Note that you cannot move a block once it has been placed, and there is no way to 'undo' the placement of a block. </p>",
   'str2' : "<p> There are 16 different block towers you will build in this HIT. For really accurate reconstructions, you will receive a <b> bonus</b> between $0.01 and $0.05.</p>",
   'str3' : "<p> Once you are finished, the HIT will be automatically submitted for approval. Please know that you can only perform this HIT one time.</p><p> Note: We recommend using Chrome. We have not tested this HIT in other browsers.</p>",
   'str4' : "<p> Before we begin, let's get some practice with the building tool. On this practice trial, you will be shown the exact locations to place each block. Please place the blocks as precisely as you can to ensure that you have the opportunity to proceed and participate in the experiment. No bonus can be earned on this practice trial. Please note that after you place a block, you will not be able to select a new block or press 'Done' until all of the blocks have come to rest. </p>",
@@ -63,7 +63,7 @@ var readyTrial = {
 }
 
 var acceptHTML = {
-  'str1' : '<p>Welcome! In this HIT, you will play a fun game in which you aim to reconstruct various block towers from a set of blocks. </p> <p> <b> If you are interested in learning more about this HIT, please first accept the HIT in MTurk before continuing further</b>. </p>'  
+  'str1' : '<p>Welcome! In this HIT, you will play a fun game in which you build block towers. </p> <p> <b> If you are interested in learning more about this HIT, please first accept the HIT in MTurk by clicking the Accept button below</b>. </p>'  
 }
 
 var previewTrial = {
@@ -124,7 +124,7 @@ var text_page = {
 function Trial () {
   this.randID = randID;
   this.type = 'block-silhouette';
-  this.iterationName = 'willjudytest';
+  this.iterationName = 'dataTesting';
   this.prompt = "Please build the tower using as few blocks as possible.";
   this.dev_mode = false;
   this.explore_duration = explore_duration; // time limit in seconds
@@ -133,23 +133,26 @@ function Trial () {
   this.F1Score = 0; // F1 score
   this.normedScore = 0;
   this.currBonus = 0; // current bonus
+  this.nullScore = NaN;
+  this.scoreGap = NaN;
   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'.
   this.phase = 'NA';
   this.completed = false;
-  this.resets = 0;
+  this.buildResets = 0;
+  this.exploreResets = 0;
   this.exploreStartTime = 0;
   this.buildStartTime = 0;
   this.buildFinishTime = 0;
   this.trialBonus = 0;
   this.score = 0;
   this.nPracticeAttempts = NaN;
-  this.practiceAttempt = 0;
+  this.practiceAttempt = 0
 };
 
 function PracticeTrial () {
   this.randID = randID;
   this.type = 'block-silhouette';
-  this.iterationName = 'willjudytest';
+  this.iterationName = 'dataTesting';
   this.prompt = "Please build your tower using as few blocks as possible.";
   this.dev_mode = false;
   this.condition = 'practice';
@@ -162,14 +165,19 @@ function PracticeTrial () {
   this.normedScore = 0; // WANT TO RECORD THIS FOR EVERY ATTEMPT IN PRACTICE
   this.currBonus = 0; // current bonus
   this.score = 0; // cumulative bonus 
+  this.nullScore = NaN;
+  this.scoreGap = NaN;
   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'. 
-  this.resets = 0; 
+  this.buildResets = 0; 
+  this.exploreResets = 0;
   this.nPracticeAttempts = 0;
   this.practiceAttempt = 0; // indexing starts at 0.
   this.trialNum = NaN;
   this.exploreStartTime = 0;
   this.buildStartTime = 0;
   this.buildFinishTime = 0;
+  this.phase = 'practice'
+  
 };
 
 function setupGame () {
@@ -199,7 +207,8 @@ function setupGame () {
       version: d.versionInd,
       post_trial_gap: 1000, // add brief ITI between trials
       num_trials : numTrials,
-      on_finish : on_finish
+      on_finish : on_finish,
+      trialList: d.trials,
     };
     
     // Bind trial data with boilerplate
@@ -212,17 +221,20 @@ function setupGame () {
     }));
 
     // insert final instructions page between practice trial and first "real" experimental trial
-    trials.unshift(readyTrial);    
+    //trials.unshift(readyTrial);    
 
     // insert practice trial before the first "real" experimental trial
-    var practiceTrial = new PracticeTrial;
+    var practiceTrial = _.extend(new PracticeTrial, additionalInfo, {
+      trialNum : NaN
+    });;
+
     trials.unshift(practiceTrial);
     
     // Stick welcome trial at beginning & goodbye trial at end
     if (!turkInfo.previewMode) { 
-      trials.unshift(welcomeTrial);
+      //trials.unshift(welcomeTrial);
     } else {
-      trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
+      //trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
     }
     trials.push(goodbyeTrial); // goodbye and submit HIT
 
