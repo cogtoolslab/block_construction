@@ -453,6 +453,26 @@ var sendData = function (eventType, trialObj) {
         }
         else if (eventType == 'settled') {
 
+            lastBlock = newBlock;
+            // test out sending newBlock info to server/mongodb
+            propertyList = Object.keys(lastBlock.body); // extract block properties;
+            propertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
+            blockProperties = _.pick(lastBlock['body'], propertyList); // pick out all and only the block body properties in the property list
+
+            // custom de-borkification
+            vertices = _.map(lastBlock.body.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
+
+            last_block_data = {
+                blockDimUnits: [lastBlock.blockKind.w, lastBlock.blockKind.h],
+                blockWidth: lastBlock['w'],
+                blockHeight: lastBlock['h'],
+                blockCenterX: lastBlock['body']['position']['x'],
+                blockCenterY: lastBlock['body']['position']['y'],
+                blockVertices: vertices,
+                blockBodyProperties: blockProperties
+            };
+
+
             //hacky solution to get current score from trial object
             //console.log('CurrScore: ' + trialObj.getCurrScore());
             //console.log('NormedScore: ' + trialObj.getNormedScore(trialObj.getCurrScore()));
@@ -470,10 +490,16 @@ var sendData = function (eventType, trialObj) {
                 return blockProperties
             });
 
-            world_data = _.extend({}, commonInfo, {
+            var allVertices = blocks.map(block => {
+                vertices = _.map(block.body.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
+                return vertices
+            });
+
+            world_data = _.extend({}, commonInfo, last_block_data, {
                 dataType: 'world',
                 eventType: eventType, // initial block placement decision vs. final block resting position.
                 allBlockBodyProperties: bodiesForSending, // matter information about bodies of each block. Order is order of block placement
+                allVertices: allVertices,
                 numBlocks: bodiesForSending.length,
                 incrementalScore: incrementalScore,
                 normedIncrementalScore: normedIncrementalScore

@@ -118,7 +118,6 @@ function TextPage () {
   ];
 };
 
-
 // define trial object with boilerplate
 function Trial () {
   this.randID = randID;
@@ -249,9 +248,8 @@ function setupGame () {
           multi_choice_data: data.responses,
           text_data: survey_data.responses
         }));
-        console.log(data.responses);
       }
-    });;
+    });
 
     var text_page = _.extend(new TextPage, additionalInfo, {
       trialNum : NaN,
@@ -260,13 +258,11 @@ function setupGame () {
       on_finish: function(data){
         survey_data = data;
       }
-    });;
+    });
 
-    trials.unshift(multi_choice_page);
-    trials.unshift(text_page);
-
-    //trials.unshift(multi_choice_page);
-    //trials.unshift(text_page)
+    trials.push(text_page);
+    trials.push(multi_choice_page);
+   
       
     jsPsych.init({
       timeline: trials,
