@@ -124,3 +124,8 @@ body {
     background-color: blue;
     width: 100%;
 }
+
+#text-bar p {
+    border: 8px solid white;
+    margin-bottom: 0px;
+}

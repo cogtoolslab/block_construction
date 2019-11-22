@@ -355,242 +355,253 @@ var sendData = function (eventType, trialObj) {
         devMode: trialObj.dev_mode
     };
 
-    // general info about world params, bundled into worldInfo
-    floorBody = ground.body;
-    // test out sending newBlock info to server/mongodb
-    floorPropertyList = Object.keys(floorBody); // extract block properties;
-    floorPropertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
-    floorProperties = _.pick(floorBody['body'], propertyList); // pick out all and only the block body properties in the property list    
-    vertices = _.map(floorBody.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
+    if (eventType == 'survey_data'){
 
-    worldInfo = {
-        canvasHeight: canvasHeight,
-        canvasWidth: canvasWidth,
-        menuHeight: menuHeight,
-        menuWidth: menuWidth,
-        floorY: floorY,
-        stimCanvasWidth: stimCanvasWidth,
-        stimCanvasHeight: stimCanvasHeight,
-        stimX: stimX,
-        stimY: stimY,
-        scalingFactor: sF,
-        worldScale: worldScale,
-        stim_scale: stim_scale,
-        allBlockDims: [
-            [1, 2],
-            [2, 1],
-            [2, 2],
-            [2, 4],
-            [4, 2]
-        ],
-        worldWidthUnits: 8,
-        worldHeightUnits: 8,
-        blockOptions: { //update if changed in block
-            friction: 0.9,
-            frictionStatic: 1.4,
-            density: 0.0035,
-            restitution: 0.001,
-            sleepThreshold: 30
-        },
-        floorOptions: {
-            isStatic: true, // static i.e. not affected by gravity
-            friction: 0.9,
-            frictionStatic: 2
-        },
-        floorProperties: floorProperties, //properties of floor body
-        vertices: vertices
-    };
+        survey_data = _.extend(commonInfo, JSON.parse(trialObj.text_data), JSON.parse(trialObj.multi_choice_data), {
+            dataType: eventType,
+            eventType: eventType
+        });
+        console.log(survey_data);
+        socket.emit('currentData', survey_data);
 
-    // glom commonInfo and worldInfo together
-    _.extend(commonInfo, worldInfo);
-
-    //console.log('commonInfo: ', commonInfo);
-    //console.log('trialObj: ', trialObj);
-
-    if (eventType == 'none') {
-        console.log('Error: Null eventType sent');
-    };
-
-    //console.log('Trying to send ' + eventType + ' data from ' + phase + ' phase');
-
-    if (eventType == 'initial') {
-        // Send data about initial placement of a block
-        // Could be in Build 
-
+    } else {
+        // general info about world params, bundled into worldInfo
+        floorBody = ground.body;
         // test out sending newBlock info to server/mongodb
-        propertyList = Object.keys(newBlock.body); // extract block properties;
-        propertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
-        blockProperties = _.pick(newBlock['body'], propertyList); // pick out all and only the block body properties in the property list
+        floorPropertyList = Object.keys(floorBody); // extract block properties;
+        floorPropertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
+        floorProperties = _.pick(floorBody['body'], propertyList); // pick out all and only the block body properties in the property list    
+        vertices = _.map(floorBody.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
 
-        // custom de-borkification
-        vertices = _.map(newBlock.body.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
+        worldInfo = {
+            canvasHeight: canvasHeight,
+            canvasWidth: canvasWidth,
+            menuHeight: menuHeight,
+            menuWidth: menuWidth,
+            floorY: floorY,
+            stimCanvasWidth: stimCanvasWidth,
+            stimCanvasHeight: stimCanvasHeight,
+            stimX: stimX,
+            stimY: stimY,
+            scalingFactor: sF,
+            worldScale: worldScale,
+            stim_scale: stim_scale,
+            allBlockDims: [
+                [1, 2],
+                [2, 1],
+                [2, 2],
+                [2, 4],
+                [4, 2]
+            ],
+            worldWidthUnits: 8,
+            worldHeightUnits: 8,
+            blockOptions: { //update if changed in block
+                friction: 0.9,
+                frictionStatic: 1.4,
+                density: 0.0035,
+                restitution: 0.001,
+                sleepThreshold: 30
+            },
+            floorOptions: {
+                isStatic: true, // static i.e. not affected by gravity
+                friction: 0.9,
+                frictionStatic: 2
+            },
+            floorProperties: floorProperties, //properties of floor body
+            vertices: vertices
+        };
 
-        block_data = _.extend({}, commonInfo, {
-            dataType: 'block',
-            eventType: eventType, // initial block placement decision vs. final block resting position.
-            phase: trialObj.phase,
-            blockDimUnits: [newBlock.blockKind.w, newBlock.blockKind.h],
-            blockWidth: newBlock['w'],
-            blockHeight: newBlock['h'],
-            blockCenterX: newBlock['body']['position']['x'],
-            blockCenterY: newBlock['body']['position']['y'],
-            blockVertices: vertices,
-            blockBodyProperties: blockProperties
-        })
+        // glom commonInfo and worldInfo together
+        _.extend(commonInfo, worldInfo);
 
-        // console.log('block_data', block_data);
-        socket.emit('currentData', block_data);
-    }
-    else if (eventType == 'settled') {
+        //console.log('commonInfo: ', commonInfo);
+        //console.log('trialObj: ', trialObj);
 
-        //hacky solution to get current score from trial object
-        //console.log('CurrScore: ' + trialObj.getCurrScore());
-        //console.log('NormedScore: ' + trialObj.getNormedScore(trialObj.getCurrScore()));
-        var incrementalScore = trialObj.getCurrScore()
-        var normedIncrementalScore = trialObj.getNormedScore(trialObj.getCurrScore());
-        // A world is, primarily, a list of blocks and locations
-        // Get this list of blocks
+        if (eventType == 'none') {
+            console.log('Error: Null eventType sent');
+        };
 
-        var bodiesForSending = blocks.map(block => {
+        //console.log('Trying to send ' + eventType + ' data from ' + phase + ' phase');
+
+        if (eventType == 'initial') {
+            // Send data about initial placement of a block
+            // Could be in Build 
+
             // test out sending newBlock info to server/mongodb
-            propertyList = Object.keys(block.body); // extract block properties;
+            propertyList = Object.keys(newBlock.body); // extract block properties;
             propertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
-            propertyList = _.pullAll(propertyList, ['collisionFilter', 'constraintImpulse', 'density', 'force', 'friction', 'frictionAir', 'frictionStatic', 'isSensor', 'label', 'render', 'restitution', 'sleepCounter', 'sleepThreshold', 'slop', 'timeScale', 'type']);  // omit extraneus matter properties
-            blockProperties = _.pick(block.body, propertyList); // pick out all and only the block body properties in the property list
-            return blockProperties
-        });
+            blockProperties = _.pick(newBlock['body'], propertyList); // pick out all and only the block body properties in the property list
 
-        world_data = _.extend({}, commonInfo, {
-            dataType: 'world',
-            eventType: eventType, // initial block placement decision vs. final block resting position.
-            allBlockBodyProperties: bodiesForSending, // matter information about bodies of each block. Order is order of block placement
-            numBlocks: bodiesForSending.length,
-            incrementalScore: incrementalScore,
-            normedIncrementalScore: normedIncrementalScore
-            // need to add bonuses
-        });
+            // custom de-borkification
+            vertices = _.map(newBlock.body.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
 
-        //console.log('world_data', world_data);
-        socket.emit('currentData', world_data);
-    }
-    else if (eventType == 'reset') {
-        // Event to show that reset has occurred
-        // We can infer from the existence of this event that the world is empty
-
-        // Do we calculate anything about the reset?
-        reset_data = _.extend({}, commonInfo, {
-            dataType: 'reset',
-            eventType: eventType, // initial block placement decision vs. final block resting position.
-            numBlocks: blocks.length //number of blocks before reset pressed
-        });
-
-        console.log('reset_data', reset_data);
-        socket.emit('currentData', reset_data);
-
-    } else if (eventType == 'practice_attempt' || eventType == 'explore_end' || eventType == 'explore_end' || eventType == 'trial_end') {
-
-        // Data for all blocks
-        var bodiesForSending = blocks.map(block => {
-            // test out sending newBlock info to server/mongodb
-            propertyList = Object.keys(block.body); // extract block properties;
-            propertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
-            propertyList = _.pullAll(propertyList, ['collisionFilter', 'constraintImpulse', 'density', 'force', 'friction', 'frictionAir', 'frictionStatic', 'isSensor', 'label', 'render', 'restitution', 'sleepCounter', 'sleepThreshold', 'slop', 'timeScale', 'type']);  // omit extraneus matter properties
-            blockProperties = _.pick(block.body, propertyList); // pick out all and only the block body properties in the property list
-            return blockProperties
-        });
-
-        // Data for world
-        world_data = _.extend({}, commonInfo, {
-            dataType: 'world',
-            eventType: eventType, // initial block placement decision vs. final block resting position.
-            allBlockBodyProperties: bodiesForSending, // matter information about bodies of each block. Order is order of block placement
-            numBlocks: bodiesForSending.length
-            // need to add bonuses
-        });
-
-        if (eventType == 'practice_attempt') {
-            // Summary data for 
-            trial_end_data = _.extend({}, commonInfo, world_data, {
-                dataType: 'practice_attempt',
+            block_data = _.extend({}, commonInfo, {
+                dataType: 'block',
                 eventType: eventType, // initial block placement decision vs. final block resting position.
-                numBlocks: blocks.length, //number of blocks before reset pressed
-                exploreStartTime: trialObj.exploreStartTime,
-                completed: trialObj.completed,
-                F1Score: trialObj.F1Score, // raw score
-                normedScore: trialObj.normedScore,
-                currBonus: trialObj.currBonus,
-                score: trialObj.score,
-                success: trialObj.practiceSuccess,
-                exploreResets: trialObj.exploreResets,
-                nPracticeAttempts: trialObj.nPracticeAttempts,
-                practiceAttempt: trialObj.practiceAttempt
-            });
-            console.log('trial_end_data: ', trial_end_data);
-            socket.emit('currentData', trial_end_data);
+                phase: trialObj.phase,
+                blockDimUnits: [newBlock.blockKind.w, newBlock.blockKind.h],
+                blockWidth: newBlock['w'],
+                blockHeight: newBlock['h'],
+                blockCenterX: newBlock['body']['position']['x'],
+                blockCenterY: newBlock['body']['position']['y'],
+                blockVertices: vertices,
+                blockBodyProperties: blockProperties
+            })
 
-        } else if (eventType == 'explore_end') {
-            // Summary data for entire explore phase
-            trial_end_data = _.extend({}, commonInfo, world_data, {
-                dataType: 'explore_end',
-                eventType: eventType, // initial block placement decision vs. final block resting position.
-                numBlocks: blocks.length, //number of blocks before reset pressed
-                exploreStartTime: trialObj.exploreStartTime,
-                completed: trialObj.completed,
-                F1Score: trialObj.F1Score, // raw score
-                normedScore: trialObj.normedScore,
-                currBonus: trialObj.currBonus,
-                score: trialObj.score,
-                exploreResets: trialObj.exploreResets,
-                nPracticeAttempts: trialObj.nPracticeAttempts,
-            });
-            console.log('trial_end_data: ', trial_end_data);
-            socket.emit('currentData', trial_end_data);
-
-        } /* else if (eventType == 'build_end') {
-            // Summary data for 
-            trial_end_data = _.extend({}, commonInfo, world_data, {
-                dataType: 'build_end',
-                eventType: eventType, // initial block placement decision vs. final block resting position.
-                numBlocks: blocks.length, //number of blocks before reset pressed
-                buildStartTime: trialObj.buildStartTime,
-                buildFinishTime: trialObj.buildFinishTime,
-                endReason: trialObj.endReason,
-                completed: trialObj.completed,
-                F1Score: trialObj.F1Score, // raw score
-                normedScore: trialObj.normedScore,
-                currBonus: trialObj.currBonus,
-                score: trialObj.score,
-                endReason: trialObj.endReason,
-                buildResets: trialObj.buildResets,
-                nPracticeAttempts: trialObj.nPracticeAttempts
-            });
-            console.log('trial_end_data: ', trial_end_data);
-            socket.emit('currentData', trial_end_data);
-
-        }*/
-        else if (eventType == 'trial_end') {
-            // Summary data for 
-            trial_end_data = _.extend({}, commonInfo, world_data, {
-                dataType: 'trial_end',
-                eventType: eventType, // initial block placement decision vs. final block resting position.
-                numBlocks: blocks.length, //number of blocks before reset pressed
-                exploreStartTime: trialObj.exploreStartTime,
-                buildStartTime: trialObj.buildStartTime,
-                buildFinishTime: trialObj.buildFinishTime,
-                endReason: trialObj.endReason,
-                completed: trialObj.completed,
-                F1Score: trialObj.F1Score, // raw score
-                normedScore: trialObj.normedScore,
-                currBonus: trialObj.currBonus,
-                score: trialObj.score,
-                buildResets: trialObj.buildResets,
-                exploreResets: trialObj.exploreResets,
-                nPracticeAttempts: trialObj.nPracticeAttempts
-            });
-            console.log('trial_end_data: ', trial_end_data);
-            socket.emit('currentData', trial_end_data);
-
+            // console.log('block_data', block_data);
+            socket.emit('currentData', block_data);
         }
-    }
+        else if (eventType == 'settled') {
 
-}
+            //hacky solution to get current score from trial object
+            //console.log('CurrScore: ' + trialObj.getCurrScore());
+            //console.log('NormedScore: ' + trialObj.getNormedScore(trialObj.getCurrScore()));
+            var incrementalScore = trialObj.getCurrScore()
+            var normedIncrementalScore = trialObj.getNormedScore(trialObj.getCurrScore());
+            // A world is, primarily, a list of blocks and locations
+            // Get this list of blocks
+
+            var bodiesForSending = blocks.map(block => {
+                // test out sending newBlock info to server/mongodb
+                propertyList = Object.keys(block.body); // extract block properties;
+                propertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
+                propertyList = _.pullAll(propertyList, ['collisionFilter', 'constraintImpulse', 'density', 'force', 'friction', 'frictionAir', 'frictionStatic', 'isSensor', 'label', 'render', 'restitution', 'sleepCounter', 'sleepThreshold', 'slop', 'timeScale', 'type']);  // omit extraneus matter properties
+                blockProperties = _.pick(block.body, propertyList); // pick out all and only the block body properties in the property list
+                return blockProperties
+            });
+
+            world_data = _.extend({}, commonInfo, {
+                dataType: 'world',
+                eventType: eventType, // initial block placement decision vs. final block resting position.
+                allBlockBodyProperties: bodiesForSending, // matter information about bodies of each block. Order is order of block placement
+                numBlocks: bodiesForSending.length,
+                incrementalScore: incrementalScore,
+                normedIncrementalScore: normedIncrementalScore
+                // need to add bonuses
+            });
+
+            //console.log('world_data', world_data);
+            socket.emit('currentData', world_data);
+        }
+        else if (eventType == 'reset') {
+            // Event to show that reset has occurred
+            // We can infer from the existence of this event that the world is empty
+
+            // Do we calculate anything about the reset?
+            reset_data = _.extend({}, commonInfo, {
+                dataType: 'reset',
+                eventType: eventType, // initial block placement decision vs. final block resting position.
+                numBlocks: blocks.length //number of blocks before reset pressed
+            });
+
+            console.log('reset_data', reset_data);
+            socket.emit('currentData', reset_data);
+
+        } else if (eventType == 'practice_attempt' || eventType == 'explore_end' || eventType == 'explore_end' || eventType == 'trial_end') {
+
+            // Data for all blocks
+            var bodiesForSending = blocks.map(block => {
+                // test out sending newBlock info to server/mongodb
+                propertyList = Object.keys(block.body); // extract block properties;
+                propertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
+                propertyList = _.pullAll(propertyList, ['collisionFilter', 'constraintImpulse', 'density', 'force', 'friction', 'frictionAir', 'frictionStatic', 'isSensor', 'label', 'render', 'restitution', 'sleepCounter', 'sleepThreshold', 'slop', 'timeScale', 'type']);  // omit extraneus matter properties
+                blockProperties = _.pick(block.body, propertyList); // pick out all and only the block body properties in the property list
+                return blockProperties
+            });
+
+            // Data for world
+            world_data = _.extend({}, commonInfo, {
+                dataType: 'world',
+                eventType: eventType, // initial block placement decision vs. final block resting position.
+                allBlockBodyProperties: bodiesForSending, // matter information about bodies of each block. Order is order of block placement
+                numBlocks: bodiesForSending.length
+                // need to add bonuses
+            });
+
+            if (eventType == 'practice_attempt') {
+                // Summary data for 
+                trial_end_data = _.extend({}, commonInfo, world_data, {
+                    dataType: 'practice_attempt',
+                    eventType: eventType, // initial block placement decision vs. final block resting position.
+                    numBlocks: blocks.length, //number of blocks before reset pressed
+                    exploreStartTime: trialObj.exploreStartTime,
+                    completed: trialObj.completed,
+                    F1Score: trialObj.F1Score, // raw score
+                    normedScore: trialObj.normedScore,
+                    currBonus: trialObj.currBonus,
+                    score: trialObj.score,
+                    success: trialObj.practiceSuccess,
+                    exploreResets: trialObj.exploreResets,
+                    nPracticeAttempts: trialObj.nPracticeAttempts,
+                    practiceAttempt: trialObj.practiceAttempt
+                });
+                console.log('trial_end_data: ', trial_end_data);
+                socket.emit('currentData', trial_end_data);
+
+            } else if (eventType == 'explore_end') {
+                // Summary data for entire explore phase
+                trial_end_data = _.extend({}, commonInfo, world_data, {
+                    dataType: 'explore_end',
+                    eventType: eventType, // initial block placement decision vs. final block resting position.
+                    numBlocks: blocks.length, //number of blocks before reset pressed
+                    exploreStartTime: trialObj.exploreStartTime,
+                    completed: trialObj.completed,
+                    F1Score: trialObj.F1Score, // raw score
+                    normedScore: trialObj.normedScore,
+                    currBonus: trialObj.currBonus,
+                    score: trialObj.score,
+                    exploreResets: trialObj.exploreResets,
+                    nPracticeAttempts: trialObj.nPracticeAttempts,
+                });
+                console.log('trial_end_data: ', trial_end_data);
+                socket.emit('currentData', trial_end_data);
+
+            } /* else if (eventType == 'build_end') {
+                // Summary data for 
+                trial_end_data = _.extend({}, commonInfo, world_data, {
+                    dataType: 'build_end',
+                    eventType: eventType, // initial block placement decision vs. final block resting position.
+                    numBlocks: blocks.length, //number of blocks before reset pressed
+                    buildStartTime: trialObj.buildStartTime,
+                    buildFinishTime: trialObj.buildFinishTime,
+                    endReason: trialObj.endReason,
+                    completed: trialObj.completed,
+                    F1Score: trialObj.F1Score, // raw score
+                    normedScore: trialObj.normedScore,
+                    currBonus: trialObj.currBonus,
+                    score: trialObj.score,
+                    endReason: trialObj.endReason,
+                    buildResets: trialObj.buildResets,
+                    nPracticeAttempts: trialObj.nPracticeAttempts
+                });
+                console.log('trial_end_data: ', trial_end_data);
+                socket.emit('currentData', trial_end_data);
+
+            }*/
+            else if (eventType == 'trial_end') {
+                // Summary data for 
+                trial_end_data = _.extend({}, commonInfo, world_data, {
+                    dataType: 'trial_end',
+                    eventType: eventType, // initial block placement decision vs. final block resting position.
+                    numBlocks: blocks.length, //number of blocks before reset pressed
+                    exploreStartTime: trialObj.exploreStartTime,
+                    buildStartTime: trialObj.buildStartTime,
+                    buildFinishTime: trialObj.buildFinishTime,
+                    endReason: trialObj.endReason,
+                    completed: trialObj.completed,
+                    F1Score: trialObj.F1Score, // raw score
+                    normedScore: trialObj.normedScore,
+                    currBonus: trialObj.currBonus,
+                    score: trialObj.score,
+                    buildResets: trialObj.buildResets,
+                    exploreResets: trialObj.exploreResets,
+                    nPracticeAttempts: trialObj.nPracticeAttempts
+                });
+                console.log('trial_end_data: ', trial_end_data);
+                socket.emit('currentData', trial_end_data);
+
+            };
+        };
+    };
+
+};
