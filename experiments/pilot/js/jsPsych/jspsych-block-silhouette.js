@@ -349,7 +349,9 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       if (allSleeping) {
 
-        sendData(eventType = 'settled', trial);
+        if (blocks.length > 0){
+         sendData(eventType = 'settled', trial);
+        }
 
         if (trial.condition == 'practice') {
 
@@ -381,8 +383,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
             setupEnvs(trial);
 
           } else {
-            // if practice score is good:
-            // move on
+          // if practice score is good:
+          // move on
             trial.practiceSuccess = true;
             sendData('practice_attempt', trial);
             occluder_text.textContent = practice_feedback_text['success'];
@@ -391,15 +393,23 @@ jsPsych.plugins["block-silhouette"] = (function () {
               endTrial(endReason = 'practice_success');
               clear_display_move_on();
             });
-          }
+          };
           occluder.style.display = "block";
         }
-        else { // if a normal trial, must be build phase, so move on trial
-          trial.completed = true;
-          endTrial(endReason = 'done-pressed');
-          jsPsych.pluginAPI.setTimeout(function () {
-            clear_display_move_on();
-          }, 2500);
+        else { // if a normal trial, must be build phase
+          if (blocks.length > 0) { //make sure they've actually built something
+            trial.completed = true;
+            endTrial(endReason = 'done-pressed');
+            jsPsych.pluginAPI.setTimeout(function () {
+              clear_display_move_on();
+            }, 2500);
+          }
+          else {
+            condition_heading.textContent = "Please build the structure!"
+            jsPsych.pluginAPI.setTimeout(function () {
+              condition_heading.textContent = "BUILD"
+            }, 2500);
+          };
         };
       } else {
         done_button.textContent = 'Wait';
