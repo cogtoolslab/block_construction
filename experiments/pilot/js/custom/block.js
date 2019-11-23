@@ -17,9 +17,8 @@ function Block(blockKind, x, y, rotated, testing_placement = false){
         friction: 0.9,
         frictionStatic: 1.4,
         //frictionAir: 0.07,
-        //slop: 0.1,
         density: 0.0035,
-        restitution: 0.001,
+        restitution: 0.0015,
         sleepThreshold: 30
     }
     if(!testing_placement){

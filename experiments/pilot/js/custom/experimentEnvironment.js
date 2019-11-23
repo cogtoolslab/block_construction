@@ -65,6 +65,7 @@ var block_data; // data to send to mongodb about every block placement
 var trial_data; // data to send to mongodb about every finished block structure
 var newSelectedBlockKind; // init this variable so we can inspect it in the console
 var newBlock; // init this variable so we can inspect it in the console
+var timeLastPlaced = Date.now()
 
 var blockDims = [
     [1, 2],
@@ -217,7 +218,9 @@ var setupEnvironment = function (env, trialObj = null) {
                     sleeping = blocks.filter((block) => block.body.isSleeping);
                     allSleeping = sleeping.length == blocks.length;
 
-                    if (allSleeping) {
+                    time_placing = Date.now();
+
+                    if (allSleeping || (time_placing - timeLastPlaced > 3000)) {
                         // SEND WORLD DATA AFTER PREVIOUS BLOCK HAS SETTLED
                         // Sends information about the state of the world prior to next block being placed
 
@@ -245,14 +248,14 @@ var setupEnvironment = function (env, trialObj = null) {
                             disabledBlockPlacement = true;
                             jsPsych.pluginAPI.setTimeout(function () { // change color of bonus back to white
                                 disabledBlockPlacement = false;
-                            }, 200);
+                            }, 100);
                         }
 
                     } else {
                         disabledBlockPlacement = true;
                         jsPsych.pluginAPI.setTimeout(function () { // change color of bonus back to white
                             disabledBlockPlacement = false;
-                        }, 200);
+                        }, 100);
 
                     }
 
@@ -449,6 +452,8 @@ var sendData = function (eventType, trialObj) {
         if (eventType == 'initial') {
             // Send data about initial placement of a block
             // Could be in Build 
+
+            timeLastPlaced = Date.now();
 
             // test out sending newBlock info to server/mongodb
             propertyList = Object.keys(newBlock.body); // extract block properties;
