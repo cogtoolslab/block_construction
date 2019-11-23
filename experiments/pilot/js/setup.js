@@ -1,5 +1,6 @@
 var callback;
 var score = 0;
+var points = 0;
 var numTrials = 16;
 var shuffleTrials = false; // set to False to preserve order in db; set to True if you want to shuffle trials from db (scrambled10)
 var survey_data = null;
@@ -143,6 +144,7 @@ function Trial () {
   this.buildFinishTime = 0;
   this.trialBonus = 0;
   this.score = score;
+  this.points = 0;
   this.nPracticeAttempts = NaN;
   this.practiceAttempt = 0
 };
@@ -163,6 +165,7 @@ function PracticeTrial () {
   this.normedScore = 0; // WANT TO RECORD THIS FOR EVERY ATTEMPT IN PRACTICE
   this.currBonus = 0; // current bonus
   this.score = score; // cumulative bonus 
+  this.points = 0;
   this.nullScore = NaN;
   this.scoreGap = NaN;
   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'. 
@@ -183,11 +186,12 @@ function setupGame () {
   // number of trials to fetch from database is defined in ./app.js
   var socket = io.connect();
   
-
   // on_finish is called at the very very end of the experiment
   var on_finish = function(data) {    
     score = data.score ? data.score : score; // updates the score variable    
+    points = data.points ? data.points : points;
     console.log('updated global score to: ', score);
+    console.log('updated global points to: ', points);
   };
 
   // Start once server initializes us
@@ -208,7 +212,6 @@ function setupGame () {
       on_finish : on_finish,
       trialList: d.trials,
     };
-    
     // Bind trial data with boilerplate
     var rawTrialList = shuffleTrials ? _.shuffle(d.trials) : d.trials;
     var trials = _.flatten(_.map(rawTrialList, function(trialData, i) {

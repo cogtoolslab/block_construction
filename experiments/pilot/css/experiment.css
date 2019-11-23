@@ -17,9 +17,7 @@ body {
     margin-right: 15px;
 }
 
-.row{
-    flex-wrap: nowrap;
-}
+
 
 #condition-heading {
     display: inline-block;
@@ -36,20 +34,39 @@ body {
     line-height: 1.8em;
 }
 
+#text-bar.column {
+
+}
+
 #timer-text {
     display: block;
     float: right;
     text-align: right;
     font-family: 'Roboto', sans-serif;
-    font-size: 28px;    
+    font-size: 32px;    
 }
 
-#bonus-meter {
+.scores {
     display: block;
     float: left;
     text-align: left;
     font-family: 'Roboto', sans-serif;
-    font-size: 28px;    
+    font-size: 24px;    
+}
+
+#bonus-meter {
+    font-size: 32px;
+    border: 8px solid #FFFFFF;
+}
+
+#points-meter {
+    font-size: 32px;
+    border: 8px solid #FFFFFF;
+}
+
+#condition-heading {
+    font-size: 32px;
+    border: 8px solid #FFFFFF;
 }
 
 #defaultCanvas0, #defaultCanvas1 {

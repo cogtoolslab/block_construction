@@ -368,9 +368,9 @@ var sendData = function (eventType, trialObj) {
         normedScore: trialObj.normedScore,
         currBonus: trialObj.currBonus,
         score: trialObj.score,
+        points: trialObj.points,
         numTrials: trialObj.num_trials, 
         //trial vars
-        trialList: trialObj.trialList,
         targetName: trialObj.targetName,
         targetBlocks: trialObj.targetBlocks,
         prompt: trialObj.prompt, 

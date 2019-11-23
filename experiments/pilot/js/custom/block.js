@@ -1,12 +1,12 @@
 // Wrappers for Matter Bodies that instantiate a particular BlockKind
-function Block(blockKind, x, y, rotated, testing_placement = false){
+function Block(blockKind, x, y, rotated, testing_placement = false) {
 
     this.blockKind = blockKind;
 
-    if(rotated){
+    if (rotated) {
         this.w = blockKind.h * sF;
         this.h = blockKind.w * sF;
-    }else{
+    } else {
         this.w = blockKind.w * sF;
         this.h = blockKind.h * sF;
     }
@@ -21,42 +21,41 @@ function Block(blockKind, x, y, rotated, testing_placement = false){
         restitution: 0.0015,
         sleepThreshold: 30
     }
-    if(!testing_placement){
-        this.body = Bodies.rectangle(x*worldScale,y*worldScale,this.w*worldScale,this.h*worldScale, options);
-        World.add(engine.world, this.body); 
+    if (!testing_placement) {
+        this.body = Bodies.rectangle(x * worldScale, y * worldScale, this.w * worldScale, this.h * worldScale, options);
+        World.add(engine.world, this.body);
     }
-    else{
-        this.test_body = Bodies.rectangle(x*worldScale,y*worldScale,this.w*worldScale,this.h*worldScale);
+    else {
+        this.test_body = Bodies.rectangle(x * worldScale, y * worldScale, this.w * worldScale, this.h * worldScale);
         this.test_body.collisionFilter.category = 3;
-
     }
-        
+
 
     // Display the block (maybe separate out view functions later?)
-    this.show = function(env) {
+    this.show = function (env) {
 
         var pos = this.body.position;
         var angle = this.body.angle;
 
         env.push(); //saves the current drawing style settings and transformations
-        env.translate(pos.x/worldScale, pos.y/worldScale);
+        env.translate(pos.x / worldScale, pos.y / worldScale);
         env.rectMode(env.CENTER);
         env.rotate(angle);
         env.stroke(30);
         env.fill(this.blockKind.blockColor);
-        
+
         // if(this.body.isSleeping) {
         //     env.fill();
         // }
-        
-        env.rect(0,0,this.w,this.h);
+
+        env.rect(0, 0, this.w, this.h);
         env.pop();
-        
+
 
     }
 
-    this.can_be_placed = function(){
-        colliding_bodies = Matter.Query.region(engine.world.bodies, this.test_body.bounds );
+    this.can_be_placed = function () {
+        colliding_bodies = Matter.Query.region(engine.world.bodies, this.test_body.bounds);
         return (colliding_bodies === undefined || colliding_bodies.length == 0)
     }
 
