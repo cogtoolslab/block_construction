@@ -17,6 +17,7 @@ var scoreGap = 0; // difference between nullScore and perfect score (F1 = 1)
 var rawScore = 0; // raw F1 score after phase end
 var currBonus = 0; // current bonus increment 
 var cumulBonus = 0; // cumulative bonus earned in experiment
+var points = 0;
 
 // Metadata
 var gameID = 'GAMEID_PLACEHOLDER';
@@ -91,6 +92,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     // trial.targetBlocks = [{"x": 1, "y": 0, "width": 2, "height": 4}, {"x": 5, "y": 0, "width": 2, "height": 4}, {"x": 2, "y": 4, "width": 4, "height": 2}];
 
     trial.score = cumulBonus;
+    trial.points = points;
     var timers = [];
 
     if (typeof trial.targetBlocks === 'undefined') {
@@ -104,12 +106,13 @@ jsPsych.plugins["block-silhouette"] = (function () {
       var html = '';
 
       html += '<div class="container pt-1" id="experiment">'
-      html += '<div class="container" id="text-bar">'
-      html += `<p id="bonus-meter">Bonus: $${cumulBonus.toFixed(2)} </p>`
-      html += '<p id="condition-heading">Build that tower!</p>'
-      html += '<p id="timer-text">00:00</p>'
+      html += '<div class="row" id="text-bar">'
+      html += `<div class="col-md-auto"><p class="scores">Points: <span id="points-meter">${points}</span> </p></div>`
+      html += `<div class="col-md-auto"><p class="scores">Bonus:<span id="bonus-meter">$${cumulBonus.toFixed(2)}</span> </p></div>`
+      html += '<div class="col"><p id="condition-heading">Build that tower!</p></div>'
+      html += '<div class="col-md-auto"><p id="timer-text">00:00</p></div>'
       html += '</div>'
-      html += '<div class="row">'
+      html += '<div class="row pt-1">'
       html += '<div class="col-md env-div" id="stimulus-window">'
       html += '</div>'
       html += '<div class="col-md env-div" id="environment-window">'
@@ -285,7 +288,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
     function getBonusEarned(rawScore, nullScore, scoreGap) {
       normedScore = getNormedScore(rawScore, nullScore, scoreGap);
       bonus = convertNormedScoreToBonus(normedScore);
-      console.log('bonus earned = ', bonus);
       return bonus;
     }
 
@@ -349,7 +351,9 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       if (allSleeping) {
 
-        sendData(eventType = 'settled', trial);
+        if (blocks.length > 0){
+         sendData(eventType = 'settled', trial);
+        }
 
         if (trial.condition == 'practice') {
 
@@ -381,8 +385,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
             setupEnvs(trial);
 
           } else {
-            // if practice score is good:
-            // move on
+          // if practice score is good:
+          // move on
             trial.practiceSuccess = true;
             sendData('practice_attempt', trial);
             occluder_text.textContent = practice_feedback_text['success'];
@@ -391,15 +395,23 @@ jsPsych.plugins["block-silhouette"] = (function () {
               endTrial(endReason = 'practice_success');
               clear_display_move_on();
             });
-          }
+          };
           occluder.style.display = "block";
         }
-        else { // if a normal trial, must be build phase, so move on trial
-          trial.completed = true;
-          endTrial(endReason = 'done-pressed');
-          jsPsych.pluginAPI.setTimeout(function () {
-            clear_display_move_on();
-          }, 2500);
+        else { // if a normal trial, must be build phase
+          if (blocks.length > 0) { //make sure they've actually built something
+            trial.completed = true;
+            endTrial(endReason = 'done-pressed');
+            jsPsych.pluginAPI.setTimeout(function () {
+              clear_display_move_on();
+            }, 2500);
+          }
+          else {
+            condition_heading.textContent = "Please build the structure!"
+            jsPsych.pluginAPI.setTimeout(function () {
+              condition_heading.textContent = "BUILD"
+            }, 2500);
+          };
         };
       } else {
         done_button.textContent = 'Wait';
@@ -428,13 +440,16 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       //calculate bonus earned
       rawScore = getCurrScore();
+      normedScore = getNormedScore(rawScore, nullScore, scoreGap);
+      trialPoints = Math.ceil(normedScore*100)
 
       if (trial.condition != 'practice') {
         currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
         cumulBonus += parseFloat(currBonus.toFixed(2)); // TODO: this cumulBonus needs to be bundled into data sent to mongo
+        points += trialPoints;
       }
 
-      normedScore = getNormedScore(rawScore, nullScore, scoreGap);
+
 
       // update official bonus tallies
       trial.F1Score = rawScore;
@@ -442,23 +457,24 @@ jsPsych.plugins["block-silhouette"] = (function () {
       trial.normedScore = normedScore;
       trial.currBonus = currBonus; // update trial var to reflect current bonus earned
       trial.score = cumulBonus; // update trial.score var to reflect cumulative bonustrial.nullScore = nullScore;
+      trial.points = points;
       sendData('settled', trial);
       
-      console.log('raw: ' + rawScore);
-      console.log('null: ' + nullScore);
-      console.log('scoregap: ' + scoreGap);
-      console.log(endReason + '. Normed Score: ' + normedScore);
-      console.log(endReason + '. Bonus: ' + currBonus);
+      // console.log('raw: ' + rawScore);
+      // console.log('null: ' + nullScore);
+      // console.log('scoregap: ' + scoreGap);
+      // console.log(endReason + '. Normed Score: ' + normedScore);
+      // console.log(endReason + '. Bonus: ' + currBonus);
 
       occluder.style.fontSize = 'large';
       if (currBonus == 0.05) {
-        occluder_text.textContent = '🤩 Amazing! $0.05 bonus!';
+        occluder_text.textContent = `🤩 Amazing! ${trialPoints} Points! $0.05 bonus!`;
       } else if (currBonus == 0.03) {
-        occluder_text.textContent = '😃 Great job! $0.03 bonus!';
+        occluder_text.textContent = `😃 Great job! ${trialPoints} Points! $0.03 bonus!`;
       } else if (currBonus == 0.01) {
-        occluder_text.textContent = '🙂 Not bad! $0.01 bonus!';
+        occluder_text.textContent = `🙂 Not bad! ${trialPoints} Points! $0.01 bonus!`;
       } else {
-        occluder_text.textContent = '😐 Sorry, no bonus this round.';
+        occluder_text.textContent = `😐 ${trialPoints} Points! Sorry, no bonus this round.`;
       }
       
       if (trial.condition != 'practice') {

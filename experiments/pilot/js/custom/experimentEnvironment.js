@@ -65,6 +65,7 @@ var block_data; // data to send to mongodb about every block placement
 var trial_data; // data to send to mongodb about every finished block structure
 var newSelectedBlockKind; // init this variable so we can inspect it in the console
 var newBlock; // init this variable so we can inspect it in the console
+var timeLastPlaced = Date.now()
 
 var blockDims = [
     [1, 2],
@@ -217,7 +218,9 @@ var setupEnvironment = function (env, trialObj = null) {
                     sleeping = blocks.filter((block) => block.body.isSleeping);
                     allSleeping = sleeping.length == blocks.length;
 
-                    if (allSleeping) {
+                    time_placing = Date.now();
+
+                    if (allSleeping || (time_placing - timeLastPlaced > 3000)) {
                         // SEND WORLD DATA AFTER PREVIOUS BLOCK HAS SETTLED
                         // Sends information about the state of the world prior to next block being placed
 
@@ -239,20 +242,23 @@ var setupEnvironment = function (env, trialObj = null) {
                             });
 
                             // send initial data about block placement
-                            sendData('initial', trialObj);
+                            jsPsych.pluginAPI.setTimeout(function () { // will be a rough estimate- not entirely useful and maybe misleading info
+                                sendData('initial', trialObj);
+                            }, 30);
+                            
 
                         } else {
                             disabledBlockPlacement = true;
                             jsPsych.pluginAPI.setTimeout(function () { // change color of bonus back to white
                                 disabledBlockPlacement = false;
-                            }, 200);
+                            }, 100);
                         }
 
                     } else {
                         disabledBlockPlacement = true;
                         jsPsych.pluginAPI.setTimeout(function () { // change color of bonus back to white
                             disabledBlockPlacement = false;
-                        }, 200);
+                        }, 100);
 
                     }
 
@@ -365,9 +371,9 @@ var sendData = function (eventType, trialObj) {
         normedScore: trialObj.normedScore,
         currBonus: trialObj.currBonus,
         score: trialObj.score,
+        points: trialObj.points,
         numTrials: trialObj.num_trials, 
         //trial vars
-        trialList: trialObj.trialList,
         targetName: trialObj.targetName,
         targetBlocks: trialObj.targetBlocks,
         prompt: trialObj.prompt, 
@@ -450,10 +456,16 @@ var sendData = function (eventType, trialObj) {
             // Send data about initial placement of a block
             // Could be in Build 
 
+            timeLastPlaced = Date.now();
+
             // test out sending newBlock info to server/mongodb
             propertyList = Object.keys(newBlock.body); // extract block properties;
             propertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
             blockProperties = _.pick(newBlock['body'], propertyList); // pick out all and only the block body properties in the property list
+
+            // get score of placement of block before gravity (likely a rough estimate)
+            var incrementalScore = trialObj.getCurrScore()
+            var normedIncrementalScore = trialObj.getNormedScore(trialObj.getCurrScore());
 
             // custom de-borkification
             vertices = _.map(newBlock.body.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
@@ -468,7 +480,9 @@ var sendData = function (eventType, trialObj) {
                 blockCenterX: newBlock['body']['position']['x'],
                 blockCenterY: newBlock['body']['position']['y'],
                 blockVertices: vertices,
-                blockBodyProperties: blockProperties
+                blockBodyProperties: blockProperties,
+                incrementalScore: incrementalScore,
+                normedIncrementalScore: normedIncrementalScore
             })
 
             // console.log('block_data', block_data);
