@@ -92,6 +92,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     // trial.targetBlocks = [{"x": 1, "y": 0, "width": 2, "height": 4}, {"x": 5, "y": 0, "width": 2, "height": 4}, {"x": 2, "y": 4, "width": 4, "height": 2}];
 
     trial.score = cumulBonus;
+    trial.points = points;
     var timers = [];
 
     if (typeof trial.targetBlocks === 'undefined') {

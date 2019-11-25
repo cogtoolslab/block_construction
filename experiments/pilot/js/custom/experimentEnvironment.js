@@ -460,6 +460,10 @@ var sendData = function (eventType, trialObj) {
             propertyList = _.pullAll(propertyList, ['parts', 'plugin', 'vertices', 'parent']);  // omit self-referential properties that cause max call stack exceeded error
             blockProperties = _.pick(newBlock['body'], propertyList); // pick out all and only the block body properties in the property list
 
+            // get score of placement of block before gravity (likely a rough estimate)
+            var incrementalScore = trialObj.getCurrScore()
+            var normedIncrementalScore = trialObj.getNormedScore(trialObj.getCurrScore());
+
             // custom de-borkification
             vertices = _.map(newBlock.body.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
 
@@ -473,7 +477,9 @@ var sendData = function (eventType, trialObj) {
                 blockCenterX: newBlock['body']['position']['x'],
                 blockCenterY: newBlock['body']['position']['y'],
                 blockVertices: vertices,
-                blockBodyProperties: blockProperties
+                blockBodyProperties: blockProperties,
+                incrementalScore: incrementalScore,
+                normedIncrementalScore: normedIncrementalScore
             })
 
             // console.log('block_data', block_data);
