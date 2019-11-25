@@ -242,7 +242,10 @@ var setupEnvironment = function (env, trialObj = null) {
                             });
 
                             // send initial data about block placement
-                            sendData('initial', trialObj);
+                            jsPsych.pluginAPI.setTimeout(function () { // will be a rough estimate- not entirely useful and maybe misleading info
+                                sendData('initial', trialObj);
+                            }, 30);
+                            
 
                         } else {
                             disabledBlockPlacement = true;

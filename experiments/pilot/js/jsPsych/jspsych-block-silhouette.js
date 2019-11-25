@@ -288,7 +288,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
     function getBonusEarned(rawScore, nullScore, scoreGap) {
       normedScore = getNormedScore(rawScore, nullScore, scoreGap);
       bonus = convertNormedScoreToBonus(normedScore);
-      console.log('bonus earned = ', bonus);
       return bonus;
     }
 
@@ -461,11 +460,11 @@ jsPsych.plugins["block-silhouette"] = (function () {
       trial.points = points;
       sendData('settled', trial);
       
-      console.log('raw: ' + rawScore);
-      console.log('null: ' + nullScore);
-      console.log('scoregap: ' + scoreGap);
-      console.log(endReason + '. Normed Score: ' + normedScore);
-      console.log(endReason + '. Bonus: ' + currBonus);
+      // console.log('raw: ' + rawScore);
+      // console.log('null: ' + nullScore);
+      // console.log('scoregap: ' + scoreGap);
+      // console.log(endReason + '. Normed Score: ' + normedScore);
+      // console.log(endReason + '. Bonus: ' + currBonus);
 
       occluder.style.fontSize = 'large';
       if (currBonus == 0.05) {

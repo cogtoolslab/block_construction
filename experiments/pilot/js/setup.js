@@ -6,7 +6,7 @@ var shuffleTrials = false; // set to False to preserve order in db; set to True 
 var survey_data = null;
 
 var practice_duration = 600;
-var explore_duration = 1;
+var explore_duration = 30;
 var build_duration = 60;
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -222,20 +222,20 @@ function setupGame () {
     }));
 
     // insert final instructions page between practice trial and first "real" experimental trial
-    //trials.unshift(readyTrial);    
+    trials.unshift(readyTrial);    
 
     // insert practice trial before the first "real" experimental trial
     var practiceTrial = _.extend(new PracticeTrial, additionalInfo, {
       trialNum : NaN
     });;
 
-    //trials.unshift(practiceTrial);
+    trials.unshift(practiceTrial);
     
     // Stick welcome trial at beginning & goodbye trial at end
     if (!turkInfo.previewMode) { 
-      //trials.unshift(welcomeTrial);
+      trials.unshift(welcomeTrial);
     } else {
-      //trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
+      trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
     }
     trials.push(goodbyeTrial); // goodbye and submit HIT
 
