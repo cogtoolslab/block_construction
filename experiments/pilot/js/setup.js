@@ -123,7 +123,7 @@ function TextPage () {
 function Trial () {
   this.randID = randID;
   this.type = 'block-silhouette';
-  this.iterationName = 'dataTesting';
+  this.iterationName = 'pilot0';
   this.prompt = "Please build the tower using as few blocks as possible.";
   this.dev_mode = false;
   this.explore_duration = explore_duration; // time limit in seconds
@@ -152,7 +152,7 @@ function Trial () {
 function PracticeTrial () {
   this.randID = randID;
   this.type = 'block-silhouette';
-  this.iterationName = 'dataTesting';
+  this.iterationName = 'pilot0';
   this.prompt = "Please build your tower using as few blocks as possible.";
   this.dev_mode = false;
   this.condition = 'practice';
@@ -249,7 +249,7 @@ function setupGame () {
     var multi_choice_page = _.extend(new MultiChoicePage, additionalInfo, {
       trialNum : NaN,
       randID: randID,
-      iterationName: 'dataTesting',
+      iterationName: 'pilot0',
       on_finish: function(data){
         sendData(eventType = 'survey_data',  _.extend(multi_choice_page, {
           multi_choice_data: data.responses,
@@ -261,7 +261,7 @@ function setupGame () {
     var text_page = _.extend(new TextPage, additionalInfo, {
       trialNum : NaN,
       randID: randID,
-      iterationName: 'dataTesting',
+      iterationName: 'pilot0',
       on_finish: function(data){
         survey_data = data;
       }
