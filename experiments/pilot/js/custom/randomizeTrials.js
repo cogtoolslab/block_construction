@@ -21,12 +21,10 @@ var generateConditionSequence = function (structureList, conditions = ['mental',
         
         if(!hasStreakOfLength(candidateSequence, 3) && comsEqual){
             found_good_sequence = true;
-            console.log('number of attempts:', nAttempts);
+            //console.log('number of attempts:', nAttempts);
             return candidateSequence;            
         }
-
     }
-
 }
 
 var generateStructureSequence = function (structureList) {
@@ -35,16 +33,20 @@ var generateStructureSequence = function (structureList) {
 }
 
 
-var generateTrialList = function (structureList, conditions = ['mental', 'physical'], miniblock_size = 4) {
+var setupRandomTrialList = function (trialTemplates, conditions = ['mental', 'physical'], miniblock_size = 4) {
 
-    conditions = generateConditionSequence(structureList, conditions = ['mental', 'physical'], miniblock_size = 4);
-    structures = generateStructureSequence(structureList);
+    conditions = generateConditionSequence(trialTemplates, conditions = ['mental', 'physical'], miniblock_size = 4);
+    structures = generateStructureSequence(trialTemplates);
 
-    trialList = {
-        conditions: conditions,
-        structures: structures
+    trialList = [];
+    for (i=0; i<trialTemplates.length; i++) {
+
+        _.extend(trialTemplates[i], {
+            condition: conditions[i],
+            trialNum: i
+        });
+
     }
-    return trialList
 
 }
 
@@ -93,7 +95,7 @@ var centerOfMass = function (inputArray, e) {
 }
 
 
-var structureList = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+// var structureList = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
 
-var trialList = generateTrialList(structureList);
-console.log(trialList);
+// var trialList = generateTrialList(structureList);
+// console.log(trialList);

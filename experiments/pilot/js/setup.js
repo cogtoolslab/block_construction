@@ -201,7 +201,7 @@ function setupGame () {
     //console.log(d);
 
     // get workerId, etc. from URL (so that it can be sent to the server)
-    var turkInfo = jsPsych.turk.turkInfo();    
+    var turkInfo = jsPsych.turk.turkInfo(); 
 
     // extra information to bind to trial list
     var additionalInfo = {
@@ -209,9 +209,15 @@ function setupGame () {
       version: d.versionInd,
       post_trial_gap: 1000, // add brief ITI between trials
       num_trials : numTrials,
-      on_finish : on_finish,
-      trialList: d.trials,
+      on_finish : on_finish
     };
+
+    var trialTemplates = d.trials;
+
+    setupRandomTrialList(trialTemplates); //randomize trial order and condition
+
+    console.log(trialTemplates);
+
     // Bind trial data with boilerplate
     var rawTrialList = shuffleTrials ? _.shuffle(d.trials) : d.trials;
     var trials = _.flatten(_.map(rawTrialList, function(trialData, i) {
@@ -222,20 +228,20 @@ function setupGame () {
     }));
 
     // insert final instructions page between practice trial and first "real" experimental trial
-    trials.unshift(readyTrial);    
+    //trials.unshift(readyTrial);    
 
     // insert practice trial before the first "real" experimental trial
     var practiceTrial = _.extend(new PracticeTrial, additionalInfo, {
       trialNum : NaN
     });;
 
-    trials.unshift(practiceTrial);
+    //trials.unshift(practiceTrial);
     
     // Stick welcome trial at beginning & goodbye trial at end
     if (!turkInfo.previewMode) { 
-      trials.unshift(welcomeTrial);
+      //trials.unshift(welcomeTrial);
     } else {
-      trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
+      //trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
     }
     trials.push(goodbyeTrial); // goodbye and submit HIT
 
