@@ -41,7 +41,8 @@ function Block(blockKind, x, y, rotated, testing_placement = false) {
         env.translate(pos.x / worldScale, pos.y / worldScale);
         env.rectMode(env.CENTER);
         env.rotate(angle);
-        env.stroke(30);
+        env.stroke([28,54,62]);
+        env.strokeWeight(2);
         env.fill(this.blockKind.blockColor);
 
         // if(this.body.isSleeping) {

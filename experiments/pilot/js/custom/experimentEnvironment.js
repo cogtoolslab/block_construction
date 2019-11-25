@@ -85,7 +85,7 @@ var block_colors = [
     ;
 */
 
-var buildColor = [179, 47, 10, 230];
+var buildColor = [179, 47, 10, 255];
 var exploreColor = [179, 47, 10, 180];
 var disabledColor = [100, 100, 100, 30];
 
@@ -390,7 +390,7 @@ var sendData = function (eventType, trialObj) {
             dataType: eventType,
             eventType: eventType
         });
-        console.log(survey_data);
+        //console.log(survey_data);
         socket.emit('currentData', survey_data);
 
     } else {
@@ -558,7 +558,7 @@ var sendData = function (eventType, trialObj) {
                 numBlocks: blocks.length //number of blocks before reset pressed
             });
 
-            console.log('reset_data', reset_data);
+            //console.log('reset_data', reset_data);
             socket.emit('currentData', reset_data);
 
         } else if (eventType == 'practice_attempt' || eventType == 'explore_end' || eventType == 'explore_end' || eventType == 'trial_end') {
@@ -617,7 +617,7 @@ var sendData = function (eventType, trialObj) {
                     exploreResets: trialObj.exploreResets,
                     nPracticeAttempts: trialObj.nPracticeAttempts,
                 });
-                console.log('trial_end_data: ', trial_end_data);
+                //console.log('trial_end_data: ', trial_end_data);
                 socket.emit('currentData', trial_end_data);
 
             } /* else if (eventType == 'build_end') {
@@ -661,7 +661,7 @@ var sendData = function (eventType, trialObj) {
                     exploreResets: trialObj.exploreResets,
                     nPracticeAttempts: trialObj.nPracticeAttempts
                 });
-                console.log('trial_end_data: ', trial_end_data);
+                //console.log('trial_end_data: ', trial_end_data);
                 socket.emit('currentData', trial_end_data);
 
             };

@@ -89,7 +89,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
   plugin.trial = function (display_element, trial) {
 
     // Make target a stonehenge
-    // trial.targetBlocks = [{"x": 1, "y": 0, "width": 2, "height": 4}, {"x": 5, "y": 0, "width": 2, "height": 4}, {"x": 2, "y": 4, "width": 4, "height": 2}];
+    //trial.targetBlocks = [{"x": 1, "y": 0, "width": 2, "height": 4}, {"x": 5, "y": 0, "width": 2, "height": 4}, {"x": 2, "y": 4, "width": 4, "height": 2}];
 
     trial.score = cumulBonus;
     trial.points = points;
@@ -115,13 +115,13 @@ jsPsych.plugins["block-silhouette"] = (function () {
       html += '<div class="row pt-1">'
       html += '<div class="col-md env-div" id="stimulus-window">'
       html += '</div>'
-      html += '<div class="col-md env-div" id="environment-window">'
+      html += '<div class="col-md env-div pl-2" id="environment-window">'
       html += '</div>'
       html += '</div>'
       html += '<div class="row pt-2" id="experiment-button-col">'
       html += '<div class="col-auto ml-auto button-col" id="env-buttons">'
-      html += '<button type="button" class="btn btn-success" id="done" value="done">Done</button>'
-      html += '<button type="button" class="btn btn-danger" id="reset" value="reset">Reset</button>'
+      html += '<button type="button" class="btn btn-success btn-lg" id="done" value="done">Done</button>'
+      html += '<button type="button" class="btn btn-danger btn-lg" id="reset" value="reset">Reset</button>'
       html += '</div>'
       html += '</div>'
       html += '<div class="row pt-2" id="trial-info">'
@@ -131,7 +131,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       html += '</div>'
       html += '</div>'
       if (trial.condition != 'practice') {
-        html += '<div id="trial-counter"> <p2> trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + ' of ' + trial.num_trials + '</p2></div>'
+        html += '<div id="trial-counter"> <p> trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + ' of ' + trial.num_trials + '</p></div>'
       }
 
       // introduce occluder to make the inter-trial transitions less jarring
@@ -192,7 +192,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
         occluder_text.textContent = 'Trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + ". " + mental_explore_text;
         condition_heading.textContent = "THINK"
         Array.prototype.forEach.call(env_divs, env_div => {
-          env_div.style.backgroundColor = "#FE5D26";
+          env_div.style.backgroundColor = "#E23686";
         });
 
       }
@@ -202,7 +202,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
         occluder_text.textContent = 'Trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + ". " + physical_explore_text;
         condition_heading.textContent = "PRACTICE";
         Array.prototype.forEach.call(env_divs, env_div => {
-          env_div.style.backgroundColor = "#6DEBFF";
+          env_div.style.backgroundColor = "#4DE5F9";
         });
       }
       // set up p5 envs
@@ -226,7 +226,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       occluder_text.textContent = build_text;
       condition_heading.textContent = "BUILD";
       Array.prototype.forEach.call(env_divs, env_div => {
-        env_div.style.backgroundColor = "#75E559";
+        env_div.style.backgroundColor = "#FFD819";
       });
 
       // set null score for normed score calculation
@@ -441,7 +441,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       //calculate bonus earned
       rawScore = getCurrScore();
       normedScore = getNormedScore(rawScore, nullScore, scoreGap);
-      trialPoints = Math.ceil(normedScore*100)
+      trialPoints = Math.max(Math.ceil(normedScore*100), 0);
 
       if (trial.condition != 'practice') {
         currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
@@ -563,7 +563,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       condition_heading.textContent = "PRACTICE";
 
       Array.prototype.forEach.call(env_divs, env_div => {
-        env_div.style.backgroundColor = "#FFFF25";
+        env_div.style.backgroundColor = "#FFD819";
       });
 
       // set null score for normed score calculation
