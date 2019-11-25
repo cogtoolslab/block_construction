@@ -12,6 +12,7 @@ body {
     margin: 100;
     padding: 0;
     color: #1c363e;
+    font-family: 'Francois One', sans-serif;
 }
 
 p {
@@ -38,7 +39,7 @@ p {
 #occluder-text {
     display: inline-block;
     text-align: center;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Francois One', sans-serif;
     font-size: 28px;
     line-height: 1.8em;
 }

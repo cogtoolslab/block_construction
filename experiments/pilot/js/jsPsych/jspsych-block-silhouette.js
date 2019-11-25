@@ -131,7 +131,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       html += '</div>'
       html += '</div>'
       if (trial.condition != 'practice') {
-        html += '<div id="trial-counter"> <p> trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + ' of ' + trial.num_trials + '</p></div>'
+        html += '<div id="trial-counter"> <p> Trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + ' of ' + trial.num_trials + '</p></div>'
       }
 
       // introduce occluder to make the inter-trial transitions less jarring
