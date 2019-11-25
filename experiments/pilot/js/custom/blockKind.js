@@ -19,22 +19,23 @@ function BlockKind(w,h,blockColor){
         env.push();
         env.rectMode(env.CENTER);
         env.fill(this.blockColor);
-        env.stroke(100);
+        env.stroke([60,90,110]);
+        env.strokeWeight(2);
         env.rect(x,y,this.w*sF,this.h*sF)
         env.pop();
 
     }
 
-    this.showGhost = function(env, mouseX, mouseY, rotated, disabled = false) {
+    this.showGhost = function(env, mouseX, mouseY, rotated, disabledBlockPlacement = false) {
 
         env.push();
         env.translate(mouseX, mouseY);
         env.rectMode(env.CENTER);
-        env.stroke(100);
-        fillColor = disabled ? [100, 100, 100, 100] : [...this.blockColor];
+        env.stroke([28,54,62,100]);
+        env.strokeWeight(2);
+        fillColor = disabledBlockPlacement ? [100, 100, 100, 100] : [...this.blockColor];
         fillColor[3] = 130;
         env.fill(fillColor);
-
         if(rotated){
             env.rect(0,0,this.h*sF,this.w*sF);
         } else {

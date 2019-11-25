@@ -1,7 +1,9 @@
 var callback;
 var score = 0;
+var points = 0;
 var numTrials = 16;
 var shuffleTrials = false; // set to False to preserve order in db; set to True if you want to shuffle trials from db (scrambled10)
+var survey_data = null;
 
 var practice_duration = 600;
 var explore_duration = 30;
@@ -41,8 +43,8 @@ var instructionsHTML = {
 
 var secondInstructionsHTML = {
   'str1' : "<p> Note that in the main experiment you will not be shown where to place each block. However, there will be a small tick mark on the center of the floor to help you make sure your tower is in the correct location.</p>",
-  'str2' : "<p> In the main experiment, you will also have "+explore_duration+" seconds to <b>prepare</b> before reconstructing each tower.</p> <p> There are two ways we will ask you to prepare: <b><font color='#FE5D26'>THINKING</font></b> and <b><font color='#6DEBFF'>PRACTICING</font></b>. <p> This is what the <b><font color='#FE5D26'>THINKING</font></b> preparation phase looks like: </p><div><img src='assets/internalDemo.gif' id='example_screen'></div> You will be able to think about how you will build your tower, you will not be able to place any blocks. <p> This is what the <b><font color='#6DEBFF'>PRACTICING</font></b> preparation phase looks like: </p><div><img src='assets/externalDemo.gif' id='example_screen'></div> You will get to practice building your tower before the final building phase. </p> <p> After your preparation time is up, you will move onto the <b><font color='#75E559'>BUILDING</font></b> phase and you will have "+build_duration+" seconds to build your tower. The more accurate your tower, the larger the bonus you will receive. If you are finished with your tower before time runs out, press 'Done' to find out how much bonus you earned for that trial.</p>",
-  'str3' : "<p> To summarize, there are TWO stages in each trial: </p><p><ul style='list-style: none;'><li> 1. <b>PREPARATION,</b> either by <b><font color='#FE5D26'>THINKING</font></b> or by <b><font color='#6DEBFF'>PRACTICING</font></b>.</li> <li>2. <b><font color='#75E559'>BUILDING,</font></b> when you can earn a bonus for accuracy. </li></ul> <p> That's it! Click Next to begin the first trial. </p>"
+  'str2' : "<p> In the main experiment, you will also have "+explore_duration+" seconds to <b>prepare</b> before reconstructing each tower.</p> <p> There are two ways we will ask you to prepare: <b><font color='#E23686'>THINKING</font></b> and <b><font color='#4DE5F9'>PRACTICING</font></b>. <p> This is what the <b><font color='#E23686'>THINKING</font></b> preparation phase looks like: </p><div><img src='assets/internalDemo.gif' id='example_screen'></div> You will be able to think about how you will build your tower, you will not be able to place any blocks. <p> This is what the <b><font color='#4DE5F9'>PRACTICING</font></b> preparation phase looks like: </p><div><img src='assets/externalDemo.gif' id='example_screen'></div> You will get to practice building your tower before the final building phase. </p> <p> After your preparation time is up, you will move onto the <b><font color='#FFD819'>BUILDING</font></b> phase and you will have "+build_duration+" seconds to build your tower. The more accurate your tower, the larger the bonus you will receive. If you are finished with your tower before time runs out, press 'Done' to find out how much bonus you earned for that trial.</p>",
+  'str3' : "<p> To summarize, there are TWO stages in each trial: </p><p><ul style='list-style: none;'><li> 1. <b>PREPARATION,</b> either by <b><font color='#E23686'>THINKING</font></b> or by <b><font color='#4DE5F9'>PRACTICING</font></b>.</li> <li>2. <b><font color='#FFD819'>BUILDING,</font></b> when you can earn a bonus for accuracy. </li></ul> <p> That's it! Click Next to begin the first trial. </p>"
 }
 
 var welcomeTrial = {
@@ -73,9 +75,9 @@ var previewTrial = {
   allow_keys: false  
 }
 
-var multi_choice_page = {
-  type: 'survey-multi-choice',
-  questions: [
+function MultiChoicePage () {
+  this.type = 'survey-multi-choice';
+  this.questions = [
     {
       prompt: "What is your sex?", 
       options: ["Male", "Female"], 
@@ -104,20 +106,17 @@ var multi_choice_page = {
       required: true,
       name: 'fun'
     }    
-  ], 
-  randomize_question_order: true
+  ];
+  this.randomize_question_order = true;
 };
 
-var text_page = {
-  type: 'survey-text',
-  questions: [
+function TextPage () {
+  this.type = 'survey-text';
+  this.questions = [
     {name: 'comments', prompt: "Thank you for participating in our study! Any comments?", rows: 5, columns: 40, placeholder: "How was that for you? Did you notice any issues?"},
     {name: 'age', prompt: "How old are you?", placeholder: ""}, 
     {name: 'strategies', prompt: "Did you use any strategies?", rows: 5, columns: 50,  placeholder: ""}
-  ],
-  on_finish: function(data){
-    console.log(data)
-  }
+  ];
 };
 
 // define trial object with boilerplate
@@ -144,7 +143,8 @@ function Trial () {
   this.buildStartTime = 0;
   this.buildFinishTime = 0;
   this.trialBonus = 0;
-  this.score = 0;
+  this.score = score;
+  this.points = 0;
   this.nPracticeAttempts = NaN;
   this.practiceAttempt = 0
 };
@@ -164,7 +164,8 @@ function PracticeTrial () {
   this.F1Score = 0; // F1 score
   this.normedScore = 0; // WANT TO RECORD THIS FOR EVERY ATTEMPT IN PRACTICE
   this.currBonus = 0; // current bonus
-  this.score = 0; // cumulative bonus 
+  this.score = score; // cumulative bonus 
+  this.points = 0;
   this.nullScore = NaN;
   this.scoreGap = NaN;
   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'. 
@@ -185,11 +186,12 @@ function setupGame () {
   // number of trials to fetch from database is defined in ./app.js
   var socket = io.connect();
   
-
   // on_finish is called at the very very end of the experiment
   var on_finish = function(data) {    
     score = data.score ? data.score : score; // updates the score variable    
+    points = data.points ? data.points : points;
     console.log('updated global score to: ', score);
+    console.log('updated global points to: ', points);
   };
 
   // Start once server initializes us
@@ -199,7 +201,7 @@ function setupGame () {
     //console.log(d);
 
     // get workerId, etc. from URL (so that it can be sent to the server)
-    var turkInfo = jsPsych.turk.turkInfo();    
+    var turkInfo = jsPsych.turk.turkInfo(); 
 
     // extra information to bind to trial list
     var additionalInfo = {
@@ -207,10 +209,13 @@ function setupGame () {
       version: d.versionInd,
       post_trial_gap: 1000, // add brief ITI between trials
       num_trials : numTrials,
-      on_finish : on_finish,
-      trialList: d.trials,
+      on_finish : on_finish
     };
-    
+
+    var trialTemplates = d.trials;
+
+    setupRandomTrialList(trialTemplates); //randomize trial order and condition
+
     // Bind trial data with boilerplate
     var rawTrialList = shuffleTrials ? _.shuffle(d.trials) : d.trials;
     var trials = _.flatten(_.map(rawTrialList, function(trialData, i) {
@@ -221,7 +226,7 @@ function setupGame () {
     }));
 
     // insert final instructions page between practice trial and first "real" experimental trial
-    //trials.unshift(readyTrial);    
+    trials.unshift(readyTrial);    
 
     // insert practice trial before the first "real" experimental trial
     var practiceTrial = _.extend(new PracticeTrial, additionalInfo, {
@@ -232,20 +237,39 @@ function setupGame () {
     
     // Stick welcome trial at beginning & goodbye trial at end
     if (!turkInfo.previewMode) { 
-      //trials.unshift(welcomeTrial);
+      trials.unshift(welcomeTrial);
     } else {
-      //trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
+      trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
     }
     trials.push(goodbyeTrial); // goodbye and submit HIT
 
     // print out trial list    
     //console.log(trials);
 
-    trials.push(multi_choice_page);
-    trials.push(text_page);
+    var multi_choice_page = _.extend(new MultiChoicePage, additionalInfo, {
+      trialNum : NaN,
+      randID: randID,
+      iterationName: 'dataTesting',
+      on_finish: function(data){
+        sendData(eventType = 'survey_data',  _.extend(multi_choice_page, {
+          multi_choice_data: data.responses,
+          text_data: survey_data.responses
+        }));
+      }
+    });
 
-    //trials.unshift(multi_choice_page);
-    //trials.unshift(text_page)
+    var text_page = _.extend(new TextPage, additionalInfo, {
+      trialNum : NaN,
+      randID: randID,
+      iterationName: 'dataTesting',
+      on_finish: function(data){
+        survey_data = data;
+      }
+    });
+
+    trials.push(text_page);
+    trials.push(multi_choice_page);
+   
       
     jsPsych.init({
       timeline: trials,

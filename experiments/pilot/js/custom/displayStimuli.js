@@ -24,6 +24,7 @@ function showBlock(p5stim, block, individual_blocks = false){
     p5stim.stroke([28,54,62]);
     p5stim.fill([28,54,62]);
     if (individual_blocks) {
+        p5stim.strokeWeight(2);
         p5stim.stroke(150);
         p5stim.fill([200,200,200,200]);
     }
@@ -43,7 +44,8 @@ function showFloor(p5stim){
     p5stim.translate(floorX, floorY);
     p5stim.rectMode(p5stim.CENTER);
     p5stim.stroke(220);
-    p5stim.fill([12,27,36]);
+    p5stim.strokeWeight(2);
+    p5stim.fill([28,54,62]);
     p5stim.rect(0,0,floorWidth,floorHeight);
     p5stim.pop();
     showMarker(p5stim);
