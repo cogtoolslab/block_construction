@@ -9,11 +9,14 @@ var practice_duration = 600;
 var explore_duration = 30;
 var build_duration = 60;
 
+var iterationName = 'pilot1';
+
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 console.log(randID);
 function submit2AMT() {
-  console.log('attempting to send data to mturk! score = ', score);
-  jsPsych.turk.submitToTurk({'score':score});
+  scoreToTurk = Math.max(score,cumulBonus);
+  console.log('attempting to send data to mturk! score = ', scoreToTurk);
+  jsPsych.turk.submitToTurk({'score':scoreToTurk});
 }
 
 var goodbyeTrial = {
@@ -119,16 +122,21 @@ function TextPage () {
   ];
 };
 
+var allTrialInfo = {
+  randID: randID,
+  iterationName: iterationName,
+  explore_duration: explore_duration,
+  practice_duration: practice_duration,
+  build_duration: build_duration,
+  score: score,
+  points: points,
+};
+
 // define trial object with boilerplate
 function Trial () {
-  this.randID = randID;
   this.type = 'block-silhouette';
-  this.iterationName = 'pilot0';
   this.prompt = "Please build the tower using as few blocks as possible.";
   this.dev_mode = false;
-  this.explore_duration = explore_duration; // time limit in seconds
-  this.build_duration = build_duration; // time limit in seconds
-  this.practice_duration = practice_duration; // time limit in seconds
   this.F1Score = 0; // F1 score
   this.normedScore = 0;
   this.currBonus = 0; // current bonus
@@ -136,31 +144,24 @@ function Trial () {
   this.scoreGap = NaN;
   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'.
   this.phase = 'NA';
-  this.completed = false;
   this.buildResets = 0;
   this.exploreResets = 0;
   this.exploreStartTime = 0;
   this.buildStartTime = 0;
   this.buildFinishTime = 0;
   this.trialBonus = 0;
-  this.score = score;
-  this.points = 0;
+  this.completed = false,
   this.nPracticeAttempts = NaN;
   this.practiceAttempt = 0
 };
 
 function PracticeTrial () {
-  this.randID = randID;
   this.type = 'block-silhouette';
-  this.iterationName = 'pilot0';
   this.prompt = "Please build your tower using as few blocks as possible.";
   this.dev_mode = false;
   this.condition = 'practice';
   this.targetBlocks = practice_structure.blocks;
   this.targetName = 'any';
-  this.explore_duration = explore_duration; // time limit in seconds
-  this.build_duration = build_duration; // time limit in seconds
-  this.practice_duration = practice_duration; // time limit in seconds
   this.F1Score = 0; // F1 score
   this.normedScore = 0; // WANT TO RECORD THIS FOR EVERY ATTEMPT IN PRACTICE
   this.currBonus = 0; // current bonus
@@ -181,6 +182,69 @@ function PracticeTrial () {
   
 };
 
+
+// // define trial object with boilerplate
+// function Trial () {
+//   this.randID = randID;
+//   this.type = 'block-silhouette';
+//   this.iterationName = iterationName;
+//   this.prompt = "Please build the tower using as few blocks as possible.";
+//   this.dev_mode = false;
+//   this.explore_duration = explore_duration; // time limit in seconds
+//   this.build_duration = build_duration; // time limit in seconds
+//   this.practice_duration = practice_duration; // time limit in seconds
+//   this.F1Score = 0; // F1 score
+//   this.normedScore = 0;
+//   this.currBonus = 0; // current bonus
+//   this.nullScore = NaN;
+//   this.scoreGap = NaN;
+//   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'.
+//   this.phase = 'NA';
+//   this.completed = false;
+//   this.buildResets = 0;
+//   this.exploreResets = 0;
+//   this.exploreStartTime = 0;
+//   this.buildStartTime = 0;
+//   this.buildFinishTime = 0;
+//   this.trialBonus = 0;
+//   this.score = score;
+//   this.points = 0;
+//   this.nPracticeAttempts = NaN;
+//   this.practiceAttempt = 0
+// };
+
+// function PracticeTrial () {
+//   this.randID = randID;
+//   this.type = 'block-silhouette';
+//   this.iterationName = iterationName;
+//   this.prompt = "Please build your tower using as few blocks as possible.";
+//   this.dev_mode = false;
+//   this.condition = 'practice';
+//   this.targetBlocks = practice_structure.blocks;
+//   this.targetName = 'any';
+//   this.explore_duration = explore_duration; // time limit in seconds
+//   this.build_duration = build_duration; // time limit in seconds
+//   this.practice_duration = practice_duration; // time limit in seconds
+//   this.F1Score = 0; // F1 score
+//   this.normedScore = 0; // WANT TO RECORD THIS FOR EVERY ATTEMPT IN PRACTICE
+//   this.currBonus = 0; // current bonus
+//   this.score = score; // cumulative bonus 
+//   this.points = 0;
+//   this.nullScore = NaN;
+//   this.scoreGap = NaN;
+//   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'. 
+//   this.buildResets = 0; 
+//   this.exploreResets = 0;
+//   this.nPracticeAttempts = 0;
+//   this.practiceAttempt = 0; // indexing starts at 0.
+//   this.trialNum = NaN;
+//   this.exploreStartTime = 0;
+//   this.buildStartTime = 0;
+//   this.buildFinishTime = 0;
+//   this.phase = 'practice'
+  
+// };
+
 function setupGame () {
 
   // number of trials to fetch from database is defined in ./app.js
@@ -188,7 +252,7 @@ function setupGame () {
   
   // on_finish is called at the very very end of the experiment
   var on_finish = function(data) {    
-    score = data.score ? data.score : score; // updates the score variable    
+    score = Math.max(cumulBonus, score); // updates the score variable    
     points = data.points ? data.points : points;
     console.log('updated global score to: ', score);
     console.log('updated global points to: ', points);
@@ -219,7 +283,7 @@ function setupGame () {
     // Bind trial data with boilerplate
     var rawTrialList = shuffleTrials ? _.shuffle(d.trials) : d.trials;
     var trials = _.flatten(_.map(rawTrialList, function(trialData, i) {
-      var trial = _.extend(new Trial, trialData, additionalInfo, {
+      var trial = _.extend(new Trial, trialData, allTrialInfo, additionalInfo, {
         trialNum : i
       });
       return trial
@@ -229,7 +293,7 @@ function setupGame () {
     trials.unshift(readyTrial);    
 
     // insert practice trial before the first "real" experimental trial
-    var practiceTrial = _.extend(new PracticeTrial, additionalInfo, {
+    var practiceTrial = _.extend(new PracticeTrial, allTrialInfo, additionalInfo, {
       trialNum : NaN
     });;
 
@@ -241,19 +305,19 @@ function setupGame () {
     } else {
       trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
     }
-    trials.push(goodbyeTrial); // goodbye and submit HIT
 
     // print out trial list    
     //console.log(trials);
 
-    var multi_choice_page = _.extend(new MultiChoicePage, additionalInfo, {
+    var multi_choice_page = _.extend(new MultiChoicePage, allTrialInfo, additionalInfo, {
       trialNum : NaN,
       randID: randID,
-      iterationName: 'pilot0',
+      iterationName: iterationName,
       on_finish: function(data){
-        sendData(eventType = 'survey_data',  _.extend(multi_choice_page, {
+        sendData(eventType = 'survey_data',  _.extend(multi_choice_page, allTrialInfo, {
           multi_choice_data: data.responses,
-          text_data: survey_data.responses
+          text_data: survey_data.responses,
+          iterationName: iterationName
         }));
       }
     });
@@ -261,7 +325,7 @@ function setupGame () {
     var text_page = _.extend(new TextPage, additionalInfo, {
       trialNum : NaN,
       randID: randID,
-      iterationName: 'pilot0',
+      iterationName: iterationName,
       on_finish: function(data){
         survey_data = data;
       }
@@ -269,6 +333,8 @@ function setupGame () {
 
     trials.push(text_page);
     trials.push(multi_choice_page);
+    
+    trials.push(goodbyeTrial); // goodbye and submit HIT
    
       
     jsPsych.init({

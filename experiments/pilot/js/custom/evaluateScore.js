@@ -96,8 +96,8 @@ function getPrecision(im1, im2) {
   fp = math.subtract(arr2,prod); // false positives = reconstruction minus matches
   numerator = math.sum(prod);  
   denominator = math.sum(numerator,math.sum(fp));
-  score = math.divide(numerator,denominator);
-  return score;
+  score_to_be_returned = math.divide(numerator,denominator);
+  return score_to_be_returned;
 } 
 
 function getRecall(im1, im2) {
@@ -109,8 +109,8 @@ function getRecall(im1, im2) {
   fn = math.subtract(arr1,prod); // false negatives = all target pixels minus matches
   numerator = math.sum(prod);
   denominator = math.sum(math.sum(prod),math.sum(fn));
-  score = math.divide(numerator,denominator);  
-  return score;  
+  score_to_be_returned = math.divide(numerator,denominator);  
+  return score_to_be_returned;  
 } 
 
 function F1Score(im1,im2) {
@@ -126,8 +126,8 @@ function F1Score(im1,im2) {
     // console.log('recall = ', recall);
     // console.log('precision = ', precision);
     // console.log('quotient = ', quotient);  
-    score = math.multiply(2,quotient);
-  return score
+    score_to_be_returned = math.multiply(2,quotient);
+  return score_to_be_returned
 }
 
 function getScore(canvas0, canvas1, agprop, imsize) {
@@ -149,7 +149,7 @@ function getScore(canvas0, canvas1, agprop, imsize) {
   t = Array.from(targs);
   r = Array.from(recons);
 
-  score = F1Score(t,r);
-  return score;
+  score_to_be_returned = F1Score(t,r);
+  return score_to_be_returned;
 
 }
