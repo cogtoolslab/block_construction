@@ -370,7 +370,7 @@ var sendData = function (eventType, trialObj) {
         F1Score: trialObj.F1Score,
         normedScore: trialObj.normedScore,
         currBonus: trialObj.currBonus,
-        score: trialObj.score,
+        score: cumulBonus,
         points: trialObj.points,
         numTrials: trialObj.num_trials, 
         //trial vars
@@ -661,7 +661,7 @@ var sendData = function (eventType, trialObj) {
                     exploreResets: trialObj.exploreResets,
                     nPracticeAttempts: trialObj.nPracticeAttempts
                 });
-                //console.log('trial_end_data: ', trial_end_data);
+                console.log('trial_end_data: ', trial_end_data);
                 socket.emit('currentData', trial_end_data);
 
             };

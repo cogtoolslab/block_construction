@@ -90,8 +90,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     // Make target a stonehenge
     //trial.targetBlocks = [{"x": 1, "y": 0, "width": 2, "height": 4}, {"x": 5, "y": 0, "width": 2, "height": 4}, {"x": 2, "y": 4, "width": 4, "height": 2}];
-
-    trial.score = cumulBonus;
+    trial.score = score;
     trial.points = points;
     var timers = [];
 
@@ -258,8 +257,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
       // call this to get: 
       // (1) F1 score for target vs. blank at beginning of each phase
       // (2) F1 score for target vs. blank at end of each phase
-      score = getScore('defaultCanvas0', 'defaultCanvas1', 0.75, 64);
-      return score;
+      current_score_to_return = getScore('defaultCanvas0', 'defaultCanvas1', 0.75, 64);
+      return current_score_to_return;
     }
 
     function getNormedScore(rawScore, nullScore, scoreGap) {
