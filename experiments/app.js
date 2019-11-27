@@ -39,22 +39,24 @@ try {
 // serve stuff that the client requests
 app.get('/*', (req, res) => {
   var id = req.query.workerId;
+  // console.log(req);
   // Let them through if researcher, or in 'testing' mode
   var isResearcher = _.includes(researchers, id);
-  if (!id || id === 'undefined' || (isResearcher && !blockResearcher)) {
-    serveFile(req, res);
-  } else if (!valid_id(id)) {
-    // If invalid id, block them
-    return handleInvalidID(req, res);
-    console.log('invalid id, blocked');
-  } else {
-    // If the database shows they've already participated, block them
-    // If not a repeat worker, then send client stims
-    console.log('neither invalid nor blank id, check if repeat worker');
-    checkPreviousParticipant(id, (exists) => {
-      return exists ? handleDuplicate(req, res) : serveFile(req, res);
-    });
-  }
+  // if (!id || id === 'undefined' || (isResearcher && !blockResearcher)) {
+  //   serveFile(req, res);
+  // } else if (!valid_id(id)) {
+  //   // If invalid id, block them
+  //   return handleInvalidID(req, res);
+  //   console.log('invalid id, blocked');
+  // } else {
+  //   // If the database shows they've already participated, block them
+  //   // If not a repeat worker, then send client stims
+  //   console.log('neither invalid nor blank id, check if repeat worker');
+  //   checkPreviousParticipant(id, (exists) => {
+  //     return exists ? handleDuplicate(req, res) : serveFile(req, res);
+  //   });
+  // }
+  serveFile(req, res);
 });
 
 
@@ -63,9 +65,23 @@ io.on('connection', function (socket) {
   // Recover query string information and set condition
   var hs = socket.request;
   var query = require('url').parse(hs.headers.referer, true).query;
+  var id = query.workerId;
+  
+  var isResearcher = _.includes(researchers, id);
+
+  if (isResearcher && !blockResearcher){
+    initializeWithTrials(socket)
+  } else if (!valid_id(id)) {
+    console.log('invalid id, blocked');
+
+  } else {
+    checkPreviousParticipant(id, (exists) => {
+      return exists ? handleDuplicate(socket) : initializeWithTrials(socket);
+    });
+  }
 
   // Send client stims
-  initializeWithTrials(socket);
+ // initializeWithTrials(socket);
 
   socket.on('currentData', function (data) {
     console.log(data.dataType + ' data: ' + JSON.stringify(data));
@@ -80,20 +96,24 @@ var serveFile = function (req, res) {
   return res.sendFile(fileName, { root: __dirname });
 };
 
-var handleDuplicate = function (req, res) {
-  console.log("duplicate id: blocking request");
-  res.sendFile('duplicate.html', { root: __dirname });
-  return res.redirect('/duplicate.html');
+// var handleDuplicate = function (req, res) {
+//   console.log("duplicate id: blocking request");
+//   res.sendFile('duplicate.html', { root: __dirname });
+//   return res.redirect('/duplicate.html');
+// };
 
+var handleDuplicate = function (socket) {
+  console.log("duplicate id: blocking request");
+  socket.emit('redirect', '/duplicate.html');
 };
 
 var valid_id = function (id) {
   return (id.length <= 15 && id.length >= 12) || id.length == 41;
 };
 
-var handleInvalidID = function (req, res) {
+var handleInvalidID = function (socket) {
   console.log("invalid id: blocking request");
-  return res.redirect('/invalid.html');
+  socket.emit('redirect', '/invalid.html');
 };
 
 function checkPreviousParticipant(workerId, callback) {

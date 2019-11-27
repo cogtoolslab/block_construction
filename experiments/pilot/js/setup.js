@@ -13,6 +13,8 @@ var iterationName = 'pilot1';
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 console.log(randID);
+
+
 function submit2AMT() {
   scoreToTurk = Math.max(score,cumulBonus);
   console.log('attempting to send data to mturk! score = ', scoreToTurk);
@@ -258,6 +260,10 @@ function setupGame () {
     console.log('updated global points to: ', points);
   };
 
+  socket.on('redirect', function(d){
+    window.location.href = d;
+  });
+
   // Start once server initializes us
   socket.on('onConnected', function(d) {
 
@@ -266,6 +272,8 @@ function setupGame () {
 
     // get workerId, etc. from URL (so that it can be sent to the server)
     var turkInfo = jsPsych.turk.turkInfo(); 
+
+    console.log(turkInfo.workerId);
 
     // extra information to bind to trial list
     var additionalInfo = {
