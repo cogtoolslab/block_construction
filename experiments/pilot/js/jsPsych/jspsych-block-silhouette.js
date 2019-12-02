@@ -236,6 +236,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     }
 
     var startPractice = function () {
+      trial.buildStartTime = Date.now()
       occluder.style.display = "none";
       timer(trial.practice_duration, function () {
         clearP5Envs();
@@ -274,12 +275,12 @@ jsPsych.plugins["block-silhouette"] = (function () {
     function convertNormedScoreToBonus(normedScore) {
       // convert normedScore (ranges between 0 and 1)
       // to bonus amount (in cents)      
-      highThresh = 0.93;
-      midThresh = 0.85;
-      lowThresh = 0.7;
-      if (normedScore > highThresh) { bonus = 0.05; }
-      else if (normedScore > midThresh) { bonus = 0.03; }
-      else if (normedScore > lowThresh) { bonus = 0.01; }
+      // highThresh = 0.93;
+      // midThresh = 0.85;
+      // lowThresh = 0.7;
+      if (normedScore > trial.bonusThresholdHigh) { bonus = 0.05; }
+      else if (normedScore > trial.bonusThresholdMid) { bonus = 0.03; }
+      else if (normedScore > trial.bonusThresholdLow) { bonus = 0.01; }
       else { bonus = 0; console.log('No bonus earned.') }
       return bonus;
     }
@@ -348,7 +349,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       sleeping = blocks.filter((block) => block.body.isSleeping);
       allSleeping = sleeping.length == blocks.length;
 
-      if (allSleeping) {
+      if (allSleeping) { // Only do something if world in resting state
 
         if (blocks.length > 0){
          sendData(eventType = 'settled', trial);
@@ -365,6 +366,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
 
           trial.nPracticeAttempts += 1;
+          trial.buildFinishTime = Date.now();
           sendData(eventType = 'trial_end', trial);
           trial.practiceAttempt += 1;
 
@@ -398,7 +400,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
           occluder.style.display = "block";
         }
         else { // if a normal trial, must be build phase
-          if (blocks.length > 0) { //make sure they've actually built something
+          if (blocks.length > 3) { //make sure they've actually built something
             trial.completed = true;
             endTrial(endReason = 'done-pressed');
             jsPsych.pluginAPI.setTimeout(function () {
@@ -412,7 +414,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
             }, 2500);
           };
         };
-      } else {
+      } else { // If not all blocks are stationary, then wait.
         done_button.textContent = 'Wait';
         setInterval(function () {
           sleeping = blocks.filter((block) => block.body.isSleeping);
@@ -447,8 +449,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
         cumulBonus += parseFloat(currBonus.toFixed(2)); // TODO: this cumulBonus needs to be bundled into data sent to mongo
         points += trialPoints;
       }
-
-
 
       // update official bonus tallies
       trial.F1Score = rawScore;
@@ -496,6 +496,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
       clearP5Envs(); // Clear everything in P5
 
     }
+
+    // *** Handlers for starting experiment on mouseclick ***
 
     var startExplorePhase = function () { //Function needed for removeEventListener
       trial.exploreStartTime = Date.now()

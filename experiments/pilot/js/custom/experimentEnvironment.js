@@ -573,6 +573,11 @@ var sendData = function (eventType, trialObj) {
                 return blockProperties
             });
 
+            var allVertices = blocks.map(block => {
+                vertices = _.map(block.body.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
+                return vertices
+            });
+
             // Data for world
             world_data = _.extend({}, commonInfo, {
                 dataType: 'world',
@@ -597,7 +602,8 @@ var sendData = function (eventType, trialObj) {
                     success: trialObj.practiceSuccess,
                     exploreResets: trialObj.exploreResets,
                     nPracticeAttempts: trialObj.nPracticeAttempts,
-                    practiceAttempt: trialObj.practiceAttempt
+                    practiceAttempt: trialObj.practiceAttempt,
+                    allVertices: allVertices
                 });
                 console.log('trial_end_data: ', trial_end_data);
                 socket.emit('currentData', trial_end_data);
@@ -616,32 +622,12 @@ var sendData = function (eventType, trialObj) {
                     score: trialObj.score,
                     exploreResets: trialObj.exploreResets,
                     nPracticeAttempts: trialObj.nPracticeAttempts,
+                    allVertices: allVertices
                 });
                 //console.log('trial_end_data: ', trial_end_data);
                 socket.emit('currentData', trial_end_data);
 
-            } /* else if (eventType == 'build_end') {
-                // Summary data for 
-                trial_end_data = _.extend({}, commonInfo, world_data, {
-                    dataType: 'build_end',
-                    eventType: eventType, // initial block placement decision vs. final block resting position.
-                    numBlocks: blocks.length, //number of blocks before reset pressed
-                    buildStartTime: trialObj.buildStartTime,
-                    buildFinishTime: trialObj.buildFinishTime,
-                    endReason: trialObj.endReason,
-                    completed: trialObj.completed,
-                    F1Score: trialObj.F1Score, // raw score
-                    normedScore: trialObj.normedScore,
-                    currBonus: trialObj.currBonus,
-                    score: trialObj.score,
-                    endReason: trialObj.endReason,
-                    buildResets: trialObj.buildResets,
-                    nPracticeAttempts: trialObj.nPracticeAttempts
-                });
-                console.log('trial_end_data: ', trial_end_data);
-                socket.emit('currentData', trial_end_data);
-
-            }*/
+            } 
             else if (eventType == 'trial_end') {
                 // Summary data for 
                 trial_end_data = _.extend({}, commonInfo, world_data, {
@@ -651,6 +637,7 @@ var sendData = function (eventType, trialObj) {
                     exploreStartTime: trialObj.exploreStartTime,
                     buildStartTime: trialObj.buildStartTime,
                     buildFinishTime: trialObj.buildFinishTime,
+                    buildTime: trialObj.buildFinishTime - trialObj.buildStartTime,
                     endReason: trialObj.endReason,
                     completed: trialObj.completed,
                     F1Score: trialObj.F1Score, // raw score
@@ -659,7 +646,11 @@ var sendData = function (eventType, trialObj) {
                     score: trialObj.score,
                     buildResets: trialObj.buildResets,
                     exploreResets: trialObj.exploreResets,
-                    nPracticeAttempts: trialObj.nPracticeAttempts
+                    nPracticeAttempts: trialObj.nPracticeAttempts,
+                    bonusThresholdHigh: trialObj.bonusThresholdHigh,
+                    bonusThresholdMid: trialObj.bonusThresholdMid,
+                    bonusThresholdLow: trialObj.bonusThresholdLow,
+                    allVertices: allVertices
                 });
                 console.log('trial_end_data: ', trial_end_data);
                 socket.emit('currentData', trial_end_data);

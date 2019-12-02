@@ -132,6 +132,9 @@ var allTrialInfo = {
   build_duration: build_duration,
   score: score,
   points: points,
+  bonusThresholdHigh: 0.93,
+  bonusThresholdMid: 0.85,
+  bonusThresholdLow: 0.7
 };
 
 // define trial object with boilerplate
@@ -149,6 +152,7 @@ function Trial () {
   this.buildResets = 0;
   this.exploreResets = 0;
   this.exploreStartTime = 0;
+  this.buildTime = 0;
   this.buildStartTime = 0;
   this.buildFinishTime = 0;
   this.trialBonus = 0;
@@ -165,7 +169,7 @@ function PracticeTrial () {
   this.targetBlocks = practice_structure.blocks;
   this.targetName = 'any';
   this.F1Score = 0; // F1 score
-  this.normedScore = 0; // WANT TO RECORD THIS FOR EVERY ATTEMPT IN PRACTICE
+  this.normedScore = 0;  // F1 score normed to area of structure
   this.currBonus = 0; // current bonus
   this.score = score; // cumulative bonus 
   this.points = 0;
@@ -180,72 +184,9 @@ function PracticeTrial () {
   this.exploreStartTime = 0;
   this.buildStartTime = 0;
   this.buildFinishTime = 0;
+  this.buildTime = 0;
   this.phase = 'practice'
-  
 };
-
-
-// // define trial object with boilerplate
-// function Trial () {
-//   this.randID = randID;
-//   this.type = 'block-silhouette';
-//   this.iterationName = iterationName;
-//   this.prompt = "Please build the tower using as few blocks as possible.";
-//   this.dev_mode = false;
-//   this.explore_duration = explore_duration; // time limit in seconds
-//   this.build_duration = build_duration; // time limit in seconds
-//   this.practice_duration = practice_duration; // time limit in seconds
-//   this.F1Score = 0; // F1 score
-//   this.normedScore = 0;
-//   this.currBonus = 0; // current bonus
-//   this.nullScore = NaN;
-//   this.scoreGap = NaN;
-//   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'.
-//   this.phase = 'NA';
-//   this.completed = false;
-//   this.buildResets = 0;
-//   this.exploreResets = 0;
-//   this.exploreStartTime = 0;
-//   this.buildStartTime = 0;
-//   this.buildFinishTime = 0;
-//   this.trialBonus = 0;
-//   this.score = score;
-//   this.points = 0;
-//   this.nPracticeAttempts = NaN;
-//   this.practiceAttempt = 0
-// };
-
-// function PracticeTrial () {
-//   this.randID = randID;
-//   this.type = 'block-silhouette';
-//   this.iterationName = iterationName;
-//   this.prompt = "Please build your tower using as few blocks as possible.";
-//   this.dev_mode = false;
-//   this.condition = 'practice';
-//   this.targetBlocks = practice_structure.blocks;
-//   this.targetName = 'any';
-//   this.explore_duration = explore_duration; // time limit in seconds
-//   this.build_duration = build_duration; // time limit in seconds
-//   this.practice_duration = practice_duration; // time limit in seconds
-//   this.F1Score = 0; // F1 score
-//   this.normedScore = 0; // WANT TO RECORD THIS FOR EVERY ATTEMPT IN PRACTICE
-//   this.currBonus = 0; // current bonus
-//   this.score = score; // cumulative bonus 
-//   this.points = 0;
-//   this.nullScore = NaN;
-//   this.scoreGap = NaN;
-//   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'. 
-//   this.buildResets = 0; 
-//   this.exploreResets = 0;
-//   this.nPracticeAttempts = 0;
-//   this.practiceAttempt = 0; // indexing starts at 0.
-//   this.trialNum = NaN;
-//   this.exploreStartTime = 0;
-//   this.buildStartTime = 0;
-//   this.buildFinishTime = 0;
-//   this.phase = 'practice'
-  
-// };
 
 function setupGame () {
 
