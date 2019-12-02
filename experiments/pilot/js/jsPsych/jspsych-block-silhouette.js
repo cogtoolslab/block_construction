@@ -170,7 +170,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     var timer_text = document.getElementById("timer-text");
     var env_divs = document.getElementsByClassName("col-md env-div");
     var progressBar = $('#progress-bar');
-
+    occluder.setAttribute('style', 'white-space: pre;');
 
     // update these global metadata vars with actual values for this trial  
     gameID = trial.gameID;
@@ -403,9 +403,10 @@ jsPsych.plugins["block-silhouette"] = (function () {
           if (blocks.length > 3) { //make sure they've actually built something
             trial.completed = true;
             endTrial(endReason = 'done-pressed');
-            jsPsych.pluginAPI.setTimeout(function () {
-              clear_display_move_on();
-            }, 2500);
+            occluder_text.textContent += "Please wait for the next trial."
+            // jsPsych.pluginAPI.setTimeout(function () {
+            //   clear_display_move_on();
+            // }, 2500);
           }
           else {
             condition_heading.textContent = "Please build the structure!"
@@ -467,13 +468,13 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       occluder.style.fontSize = 'large';
       if (currBonus == 0.05) {
-        occluder_text.textContent = `🤩 Amazing! ${trialPoints} Points! $0.05 bonus!`;
+        occluder_text.textContent = `🤩 Amazing! ${trialPoints} Points! $0.05 bonus! \r\n`;
       } else if (currBonus == 0.03) {
-        occluder_text.textContent = `😃 Great job! ${trialPoints} Points! $0.03 bonus!`;
+        occluder_text.textContent = `😃 Great job! ${trialPoints} Points! $0.03 bonus! \r\n`;
       } else if (currBonus == 0.01) {
-        occluder_text.textContent = `🙂 Not bad! ${trialPoints} Points! $0.01 bonus!`;
+        occluder_text.textContent = `🙂 Not bad! ${trialPoints} Points! $0.01 bonus! \r\n`;
       } else {
-        occluder_text.textContent = `😐 ${trialPoints} Points! Sorry, no bonus this round.`;
+        occluder_text.textContent = `😐 ${trialPoints} Points! Sorry, no bonus this round. \r\n`;
       }
       
       if (trial.condition != 'practice') {
@@ -531,10 +532,11 @@ jsPsych.plugins["block-silhouette"] = (function () {
         if (trial.completed == false) {
           trial.completed = true;
           endTrial(endReason = 'timeout'); // calculate bonuses and clear envs
-          jsPsych.pluginAPI.setTimeout(function () {
-            clear_display_move_on();
-          }, 2500);
         }
+        jsPsych.pluginAPI.setTimeout(function () {
+          clear_display_move_on();
+        }, 2500);
+      
       });
     }
 

@@ -9,6 +9,14 @@ var practice_duration = 600;
 var explore_duration = 30;
 var build_duration = 60;
 
+var dev_mode = true;
+
+if (dev_mode) {
+  practice_duration = 1;
+  explore_duration = 1;
+  build_duration = 20;
+}
+
 var iterationName = 'pilot1';
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -48,7 +56,7 @@ var instructionsHTML = {
 
 var secondInstructionsHTML = {
   'str1' : "<p> Note that in the main experiment you will not be shown where to place each block. However, there will be a small tick mark on the center of the floor to help you make sure your tower is in the correct location.</p>",
-  'str2' : "<p> In the main experiment, you will also have "+explore_duration+" seconds to <b>prepare</b> before reconstructing each tower.</p> <p> During this time, you will be asked to prepare in one of two ways: <b><font color='#E23686'>THINKING</font></b> or <b><font color='#4DE5F9'>PRACTICING</font></b>. <p> This is what the <b><font color='#E23686'>THINKING</font></b> preparation phase looks like: </p><div><img src='assets/internalDemo.gif' id='example_screen'></div> You will be able to think about how you will build your tower, you will not be able to place any blocks. <p> This is what the <b><font color='#4DE5F9'>PRACTICING</font></b> preparation phase looks like: </p><div><img src='assets/externalDemo.gif' id='example_screen'></div> You will get to practice building your tower before the final building phase. </p> <p> After your preparation time is up, you will move onto the <b><font color='#FFD819'>BUILDING</font></b> phase and you will have "+build_duration+" seconds to build your tower. The more accurate your tower, the larger the bonus you will receive. If you are finished with your tower before time runs out, press 'Done' to find out how much bonus you earned for that trial.</p>",
+  'str2' : "<p> In the main experiment, you will also have "+explore_duration+" seconds to <b>prepare</b> before reconstructing each tower.</p> <p> During this time, you will be asked to prepare in one of two ways: <b><font color='#E23686'>THINKING</font></b> or <b><font color='#4DE5F9'>PRACTICING</font></b>. <p> This is what the <b><font color='#E23686'>THINKING</font></b> preparation phase looks like: </p><div><img src='assets/internalDemo.gif' id='example_screen'></div> You will be able to think about how you will build your tower, you will not be able to place any blocks. <p> This is what the <b><font color='#4DE5F9'>PRACTICING</font></b> preparation phase looks like: </p><div><img src='assets/externalDemo.gif' id='example_screen'></div> You will get to practice building your tower before the final building phase. </p> <p> After your preparation time is up, you will move onto the <b><font color='#FFD819'>BUILDING</font></b> phase and you will have "+build_duration+" seconds to build your tower. The more accurate your tower, the larger the bonus you will receive. If you are finished with your tower before time runs out, press 'Done' to find out how much bonus you earned for that trial, and then wait for the next trial.</p>",
   'str3' : "<p> To summarize, there are TWO stages in each trial: </p><p><ul style='list-style: none;'><li> 1. <b>PREPARATION,</b> either by <b><font color='#E23686'>THINKING</font></b> or by <b><font color='#4DE5F9'>PRACTICING</font></b>.</li> <li>2. <b><font color='#FFD819'>BUILDING,</font></b> when you can earn a bonus for accuracy. </li></ul> <p> That's it! Click Next to begin the first trial. </p>"
 }
 
@@ -141,7 +149,7 @@ var allTrialInfo = {
 function Trial () {
   this.type = 'block-silhouette';
   this.prompt = "Please build the tower using as few blocks as possible.";
-  this.dev_mode = false;
+  this.dev_mode = dev_mode;
   this.F1Score = 0; // F1 score
   this.normedScore = 0;
   this.currBonus = 0; // current bonus
@@ -164,7 +172,7 @@ function Trial () {
 function PracticeTrial () {
   this.type = 'block-silhouette';
   this.prompt = "Please build your tower using as few blocks as possible.";
-  this.dev_mode = false;
+  this.dev_mode = dev_mode;
   this.condition = 'practice';
   this.targetBlocks = practice_structure.blocks;
   this.targetName = 'any';
@@ -238,21 +246,25 @@ function setupGame () {
       return trial
     }));
 
-    // insert final instructions page between practice trial and first "real" experimental trial
-    trials.unshift(readyTrial);    
+    if (!dev_mode) {
 
-    // insert practice trial before the first "real" experimental trial
-    var practiceTrial = _.extend(new PracticeTrial, allTrialInfo, additionalInfo, {
-      trialNum : NaN
-    });;
+      // insert final instructions page between practice trial and first "real" experimental trial
+      trials.unshift(readyTrial);    
 
-    trials.unshift(practiceTrial);
-    
-    // Stick welcome trial at beginning & goodbye trial at end
-    if (!turkInfo.previewMode) { 
-      trials.unshift(welcomeTrial);
-    } else {
-      trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
+      // insert practice trial before the first "real" experimental trial
+      var practiceTrial = _.extend(new PracticeTrial, allTrialInfo, additionalInfo, {
+        trialNum : NaN
+      });;
+
+      trials.unshift(practiceTrial);
+      
+      // Stick welcome trial at beginning & goodbye trial at end
+      if (!turkInfo.previewMode) { 
+        trials.unshift(welcomeTrial);
+      } else {
+        trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
+      }
+
     }
 
     // print out trial list    
