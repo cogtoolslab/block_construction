@@ -212,7 +212,7 @@ var setupEnvironment = function (env, trialObj = null) {
 
             // if mouse in main environment
             if (env.mouseY > 0 && (env.mouseY < canvasHeight - menuHeight) && (env.mouseX > 0 && env.mouseX < canvasWidth)) {
-                
+
                 if (isPlacingObject) {
                     // test whether all blocks are sleeping
                     sleeping = blocks.filter((block) => block.body.isSleeping);
@@ -224,13 +224,21 @@ var setupEnvironment = function (env, trialObj = null) {
                         // SEND WORLD DATA AFTER PREVIOUS BLOCK HAS SETTLED
                         // Sends information about the state of the world prior to next block being placed
 
-                        if (blocks.length != 0) { //if a block has already been placed, send settled world state
-                            sendData('settled', trialObj);
-                        }
-
                         //test whether there is a block underneath this area
                         test_block = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated, testing_placement = true);
                         if (test_block.can_be_placed()) {
+                            
+                            if (blocks.length != 0) { //if a block has already been placed, send settled world state
+                                sendData('settled', trialObj);
+                            }
+
+                            if (env.mouseY < canvasHeight/6 && trialObj.phase == 'build') { // if dropping from a great height, assume they are messing around
+                                trialObj.pMessingAround += 0.2;
+                                if(trialObj.pMessingAround > 0.6) {
+                                    alert('Dropping blocks from high up is likely to make the tower unstable!');
+                                }
+                            }
+
                             newBlock = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated);
                             blocks.push(newBlock);
                             // blocks.push(new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated));

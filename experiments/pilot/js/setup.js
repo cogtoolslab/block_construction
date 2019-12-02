@@ -9,7 +9,7 @@ var practice_duration = 600;
 var explore_duration = 30;
 var build_duration = 60;
 
-var dev_mode = true;
+var dev_mode = false;
 
 if (dev_mode) {
   practice_duration = 1;
@@ -166,7 +166,8 @@ function Trial () {
   this.trialBonus = 0;
   this.completed = false,
   this.nPracticeAttempts = NaN;
-  this.practiceAttempt = 0
+  this.practiceAttempt = 0;
+  this.pMessingAround = 0;
 };
 
 function PracticeTrial () {
