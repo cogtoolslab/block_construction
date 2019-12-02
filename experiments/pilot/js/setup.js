@@ -273,7 +273,7 @@ function setupGame () {
     // get workerId, etc. from URL (so that it can be sent to the server)
     var turkInfo = jsPsych.turk.turkInfo(); 
 
-    console.log(turkInfo.workerId);
+    //console.log(turkInfo.workerId);
 
     // extra information to bind to trial list
     var additionalInfo = {
