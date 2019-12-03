@@ -496,7 +496,7 @@ var sendData = function (eventType, trialObj) {
                 timeBlockSelected: timeBlockSelected
             })
 
-            console.log('block_data', block_data);
+            //console.log('block_data', block_data);
             socket.emit('currentData', block_data);
         }
         else if (eventType == 'settled') {
