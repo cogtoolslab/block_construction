@@ -27,6 +27,12 @@ Found several missing pieces, including survey data not being sent.
 - Enforced 4 blocks present before submitting structure.
 - Prevented trial from finishing when participant submits structure. 
 - Added checks for people repeatedly dropping blocks from sky.
+- Feedback from some participants: making people wait for entire 60 seconds was frustrating. 
+
+#### `pilot3`: Minor updates to the UI and data saving
+- N = `TBD` participants.
+- Removed "Done" button from building phase. All participants have exactly 60s for build phase.
+- Timestamp when block selected (in addition to existing timestamp when each block is placed).
+- Adjusted base compensation to $4, reflecting updated estimate of expected total time on HIT.
 
 
-Significant push-back on making people wait for entire 60 seconds. 
