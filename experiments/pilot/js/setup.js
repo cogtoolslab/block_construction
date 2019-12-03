@@ -9,7 +9,7 @@ var practice_duration = 600;
 var explore_duration = 30;
 var build_duration = 60;
 
-var dev_mode = false;
+var dev_mode = true;
 
 if (dev_mode) {
   practice_duration = 1;
@@ -17,7 +17,7 @@ if (dev_mode) {
   build_duration = 20;
 }
 
-var iterationName = 'pilot1';
+var iterationName = 'testpilot2';
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 console.log(randID);

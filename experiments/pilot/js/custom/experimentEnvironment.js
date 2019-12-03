@@ -65,7 +65,8 @@ var block_data; // data to send to mongodb about every block placement
 var trial_data; // data to send to mongodb about every finished block structure
 var newSelectedBlockKind; // init this variable so we can inspect it in the console
 var newBlock; // init this variable so we can inspect it in the console
-var timeLastPlaced = Date.now()
+var timeLastPlaced = Date.now();
+var timeBlockSelected = Date.now();
 
 var blockDims = [
     [1, 2],
@@ -278,6 +279,7 @@ var setupEnvironment = function (env, trialObj = null) {
                 newSelectedBlockKind = blockMenu.hasClickedButton(env.mouseX, env.mouseY, selectedBlockKind);
                 if (newSelectedBlockKind) {
                     if (newSelectedBlockKind == selectedBlockKind) {
+                        timeBlockSelected = Date.now();
 
                         //rotated = !rotated; // uncomment to allow rotation by re-selecting block from menu
                     } else {
@@ -490,10 +492,11 @@ var sendData = function (eventType, trialObj) {
                 blockVertices: vertices,
                 blockBodyProperties: blockProperties,
                 incrementalScore: incrementalScore,
-                normedIncrementalScore: normedIncrementalScore
+                normedIncrementalScore: normedIncrementalScore,
+                timeBlockSelected: timeBlockSelected
             })
 
-            // console.log('block_data', block_data);
+            console.log('block_data', block_data);
             socket.emit('currentData', block_data);
         }
         else if (eventType == 'settled') {
