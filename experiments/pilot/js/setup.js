@@ -9,10 +9,20 @@ var practice_duration = 600;
 var explore_duration = 30;
 var build_duration = 60;
 
+var dev_mode = false;
+
+if (dev_mode) {
+  practice_duration = 1;
+  explore_duration = 1;
+  build_duration = 20;
+}
+
 var iterationName = 'pilot1';
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 console.log(randID);
+
+
 function submit2AMT() {
   scoreToTurk = Math.max(score,cumulBonus);
   console.log('attempting to send data to mturk! score = ', scoreToTurk);
@@ -46,7 +56,7 @@ var instructionsHTML = {
 
 var secondInstructionsHTML = {
   'str1' : "<p> Note that in the main experiment you will not be shown where to place each block. However, there will be a small tick mark on the center of the floor to help you make sure your tower is in the correct location.</p>",
-  'str2' : "<p> In the main experiment, you will also have "+explore_duration+" seconds to <b>prepare</b> before reconstructing each tower.</p> <p> During this time, you will be asked to prepare in one of two ways: <b><font color='#E23686'>THINKING</font></b> or <b><font color='#4DE5F9'>PRACTICING</font></b>. <p> This is what the <b><font color='#E23686'>THINKING</font></b> preparation phase looks like: </p><div><img src='assets/internalDemo.gif' id='example_screen'></div> You will be able to think about how you will build your tower, you will not be able to place any blocks. <p> This is what the <b><font color='#4DE5F9'>PRACTICING</font></b> preparation phase looks like: </p><div><img src='assets/externalDemo.gif' id='example_screen'></div> You will get to practice building your tower before the final building phase. </p> <p> After your preparation time is up, you will move onto the <b><font color='#FFD819'>BUILDING</font></b> phase and you will have "+build_duration+" seconds to build your tower. The more accurate your tower, the larger the bonus you will receive. If you are finished with your tower before time runs out, press 'Done' to find out how much bonus you earned for that trial.</p>",
+  'str2' : "<p> In the main experiment, you will also have "+explore_duration+" seconds to <b>prepare</b> before reconstructing each tower.</p> <p> During this time, you will be asked to prepare in one of two ways: <b><font color='#E23686'>THINKING</font></b> or <b><font color='#4DE5F9'>PRACTICING</font></b>. <p> This is what the <b><font color='#E23686'>THINKING</font></b> preparation phase looks like: </p><div><img src='assets/internalDemo.gif' id='example_screen'></div> You will be able to think about how you will build your tower, you will not be able to place any blocks. <p> This is what the <b><font color='#4DE5F9'>PRACTICING</font></b> preparation phase looks like: </p><div><img src='assets/externalDemo.gif' id='example_screen'></div> You will get to practice building your tower before the final building phase. </p> <p> After your preparation time is up, you will move onto the <b><font color='#FFD819'>BUILDING</font></b> phase and you will have "+build_duration+" seconds to build your tower. The more accurate your tower, the larger the bonus you will receive. If you are finished with your tower before time runs out, press 'Done' to find out how much bonus you earned for that trial, and then wait for the next trial.</p>",
   'str3' : "<p> To summarize, there are TWO stages in each trial: </p><p><ul style='list-style: none;'><li> 1. <b>PREPARATION,</b> either by <b><font color='#E23686'>THINKING</font></b> or by <b><font color='#4DE5F9'>PRACTICING</font></b>.</li> <li>2. <b><font color='#FFD819'>BUILDING,</font></b> when you can earn a bonus for accuracy. </li></ul> <p> That's it! Click Next to begin the first trial. </p>"
 }
 
@@ -130,13 +140,16 @@ var allTrialInfo = {
   build_duration: build_duration,
   score: score,
   points: points,
+  bonusThresholdHigh: 0.93,
+  bonusThresholdMid: 0.85,
+  bonusThresholdLow: 0.7
 };
 
 // define trial object with boilerplate
 function Trial () {
   this.type = 'block-silhouette';
   this.prompt = "Please build the tower using as few blocks as possible.";
-  this.dev_mode = false;
+  this.dev_mode = dev_mode;
   this.F1Score = 0; // F1 score
   this.normedScore = 0;
   this.currBonus = 0; // current bonus
@@ -147,23 +160,25 @@ function Trial () {
   this.buildResets = 0;
   this.exploreResets = 0;
   this.exploreStartTime = 0;
+  this.buildTime = 0;
   this.buildStartTime = 0;
   this.buildFinishTime = 0;
   this.trialBonus = 0;
   this.completed = false,
   this.nPracticeAttempts = NaN;
-  this.practiceAttempt = 0
+  this.practiceAttempt = 0;
+  this.pMessingAround = 0;
 };
 
 function PracticeTrial () {
   this.type = 'block-silhouette';
   this.prompt = "Please build your tower using as few blocks as possible.";
-  this.dev_mode = false;
+  this.dev_mode = dev_mode;
   this.condition = 'practice';
   this.targetBlocks = practice_structure.blocks;
   this.targetName = 'any';
   this.F1Score = 0; // F1 score
-  this.normedScore = 0; // WANT TO RECORD THIS FOR EVERY ATTEMPT IN PRACTICE
+  this.normedScore = 0;  // F1 score normed to area of structure
   this.currBonus = 0; // current bonus
   this.score = score; // cumulative bonus 
   this.points = 0;
@@ -178,72 +193,9 @@ function PracticeTrial () {
   this.exploreStartTime = 0;
   this.buildStartTime = 0;
   this.buildFinishTime = 0;
+  this.buildTime = 0;
   this.phase = 'practice'
-  
 };
-
-
-// // define trial object with boilerplate
-// function Trial () {
-//   this.randID = randID;
-//   this.type = 'block-silhouette';
-//   this.iterationName = iterationName;
-//   this.prompt = "Please build the tower using as few blocks as possible.";
-//   this.dev_mode = false;
-//   this.explore_duration = explore_duration; // time limit in seconds
-//   this.build_duration = build_duration; // time limit in seconds
-//   this.practice_duration = practice_duration; // time limit in seconds
-//   this.F1Score = 0; // F1 score
-//   this.normedScore = 0;
-//   this.currBonus = 0; // current bonus
-//   this.nullScore = NaN;
-//   this.scoreGap = NaN;
-//   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'.
-//   this.phase = 'NA';
-//   this.completed = false;
-//   this.buildResets = 0;
-//   this.exploreResets = 0;
-//   this.exploreStartTime = 0;
-//   this.buildStartTime = 0;
-//   this.buildFinishTime = 0;
-//   this.trialBonus = 0;
-//   this.score = score;
-//   this.points = 0;
-//   this.nPracticeAttempts = NaN;
-//   this.practiceAttempt = 0
-// };
-
-// function PracticeTrial () {
-//   this.randID = randID;
-//   this.type = 'block-silhouette';
-//   this.iterationName = iterationName;
-//   this.prompt = "Please build your tower using as few blocks as possible.";
-//   this.dev_mode = false;
-//   this.condition = 'practice';
-//   this.targetBlocks = practice_structure.blocks;
-//   this.targetName = 'any';
-//   this.explore_duration = explore_duration; // time limit in seconds
-//   this.build_duration = build_duration; // time limit in seconds
-//   this.practice_duration = practice_duration; // time limit in seconds
-//   this.F1Score = 0; // F1 score
-//   this.normedScore = 0; // WANT TO RECORD THIS FOR EVERY ATTEMPT IN PRACTICE
-//   this.currBonus = 0; // current bonus
-//   this.score = score; // cumulative bonus 
-//   this.points = 0;
-//   this.nullScore = NaN;
-//   this.scoreGap = NaN;
-//   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'. 
-//   this.buildResets = 0; 
-//   this.exploreResets = 0;
-//   this.nPracticeAttempts = 0;
-//   this.practiceAttempt = 0; // indexing starts at 0.
-//   this.trialNum = NaN;
-//   this.exploreStartTime = 0;
-//   this.buildStartTime = 0;
-//   this.buildFinishTime = 0;
-//   this.phase = 'practice'
-  
-// };
 
 function setupGame () {
 
@@ -258,6 +210,10 @@ function setupGame () {
     console.log('updated global points to: ', points);
   };
 
+  socket.on('redirect', function(d){
+    window.location.href = d;
+  });
+
   // Start once server initializes us
   socket.on('onConnected', function(d) {
 
@@ -266,6 +222,8 @@ function setupGame () {
 
     // get workerId, etc. from URL (so that it can be sent to the server)
     var turkInfo = jsPsych.turk.turkInfo(); 
+
+    //console.log(turkInfo.workerId);
 
     // extra information to bind to trial list
     var additionalInfo = {
@@ -289,21 +247,25 @@ function setupGame () {
       return trial
     }));
 
-    // insert final instructions page between practice trial and first "real" experimental trial
-    trials.unshift(readyTrial);    
+    if (!dev_mode) {
 
-    // insert practice trial before the first "real" experimental trial
-    var practiceTrial = _.extend(new PracticeTrial, allTrialInfo, additionalInfo, {
-      trialNum : NaN
-    });;
+      // insert final instructions page between practice trial and first "real" experimental trial
+      trials.unshift(readyTrial);    
 
-    trials.unshift(practiceTrial);
-    
-    // Stick welcome trial at beginning & goodbye trial at end
-    if (!turkInfo.previewMode) { 
-      trials.unshift(welcomeTrial);
-    } else {
-      trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
+      // insert practice trial before the first "real" experimental trial
+      var practiceTrial = _.extend(new PracticeTrial, allTrialInfo, additionalInfo, {
+        trialNum : NaN
+      });;
+
+      trials.unshift(practiceTrial);
+      
+      // Stick welcome trial at beginning & goodbye trial at end
+      if (!turkInfo.previewMode) { 
+        trials.unshift(welcomeTrial);
+      } else {
+        trials.unshift(previewTrial); // if still in preview mode, tell them to accept first.
+      }
+
     }
 
     // print out trial list    

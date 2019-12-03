@@ -19,6 +19,7 @@ p {
     color: #1c363e;
 }
 
+
 #env-buttons .btn{
     margin-right: 15px;
     border: solid 4px #1c363e;
@@ -49,7 +50,7 @@ p {
     float: right;
     text-align: right;
     font-family: 'Francois One', sans-serif;
-    font-size: 32px;    
+    font-size: 32px;  
 }
 
 .scores {

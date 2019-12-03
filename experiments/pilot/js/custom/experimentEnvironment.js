@@ -212,7 +212,7 @@ var setupEnvironment = function (env, trialObj = null) {
 
             // if mouse in main environment
             if (env.mouseY > 0 && (env.mouseY < canvasHeight - menuHeight) && (env.mouseX > 0 && env.mouseX < canvasWidth)) {
-                
+
                 if (isPlacingObject) {
                     // test whether all blocks are sleeping
                     sleeping = blocks.filter((block) => block.body.isSleeping);
@@ -224,13 +224,21 @@ var setupEnvironment = function (env, trialObj = null) {
                         // SEND WORLD DATA AFTER PREVIOUS BLOCK HAS SETTLED
                         // Sends information about the state of the world prior to next block being placed
 
-                        if (blocks.length != 0) { //if a block has already been placed, send settled world state
-                            sendData('settled', trialObj);
-                        }
-
                         //test whether there is a block underneath this area
                         test_block = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated, testing_placement = true);
                         if (test_block.can_be_placed()) {
+                            
+                            if (blocks.length != 0) { //if a block has already been placed, send settled world state
+                                sendData('settled', trialObj);
+                            }
+
+                            if (env.mouseY < canvasHeight/6 && trialObj.phase == 'build') { // if dropping from a great height, assume they are messing around
+                                trialObj.pMessingAround += 0.2;
+                                if(trialObj.pMessingAround > 0.6) {
+                                    alert('Dropping blocks from high up is likely to make the tower unstable!');
+                                }
+                            }
+
                             newBlock = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated);
                             blocks.push(newBlock);
                             // blocks.push(new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated));
@@ -573,6 +581,11 @@ var sendData = function (eventType, trialObj) {
                 return blockProperties
             });
 
+            var allVertices = blocks.map(block => {
+                vertices = _.map(block.body.vertices, function (key, value) { return _.pick(key, ['x', 'y']) });
+                return vertices
+            });
+
             // Data for world
             world_data = _.extend({}, commonInfo, {
                 dataType: 'world',
@@ -597,7 +610,8 @@ var sendData = function (eventType, trialObj) {
                     success: trialObj.practiceSuccess,
                     exploreResets: trialObj.exploreResets,
                     nPracticeAttempts: trialObj.nPracticeAttempts,
-                    practiceAttempt: trialObj.practiceAttempt
+                    practiceAttempt: trialObj.practiceAttempt,
+                    allVertices: allVertices
                 });
                 console.log('trial_end_data: ', trial_end_data);
                 socket.emit('currentData', trial_end_data);
@@ -616,32 +630,12 @@ var sendData = function (eventType, trialObj) {
                     score: trialObj.score,
                     exploreResets: trialObj.exploreResets,
                     nPracticeAttempts: trialObj.nPracticeAttempts,
+                    allVertices: allVertices
                 });
                 //console.log('trial_end_data: ', trial_end_data);
                 socket.emit('currentData', trial_end_data);
 
-            } /* else if (eventType == 'build_end') {
-                // Summary data for 
-                trial_end_data = _.extend({}, commonInfo, world_data, {
-                    dataType: 'build_end',
-                    eventType: eventType, // initial block placement decision vs. final block resting position.
-                    numBlocks: blocks.length, //number of blocks before reset pressed
-                    buildStartTime: trialObj.buildStartTime,
-                    buildFinishTime: trialObj.buildFinishTime,
-                    endReason: trialObj.endReason,
-                    completed: trialObj.completed,
-                    F1Score: trialObj.F1Score, // raw score
-                    normedScore: trialObj.normedScore,
-                    currBonus: trialObj.currBonus,
-                    score: trialObj.score,
-                    endReason: trialObj.endReason,
-                    buildResets: trialObj.buildResets,
-                    nPracticeAttempts: trialObj.nPracticeAttempts
-                });
-                console.log('trial_end_data: ', trial_end_data);
-                socket.emit('currentData', trial_end_data);
-
-            }*/
+            } 
             else if (eventType == 'trial_end') {
                 // Summary data for 
                 trial_end_data = _.extend({}, commonInfo, world_data, {
@@ -651,6 +645,7 @@ var sendData = function (eventType, trialObj) {
                     exploreStartTime: trialObj.exploreStartTime,
                     buildStartTime: trialObj.buildStartTime,
                     buildFinishTime: trialObj.buildFinishTime,
+                    buildTime: trialObj.buildFinishTime - trialObj.buildStartTime,
                     endReason: trialObj.endReason,
                     completed: trialObj.completed,
                     F1Score: trialObj.F1Score, // raw score
@@ -659,7 +654,11 @@ var sendData = function (eventType, trialObj) {
                     score: trialObj.score,
                     buildResets: trialObj.buildResets,
                     exploreResets: trialObj.exploreResets,
-                    nPracticeAttempts: trialObj.nPracticeAttempts
+                    nPracticeAttempts: trialObj.nPracticeAttempts,
+                    bonusThresholdHigh: trialObj.bonusThresholdHigh,
+                    bonusThresholdMid: trialObj.bonusThresholdMid,
+                    bonusThresholdLow: trialObj.bonusThresholdLow,
+                    allVertices: allVertices
                 });
                 console.log('trial_end_data: ', trial_end_data);
                 socket.emit('currentData', trial_end_data);

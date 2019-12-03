@@ -93,6 +93,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     trial.score = score;
     trial.points = points;
     var timers = [];
+    trial.pMessingAround = 0;
 
     if (typeof trial.targetBlocks === 'undefined') {
       console.error('Required parameter "target" missing in block-silhouette');
@@ -170,7 +171,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     var timer_text = document.getElementById("timer-text");
     var env_divs = document.getElementsByClassName("col-md env-div");
     var progressBar = $('#progress-bar');
-
+    occluder.setAttribute('style', 'white-space: pre;');
 
     // update these global metadata vars with actual values for this trial  
     gameID = trial.gameID;
@@ -236,6 +237,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     }
 
     var startPractice = function () {
+      trial.buildStartTime = Date.now()
       occluder.style.display = "none";
       timer(trial.practice_duration, function () {
         clearP5Envs();
@@ -272,14 +274,9 @@ jsPsych.plugins["block-silhouette"] = (function () {
     }
 
     function convertNormedScoreToBonus(normedScore) {
-      // convert normedScore (ranges between 0 and 1)
-      // to bonus amount (in cents)      
-      highThresh = 0.93;
-      midThresh = 0.85;
-      lowThresh = 0.7;
-      if (normedScore > highThresh) { bonus = 0.05; }
-      else if (normedScore > midThresh) { bonus = 0.03; }
-      else if (normedScore > lowThresh) { bonus = 0.01; }
+      if (normedScore > trial.bonusThresholdHigh) { bonus = 0.05; }
+      else if (normedScore > trial.bonusThresholdMid) { bonus = 0.03; }
+      else if (normedScore > trial.bonusThresholdLow) { bonus = 0.01; }
       else { bonus = 0; console.log('No bonus earned.') }
       return bonus;
     }
@@ -348,7 +345,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       sleeping = blocks.filter((block) => block.body.isSleeping);
       allSleeping = sleeping.length == blocks.length;
 
-      if (allSleeping) {
+      if (allSleeping) { // Only do something if world in resting state
 
         if (blocks.length > 0){
          sendData(eventType = 'settled', trial);
@@ -365,6 +362,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
 
           trial.nPracticeAttempts += 1;
+          trial.buildFinishTime = Date.now();
           sendData(eventType = 'trial_end', trial);
           trial.practiceAttempt += 1;
 
@@ -398,12 +396,14 @@ jsPsych.plugins["block-silhouette"] = (function () {
           occluder.style.display = "block";
         }
         else { // if a normal trial, must be build phase
-          if (blocks.length > 0) { //make sure they've actually built something
+          if (blocks.length > 3) { //make sure they've actually built something
             trial.completed = true;
             endTrial(endReason = 'done-pressed');
-            jsPsych.pluginAPI.setTimeout(function () {
-              clear_display_move_on();
-            }, 2500);
+            occluder_text.textContent += `Please wait for the next trial.`
+            // uncomment to allow donePressed to move on to the next trial immediately
+            // jsPsych.pluginAPI.setTimeout(function () {
+            //   clear_display_move_on();
+            // }, 2500);
           }
           else {
             condition_heading.textContent = "Please build the structure!"
@@ -412,7 +412,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
             }, 2500);
           };
         };
-      } else {
+      } else { // If not all blocks are stationary, then wait.
         done_button.textContent = 'Wait';
         setInterval(function () {
           sleeping = blocks.filter((block) => block.body.isSleeping);
@@ -448,8 +448,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
         points += trialPoints;
       }
 
-
-
       // update official bonus tallies
       trial.F1Score = rawScore;
       trial.endReason = endReason;
@@ -467,13 +465,13 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
       occluder.style.fontSize = 'large';
       if (currBonus == 0.05) {
-        occluder_text.textContent = `🤩 Amazing! ${trialPoints} Points! $0.05 bonus!`;
+        occluder_text.textContent = `🤩 Amazing! ${trialPoints} Points! $0.05 bonus! \r\n`;
       } else if (currBonus == 0.03) {
-        occluder_text.textContent = `😃 Great job! ${trialPoints} Points! $0.03 bonus!`;
+        occluder_text.textContent = `😃 Great job! ${trialPoints} Points! $0.03 bonus! \r\n`;
       } else if (currBonus == 0.01) {
-        occluder_text.textContent = `🙂 Not bad! ${trialPoints} Points! $0.01 bonus!`;
+        occluder_text.textContent = `🙂 Not bad! ${trialPoints} Points! $0.01 bonus! \r\n`;
       } else {
-        occluder_text.textContent = `😐 ${trialPoints} Points! Sorry, no bonus this round.`;
+        occluder_text.textContent = `😐 ${trialPoints} Points! Sorry, no bonus this round. \r\n`;
       }
       
       if (trial.condition != 'practice') {
@@ -483,9 +481,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
         jsPsych.pluginAPI.setTimeout(function () {
           if (currBonus > 0) {    
             display_element.querySelector('#bonus-meter').style.border = "8px solid #66B03B"; 
-            // also bold/enlarge the score in bottom left corner 
-            //display_element.querySelector('#score p2').innerHTML = 'bonus earned: ' + parseFloat(currBonus).toFixed(3);
-            //display_element.querySelector('#score p2').style.fontWeight = 'bold';
           } else {
             display_element.querySelector('#bonus-meter').style.border = "8px solid #FFFFFF";
           }
@@ -496,6 +491,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
       clearP5Envs(); // Clear everything in P5
 
     }
+
+    // *** Handlers for starting experiment on mouseclick ***
 
     var startExplorePhase = function () { //Function needed for removeEventListener
       trial.exploreStartTime = Date.now()
@@ -529,10 +526,22 @@ jsPsych.plugins["block-silhouette"] = (function () {
         if (trial.completed == false) {
           trial.completed = true;
           endTrial(endReason = 'timeout'); // calculate bonuses and clear envs
-          jsPsych.pluginAPI.setTimeout(function () {
-            clear_display_move_on();
-          }, 2500);
         }
+
+        jsPsych.pluginAPI.setTimeout(function () { //edit here to add punishment timeout
+          if (trial.pMessingAround >= 0.8 && trial.normedScore < 0.5) {
+            occluder.style.fontSize = 'large';
+            occluder.textContent = "It seems like you're not trying 🤨 Waiting for an extra 30 seconds";
+            jsPsych.pluginAPI.setTimeout(function () { //edit here to add punishment timeout
+              clear_display_move_on();
+            }, 32500);
+          } else {
+            clear_display_move_on();
+          }
+        }, 2500);
+
+       
+        
       });
     }
 
@@ -574,39 +583,48 @@ jsPsych.plugins["block-silhouette"] = (function () {
       occluder.addEventListener('click', startPractice);
     };
 
-    // store response
-    var response = {
-      rt: null,
-      button: null,
-      time_bonus: null
+
+
+    function clear_display_move_on() {
+
+      timers.forEach(interval => {
+        clearInterval(interval);
+      });
+
+      // clear the display
+      display_element.innerHTML = '';
+
+      // move on to the next trial
+      jsPsych.finishTrial();
+
     };
 
-    // function to handle responses by the subject
-    function after_response(choice) {
-      // console.log('after response function called');
+    // // function to handle responses by the subject
+    // function after_response(choice) {
+    //   // console.log('after response function called');
 
-      // // End timer
-      // clearInterval(interval);
-      // progressBar.stop();
+    //   // // End timer
+    //   // clearInterval(interval);
+    //   // progressBar.stop();
 
-      // measure rt
-      var end_time = Date.now();
-      var rt = end_time - start_time;
-      response.rt = rt;
+    //   // measure rt
+    //   var end_time = Date.now();
+    //   var rt = end_time - start_time;
+    //   response.rt = rt;
 
-      // // after a valid response, the sketch will have the CSS class 'responded'
-      // // which can be used to provide visual feedback that a response was recorded
-      // display_element.querySelector('#jspsych-block-silhouette-sketch').className += ' responded';
+    //   // // after a valid response, the sketch will have the CSS class 'responded'
+    //   // // which can be used to provide visual feedback that a response was recorded
+    //   // display_element.querySelector('#jspsych-block-silhouette-sketch').className += ' responded';
 
-      // // disable all the buttons after a response
-      // for (var i = 0; i < trial.choices.length; i++) {
-      //   $('#jspsych-block-silhouette-button-' + i).off('click');
-      // }      
+    //   // // disable all the buttons after a response
+    //   // for (var i = 0; i < trial.choices.length; i++) {
+    //   //   $('#jspsych-block-silhouette-button-' + i).off('click');
+    //   // }      
 
-      // if (trial.response_ends_trial) {
-      //   end_trial();
-      // }
-    };
+    //   // if (trial.response_ends_trial) {
+    //   //   end_trial();
+    //   // }
+    // };
 
     // // function to end trial when it is time
     // function end_trial() {
@@ -672,19 +690,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
     // };
 
     // 
-    function clear_display_move_on() {
 
-      timers.forEach(interval => {
-        clearInterval(interval);
-      });
-
-      // clear the display
-      display_element.innerHTML = '';
-
-      // move on to the next trial
-      jsPsych.finishTrial();
-
-    };
 
     // // hide image if timing is set
     // if (trial.explore_duration !== null) {

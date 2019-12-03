@@ -144,6 +144,45 @@ function serve() {
       });
     });
 
+    app.post('/db/exists', (request, response) => {            
+      if (!request.body) {
+        return failure(response, '/db/exists needs post request body');
+      }
+      const databaseName = request.body.dbname;
+      const database = connection.db(databaseName);
+      const query = request.body.query;
+      const projection = request.body.projection;
+      // hardcoded for now (TODO: get list of collections in db)
+      var collectionList = ['silhouette']; 
+      function checkCollectionForHits(collectionName, query, projection, callback) {
+        const collection = database.collection(collectionName);        
+        collection.find(query, projection).limit(1).toArray((err, items) => {          
+          callback(!_.isEmpty(items));
+        });  
+      }
+      function checkEach(collectionList, checkCollectionForHits, query,
+       projection, evaluateTally) {
+        var doneCounter = 0;
+        var results = 0;          
+        collectionList.forEach(function (collectionName) {
+          checkCollectionForHits(collectionName, query, projection, function (res) {
+            log(`got request to find_one in ${collectionName} with` +
+                ` query ${JSON.stringify(query)} and projection ${JSON.stringify(projection)}`);          
+            doneCounter += 1;
+            results+=res;
+            if (doneCounter === collectionList.length) {
+              evaluateTally(results);
+            }
+          });
+        });
+      }
+      function evaluateTally(hits) {
+        console.log("hits: ", hits);
+        response.json(hits>0);
+      }
+      checkEach(collectionList, checkCollectionForHits, query, projection, evaluateTally);
+    });
+
     app.listen(port, () => {
       log(`running at http://localhost:${port}`);
     });
