@@ -29,6 +29,10 @@ p {
     padding: 6px 12px;
 }
 
+#zoom-message p{
+    font-size: 18px;
+}
+
 
 #condition-heading {
     display: inline-block;

@@ -30,3 +30,9 @@ Found several missing pieces, including survey data not being sent.
 
 
 Significant push-back on making people wait for entire 60 seconds. 
+
+#### `pilot3`: Remove done button
+
+- Remove done button from build stage
+- Collecting timestamp for selection of block
+- 

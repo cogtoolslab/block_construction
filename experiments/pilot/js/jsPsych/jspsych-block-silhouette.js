@@ -119,6 +119,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
       html += '</div>'
       html += '</div>'
       html += '<div class="row pt-2" id="experiment-button-col">'
+      html += '<div class="col-auto mr-auto" id="zoom-message"><p> If windows are on top of each other, please adjust zoom until they are side by side.</p></div>'
       html += '<div class="col-auto ml-auto button-col" id="env-buttons">'
       html += '<button type="button" class="btn btn-success btn-lg" id="done" value="done">Done</button>'
       html += '<button type="button" class="btn btn-danger btn-lg" id="reset" value="reset">Reset</button>'
@@ -170,6 +171,9 @@ jsPsych.plugins["block-silhouette"] = (function () {
     var condition_heading = document.getElementById("condition-heading");
     var timer_text = document.getElementById("timer-text");
     var env_divs = document.getElementsByClassName("col-md env-div");
+    var zoom_message = document.getElementById("zoom-message");
+
+    zoom_message.style.display = "none";
     var progressBar = $('#progress-bar');
     occluder.setAttribute('style', 'white-space: pre;');
 
@@ -239,6 +243,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
 
     var startPractice = function () {
       trial.buildStartTime = Date.now()
+      zoom_message.style.display = "inline-block";
       occluder.style.display = "none";
       timer(trial.practice_duration, function () {
         clearP5Envs();
@@ -388,6 +393,7 @@ jsPsych.plugins["block-silhouette"] = (function () {
             trial.practiceSuccess = true;
             sendData('practice_attempt', trial);
             occluder_text.textContent = practice_feedback_text['success'];
+            zoom_message.style.display = "none";
             occluder.addEventListener('click', event => {
               trial.completed = true;
               endTrial(endReason = 'practice_success');
