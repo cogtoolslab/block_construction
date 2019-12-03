@@ -221,7 +221,8 @@ jsPsych.plugins["block-silhouette"] = (function () {
       p5stim, p5env = setupEnvs(trial); //create p5 instances for this trial phase
 
       //Update trial appearance 
-      done_button.style.display = "inline-block";
+      // done_button.style.display = "inline-block"; // for displaying done button during build
+      done_button.style.display = "none";
       reset_button.style.display = "inline-block";
       occluder_text.textContent = build_text;
       condition_heading.textContent = "BUILD";
