@@ -616,7 +616,7 @@ var sendData = function (eventType, trialObj) {
                     practiceAttempt: trialObj.practiceAttempt,
                     allVertices: allVertices
                 });
-                console.log('trial_end_data: ', trial_end_data);
+                //console.log('trial_end_data: ', trial_end_data);
                 socket.emit('currentData', trial_end_data);
 
             } else if (eventType == 'explore_end') {
@@ -663,7 +663,7 @@ var sendData = function (eventType, trialObj) {
                     bonusThresholdLow: trialObj.bonusThresholdLow,
                     allVertices: allVertices
                 });
-                console.log('trial_end_data: ', trial_end_data);
+                //console.log('trial_end_data: ', trial_end_data);
                 socket.emit('currentData', trial_end_data);
 
             };
