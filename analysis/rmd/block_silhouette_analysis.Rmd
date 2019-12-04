@@ -23,316 +23,90 @@ d <- read_csv('../results/csv/block_silhouette_pilot3.csv')
 d
 ```
 
+# Modeling ACCURACY (normedScore) from condition, with random intercepts for participant and target
 
-# Define basic model predicting ACCURACY (normedScore) from condition, with random intercepts for participant and target
+## Model specifications
 
 ```{r}
-m1 <- lmer(normedScore ~ condition + (1 | gameID), 
+## fixed effects only
+m1 <- lm(normedScore ~ condition, 
             data = d)
 
-# m2 <- lmer(targetProb ~ condition + (1 | gameID), 
-#             data = d)
-# 
-# m3 <- lmer(targetProb ~ condition + (1 | gameID) + (1 | className), 
-#             data = d)
+## with random intercepts for participant only
+m2 <- lmer(normedScore ~ condition + (1 | gameID),
+            data = d)
 
+## with random intercepts for item only
+m3 <- lmer(normedScore ~ condition + (1 | targetName),
+            data = d)
+
+##with random intercepts for both participant AND item
+m4 <- lmer(normedScore ~ condition + (1 | gameID) + (1 | targetName),
+            data = d)
+
+```
+
+### Model comparison
+```{r}
+anova(m2,m3,m4)
+```
+
+### Model inspection
+
+```{r}
+summary(m4)
 ```
 
 # Define basic model predicting BLOCK EFFICIENCY (numBlocks) from condition, with random intercepts for participant and target
 
 
+```{r}
+## fixed effects only
+m1 <- lm(numBlocks ~ condition, 
+            data = d)
+
+## with random intercepts for participant only
+m2 <- lmer(numBlocks ~ condition + (1 | gameID),
+            data = d)
+
+## with random intercepts for item only
+m3 <- lmer(numBlocks ~ condition + (1 | targetName),
+            data = d)
+
+##with random intercepts for both participant AND item
+m4 <- lmer(numBlocks ~ condition + (1 | gameID) + (1 | targetName),
+            data = d)
+
+```
+
+
+### Model comparison
+```{r}
+anova(m2,m3,m4)
+```
+
+### Model inspection
+```{r}
+summary(m4)
+```
+
 # Define basic model predicting BUILD DURATION (TBD) from condition, with random intercepts for participant and target
 
-
-### Basic stats: TARGET PROBABILITY by condition 
+### Model specification
 ```{r}
-## get mean target probability by condition
-d %>%
-  group_by(condition) %>%
-  summarize(meanTargetProb=mean(targetProb))
-
-## commented out b/c bootstrapping here is a bit slow, faster in jupyter (python) notebook
-# d %>%
-#   group_by(condition) %>%
-#   tidyboot_mean(col=targetProb) %>%
-#   ungroup()
+## see above
 
 ```
 
-### Basic stats: ACCURACY by condition 
-```{r}
-## add numeric accuracy column
-d <- d %>% 
-  mutate(correct_binary = ifelse(correct == 'TRUE', 1, 0))
-
-## look at accuracy by condition
-d %>%  
-  group_by(condition) %>%
-  summarize(accuracy=mean(correct_binary))
-```
-
-### Fit mixed-effects model to TARGET PROB, and compare different definitions of random effects structure 
-```{r}
-m1 <- lmer(targetProb ~ condition + (1 | className), 
-            data = d)
-
-m2 <- lmer(targetProb ~ condition + (1 | gameID), 
-            data = d)
-
-m3 <- lmer(targetProb ~ condition + (1 | gameID) + (1 | className), 
-            data = d)
-
-```
-
-### TARGET PROB Model comparison
-```{r}
-anova(m1,m2,m3)
-```
-
-### Display summary of best-fitting model
-```{r}
-summary(m3)
-```
-
-
-### Fit mixed-effects model to ACCURACY, and compare different definitions of random effects structure 
-```{r}
-m1 <- glmer(correct_binary ~ condition + (1 | className), 
-            data = d, 
-            family="binomial")
-
-m2 <- glmer(correct_binary ~ condition + (1 | gameID), 
-            data = d, 
-            family="binomial")
-
-m3 <- glmer(correct_binary ~ condition + (1 | gameID) + (1 | className), 
-            data = d, 
-            family="binomial")
-
-```
-
-### ACCURACY Model comparison
-```{r}
-anova(m1,m2,m3)
-```
-
-### Best model summary
-```{r}
-summary(m3)
-```
-
-
-# Import timecourse & collaboration data
-
-```{r}
-delta.collab <- read_csv('../results/csv/demo96/collab_delta_quantile.csv')  %>%
-  mutate(sketcherId = factor(sketcherId))
-
-delta.solo <- read_csv('../results/csv/demo96/solo_delta_quantile.csv') %>%
-  mutate(sketcherId = factor(sketcherId))
-
-targetProb.timeSeries <- read_csv('../results/csv/demo96/timeSeries_targetProb.csv') %>%
-  mutate(condition = factor(condition)) 
-
-```
-
-
-# How does evidence for the target accumulate over the course of collaborative sketch production? 
-
-## collab vs. solo
-```{r}
-targetProb.timeSeries
-```
-
-
-## Fit several candidate polynomial regression models
-```{r}
-fit.ts.1 <- lm(targetProb ~ percentStrokeNum*condition, 
-                data = targetProb.timeSeries)
-
-fit.ts.2 <- lm(targetProb ~ percentStrokeNum*condition + poly(percentStrokeNum,2), 
-                data = targetProb.timeSeries)
-
-fit.ts.3 <- lm(targetProb ~ percentStrokeNum*condition + poly(percentStrokeNum,3), 
-                data = targetProb.timeSeries)
-
-fit.ts.4 <- lm(targetProb ~ percentStrokeNum*condition + poly(percentStrokeNum,4), 
-                data = targetProb.timeSeries)
-
-fit.ts.5 <- lm(targetProb ~ percentStrokeNum*condition + poly(percentStrokeNum,5), 
-                data = targetProb.timeSeries)
-
-```
 
 ### Model comparison
 ```{r}
-anova(fit.ts.1, fit.ts.2, fit.ts.3, fit.ts.4, fit.ts.5)
+## see above
+
 ```
 
-### Display best-fitting (but still parsimonious) model params
+### Model inspection
 ```{r}
-summary(fit.ts.3)
-```
-
-### Visualize model fit
-```{r}
-targetProb.timeSeries %>%
-  ggplot(aes(x=percentStrokeNum, y=targetProb, color=condition)) + 
-  # geom_point(aes(alpha=0.01,shape='.')) +
-  labs(x='% sketch completed', y='target probability',color = 'condition') +
-  geom_smooth(method="lm", formula = y ~ poly(x,3)) + 
-  scale_color_manual(values=c("#ec5954","#6f7070")) + 
-  theme_minimal() +
-  theme(axis.text=element_text(size=14), 
-        axis.title=element_text(size=16),
-        legend.title=element_text(size=14),
-        legend.text=element_text(size=12),
-        legend.position=c(0.8,0.25)) 
-ggsave('../results/plots/demo96/timeSeries_condition.pdf', height=12, width=12, units='cm', useDingbats=F)
+## see above
 
 ```
-
-
-# How does the contribution of each agent vary as a function of the overall sketch recognizability? aka the "delta-quantile analysis"
-
-## COLLAB condition
-```{r}
-delta.collab
-```
-
-### Fit several candidate polynomial regression models
-```{r}
-# see: https://bookdown.org/ndphillips/YaRrr/comparing-regression-models-with-anova.html
-
-fit.collab.1 <- lm(delta ~ quantile*sketcherId, 
-                data = delta.collab)
-
-fit.collab.2 <- lm(delta ~ quantile*sketcherId + poly(quantile,2), 
-                data = delta.collab)
-
-fit.collab.3 <- lm(delta ~ quantile*sketcherId + poly(quantile,3), 
-                data = delta.collab)
-
-fit.collab.4 <- lm(delta ~ quantile*sketcherId + poly(quantile,4), 
-                data = delta.collab)
-
-fit.collab.5 <- lm(delta ~ quantile*sketcherId + poly(quantile,5), 
-                data = delta.collab)
-```
-
-### Model comparison
-```{r}
-anova(fit.collab.1, fit.collab.2, fit.collab.3, fit.collab.4, fit.collab.5)
-```
-### Display best-fitting model params
-```{r}
-summary(fit.collab.4)
-```
-
-### Visualize model fit
-```{r}
-delta.collab %>%
-  ggplot(aes(x=quantile, y=delta, color=sketcherId)) + 
-  # geom_point(aes(alpha=0.01,shape='.')) +
-  labs(x='percentile', y='mean contribution per stroke',color = 'agent') +
-  geom_smooth(method="lm", formula = y ~ poly(x,4)) + 
-  scale_color_manual(values=c("#ec5954","#f7cc4e")) + 
-  theme_minimal() +
-  theme(axis.text=element_text(size=14), 
-        axis.title=element_text(size=16),
-        legend.title=element_text(size=14),
-        legend.text=element_text(size=12),
-        legend.position=c(0.8,0.2)) 
-ggsave('../results/plots/demo96/delta_quantile_collab.pdf', height=10, width=14, units='cm', useDingbats=F)
-
-```
-
-## SOLO condition
-
-### Fit several candidate polynomial regression models
-```{r}
-# see: https://bookdown.org/ndphillips/YaRrr/comparing-regression-models-with-anova.html
-
-fit.solo.1 <- lm(delta ~ quantile*sketcherId, 
-                data = delta.solo)
-
-fit.solo.2 <- lm(delta ~ quantile*sketcherId + poly(quantile,2), 
-                data = delta.solo)
-
-fit.solo.3 <- lm(delta ~ quantile*sketcherId + poly(quantile,3), 
-                data = delta.solo)
-
-fit.solo.4 <- lm(delta ~ quantile*sketcherId + poly(quantile,4), 
-                data = delta.solo)
-
-fit.solo.5 <- lm(delta ~ quantile*sketcherId + poly(quantile,5), 
-                data = delta.solo)
-```
-
-### Model comparison
-```{r}
-anova(fit.solo.1, fit.solo.2, fit.solo.3, fit.solo.4, fit.solo.5)
-```
-
-### Display best-fitting model params
-```{r}
-summary(fit.solo.3)
-```
-
-
-### Visualize model fit
-```{r}
-delta.solo %>%
-  ggplot(aes(x=quantile, y=delta, color=sketcherId)) + 
-  # geom_point(aes(alpha=0.01,shape='.')) +
-  labs(x='percentile', y='mean contribution per stroke',color = 'parity') +
-  geom_smooth(method="lm", formula = y ~ poly(x,3)) + 
-  scale_color_manual(values=c("#f7cc4e","#ec5954")) + 
-  theme_minimal() +
-  theme(axis.text=element_text(size=14), 
-        axis.title=element_text(size=16),
-        legend.title=element_text(size=14),
-        legend.text=element_text(size=12),
-        legend.position=c(0.8,0.2)) 
-ggsave('../results/plots/demo96/delta_quantile_solo.pdf', height=10, width=14, units='cm', useDingbats=F)
-```
-
-### Combine then analyze delta-quantile datasets together
-```{r}
-delta.collab <- delta.collab %>%
-  mutate(parity = ifelse(sketcherId == 'human', 'odd', 'even')) %>%
-  mutate(condition='collab') 
-
-delta.solo <- delta.solo %>%
-  mutate(parity = ifelse(sketcherId == 'odd', 'odd', 'even'))  %>%
-  mutate(condition='solo')
-
-delta.both <- bind_rows(delta.collab, delta.solo) %>%
-  mutate(condition = factor(condition, levels = c("solo","collab"))) %>%
-  mutate(parity = factor(parity, levels = c("odd","even")))
-
-```
-
-```{r}
-fit.both.1 <- lm(delta ~ quantile*parity*condition, 
-                data = delta.both)
-
-fit.both.2 <- lm(delta ~ parity*condition, 
-                data = delta.both)
-
-```
-
-```{r}
-summary(fit.both.2)
-```
-
-
-
-
-
-```{r}
-delta.both %>%
-  group_by(condition, parity) %>%
-  summarize(meanDelta = mean(na.omit(delta)))
-```
-
