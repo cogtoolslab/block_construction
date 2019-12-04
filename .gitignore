@@ -121,3 +121,4 @@ node_modules/
 
 # VS Code
 block_construction_nightingale.code-workspace
+.Rproj.user
