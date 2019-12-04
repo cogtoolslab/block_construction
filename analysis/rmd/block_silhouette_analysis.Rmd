@@ -23,6 +23,27 @@ d <- read_csv('../results/csv/block_silhouette_pilot3.csv')
 d
 ```
 
+
+# Define basic model predicting ACCURACY (normedScore) from condition, with random intercepts for participant and target
+
+```{r}
+m1 <- lmer(normedScore ~ condition + (1 | gameID), 
+            data = d)
+
+# m2 <- lmer(targetProb ~ condition + (1 | gameID), 
+#             data = d)
+# 
+# m3 <- lmer(targetProb ~ condition + (1 | gameID) + (1 | className), 
+#             data = d)
+
+```
+
+# Define basic model predicting BLOCK EFFICIENCY (numBlocks) from condition, with random intercepts for participant and target
+
+
+# Define basic model predicting BUILD DURATION (TBD) from condition, with random intercepts for participant and target
+
+
 ### Basic stats: TARGET PROBABILITY by condition 
 ```{r}
 ## get mean target probability by condition
