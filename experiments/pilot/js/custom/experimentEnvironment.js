@@ -359,7 +359,7 @@ var sendData = function (eventType, trialObj) {
 
     // common info to send to mongo
     var commonInfo = {
-        // ppt and game info
+        // identification
         dbname: dbname, 
         colname: colname,
         iterationName: trialObj.iterationName,
@@ -369,8 +369,10 @@ var sendData = function (eventType, trialObj) {
         gameID: trialObj.gameID,
         version: trialObj.versionInd,
         randID: trialObj.randID, // additional random ID in case none assigned from other sources
+        //timing
         timeRelative: performance.now(), // time since session began
         timeAbsolute: Date.now(),
+        // phase and condition
         phase: trialObj.phase,
         condition: trialObj.condition,
         trialNum: trialObj.trialNum, 
@@ -493,10 +495,15 @@ var sendData = function (eventType, trialObj) {
                 blockBodyProperties: blockProperties,
                 incrementalScore: incrementalScore,
                 normedIncrementalScore: normedIncrementalScore,
-                timeBlockSelected: timeBlockSelected
+                timeBlockSelected: timeBlockSelected,
+                timeBlockPlaced: timeLastPlaced,
+                relativePlacementTime: trialObj.phase == 'build' ? timeLastPlaced - trialObj.buildStartTime : timeLastPlaced - trialObj.exploreStartTime,
+                blockNum: blocks.length,
+                numBlocksExplore: trialObj.phase == 'build' ? trialObj.numBlocksExplore : NaN
+
             })
 
-            //console.log('block_data', block_data);
+            console.log('block_data', block_data);
             socket.emit('currentData', block_data);
         }
         else if (eventType == 'settled') {
@@ -545,17 +552,19 @@ var sendData = function (eventType, trialObj) {
             });
 
             world_data = _.extend({}, commonInfo, last_block_data, {
-                dataType: 'world',
+                dataType: 'settled',
                 eventType: eventType, // initial block placement decision vs. final block resting position.
                 allBlockBodyProperties: bodiesForSending, // matter information about bodies of each block. Order is order of block placement
                 allVertices: allVertices,
                 numBlocks: bodiesForSending.length,
                 incrementalScore: incrementalScore,
-                normedIncrementalScore: normedIncrementalScore
-                // need to add bonuses
+                normedIncrementalScore: normedIncrementalScore,
+                timeBlockPlaced: timeLastPlaced,
+                relativePlacementTime: trialObj.phase == 'build' ? timeLastPlaced - trialObj.buildStartTime : timeLastPlaced - trialObj.exploreStartTime,
+                numBlocksExplore: trialObj.phase == 'build' ? trialObj.numBlocksExplore : NaN
             });
 
-            //console.log('world_data', world_data);
+            console.log('world_data', world_data);
             socket.emit('currentData', world_data);
         }
         else if (eventType == 'reset') {
@@ -594,9 +603,13 @@ var sendData = function (eventType, trialObj) {
                 dataType: 'world',
                 eventType: eventType, // initial block placement decision vs. final block resting position.
                 allBlockBodyProperties: bodiesForSending, // matter information about bodies of each block. Order is order of block placement
-                numBlocks: bodiesForSending.length
+                numBlocks: bodiesForSending.length,
+                timeFinished: timeLastPlaced,
+                buildTime: timeLastPlaced - Date.now(),
                 // need to add bonuses
             });
+
+            
 
             if (eventType == 'practice_attempt') {
                 // Summary data for 
@@ -620,11 +633,14 @@ var sendData = function (eventType, trialObj) {
                 socket.emit('currentData', trial_end_data);
 
             } else if (eventType == 'explore_end') {
+
+                trialObj.numBlocksExplore = blocks.length;
                 // Summary data for entire explore phase
                 trial_end_data = _.extend({}, commonInfo, world_data, {
                     dataType: 'explore_end',
                     eventType: eventType, // initial block placement decision vs. final block resting position.
                     numBlocks: blocks.length, //number of blocks before reset pressed
+                    numBlocksExplore: trialObj.numBlocksExplore, //same as numblocks here
                     exploreStartTime: trialObj.exploreStartTime,
                     completed: trialObj.completed,
                     F1Score: trialObj.F1Score, // raw score
@@ -635,7 +651,7 @@ var sendData = function (eventType, trialObj) {
                     nPracticeAttempts: trialObj.nPracticeAttempts,
                     allVertices: allVertices
                 });
-                //console.log('trial_end_data: ', trial_end_data);
+                console.log('explore_end_data: ', trial_end_data);
                 socket.emit('currentData', trial_end_data);
 
             } 
@@ -645,6 +661,7 @@ var sendData = function (eventType, trialObj) {
                     dataType: 'trial_end',
                     eventType: eventType, // initial block placement decision vs. final block resting position.
                     numBlocks: blocks.length, //number of blocks before reset pressed
+                    numBlocksExplore: trialObj.numBlocksExplore,
                     exploreStartTime: trialObj.exploreStartTime,
                     buildStartTime: trialObj.buildStartTime,
                     buildFinishTime: trialObj.buildFinishTime,
@@ -663,7 +680,7 @@ var sendData = function (eventType, trialObj) {
                     bonusThresholdLow: trialObj.bonusThresholdLow,
                     allVertices: allVertices
                 });
-                //console.log('trial_end_data: ', trial_end_data);
+                console.log('trial_end_data: ', trial_end_data);
                 socket.emit('currentData', trial_end_data);
 
             };

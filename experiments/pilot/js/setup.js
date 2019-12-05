@@ -17,7 +17,7 @@ if (dev_mode) {
   build_duration = 20;
 }
 
-var iterationName = 'pilot3';
+var iterationName = 'testpilot3';
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 console.log(randID);
@@ -142,7 +142,8 @@ var allTrialInfo = {
   points: points,
   bonusThresholdHigh: 0.93,
   bonusThresholdMid: 0.85,
-  bonusThresholdLow: 0.7
+  bonusThresholdLow: 0.7,
+  numBlocksExplore: 0
 };
 
 // define trial object with boilerplate
