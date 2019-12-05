@@ -1,10 +1,11 @@
 // BlockKinds are a type of block- of which several might be placed in the environment. To be concretely instantiated, a Block must be created that inherets its properties from a BlockKind
 // BlockKind also holds the information for displaying the menu item associated with that blockKind.
-function BlockKind(w,h,blockColor){
+function BlockKind(w,h,blockColor, blockName = ''){
     // BlockKind width and height should be given in small integers. They are scaled in the block class.
     this.w = w;
     this.h = h;
     this.blockColor = blockColor;
+    this.blockName = blockName;
     
     var x;
     var y;

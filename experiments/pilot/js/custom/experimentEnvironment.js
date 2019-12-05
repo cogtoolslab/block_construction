@@ -76,6 +76,8 @@ var blockDims = [
     [4, 2]
 ];
 
+var blockNames = ['A','B','C','D','E'];
+
 /*
 var block_colors = [
     [247, 239, 244, 210],
@@ -129,12 +131,12 @@ var setupEnvironment = function (env, trialObj = null) {
             h = dims[1]
             if (trialObj.phase == 'explore') {
                 if (trialObj.condition == 'mental'){ 
-                    blockKinds.push(new BlockKind(w, h, disabledColor));
+                    blockKinds.push(new BlockKind(w, h, disabledColor, blockName=blockNames[i]));
                 } else {
-                    blockKinds.push(new BlockKind(w, h, exploreColor));
+                    blockKinds.push(new BlockKind(w, h, exploreColor, blockName=blockNames[i]));
                 }
             } else {
-                blockKinds.push(new BlockKind(w, h, buildColor));
+                blockKinds.push(new BlockKind(w, h, buildColor, blockName=blockNames[i]));
             }
         });
 
@@ -493,6 +495,7 @@ var sendData = function (eventType, trialObj) {
                 blockCenterY: newBlock['body']['position']['y'],
                 blockVertices: vertices,
                 blockBodyProperties: blockProperties,
+                blockKind: newBlock.blockKind.blockName,
                 incrementalScore: incrementalScore,
                 normedIncrementalScore: normedIncrementalScore,
                 timeBlockSelected: timeBlockSelected,
@@ -525,7 +528,8 @@ var sendData = function (eventType, trialObj) {
                 blockCenterX: lastBlock['body']['position']['x'],
                 blockCenterY: lastBlock['body']['position']['y'],
                 blockVertices: vertices,
-                blockBodyProperties: blockProperties
+                blockBodyProperties: blockProperties,
+                blockKind: lastBlock.blockKind.blockName
             };
 
 
