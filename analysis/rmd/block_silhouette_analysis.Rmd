@@ -1,0 +1,112 @@
+---
+title: "block silhouette analysis"
+author: "wmccarthy & jefan"
+date: "12/3/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggthemes)
+library(lme4)
+library(lmerTest)
+library(brms)
+library(tidyboot)
+```
+
+# Import group data
+
+```{r}
+d <- read_csv('../results/csv/block_silhouette_pilot3.csv') 
+d
+```
+
+# Modeling ACCURACY (normedScore) from condition, with random intercepts for participant and target
+
+## Model specifications
+
+```{r}
+## fixed effects only
+m1 <- lm(normedScore ~ condition, 
+            data = d)
+
+## with random intercepts for participant only
+m2 <- lmer(normedScore ~ condition + (1 | gameID),
+            data = d)
+
+## with random intercepts for item only
+m3 <- lmer(normedScore ~ condition + (1 | targetName),
+            data = d)
+
+##with random intercepts for both participant AND item
+m4 <- lmer(normedScore ~ condition + (1 | gameID) + (1 | targetName),
+            data = d)
+
+```
+
+### Model comparison
+```{r}
+anova(m2,m3,m4)
+```
+
+### Model inspection
+
+```{r}
+summary(m4)
+```
+
+# Define basic model predicting BLOCK EFFICIENCY (numBlocks) from condition, with random intercepts for participant and target
+
+
+```{r}
+## fixed effects only
+m1 <- lm(numBlocks ~ condition, 
+            data = d)
+
+## with random intercepts for participant only
+m2 <- lmer(numBlocks ~ condition + (1 | gameID),
+            data = d)
+
+## with random intercepts for item only
+m3 <- lmer(numBlocks ~ condition + (1 | targetName),
+            data = d)
+
+##with random intercepts for both participant AND item
+m4 <- lmer(numBlocks ~ condition + (1 | gameID) + (1 | targetName),
+            data = d)
+
+```
+
+
+### Model comparison
+```{r}
+anova(m2,m3,m4)
+```
+
+### Model inspection
+```{r}
+summary(m4)
+```
+
+# Define basic model predicting BUILD DURATION (TBD) from condition, with random intercepts for participant and target
+
+### Model specification
+```{r}
+## see above
+
+```
+
+
+### Model comparison
+```{r}
+## see above
+
+```
+
+### Model inspection
+```{r}
+## see above
+
+```
