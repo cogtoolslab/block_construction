@@ -53,5 +53,8 @@ Found several missing pieces, including survey data not being sent.
 - Timestamp when block selected (in addition to existing timestamp when each block is placed).
 - Adjusted base compensation to $4, reflecting updated estimate of expected total time on HIT.
 
-
+#### `pilot4`: Minor updates to data saving
+- N = `TBD` participants.
+- Added more block number and timing data
+- Added note to say adjust zoom if windows aren't inline
 

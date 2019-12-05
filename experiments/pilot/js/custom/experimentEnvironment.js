@@ -500,13 +500,13 @@ var sendData = function (eventType, trialObj) {
                 normedIncrementalScore: normedIncrementalScore,
                 timeBlockSelected: timeBlockSelected,
                 timeBlockPlaced: timeLastPlaced,
-                relativePlacementTime: trialObj.phase == 'build' ? timeLastPlaced - trialObj.buildStartTime : timeLastPlaced - trialObj.exploreStartTime,
+                relativePlacementTime: trialObj.phase == 'explore' ? timeLastPlaced - trialObj.exploreStartTime : timeLastPlaced - trialObj.buildStartTime,
                 blockNum: blocks.length,
                 numBlocksExplore: trialObj.phase == 'build' ? trialObj.numBlocksExplore : NaN
 
             })
 
-            console.log('block_data', block_data);
+            //console.log('block_data', block_data);
             socket.emit('currentData', block_data);
         }
         else if (eventType == 'settled') {
@@ -564,11 +564,11 @@ var sendData = function (eventType, trialObj) {
                 incrementalScore: incrementalScore,
                 normedIncrementalScore: normedIncrementalScore,
                 timeBlockPlaced: timeLastPlaced,
-                relativePlacementTime: trialObj.phase == 'build' ? timeLastPlaced - trialObj.buildStartTime : timeLastPlaced - trialObj.exploreStartTime,
+                relativePlacementTime: trialObj.phase == 'explore' ? timeLastPlaced - trialObj.exploreStartTime : timeLastPlaced - trialObj.buildStartTime,
                 numBlocksExplore: trialObj.phase == 'build' ? trialObj.numBlocksExplore : NaN
             });
 
-            console.log('world_data', world_data);
+            //console.log('world_data', world_data);
             socket.emit('currentData', world_data);
         }
         else if (eventType == 'reset') {
@@ -609,7 +609,7 @@ var sendData = function (eventType, trialObj) {
                 allBlockBodyProperties: bodiesForSending, // matter information about bodies of each block. Order is order of block placement
                 numBlocks: bodiesForSending.length,
                 timeFinished: timeLastPlaced,
-                buildTime: timeLastPlaced - Date.now(),
+                buildTime: trialObj.phase == 'build' ? timeLastPlaced - trialObj.buildStartTime : timeLastPlaced - trialObj.exploreStartTime,
                 // need to add bonuses
             });
 
@@ -655,7 +655,7 @@ var sendData = function (eventType, trialObj) {
                     nPracticeAttempts: trialObj.nPracticeAttempts,
                     allVertices: allVertices
                 });
-                console.log('explore_end_data: ', trial_end_data);
+                //console.log('explore_end_data: ', trial_end_data);
                 socket.emit('currentData', trial_end_data);
 
             } 
@@ -669,7 +669,6 @@ var sendData = function (eventType, trialObj) {
                     exploreStartTime: trialObj.exploreStartTime,
                     buildStartTime: trialObj.buildStartTime,
                     buildFinishTime: trialObj.buildFinishTime,
-                    buildTime: trialObj.buildFinishTime - trialObj.buildStartTime,
                     endReason: trialObj.endReason,
                     completed: trialObj.completed,
                     F1Score: trialObj.F1Score, // raw score
@@ -684,7 +683,7 @@ var sendData = function (eventType, trialObj) {
                     bonusThresholdLow: trialObj.bonusThresholdLow,
                     allVertices: allVertices
                 });
-                console.log('trial_end_data: ', trial_end_data);
+                //console.log('trial_end_data: ', trial_end_data);
                 socket.emit('currentData', trial_end_data);
 
             };
