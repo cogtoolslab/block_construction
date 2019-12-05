@@ -13,6 +13,17 @@ This directory will contain subdirs containing different versions of the `block_
 
 #### `dev`: Test UI
 
+
+
+### All pilots have the following parameters
+
+- practiceDuration: 600
+- exploreDuration: 30
+- buildDuration: 60
+- bonusThresholdHigh: 0.93 ($0.05)
+- bonusThresholdMid: 0.85 ($0.03)
+- bonusThresholdLow: 0.7 ($0.01)
+
 #### `pilot0`: Test UI
 
 - N = 2 participants
@@ -42,4 +53,8 @@ Found several missing pieces, including survey data not being sent.
 - Timestamp when block selected (in addition to existing timestamp when each block is placed).
 - Adjusted base compensation to $4, reflecting updated estimate of expected total time on HIT.
 
+#### `pilot4`: Minor updates to data saving
+- N = `TBD` participants.
+- Added more block number and timing data
+- Added note to say adjust zoom if windows aren't inline
 
