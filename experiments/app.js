@@ -38,9 +38,6 @@ try {
 
 // serve stuff that the client requests
 app.get('/*', (req, res) => {
-  var id = req.query.workerId;
-  // Let them through if researcher, or in 'testing' mode
-  var isResearcher = _.includes(researchers, id);
   serveFile(req, res);
 });
 
