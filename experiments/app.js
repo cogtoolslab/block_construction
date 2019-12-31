@@ -39,23 +39,8 @@ try {
 // serve stuff that the client requests
 app.get('/*', (req, res) => {
   var id = req.query.workerId;
-  // console.log(req);
   // Let them through if researcher, or in 'testing' mode
   var isResearcher = _.includes(researchers, id);
-  // if (!id || id === 'undefined' || (isResearcher && !blockResearcher)) {
-  //   serveFile(req, res);
-  // } else if (!valid_id(id)) {
-  //   // If invalid id, block them
-  //   return handleInvalidID(req, res);
-  //   console.log('invalid id, blocked');
-  // } else {
-  //   // If the database shows they've already participated, block them
-  //   // If not a repeat worker, then send client stims
-  //   console.log('neither invalid nor blank id, check if repeat worker');
-  //   checkPreviousParticipant(id, (exists) => {
-  //     return exists ? handleDuplicate(req, res) : serveFile(req, res);
-  //   });
-  // }
   serveFile(req, res);
 });
 
