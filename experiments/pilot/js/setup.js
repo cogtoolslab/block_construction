@@ -17,7 +17,7 @@ if (dev_mode) {
   build_duration = 20;
 }
 
-var iterationName = 'pilot4';
+var iterationName = 'debug';
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 console.log(randID);

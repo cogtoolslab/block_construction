@@ -1,7 +1,8 @@
 /**
  * jspsych-block-silhouette
  * 
- * plugin for to present a silhouette and prompt participants to reconstruct it from a set of blocks
+ * plugin to present a silhouette and prompt participants to reconstruct it from a set of blocks
+ * Building is preceded by a preparation phase, either purely observing, or practice building
  *
  * documentation: docs.jspsych.org
  *

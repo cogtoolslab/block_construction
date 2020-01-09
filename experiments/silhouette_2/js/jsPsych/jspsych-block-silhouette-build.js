@@ -1,7 +1,8 @@
 /**
  * jspsych-block-silhouette
  * 
- * plugin for to present a silhouette and prompt participants to reconstruct it from a set of blocks
+ * Plugin for presenting a silhouette and prompting participants to reconstruct it from a set of blocks
+ * This is only the 'build' phase- i.e. there is no preparation beforehand
  *
  * documentation: docs.jspsych.org
  *
@@ -25,14 +26,14 @@ var version = 'VERSION_PLACEHOLDER';
 
 //var pct_per_sec = (1 / explore_time_limit) * 100; // if time_limit==20, that means that progress bar goes down by 5% each unit time
 
-jsPsych.plugins["block-silhouette"] = (function () {
+jsPsych.plugins["block-silhouette-build"] = (function () {
 
   var plugin = {};
 
-  jsPsych.pluginAPI.registerPreload('block-silhouette', 'stimulus', 'image');
+  jsPsych.pluginAPI.registerPreload('block-silhouette-build', 'stimulus', 'image');
 
   plugin.info = {
-    name: 'block-silhouette',
+    name: 'block-silhouette-build',
     description: '',
     parameters: {
       targetBlocks: {
@@ -587,113 +588,6 @@ jsPsych.plugins["block-silhouette"] = (function () {
       jsPsych.finishTrial();
 
     };
-
-    // // function to handle responses by the subject
-    // function after_response(choice) {
-    //   // console.log('after response function called');
-
-    //   // // End timer
-    //   // clearInterval(interval);
-    //   // progressBar.stop();
-
-    //   // measure rt
-    //   var end_time = Date.now();
-    //   var rt = end_time - start_time;
-    //   response.rt = rt;
-
-    //   // // after a valid response, the sketch will have the CSS class 'responded'
-    //   // // which can be used to provide visual feedback that a response was recorded
-    //   // display_element.querySelector('#jspsych-block-silhouette-sketch').className += ' responded';
-
-    //   // // disable all the buttons after a response
-    //   // for (var i = 0; i < trial.choices.length; i++) {
-    //   //   $('#jspsych-block-silhouette-button-' + i).off('click');
-    //   // }      
-
-    //   // if (trial.response_ends_trial) {
-    //   //   end_trial();
-    //   // }
-    // };
-
-    // // function to end trial when it is time
-    // function end_trial() {
-
-    //   // kill any remaining setTimeout handlers
-    //   jsPsych.pluginAPI.clearAllTimeouts();
-
-    //   // get info from mturk
-    //   var turkInfo = jsPsych.turk.turkInfo();
-
-    //   // // prettify choices list
-    //   // var prettyChoices = new Array;
-    //   // _.forEach(trial.choices, function(x) {
-    //   //   prettyChoices.push(x.split('/').slice(-1)[0].split('.')[0]);
-    //   // });
-
-    //   // // check if response matches target, i.e., whether response is correct
-    //   // var trial_correct;
-    //   // if (response.button == trial.target.shapenetid) {
-    //   //   trial_correct = 1;
-    //   //   increment = accuracy_bonus + parseFloat(time_bonus);
-    //   //   score+= parseFloat(increment); // increment accuracy bonus and time bonus
-    //   //   numCorrect += 1; // increment num correct by one
-    //   // } else {
-    //   //   trial_correct = 0;
-    //   // }
-
-    //   // score the built structure against the target
-
-    //   // gather the data to store for the trial
-    //   if (trial.dev_mode == true) {
-    //     console.log(trial);
-    //   }
-    //   var trial_data = _.extend(_.omit(trial, 'on_finish'), {
-    //     dbname: 'block_construction',
-    //     colname: 'silhouette',
-    //     gameID: trial.gameid,
-    //     // rt: response.rt,        
-    //     workerId: turkInfo.workerId,
-    //     hitID: turkInfo.hitId,
-    //     aID: turkInfo.assignmentId,
-    //     timestamp: Date.now(),
-    //     score: cumulBonus
-    //   });
-
-    //   if (trial.dev_mode == true) {
-    //     console.log('trial data: ', trial_data);
-    //   }
-
-    //   // // show feedback
-    //   // if (trial_correct==true) {
-    //   //  // show feedback by drawing GREEN box around TARGET if selected CORRECTLY    
-    //   //   display_element.querySelector('#jspsych-block-silhouette-button-' + target_index).style.border = "8px solid #66B03B"
-    //   //   // also bold/enlarge the score in bottom left corner 
-    //   //   display_element.querySelector('#score p2').innerHTML = 'bonus earned: ' + parseFloat(score).toFixed(3);
-    //   //   display_element.querySelector('#score p2').style.fontWeight = 'bold';
-    //   // } else {
-    //   //  // draw RED box around INCORRECT response and BLACK box around TARGET
-    //   //  display_element.querySelector('#jspsych-block-silhouette-button-' + target_index).style.border = "8px solid #282828"      
-    //   //  display_element.querySelector('#jspsych-block-silhouette-button-' + response_index).style.border = "8px solid #D02B16"      
-    //   // }
-
-    // };
-
-    // 
-
-
-    // // hide image if timing is set
-    // if (trial.explore_duration !== null) {
-    //   jsPsych.pluginAPI.setTimeout(function () {
-    //     display_element.querySelector('#jspsych-block-silhouette-sketch').style.visibility = 'hidden';
-    //   }, trial.sketch_duration);
-    // }
-
-    // // end trial if time limit is set
-    // if (trial.build_duration !== null) {
-    //   jsPsych.pluginAPI.setTimeout(function () {
-    //     end_trial();
-    //   }, trial.trial_duration);
-    // }
 
   };
   return plugin;

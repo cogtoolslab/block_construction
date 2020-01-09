@@ -9,7 +9,7 @@ var practice_duration = 600;
 var explore_duration = 30;
 var build_duration = 60;
 
-var dev_mode = false;
+var dev_mode = true;
 
 if (dev_mode) {
   practice_duration = 1;
@@ -17,7 +17,7 @@ if (dev_mode) {
   build_duration = 20;
 }
 
-var iterationName = 'pilot4';
+var iterationName = 'developExp2';
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 console.log(randID);
@@ -148,7 +148,7 @@ var allTrialInfo = {
 
 // define trial object with boilerplate
 function Trial () {
-  this.type = 'block-silhouette';
+  this.type = 'block-silhouette-build';
   this.prompt = "Please build the tower using as few blocks as possible.";
   this.dev_mode = dev_mode;
   this.F1Score = 0; // F1 score
@@ -172,7 +172,7 @@ function Trial () {
 };
 
 function PracticeTrial () {
-  this.type = 'block-silhouette';
+  this.type = 'block-silhouette-build';
   this.prompt = "Please build your tower using as few blocks as possible.";
   this.dev_mode = dev_mode;
   this.condition = 'practice';
