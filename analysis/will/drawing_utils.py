@@ -65,10 +65,10 @@ def get_patch(verts,
     patch = patches.PathPatch(path, facecolor=color, lw=line_width)
     return patch
 
-def get_block_patches(blocks):
+def get_block_patches(blocks, color='#29335C'):
     patches = []
     for (b) in blocks:
-        patches.append(get_patch(b,color='#29335C'))
+        patches.append(get_patch(b,color=color))
     return patches
 
 def get_patches_stim(blocks):
@@ -113,16 +113,6 @@ def render_blockworld(patches,
     #plt.show()
     return fig
 
-
-def draw_from_vertices(vertices, world_size=900):
-    '''
-    Render solution given vertices
-    '''
-    fig = render_blockworld(get_block_patches(vertices),
-                            xlim=(0,world_size),
-                            ylim=(0,world_size)) 
-    return fig
-
 def draw_stim(world, world_size=12):
     fig = render_blockworld(get_patches_stim(world.blocks),
                             xlim=(-2,10),
@@ -131,14 +121,29 @@ def draw_stim(world, world_size=12):
 
 
 # Draw final structure for a participant
-def draw_final_structure(df, gameID, target_name):
+def draw_final_structure(df, gameID, target_name, world_size=900):
     '''
     Render solution given dataframe, gameID, and target Name
     '''
     vert_dict = df.loc[(df.gameID == gameID) & (df.targetName == target_name),'allVertices'].apply(ast.literal_eval).values[0]
     vertices = compress_vertices(vert_dict)
+    
+    #score = df.loc[(df.gameID == gameID) & (df.targetName == target_name),'normedScore'].values[0]
+    condition = df.loc[(df.gameID == gameID) & (df.targetName == target_name),'condition'].values[0]
+    c='#29335C'
+    if condition == 'physical':
+        c = '#33BBBB'
+    patches = get_block_patches(vertices, color=c)
+    
     score = df.loc[(df.gameID == gameID) & (df.targetName == target_name),'normedScore'].values[0]
-    return draw_from_vertices(vertices)
+    
+    fig = render_blockworld(patches,
+                        xlim=(0,world_size),
+                        ylim=(0,world_size)) 
+    
+    fig.suptitle(str(np.round(score,3)))
+    
+    return fig
     
 
 ############## RENDER ENVIRONMENT OF BLOCKS IN SUBPLOT ####################
@@ -171,8 +176,12 @@ def render_blockworld_subplot(patches,
 def draw_final_structure_subplot(df, gameID, target_name, ax, world_size=900):
     vert_dict = df.loc[(df.gameID == gameID) & (df.targetName == target_name),'allVertices'].apply(ast.literal_eval).values[0]
     vertices = compress_vertices(vert_dict)
-    score = df.loc[(df.gameID == gameID) & (df.targetName == target_name),'normedScore'].values[0]
-    return render_blockworld_subplot(get_block_patches(vertices),
+    condition = df.loc[(df.gameID == gameID) & (df.targetName == target_name),'condition'].values[0]
+    c='#29335C'
+    if condition == 'physical':
+        c = '#33BBBB'
+    patches = get_block_patches(vertices, color=c)
+    return render_blockworld_subplot(patches,
                                         ax,
                                         xlim=(0,world_size),
                                         ylim=(0,world_size))
@@ -190,7 +199,6 @@ def draw_all_final_structures(df, figsize=(40, 80)):
     fig = plt.figure(figsize=figsize)
     columns = len(target_names)
     rows = len(ppts)
-
     k = 0
     for i in range(0,len(ppts)):
         gameID = ppts[i]
@@ -200,6 +208,37 @@ def draw_all_final_structures(df, figsize=(40, 80)):
             ax = fig.add_subplot(rows, columns, k)
             ax = draw_final_structure_subplot(df, gameID, target_name, ax)
     plt.show()
+    
+def draw_all_final_structures_and_explores(df, dfe, figsize=(40, 160)):
+    ppts = df.gameID.unique()
+    ppts.sort()
+    
+    target_names = df.targetName.unique()
+    #target_names = [f.split('.')[0] for f in listdir(stim_dir) if isfile(join(stim_dir, f))]    
+    target_names.sort()
+
+    fig = plt.figure(figsize=figsize)
+    columns = len(target_names)
+    rows = len(ppts)*2
+    k = 0
+    for i in range(0,len(ppts)):
+        gameID = ppts[i]
+        # draw end of explore phase
+        for j in range(0,len(target_names)):
+            target_name = target_names[j]
+            k += 1
+            ax = fig.add_subplot(rows, columns, k)
+            ax = draw_final_structure_subplot(dfe, gameID, target_name, ax)
+        # draw build phase
+        for j in range(0,len(target_names)):
+            target_name = target_names[j]
+            k += 1
+            score = df.loc[(df.gameID == gameID) & (df.targetName == target_name),'normedScore'].values[0]
+            ax = fig.add_subplot(rows, columns, k)
+            ax = draw_final_structure_subplot(df, gameID, target_name, ax)
+            ax.set_title(str(np.round(score,3)))
+    plt.show()
+    
     
 def draw_stim_from_json(stim_name, stim_dir):
     J = open(join(stim_dir,stim_name + '.json')).read()
