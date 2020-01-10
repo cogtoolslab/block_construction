@@ -14,7 +14,7 @@ var dev_mode = true;
 if (dev_mode) {
   practice_duration = 1;
   explore_duration = 1;
-  build_duration = 20;
+  build_duration = 1000;
 }
 
 var iterationName = 'developExp2';

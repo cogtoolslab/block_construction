@@ -33,6 +33,34 @@ function showBlock(p5stim, block, individual_blocks = false){
     
 }
 
+function createGrid(env){
+
+    
+
+}
+
+function showGrid(env){
+    squareWidth = stim_scale;
+    squareHeight = stim_scale;
+    i = -3;
+    while(i < 5) {
+        j = 0;
+        while(j < 8) {
+            env.push();
+            env.rectMode(env.CENTER);
+            env.stroke([90,90,90]);
+            env.noFill()
+            env.translate(stim_scale*i + canvasWidth/2 - stim_scale/2, (canvasHeight - floorHeight) - (stim_scale*j) + stim_scale/2 - 7);
+            env.rect(0,0,stim_scale,stim_scale);
+            env.pop();
+            j = j+1;
+        }
+        i = i+1;
+    }    
+    
+}
+
+
 //still to do!
 function showFloor(p5stim){
 

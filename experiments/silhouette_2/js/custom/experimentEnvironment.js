@@ -184,6 +184,8 @@ var setupEnvironment = function (env, trialObj = null) {
         env.line(canvasWidth - 50 + 25, 50 - 23, canvasWidth - 50 + 25, 40);
         env.line(canvasWidth - 50 + 12, 40, canvasWidth - 50 + 25, 40);
         */
+        
+        showGrid(env);
 
         if (trialObj.condition == 'practice' && !scoring) {
             showStimulus(env, trialObj.targetBlocks, individual_blocks = true);
@@ -203,6 +205,29 @@ var setupEnvironment = function (env, trialObj = null) {
         }
 
 
+    }
+    snapToGrid = function(selectedBlockKind, preciseMouseX, preciseMouseY, rotated = false, testing_placement = false){
+
+        
+        if (selectedBlockKind.w%2 == 1) {
+            console.log((preciseMouseX+stim_scale/2)%(stim_scale));
+            
+            snappedX = (preciseMouseX+stim_scale/2)%(stim_scale) < (stim_scale/2) ? preciseMouseX - (preciseMouseX%(stim_scale/2)) : preciseMouseX - (preciseMouseX%(stim_scale)) + (stim_scale/2);
+            snappedY = (preciseMouseY+stim_scale/2)%(stim_scale) < (stim_scale/2) ? preciseMouseY - (preciseMouseY%(stim_scale/2)) : preciseMouseY - (preciseMouseY%(stim_scale)) + (stim_scale/2);
+
+            //snappedX =  (preciseMouseX+stim_scale/2)%(stim_scale) < 0 ? preciseMouseX - preciseMouseX%(stim_scale) - stim_scale/2 : preciseMouseX - (preciseMouseX+stim_scale/2)%(stim_scale) + stim_scale;
+            //snappedY = preciseMouseY%(stim_scale) < (stim_scale/2) ? preciseMouseY - preciseMouseY%(stim_scale) : preciseMouseY - preciseMouseY%(stim_scale) - stim_scale;
+        } else {
+            snappedX =  preciseMouseX%(stim_scale) < (stim_scale/2) ? preciseMouseX - preciseMouseX%(stim_scale) : preciseMouseX - preciseMouseX%(stim_scale) + stim_scale;
+            snappedY = preciseMouseY%(stim_scale) < (stim_scale/2) ? preciseMouseY - preciseMouseY%(stim_scale) : preciseMouseY - preciseMouseY%(stim_scale) + stim_scale;
+        }
+
+        //preciseMouseX - preciseMouseX%stim_scale
+        //stim_scale*i + canvasWidth/2 - stim_scale/2, 
+        //(canvasHeight - floorHeight) - (stim_scale*j) + stim_scale/2 - 7
+
+        snappedBlock = new Block(selectedBlockKind, snappedX, snappedY, rotated, testing_placement = testing_placement);
+        return(snappedBlock);
     }
 
     env.mouseClicked = function () {
@@ -231,7 +256,11 @@ var setupEnvironment = function (env, trialObj = null) {
                     // Sends information about the state of the world prior to next block being placed
 
                     //test whether there is a block underneath this area
-                    test_block = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated, testing_placement = true);
+
+                    test_block = snapToGrid(selectedBlockKind, env.mouseX, env.mouseY, rotated, testing_placement = true);
+
+                    //test_block = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated, testing_placement = true);
+
                     if (test_block.can_be_placed()) {
                         
                         if (blocks.length != 0) { //if a block has already been placed, send settled world state
@@ -245,7 +274,7 @@ var setupEnvironment = function (env, trialObj = null) {
                             }
                         }
 
-                        newBlock = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated);
+                        newBlock = snapToGrid(selectedBlockKind, env.mouseX, env.mouseY, rotated);
                         blocks.push(newBlock);
                         // blocks.push(new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated));
                         selectedBlockKind = null;
@@ -313,6 +342,7 @@ var setupStimulus = function (p5stim, stimBlocks) {
     p5stim.draw = function () {
         p5stim.background(220);
         showStimulus(p5stim, testStim);
+        showGrid(p5stim);
         showFloor(p5stim);
     };
 
