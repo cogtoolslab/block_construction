@@ -134,8 +134,8 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
     }
 
-    var physical_explore_text = 'Practice building the tower. Click anywhere to begin.';
-    var mental_explore_text = ' Think about how you will build the tower. Click anywhere to begin.';
+    //var physical_explore_text = 'Practice building the tower. Click anywhere to begin.';
+    //var mental_explore_text = ' Think about how you will build the tower. Click anywhere to begin.';
     var build_text = 'Now build the tower! Click anywhere to begin.';
     var practice_feedback_text = {
       'success': 'Success! Now onto the real experiment. Click anywhere to continue.',
@@ -167,7 +167,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     occluder.style.display = "block";
 
     // **** PHASES OF TRIAL ****
-
+    /*
     function pre_build(baseline) {
       done_button.style.display = "none";
       trial.phase = 'explore';
@@ -201,6 +201,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       trial.nullScore = nullScore;
       trial.scoreGap = scoreGap;
     }
+    */
 
     function build(baseline) {
       trial.phase = "build";
@@ -216,12 +217,6 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       Array.prototype.forEach.call(env_divs, env_div => {
         env_div.style.backgroundColor = "#FFD819";
       });
-
-      // set null score for normed score calculation
-      // nullScore = baseline();
-      // scoreGap = math.subtract(1, nullScore);
-      // trial.nullScore = nullScore;
-      // trial.scoreGap = scoreGap;
     }
 
     var startPractice = function () {
@@ -239,7 +234,6 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       occluder.style.display = "none";
       occluder.removeEventListener('click', resumePractice);
     }
-
 
 
     // **** SCORING **** 
@@ -266,7 +260,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       if (normedScore > trial.bonusThresholdHigh) { bonus = 0.05; }
       else if (normedScore > trial.bonusThresholdMid) { bonus = 0.03; }
       else if (normedScore > trial.bonusThresholdLow) { bonus = 0.01; }
-      else { bonus = 0; console.log('No bonus earned.') }
+      else { bonus = 0; }
       return bonus;
     }
 
@@ -314,16 +308,16 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       /* Called to clear building environment window. 
       Works by resetting variables then building a new p5 instance.
       */
+      /*
       if (trial.phase == 'explore'){
         trial.exploreResets += 1;
       } else {
         trial.buildResets += 1;
-      }
+      }*/
+      trial.buildResets += 1;
       sendData('reset', trial);
       clearP5Envs();
       setupEnvs(trial);
-
-      // update reset counter
 
     }
 
@@ -484,6 +478,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
     // *** Handlers for starting experiment on mouseclick ***
 
+    /*
     var startExplorePhase = function () { //Function needed for removeEventListener
       trial.exploreStartTime = Date.now()
 
@@ -505,7 +500,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
         occluder.addEventListener('click', startBuildPhase());
       });
-    }
+    }*/
 
     var startBuildPhase = function () {
       trial.buildStartTime = Date.now()
@@ -530,8 +525,6 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
           }
         }, 2500);
 
-       
-        
       });
     }
 
@@ -545,10 +538,19 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     if (trial.condition != 'practice') {
 
       // EXPLORATION PHASE
-      pre_build(getCurrScore); //Setup exploration phase
-      occluder.style.display = "block";
-      occluder.addEventListener('click', startExplorePhase);
+      //pre_build(getCurrScore); //Setup exploration phase
 
+      p5stim, p5env = setupEnvs(trial);
+
+      // set null score for normed score calculation
+      nullScore = getCurrScore();
+      scoreGap = math.subtract(1, nullScore);
+      trial.nullScore = nullScore;
+      trial.scoreGap = scoreGap;
+
+      occluder_text.textContent = 'Trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString();
+      occluder.style.display = "block";
+      occluder.addEventListener('click', startBuildPhase);
     }
     else { // this is a practice trial
       done_button.style.display = "inline-block";

@@ -129,6 +129,7 @@ var setupEnvironment = function (env, trialObj = null) {
         blockDims.forEach((dims, i) => {
             w = dims[0]
             h = dims[1]
+            /*
             if (trialObj.phase == 'explore') {
                 if (trialObj.condition == 'mental'){ 
                     blockKinds.push(new BlockKind(w, h, disabledColor, blockName=blockNames[i]));
@@ -137,7 +138,9 @@ var setupEnvironment = function (env, trialObj = null) {
                 }
             } else {
                 blockKinds.push(new BlockKind(w, h, buildColor, blockName=blockNames[i]));
-            }
+            }*/
+            blockKinds.push(new BlockKind(w, h, buildColor, blockName=blockNames[i]));
+
         });
 
         // Create Block Menu
@@ -210,89 +213,90 @@ var setupEnvironment = function (env, trialObj = null) {
             rotated = !rotated;
         }
         */
+        
+        //if (!(trialObj.phase == 'explore' && trialObj.condition == 'mental')) {} //environment will be disabled in some conditions
 
-        if (!(trialObj.phase == 'explore' && trialObj.condition == 'mental')) { //environment will be disabled in some conditions
+        // if mouse in main environment
+        if (env.mouseY > 0 && (env.mouseY < canvasHeight - menuHeight) && (env.mouseX > 0 && env.mouseX < canvasWidth)) {
 
-            // if mouse in main environment
-            if (env.mouseY > 0 && (env.mouseY < canvasHeight - menuHeight) && (env.mouseX > 0 && env.mouseX < canvasWidth)) {
+            if (isPlacingObject) {
+                // test whether all blocks are sleeping
+                sleeping = blocks.filter((block) => block.body.isSleeping);
+                allSleeping = sleeping.length == blocks.length;
 
-                if (isPlacingObject) {
-                    // test whether all blocks are sleeping
-                    sleeping = blocks.filter((block) => block.body.isSleeping);
-                    allSleeping = sleeping.length == blocks.length;
+                time_placing = Date.now();
 
-                    time_placing = Date.now();
+                if (allSleeping || (time_placing - timeLastPlaced > 3000)) {
+                    // SEND WORLD DATA AFTER PREVIOUS BLOCK HAS SETTLED
+                    // Sends information about the state of the world prior to next block being placed
 
-                    if (allSleeping || (time_placing - timeLastPlaced > 3000)) {
-                        // SEND WORLD DATA AFTER PREVIOUS BLOCK HAS SETTLED
-                        // Sends information about the state of the world prior to next block being placed
-
-                        //test whether there is a block underneath this area
-                        test_block = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated, testing_placement = true);
-                        if (test_block.can_be_placed()) {
-                            
-                            if (blocks.length != 0) { //if a block has already been placed, send settled world state
-                                sendData('settled', trialObj);
-                            }
-
-                            if (env.mouseY < canvasHeight/6 && trialObj.phase == 'build') { // if dropping from a great height, assume they are messing around
-                                trialObj.pMessingAround += 0.2;
-                                if(trialObj.pMessingAround > 0.6) {
-                                    alert('Dropping blocks from high up is likely to make the tower unstable!');
-                                }
-                            }
-
-                            newBlock = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated);
-                            blocks.push(newBlock);
-                            // blocks.push(new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated));
-                            selectedBlockKind = null;
-                            env.cursor();
-                            isPlacingObject = false;
-                            blocks.forEach(b => {
-                                Sleeping.set(b.body, false);
-                            });
-
-                            // send initial data about block placement
-                            jsPsych.pluginAPI.setTimeout(function () { // will be a rough estimate- not entirely useful and maybe misleading info
-                                sendData('initial', trialObj);
-                            }, 30);
-                            
-
-                        } else {
-                            disabledBlockPlacement = true;
-                            jsPsych.pluginAPI.setTimeout(function () { // change color of bonus back to white
-                                disabledBlockPlacement = false;
-                            }, 100);
+                    //test whether there is a block underneath this area
+                    test_block = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated, testing_placement = true);
+                    if (test_block.can_be_placed()) {
+                        
+                        if (blocks.length != 0) { //if a block has already been placed, send settled world state
+                            sendData('settled', trialObj);
                         }
+
+                        if (env.mouseY < canvasHeight/6 && trialObj.phase == 'build') { // if dropping from a great height, assume they are messing around
+                            trialObj.pMessingAround += 0.2;
+                            if(trialObj.pMessingAround > 0.6) {
+                                alert('Dropping blocks from high up is likely to make the tower unstable!');
+                            }
+                        }
+
+                        newBlock = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated);
+                        blocks.push(newBlock);
+                        // blocks.push(new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated));
+                        selectedBlockKind = null;
+                        env.cursor();
+                        isPlacingObject = false;
+                        blocks.forEach(b => {
+                            Sleeping.set(b.body, false);
+                        });
+
+                        // send initial data about block placement
+                        jsPsych.pluginAPI.setTimeout(function () { // will be a rough estimate- not entirely useful and maybe misleading info
+                            sendData('initial', trialObj);
+                        }, 30);
+                        
 
                     } else {
                         disabledBlockPlacement = true;
                         jsPsych.pluginAPI.setTimeout(function () { // change color of bonus back to white
                             disabledBlockPlacement = false;
                         }, 100);
-
                     }
 
-                }
-            }
-            else if (env.mouseY > 0 && (env.mouseY < canvasHeight) && (env.mouseX > 0 && env.mouseX < canvasWidth)) { //or if in menu then update selected blockkind
+                } else {
+                    disabledBlockPlacement = true;
+                    jsPsych.pluginAPI.setTimeout(function () { // change color of bonus back to white
+                        disabledBlockPlacement = false;
+                    }, 100);
 
-                // is mouse clicking a block?
-                newSelectedBlockKind = blockMenu.hasClickedButton(env.mouseX, env.mouseY, selectedBlockKind);
-                if (newSelectedBlockKind) {
-                    if (newSelectedBlockKind == selectedBlockKind) {
-                        timeBlockSelected = Date.now();
-
-                        //rotated = !rotated; // uncomment to allow rotation by re-selecting block from menu
-                    } else {
-                        rotated = false;
-                    }
-                    selectedBlockKind = newSelectedBlockKind;
-                    isPlacingObject = true;
                 }
 
             }
         }
+        
+        if (env.mouseY > 0 && (env.mouseY < canvasHeight) && (env.mouseX > 0 && env.mouseX < canvasWidth)) { //or if in menu then update selected blockkind
+
+            // is mouse clicking a block?
+            newSelectedBlockKind = blockMenu.hasClickedButton(env.mouseX, env.mouseY, selectedBlockKind);
+            if (newSelectedBlockKind) {
+                if (newSelectedBlockKind == selectedBlockKind) {
+                    timeBlockSelected = Date.now();
+
+                    //rotated = !rotated; // uncomment to allow rotation by re-selecting block from menu
+                } else {
+                    rotated = false;
+                }
+                selectedBlockKind = newSelectedBlockKind;
+                isPlacingObject = true;
+            }
+
+        }
+    
     }
 
 }

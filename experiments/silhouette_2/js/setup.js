@@ -21,7 +21,7 @@ var iterationName = 'developExp2';
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 console.log(randID);
-
+console.log('iteration: ', iterationName);
 
 function submit2AMT() {
   scoreToTurk = Math.max(score,cumulBonus);
@@ -207,8 +207,8 @@ function setupGame () {
   var on_finish = function(data) {    
     score = Math.max(cumulBonus, score); // updates the score variable    
     points = data.points ? data.points : points;
-    console.log('updated global score to: ', score);
-    console.log('updated global points to: ', points);
+    //console.log('updated global score to: ', score);
+    //console.log('updated global points to: ', points);
   };
 
   socket.on('redirect', function(d){
