@@ -33,12 +33,6 @@ function showBlock(p5stim, block, individual_blocks = false){
     
 }
 
-function createGrid(env){
-
-    
-
-}
-
 function showGrid(env){
     squareWidth = stim_scale;
     squareHeight = stim_scale;

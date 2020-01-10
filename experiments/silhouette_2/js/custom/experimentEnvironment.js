@@ -174,7 +174,7 @@ var setupEnvironment = function (env, trialObj = null) {
         env.line(canvasWidth - 50 + 12, 40, canvasWidth - 50 + 25, 40);
         */
         
-        showGrid(env);
+        //showGrid(env);
 
         if (trialObj.condition == 'practice' && !scoring) {
             showStimulus(env, trialObj.targetBlocks, individual_blocks = true);
@@ -331,7 +331,7 @@ var setupStimulus = function (p5stim, stimBlocks) {
     p5stim.draw = function () {
         p5stim.background(220);
         showStimulus(p5stim, testStim);
-        showGrid(p5stim);
+        //showGrid(p5stim);
         showFloor(p5stim);
     };
 
@@ -653,7 +653,7 @@ var sendData = function (eventType, trialObj) {
                 });
                 //console.log('trial_end_data: ', trial_end_data);
                 socket.emit('currentData', trial_end_data);
-                
+
             } else if (eventType == 'trial_end') {
                 // Summary data for 
                 trial_end_data = _.extend({}, commonInfo, world_data, {

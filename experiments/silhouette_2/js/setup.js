@@ -6,14 +6,12 @@ var shuffleTrials = false; // set to False to preserve order in db; set to True 
 var survey_data = null;
 
 var practice_duration = 600;
-var explore_duration = 30;
 var build_duration = 60;
 
 var dev_mode = true;
 
 if (dev_mode) {
-  practice_duration = 1;
-  explore_duration = 1;
+  practice_duration = 600;
   build_duration = 1000;
 }
 
@@ -56,7 +54,7 @@ var instructionsHTML = {
 
 var secondInstructionsHTML = {
   'str1' : "<p> Note that in the main experiment you will not be shown where to place each block. However, there will be a small tick mark on the center of the floor to help you make sure your tower is in the correct location.</p>",
-  'str2' : "<p> In the main experiment, you will also have "+explore_duration+" seconds to <b>prepare</b> before reconstructing each tower.</p> <p> During this time, you will be asked to prepare in one of two ways: <b><font color='#E23686'>THINKING</font></b> or <b><font color='#4DE5F9'>PRACTICING</font></b>. <p> This is what the <b><font color='#E23686'>THINKING</font></b> preparation phase looks like: </p><div><img src='assets/internalDemo.gif' id='example_screen'></div> You will be able to think about how you will build your tower, you will not be able to place any blocks. <p> This is what the <b><font color='#4DE5F9'>PRACTICING</font></b> preparation phase looks like: </p><div><img src='assets/externalDemo.gif' id='example_screen'></div> You will get to practice building your tower before the final building phase. </p> <p> After your preparation time is up, you will move onto the <b><font color='#FFD819'>BUILDING</font></b> phase and you will have exactly "+build_duration+" seconds to build your tower. If you finish your tower early, please sit tight until the timer runs out. Then you will find out how much bonus you earned for this trial.</p>",
+  'str2' : "<p> In the main experiment, you will also have XXXXX seconds to <b>prepare</b> before reconstructing each tower.</p> <p> During this time, you will be asked to prepare in one of two ways: <b><font color='#E23686'>THINKING</font></b> or <b><font color='#4DE5F9'>PRACTICING</font></b>. <p> This is what the <b><font color='#E23686'>THINKING</font></b> preparation phase looks like: </p><div><img src='assets/internalDemo.gif' id='example_screen'></div> You will be able to think about how you will build your tower, you will not be able to place any blocks. <p> This is what the <b><font color='#4DE5F9'>PRACTICING</font></b> preparation phase looks like: </p><div><img src='assets/externalDemo.gif' id='example_screen'></div> You will get to practice building your tower before the final building phase. </p> <p> After your preparation time is up, you will move onto the <b><font color='#FFD819'>BUILDING</font></b> phase and you will have exactly "+build_duration+" seconds to build your tower. If you finish your tower early, please sit tight until the timer runs out. Then you will find out how much bonus you earned for this trial.</p>",
   'str3' : "<p> To summarize, there are TWO stages in each trial: </p><p><ul style='list-style: none;'><li> 1. <b>PREPARATION,</b> either by <b><font color='#E23686'>THINKING</font></b> or by <b><font color='#4DE5F9'>PRACTICING</font></b>.</li> <li>2. <b><font color='#FFD819'>BUILDING,</font></b> when you can earn a bonus for accuracy. </li></ul> <p> That's it! Click Next to begin the first trial. </p>"
 }
 
@@ -135,15 +133,13 @@ function TextPage () {
 var allTrialInfo = {
   randID: randID,
   iterationName: iterationName,
-  explore_duration: explore_duration,
   practice_duration: practice_duration,
   build_duration: build_duration,
   score: score,
   points: points,
   bonusThresholdHigh: 0.93,
   bonusThresholdMid: 0.85,
-  bonusThresholdLow: 0.7,
-  numBlocksExplore: 0
+  bonusThresholdLow: 0.7
 };
 
 // define trial object with boilerplate
@@ -159,8 +155,6 @@ function Trial () {
   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'.
   this.phase = 'NA';
   this.buildResets = 0;
-  this.exploreResets = 0;
-  this.exploreStartTime = 0;
   this.buildTime = 0;
   this.buildStartTime = 0;
   this.buildFinishTime = 0;
@@ -187,11 +181,9 @@ function PracticeTrial () {
   this.scoreGap = NaN;
   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'. 
   this.buildResets = 0; 
-  this.exploreResets = 0;
   this.nPracticeAttempts = 0;
   this.practiceAttempt = 0; // indexing starts at 0.
   this.trialNum = NaN;
-  this.exploreStartTime = 0;
   this.buildStartTime = 0;
   this.buildFinishTime = 0;
   this.buildTime = 0;

@@ -2,7 +2,10 @@
  * jspsych-block-silhouette
  * 
  * Plugin for presenting a silhouette and prompting participants to reconstruct it from a set of blocks
+ * Previous version of this experiment had preparation and build phases-
  * This is only the 'build' phase- i.e. there is no preparation beforehand
+ * 
+ * Plugin will not work without supporting js files, and correctly configured app.js and setup.js files
  *
  * documentation: docs.jspsych.org
  *
@@ -112,7 +115,6 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       html += '</div>'
       html += '<div class="row pt-2" id="trial-info">'
       html += '<div class="col align-text-center" id="trial-number">'
-      //html += '<div class="progress"><div id="progress-bar"></div></div>'
       html += '</div>'
       html += '</div>'
       html += '</div>'
@@ -124,12 +126,6 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       html += '<div class="occluder" id="occluder">'
       html += '<div><p id="occluder-text"></p></div>'
       html += '</div>'
-
-      // // display helpful info during debugging
-      // if (trial.dev_mode==true) {
-      //   html += '<div id="repetition"> <p> repetition: ' + trial.repetition + '</p></div>'
-      //   html += '<div id="condition"> <p> condition: ' + trial.condition + '</p></div>'
-      // }
 
       // actually assign html to display_element.innerHTML
       display_element.innerHTML = html;
@@ -318,7 +314,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
             }, 2500);
           };
         };
-      } else { // If not all blocks are stationary, then wait.
+      } else { // If not all blocks are stationary, then make participant wait.
         done_button.textContent = 'Wait';
         setInterval(function () {
           sleeping = blocks.filter((block) => block.body.isSleeping);
@@ -434,9 +430,15 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     }
 
     var startBuildPhase = function () {
+      
       trial.buildStartTime = Date.now()
       occluder.style.display = "none";
       occluder.removeEventListener('click', startBuildPhase);
+
+      jsPsych.pluginAPI.setTimeout(function () { // change color of bonus back to white
+        display_element.querySelector('#bonus-meter').style.border = "8px solid #FFFFFF";
+      }, 3000);
+
       //console.log('timer starting for build');
       timer(trial.build_duration, function () { //set timer for build phase
         if (trial.completed == false) {
@@ -461,6 +463,9 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
     // ************* TRIAL TIMELINE ************ 
     // *****************************************
+
+    // Code below sets up what happens before the trial- setting correct occluders, reseting scores, etc.
+    // Actual code for experiment is in functions above, and setupEnvs in experimentEnvironment.js
 
     // Set up button event listeners
     done_button.addEventListener('click', donePressed);
