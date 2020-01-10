@@ -24,8 +24,6 @@ var points = 0;
 var gameID = 'GAMEID_PLACEHOLDER';
 var version = 'VERSION_PLACEHOLDER';
 
-//var pct_per_sec = (1 / explore_time_limit) * 100; // if time_limit==20, that means that progress bar goes down by 5% each unit time
-
 jsPsych.plugins["block-silhouette-build"] = (function () {
 
   var plugin = {};
@@ -86,6 +84,10 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     // reckon is long enough for the data to come back from the db
     function show_display() {
 
+
+    // ***************** SETUP *****************
+    // *****************************************
+
       var html = '';
 
       html += '<div class="container pt-1" id="experiment">'
@@ -134,8 +136,6 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
     }
 
-    //var physical_explore_text = 'Practice building the tower. Click anywhere to begin.';
-    //var mental_explore_text = ' Think about how you will build the tower. Click anywhere to begin.';
     var build_text = 'Now build the tower! Click anywhere to begin.';
     var practice_feedback_text = {
       'success': 'Success! Now onto the real experiment. Click anywhere to continue.',
@@ -166,77 +166,9 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
     occluder.style.display = "block";
 
-    // **** PHASES OF TRIAL ****
-    /*
-    function pre_build(baseline) {
-      done_button.style.display = "none";
-      trial.phase = 'explore';
-      // mental or physical exploration
-      if (trial.condition == "mental") {
-        reset_button.style.display = "none";
-        //p5stim, p5env = exploreMental(trial); //create p5 instances for this trial phase
-        //Update trial appearance 
-        occluder_text.textContent = 'Trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + ". " + mental_explore_text;
-        condition_heading.textContent = "THINK"
-        Array.prototype.forEach.call(env_divs, env_div => {
-          env_div.style.backgroundColor = "#E23686";
-        });
 
-      }
-      else if (trial.condition == "physical") {
-        //p5stim, p5env = explorePhysical(trial); //create p5 instances for this trial phase
-        //Update trial appearance 
-        occluder_text.textContent = 'Trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + ". " + physical_explore_text;
-        condition_heading.textContent = "PRACTICE";
-        Array.prototype.forEach.call(env_divs, env_div => {
-          env_div.style.backgroundColor = "#4DE5F9";
-        });
-      }
-      // set up p5 envs
-      p5stim, p5env = setupEnvs(trial);
-
-      // set null score for normed score calculation
-      nullScore = baseline();
-      scoreGap = math.subtract(1, nullScore);
-      trial.nullScore = nullScore;
-      trial.scoreGap = scoreGap;
-    }
-    */
-
-    function build(baseline) {
-      trial.phase = "build";
-      // actual building phase (same for everyone)
-      p5stim, p5env = setupEnvs(trial); //create p5 instances for this trial phase
-
-      //Update trial appearance 
-      // done_button.style.display = "inline-block"; // for displaying done button during build
-      done_button.style.display = "none";
-      reset_button.style.display = "inline-block";
-      occluder_text.textContent = build_text;
-      condition_heading.textContent = "BUILD";
-      Array.prototype.forEach.call(env_divs, env_div => {
-        env_div.style.backgroundColor = "#FFD819";
-      });
-    }
-
-    var startPractice = function () {
-      trial.buildStartTime = Date.now()
-      zoom_message.style.display = "inline-block";
-      occluder.style.display = "none";
-      timer(trial.practice_duration, function () {
-        clearP5Envs();
-        clear_display_move_on();
-      });
-      occluder.removeEventListener('click', startPractice);
-    };
-
-    var resumePractice = function () {
-      occluder.style.display = "none";
-      occluder.removeEventListener('click', resumePractice);
-    }
-
-
-    // **** SCORING **** 
+    // **************** SCORING ****************
+    // *****************************************
 
     function getCurrScore() {
       // call this to get: 
@@ -275,7 +207,8 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     trial.getNormedScore = (rawScore) => getNormedScore(rawScore, nullScore, scoreGap);
 
 
-    // ****  TIMERS, EVENT HANDLERS **** 
+    // ********* TIMERS, EVENT HANDLERS ********
+    // *****************************************
 
     // start timing
     var start_time = Date.now();
@@ -308,12 +241,6 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       /* Called to clear building environment window. 
       Works by resetting variables then building a new p5 instance.
       */
-      /*
-      if (trial.phase == 'explore'){
-        trial.exploreResets += 1;
-      } else {
-        trial.buildResets += 1;
-      }*/
       trial.buildResets += 1;
       sendData('reset', trial);
       clearP5Envs();
@@ -338,11 +265,6 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
           rawScore = getCurrScore();
           normedScore = getNormedScore(rawScore, nullScore, scoreGap);
-          
-          // jsPsych.pluginAPI.setTimeout(function () { // temporarily hide guides in build env
-          //   scoring = false;
-          // }, 100);
-
 
           trial.nPracticeAttempts += 1;
           trial.buildFinishTime = Date.now();
@@ -385,9 +307,9 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
             endTrial(endReason = 'done-pressed');
             occluder_text.textContent += `Please wait for the next trial.`
             // uncomment to allow donePressed to move on to the next trial immediately
-            // jsPsych.pluginAPI.setTimeout(function () {
-            //   clear_display_move_on();
-            // }, 2500);
+            jsPsych.pluginAPI.setTimeout(function () {
+              clear_display_move_on();
+            }, 2500);
           }
           else {
             condition_heading.textContent = "Please build the structure!"
@@ -409,7 +331,9 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
     }
 
-    // ****  CLEAN UP FUNCTIONS **** 
+    // *********** CLEAN UP FUNCTIONS ********** 
+    // *****************************************
+    
 
     function clearP5Envs() {
       // Removes P5 environments to start new experiment phase or trial
@@ -476,31 +400,38 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
     }
 
-    // *** Handlers for starting experiment on mouseclick ***
+    function clear_display_move_on() {
 
-    /*
-    var startExplorePhase = function () { //Function needed for removeEventListener
-      trial.exploreStartTime = Date.now()
-
-      jsPsych.pluginAPI.setTimeout(function () { // change color of bonus back to white
-        display_element.querySelector('#bonus-meter').style.border = "8px solid #FFFFFF";
-      }, 3000);
-
-      occluder.style.display = "none";
-      occluder.removeEventListener('click', startExplorePhase);
-      //console.log('timer starting for pre');
-      timer(trial.explore_duration, function () { //set timer for exploration phase    
-        
-        sendData('explore_end', trial);
-        clearP5Envs();
-
-        // BUILD PHASE
-        build(getCurrScore); // Setup build phase
-        occluder.style.display = "block";
-
-        occluder.addEventListener('click', startBuildPhase());
+      timers.forEach(interval => {
+        clearInterval(interval);
       });
-    }*/
+
+      // clear the display
+      display_element.innerHTML = '';
+
+      // move on to the next trial
+      jsPsych.finishTrial();
+
+    };
+
+    // ************ PHASES OF TRIAL ************
+    // *****************************************
+
+    var startPractice = function () {
+      trial.buildStartTime = Date.now()
+      zoom_message.style.display = "inline-block";
+      occluder.style.display = "none";
+      timer(trial.practice_duration, function () {
+        clearP5Envs();
+        clear_display_move_on();
+      });
+      occluder.removeEventListener('click', startPractice);
+    };
+
+    var resumePractice = function () {
+      occluder.style.display = "none";
+      occluder.removeEventListener('click', resumePractice);
+    }
 
     var startBuildPhase = function () {
       trial.buildStartTime = Date.now()
@@ -528,17 +459,14 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       });
     }
 
-
-    // ****  BEGINNING OF TRIAL TIMELINE **** 
+    // ************* TRIAL TIMELINE ************ 
+    // *****************************************
 
     // Set up button event listeners
     done_button.addEventListener('click', donePressed);
     reset_button.addEventListener('click', resetPressed);
 
     if (trial.condition != 'practice') {
-
-      // EXPLORATION PHASE
-      //pre_build(getCurrScore); //Setup exploration phase
 
       p5stim, p5env = setupEnvs(trial);
 
@@ -573,22 +501,6 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       trial.scoreGap = scoreGap;
 
       occluder.addEventListener('click', startPractice);
-    };
-
-
-
-    function clear_display_move_on() {
-
-      timers.forEach(interval => {
-        clearInterval(interval);
-      });
-
-      // clear the display
-      display_element.innerHTML = '';
-
-      // move on to the next trial
-      jsPsych.finishTrial();
-
     };
 
   };

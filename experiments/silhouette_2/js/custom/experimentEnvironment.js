@@ -89,7 +89,6 @@ var block_colors = [
 */
 
 var buildColor = [179, 47, 10, 255];
-var exploreColor = [179, 47, 10, 180];
 var disabledColor = [100, 100, 100, 30];
 
 var block_colors = [
@@ -129,16 +128,6 @@ var setupEnvironment = function (env, trialObj = null) {
         blockDims.forEach((dims, i) => {
             w = dims[0]
             h = dims[1]
-            /*
-            if (trialObj.phase == 'explore') {
-                if (trialObj.condition == 'mental'){ 
-                    blockKinds.push(new BlockKind(w, h, disabledColor, blockName=blockNames[i]));
-                } else {
-                    blockKinds.push(new BlockKind(w, h, exploreColor, blockName=blockNames[i]));
-                }
-            } else {
-                blockKinds.push(new BlockKind(w, h, buildColor, blockName=blockNames[i]));
-            }*/
             blockKinds.push(new BlockKind(w, h, buildColor, blockName=blockNames[i]));
 
         });
@@ -207,8 +196,7 @@ var setupEnvironment = function (env, trialObj = null) {
 
     }
     snapToGrid = function(selectedBlockKind, preciseMouseX, preciseMouseY, rotated = false, testing_placement = false){
-
-        console.log((preciseMouseY+7)%(stim_scale));
+        // snaps X location to grid
         if (selectedBlockKind.w%2 == 1) {
             snappedX = (preciseMouseX+stim_scale/2)%(stim_scale) < (stim_scale/2) ? preciseMouseX - (preciseMouseX%(stim_scale/2)) : preciseMouseX - (preciseMouseX%(stim_scale)) + (stim_scale/2);
             //snappedY = snappedY = preciseMouseY%(stim_scale) < (stim_scale/2) ? preciseMouseY - preciseMouseY%(stim_scale) : preciseMouseY - preciseMouseY%(stim_scale) + stim_scale;
@@ -242,8 +230,6 @@ var setupEnvironment = function (env, trialObj = null) {
         }
         */
         
-        //if (!(trialObj.phase == 'explore' && trialObj.condition == 'mental')) {} //environment will be disabled in some conditions
-
         // if mouse in main environment
         if (env.mouseY > 0 && (env.mouseY < canvasHeight - menuHeight) && (env.mouseX > 0 && env.mouseX < canvasWidth)) {
 
@@ -383,6 +369,8 @@ var removeStimWindow = function () {
 
 
 var sendData = function (eventType, trialObj) {
+
+    console.log('sending data of type: ', eventType);
     /** eventType one of:
      *  - initial, first placement of block. Sends data of type:
      *      - blockData (note that state of world can be inferred from previous settled state)
@@ -430,7 +418,6 @@ var sendData = function (eventType, trialObj) {
         prompt: trialObj.prompt, 
         //global vars
         practiceDuration: trialObj.practice_duration,
-        exploreDuration: trialObj.explore_duration,
         buildDuration: trialObj.build_duration,
         devMode: trialObj.dev_mode
     };
@@ -537,9 +524,8 @@ var sendData = function (eventType, trialObj) {
                 normedIncrementalScore: normedIncrementalScore,
                 timeBlockSelected: timeBlockSelected,
                 timeBlockPlaced: timeLastPlaced,
-                relativePlacementTime: trialObj.phase == 'explore' ? timeLastPlaced - trialObj.exploreStartTime : timeLastPlaced - trialObj.buildStartTime,
-                blockNum: blocks.length,
-                numBlocksExplore: trialObj.phase == 'build' ? trialObj.numBlocksExplore : NaN
+                relativePlacementTime: timeLastPlaced - trialObj.buildStartTime,
+                blockNum: blocks.length
 
             })
 
@@ -601,8 +587,7 @@ var sendData = function (eventType, trialObj) {
                 incrementalScore: incrementalScore,
                 normedIncrementalScore: normedIncrementalScore,
                 timeBlockPlaced: timeLastPlaced,
-                relativePlacementTime: trialObj.phase == 'explore' ? timeLastPlaced - trialObj.exploreStartTime : timeLastPlaced - trialObj.buildStartTime,
-                numBlocksExplore: trialObj.phase == 'build' ? trialObj.numBlocksExplore : NaN
+                relativePlacementTime: timeLastPlaced - trialObj.buildStartTime
             });
 
             //console.log('world_data', world_data);
@@ -622,7 +607,7 @@ var sendData = function (eventType, trialObj) {
             //console.log('reset_data', reset_data);
             socket.emit('currentData', reset_data);
 
-        } else if (eventType == 'practice_attempt' || eventType == 'explore_end' || eventType == 'explore_end' || eventType == 'trial_end') {
+        } else if (eventType == 'practice_attempt' || eventType == 'trial_end') {
 
             // Data for all blocks
             var bodiesForSending = blocks.map(block => {
@@ -646,11 +631,9 @@ var sendData = function (eventType, trialObj) {
                 allBlockBodyProperties: bodiesForSending, // matter information about bodies of each block. Order is order of block placement
                 numBlocks: bodiesForSending.length,
                 timeFinished: timeLastPlaced,
-                buildTime: trialObj.phase == 'build' ? timeLastPlaced - trialObj.buildStartTime : timeLastPlaced - trialObj.exploreStartTime,
+                buildTime: timeLastPlaced - trialObj.buildStartTime
                 // need to add bonuses
             });
-
-            
 
             if (eventType == 'practice_attempt') {
                 // Summary data for 
@@ -658,52 +641,25 @@ var sendData = function (eventType, trialObj) {
                     dataType: 'practice_attempt',
                     eventType: eventType, // initial block placement decision vs. final block resting position.
                     numBlocks: blocks.length, //number of blocks before reset pressed
-                    exploreStartTime: trialObj.exploreStartTime,
                     completed: trialObj.completed,
                     F1Score: trialObj.F1Score, // raw score
                     normedScore: trialObj.normedScore,
                     currBonus: trialObj.currBonus,
                     score: trialObj.score,
                     success: trialObj.practiceSuccess,
-                    exploreResets: trialObj.exploreResets,
                     nPracticeAttempts: trialObj.nPracticeAttempts,
                     practiceAttempt: trialObj.practiceAttempt,
                     allVertices: allVertices
                 });
                 //console.log('trial_end_data: ', trial_end_data);
                 socket.emit('currentData', trial_end_data);
-
-            } else if (eventType == 'explore_end') {
-
-                trialObj.numBlocksExplore = blocks.length;
-                // Summary data for entire explore phase
-                trial_end_data = _.extend({}, commonInfo, world_data, {
-                    dataType: 'explore_end',
-                    eventType: eventType, // initial block placement decision vs. final block resting position.
-                    numBlocks: blocks.length, //number of blocks before reset pressed
-                    numBlocksExplore: trialObj.numBlocksExplore, //same as numblocks here
-                    exploreStartTime: trialObj.exploreStartTime,
-                    completed: trialObj.completed,
-                    F1Score: trialObj.F1Score, // raw score
-                    normedScore: trialObj.normedScore,
-                    currBonus: trialObj.currBonus,
-                    score: trialObj.score,
-                    exploreResets: trialObj.exploreResets,
-                    nPracticeAttempts: trialObj.nPracticeAttempts,
-                    allVertices: allVertices
-                });
-                //console.log('explore_end_data: ', trial_end_data);
-                socket.emit('currentData', trial_end_data);
-
-            } 
-            else if (eventType == 'trial_end') {
+                
+            } else if (eventType == 'trial_end') {
                 // Summary data for 
                 trial_end_data = _.extend({}, commonInfo, world_data, {
                     dataType: 'trial_end',
                     eventType: eventType, // initial block placement decision vs. final block resting position.
                     numBlocks: blocks.length, //number of blocks before reset pressed
-                    numBlocksExplore: trialObj.numBlocksExplore,
-                    exploreStartTime: trialObj.exploreStartTime,
                     buildStartTime: trialObj.buildStartTime,
                     buildFinishTime: trialObj.buildFinishTime,
                     endReason: trialObj.endReason,
@@ -713,7 +669,6 @@ var sendData = function (eventType, trialObj) {
                     currBonus: trialObj.currBonus,
                     score: trialObj.score,
                     buildResets: trialObj.buildResets,
-                    exploreResets: trialObj.exploreResets,
                     nPracticeAttempts: trialObj.nPracticeAttempts,
                     bonusThresholdHigh: trialObj.bonusThresholdHigh,
                     bonusThresholdMid: trialObj.bonusThresholdMid,
