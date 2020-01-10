@@ -208,19 +208,22 @@ var setupEnvironment = function (env, trialObj = null) {
     }
     snapToGrid = function(selectedBlockKind, preciseMouseX, preciseMouseY, rotated = false, testing_placement = false){
 
-        
+        console.log((preciseMouseY+7)%(stim_scale));
         if (selectedBlockKind.w%2 == 1) {
-            console.log((preciseMouseX+stim_scale/2)%(stim_scale));
-            
             snappedX = (preciseMouseX+stim_scale/2)%(stim_scale) < (stim_scale/2) ? preciseMouseX - (preciseMouseX%(stim_scale/2)) : preciseMouseX - (preciseMouseX%(stim_scale)) + (stim_scale/2);
-            snappedY = (preciseMouseY+stim_scale/2)%(stim_scale) < (stim_scale/2) ? preciseMouseY - (preciseMouseY%(stim_scale/2)) : preciseMouseY - (preciseMouseY%(stim_scale)) + (stim_scale/2);
-
+            //snappedY = snappedY = preciseMouseY%(stim_scale) < (stim_scale/2) ? preciseMouseY - preciseMouseY%(stim_scale) : preciseMouseY - preciseMouseY%(stim_scale) + stim_scale;
             //snappedX =  (preciseMouseX+stim_scale/2)%(stim_scale) < 0 ? preciseMouseX - preciseMouseX%(stim_scale) - stim_scale/2 : preciseMouseX - (preciseMouseX+stim_scale/2)%(stim_scale) + stim_scale;
             //snappedY = preciseMouseY%(stim_scale) < (stim_scale/2) ? preciseMouseY - preciseMouseY%(stim_scale) : preciseMouseY - preciseMouseY%(stim_scale) - stim_scale;
-        } else {
+        } else if (selectedBlockKind.h%2 == 1) {
             snappedX =  preciseMouseX%(stim_scale) < (stim_scale/2) ? preciseMouseX - preciseMouseX%(stim_scale) : preciseMouseX - preciseMouseX%(stim_scale) + stim_scale;
-            snappedY = preciseMouseY%(stim_scale) < (stim_scale/2) ? preciseMouseY - preciseMouseY%(stim_scale) : preciseMouseY - preciseMouseY%(stim_scale) + stim_scale;
+            //snappedY = (preciseMouseY+stim_scale/2)%(stim_scale) < (stim_scale/2) ? preciseMouseY - (preciseMouseY%(stim_scale/2)) : preciseMouseY - (preciseMouseY%(stim_scale)) + (stim_scale/2);
         }
+        else {
+            snappedX = preciseMouseX%(stim_scale) < (stim_scale/2) ? preciseMouseX - preciseMouseX%(stim_scale) : preciseMouseX - preciseMouseX%(stim_scale) + stim_scale;
+            //snappedY = snappedY = preciseMouseY%(stim_scale) < (stim_scale/2) ? preciseMouseY - preciseMouseY%(stim_scale) : preciseMouseY - preciseMouseY%(stim_scale) + stim_scale;
+        }
+
+        snappedY = preciseMouseY
 
         //preciseMouseX - preciseMouseX%stim_scale
         //stim_scale*i + canvasWidth/2 - stim_scale/2, 
