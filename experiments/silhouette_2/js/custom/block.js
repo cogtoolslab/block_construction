@@ -26,7 +26,7 @@ function Block(blockKind, x, y, rotated, testing_placement = false) {
         World.add(engine.world, this.body);
     }
     else {
-        this.test_body = Bodies.rectangle(x * worldScale, y * worldScale, this.w * worldScale, this.h * worldScale);
+        this.test_body = Bodies.rectangle(x * worldScale, y * worldScale, this.w * worldScale * 0.9, this.h * worldScale * 0.9);
         this.test_body.collisionFilter.category = 3;
     }
 
