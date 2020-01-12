@@ -33,19 +33,55 @@ function showBlock(p5stim, block, individual_blocks = false){
     
 }
 
+function setupGrid(){
+
+    grid_left = -9;
+    grid_right = 11;
+    grid_bottom = 0;
+    grid_top = 20;
+
+    var grid_x = new Array(grid_right-grid_left);
+    var grid_y = new Array(grid_top-grid_bottom);
+
+    i = grid_left;
+    while(i < grid_right) {
+        grid_x[i] = stim_scale*i + canvasWidth/2 - stim_scale/2;
+        i = i+1;
+    }  
+
+    j = grid_bottom;
+    while(j < grid_top) {
+        grid_y[j] =  (canvasHeight - floorHeight) - (stim_scale*j) + stim_scale/2 - 6;
+        j = j+1;
+    } 
+
+    return [grid_x,grid_y]
+    
+}
+
 function showGrid(env){
+
+    grid_x = grid[0];
+    grid_y = grid[1];
+
     squareWidth = stim_scale;
     squareHeight = stim_scale;
-    i = -3;
-    while(i < 5) {
-        j = 0;
-        while(j < 8) {
+
+    grid_left = -9;
+    grid_right = 11;
+    grid_bottom = 0;
+    grid_top = 20;
+
+    i = grid_left;
+    while(i < grid_right) {
+        j = grid_bottom;
+        while(j < grid_top) {
             env.push();
             env.rectMode(env.CENTER);
-            env.stroke([90,90,90]);
+            env.stroke([190,190,255]);
             env.noFill()
-            env.translate(stim_scale*i + canvasWidth/2 - stim_scale/2, (canvasHeight - floorHeight) - (stim_scale*j) + stim_scale/2 - 7);
-            env.rect(0,0,stim_scale,stim_scale);
+            env.translate(grid_x[i], grid_y[j]);
+            env.rect(0,0,squareWidth,squareHeight);
             env.pop();
             j = j+1;
         }
