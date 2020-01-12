@@ -174,7 +174,7 @@ var setupEnvironment = function (env, trialObj = null) {
         env.line(canvasWidth - 50 + 12, 40, canvasWidth - 50 + 25, 40);
         */
         
-        //showGrid(env);
+        showGrid(env);
 
         if (trialObj.condition == 'practice' && !scoring) {
             showStimulus(env, trialObj.targetBlocks, individual_blocks = true);

@@ -468,10 +468,13 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     // Actual code for experiment is in functions above, and setupEnvs in experimentEnvironment.js
 
     // Set up button event listeners
-    done_button.addEventListener('click', donePressed);
-    reset_button.addEventListener('click', resetPressed);
+    //done_button.addEventListener('click', donePressed);
+    //reset_button.addEventListener('click', resetPressed);
 
     if (trial.condition != 'practice') {
+
+      done_button.style.display = "none";
+      reset_button.style.display = "none";
 
       p5stim, p5env = setupEnvs(trial);
 
