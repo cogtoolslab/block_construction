@@ -32,6 +32,7 @@ function BlockKind(w,h,blockColor, blockName = ''){
     }
 
     this.drawChocolateBlocks = function(env) {
+        // draws unit squares on each block
         nRow = this.w;
         nCol = this.h;
         i = -nRow/2 + 0.5;
