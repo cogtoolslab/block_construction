@@ -22,10 +22,31 @@ function BlockKind(w,h,blockColor, blockName = ''){
         env.fill(this.blockColor);
         env.stroke([60,90,110]);
         env.strokeWeight(2);
-        env.rect(x,y,this.w*sF,this.h*sF)
+        env.translate(x,y);
+        env.rect(0,0,this.w*sF,this.h*sF);
+        if (chocolateBlocks) {
+            this.drawChocolateBlocks(env);
+        }
         env.pop();
 
     }
+
+    this.drawChocolateBlocks = function(env) {
+        nRow = this.w;
+        nCol = this.h;
+        i = -nRow/2 + 0.5;
+        while (i < nRow/2) {
+            j = -nCol/2 + 0.5;
+            while (j < nCol/2) { // draw one square
+                env.translate(sF*i, sF*j);
+                env.rect(0, 0, sF, sF);
+                env.translate(-sF*i, -sF*j);
+                j++;
+            }
+            i++;
+        }
+    }
+
 
     this.showGhost = function(env, mouseX, mouseY, rotated, disabledBlockPlacement = false) {
 
@@ -41,6 +62,9 @@ function BlockKind(w,h,blockColor, blockName = ''){
             env.rect(0,0,this.h*sF,this.w*sF);
         } else {
             env.rect(0,0,this.w*sF,this.h*sF);
+        }
+        if (chocolateBlocks) {
+            this.drawChocolateBlocks(env);
         }
         env.pop();
 

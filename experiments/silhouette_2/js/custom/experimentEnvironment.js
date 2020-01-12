@@ -45,6 +45,7 @@ var sF = 25; //scaling factor to change appearance of blocks
 var worldScale = 2.2; //scaling factor within matterjs
 var stim_scale = sF; //scale of stimulus silhouette
 var grid = setupGrid(); // initialize grid
+var chocolateBlocks = true;
 
 // Global Variables for Matter js and custom Matter js wrappers
 var engine;

@@ -31,27 +31,30 @@ function Block(blockKind, x, y, rotated, testing_placement = false) {
     }
 
 
-    // Display the block (maybe separate out view functions later?)
+    // Display the block
     this.show = function (env) {
 
         var pos = this.body.position;
         var angle = this.body.angle;
 
         env.push(); //saves the current drawing style settings and transformations
-        env.translate(pos.x / worldScale, pos.y / worldScale);
         env.rectMode(env.CENTER);
+        env.translate(pos.x / worldScale, pos.y / worldScale);
         env.rotate(angle);
         env.stroke([28,54,62]);
         env.strokeWeight(2);
         env.fill(this.blockKind.blockColor);
-
         // if(this.body.isSleeping) {
         //     env.fill();
         // }
 
-        env.rect(0, 0, this.w, this.h);
+        if (!chocolateBlocks) {
+            env.rect(0, 0, this.w, this.h);
+        }
+        else {
+            this.blockKind.drawChocolateBlocks(env);
+        }
         env.pop();
-
 
     }
 
