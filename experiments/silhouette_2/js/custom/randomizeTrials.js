@@ -100,69 +100,67 @@ var centerOfMass = function (inputArray, e) {
 // var trialList = generateTrialList(structureList);
 // console.log(trialList);
 
-var trialOrdering = function() {
-    // UNIMPLEMENTED- CODE COPIED FROM GRAPHICAL CONVENTIONS
+var prePostStimList = function(structureList) {
+    // UNIMPLEMENTED- CODE ADAPTED FROM GRAPHICAL CONVENTIONS
 
-    if (!this.useAugmentedStimlist) { // NOT useAugmentedStimlist means old refgame version 1.0-1.2
-        // split these 8 chairs up into 2 sets of 4, one of them will be repeated, the other will be control
-        var shuffledObjs = _.shuffle(_.range(0,numObjs));
-        var repeatedObjs = shuffledObjs.slice(0,setSize);
-        var controlObjs = shuffledObjs.slice(setSize,setSize*2);
-        var sampledSubsetRepeated = "N"; // null placeholder
-        var sampledSubsetControl = "N"; // null placeholder   
-      } else { // define repeatedObj on basis of hard subsetting within cluster into contexts
-        // independent random sampling to decide whether to use subset "A" or subset "B" within each cluster
-        var sampledSubsetRepeated = _.sample(["A","A"]);
-        var sampledSubsetControl = _.sample(["B","B"]);    
-        _r = _.filter(this.stimList, ({subset,basic}) => subset == sampledSubsetRepeated && basic == repeatedCat);
-        var repeatedObjs = _.values(_.mapValues(_r, ({object}) => object));
-        _c = _.filter(this.stimList, ({subset,basic}) => subset == sampledSubsetControl && basic == controlCat);
-        var controlObjs = _.values(_.mapValues(_c, ({object}) => object));    
-      }
+    //tmp
+    var numTargets = 8;
+    var setSize = 4;
+    var numReps = 1;
+
+    var shuffledTargets = _.shuffle(_.range(0,numTargets));
+    var repeatedTargets = shuffledTargets.slice(0,setSize);
+    var controlTargets = shuffledTargets.slice(setSize,setSize*2);
+    
+    /* 
+    // define repeatedTarget on basis of hard subsetting within cluster into contexts
+    // independent random sampling to decide whether to use subset "A" or subset "B" within each cluster
+    var sampledSubsetRepeated = _.sample(["A","A"]);
+    var sampledSubsetControl = _.sample(["B","B"]);
+    _r = _.filter(structureList, ({subset,basic}) => subset == sampledSubsetRepeated && basic == repeatedCat);
+    var repeatedTargets = _.values(_.mapValues(_r, ({target}) => target));
+    _c = _.filter(structureList, ({subset,basic}) => subset == sampledSubsetControl && basic == controlCat);
+    var controlTargets = _.values(_.mapValues(_c, ({target}) => target)); 
+    */   
+    
     
       // define common trialInfo for each condition (omits: targetID, phase, repetition -- these are 
       // added iteratively)
-      commonRepeatedTrialInfo = {'objectIDs': repeatedObjs,
-                                'category': repeatedCat,
-                                'subset': sampledSubsetRepeated,      
-                                'pose': 35,
-                                'condition':'repeated',
-                                'repeatedColor':repeatedColor
+      commonRepeatedTrialInfo = {'targetIDs': repeatedTargets,
+                                'condition':'repeated'
                                 }
     
-      commonControlTrialInfo = {'objectIDs': controlObjs,
-                                'category': controlCat,
-                                'subset': sampledSubsetControl,      
-                                'pose': 35,
-                                'condition':'control',
-                                'repeatedColor':repeatedColor
+      commonControlTrialInfo = {'targetIDs': controlTargets,   
+                                'condition':'control'
                                 }
     
       // pre phase 
-      var pre = _.shuffle(_.concat(_.map(repeatedObjs, curObj => {
-                        return _.extend({}, commonRepeatedTrialInfo, {'phase':'pre','repetition':0, 'targetID': curObj});
+      var pre = _.shuffle(_.concat(_.map(repeatedTargets, curTarget => {
+                        return _.extend({}, commonRepeatedTrialInfo, structureList[curTarget], {'phase':'pre','repetition':0, 'targetID': curTarget});
                         }), 
-                                   _.map(controlObjs, curObj => {
-                        return _.extend({}, commonControlTrialInfo, {'phase':'pre','repetition':0, 'targetID': curObj});
+                                   _.map(controlTargets, curTarget => {
+                        return _.extend({}, commonControlTrialInfo, structureList[curTarget], {'phase':'pre','repetition':0, 'targetID': curTarget});
                         })));
     
       // repeated phase
-      var repeated = _.flatMap(_.range(1,this.numReps+1), curRep => {
-                      return _.map(_.shuffle(repeatedObjs), curObj => {
-                        return _.extend({}, commonRepeatedTrialInfo, {'phase':'repeated','repetition':curRep, 'targetID': curObj});
+      var repeated = _.flatMap(_.range(1,numReps+1), curRep => {
+                      return _.map(_.shuffle(repeatedTargets), curTarget => {
+                        return _.extend({}, commonRepeatedTrialInfo, structureList[curTarget], {'phase':'repeated','repetition':curRep, 'targetID': curTarget});
                       })
                      });
     
       // post phase
-      var post = _.shuffle(_.concat(_.map(repeatedObjs, curObj => {
-                        return _.extend({}, commonRepeatedTrialInfo, {'phase':'post','repetition':this.numReps+1, 'targetID': curObj});
+      var post = _.shuffle(_.concat(_.map(repeatedTargets, curTarget => {
+                        return _.extend({}, commonRepeatedTrialInfo, structureList[curTarget], {'phase':'post','repetition':numReps+1, 'targetID': curTarget});
                         }), 
-                                   _.map(controlObjs, curObj => {
-                        return _.extend({}, commonControlTrialInfo, {'phase':'post','repetition':1, 'targetID': curObj});
+                                   _.map(controlTargets, curTarget => {
+                        return _.extend({}, commonControlTrialInfo, structureList[curTarget], {'phase':'post','repetition':1, 'targetID': curTarget});
                         })));  
     
       // build session by concatenating pre, repeated, and post phases
       var session = _.concat(pre, repeated, post);
+
+      console.log(session);
     
       // this is the design dictionary
       return session;

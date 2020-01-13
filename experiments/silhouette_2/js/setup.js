@@ -2,7 +2,6 @@ var callback;
 var score = 0;
 var points = 0;
 var numTrials = 16;
-var shuffleTrials = false; // set to False to preserve order in db; set to True if you want to shuffle trials from db (scrambled10)
 var survey_data = null;
 
 var practice_duration = 600;
@@ -218,27 +217,33 @@ function setupGame () {
 
     //console.log(turkInfo.workerId);
 
+
+
+    var trialTemplates = d.trials;
+    //setupRandomTrialList(trialTemplates); //randomize trial order and condition
+    
+    session = prePostStimList(trialTemplates);
+
+
     // extra information to bind to trial list
     var additionalInfo = {
       gameID: d.gameid,
       version: d.versionInd,
       post_trial_gap: 1000, // add brief ITI between trials
-      num_trials : numTrials,
+      num_trials : session.length,
       on_finish : on_finish
     };
 
-    var trialTemplates = d.trials;
-
-    setupRandomTrialList(trialTemplates); //randomize trial order and condition
-
     // Bind trial data with boilerplate
-    var rawTrialList = shuffleTrials ? _.shuffle(d.trials) : d.trials;
+    var rawTrialList = session;
     var trials = _.flatten(_.map(rawTrialList, function(trialData, i) {
       var trial = _.extend(new Trial, trialData, allTrialInfo, additionalInfo, {
         trialNum : i
       });
       return trial
     }));
+    console.log(trials);
+    console.log(_.map(trials, function(trial){return trial['targetName']}));
 
     if (!dev_mode) {
 
