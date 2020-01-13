@@ -100,13 +100,8 @@ var centerOfMass = function (inputArray, e) {
 // var trialList = generateTrialList(structureList);
 // console.log(trialList);
 
-var prePostStimList = function(structureList) {
+var prePostStimList = function(structureList, numTargets = 8, setSize = 4, numReps = 1) {
     // UNIMPLEMENTED- CODE ADAPTED FROM GRAPHICAL CONVENTIONS
-
-    //tmp
-    var numTargets = 8;
-    var setSize = 4;
-    var numReps = 1;
 
     var shuffledTargets = _.shuffle(_.range(0,numTargets));
     var repeatedTargets = shuffledTargets.slice(0,setSize);
@@ -160,10 +155,28 @@ var prePostStimList = function(structureList) {
       // build session by concatenating pre, repeated, and post phases
       var session = _.concat(pre, repeated, post);
 
-      console.log(session);
+      //console.log(session);
     
       // this is the design dictionary
       return session;
     
+}
+
+var setRandomColors = function (trialList, blockColors, numTargets = 8) {
+   
+
+    //var numTargets = trialList.length; NOT CURRENTLY TRUE
+    var colorIDs = _.shuffle(_.range(0,numTargets));
+    
+    for (i=0; i<trialList.length; i++) {
+        var blockcolorID = colorIDs[i];
+        var blockColor = blockColors[blockcolorID];
+        
+        _.extend(trialList[i], {
+            blockColorID: blockcolorID,
+            blockColor: blockColor
+        });
+    }
+
 }
 

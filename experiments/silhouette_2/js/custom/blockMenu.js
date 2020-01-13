@@ -35,7 +35,7 @@ class BlockMenu {
 
         env.push();
         env.rectMode(env.CORNER);
-        env.stroke(200);
+        env.stroke([28,54,62,100]);
         env.fill([236,232,226]);
         env.rect(0,canvasHeight-this.h,canvasWidth,this.h);
         

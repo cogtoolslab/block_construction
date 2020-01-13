@@ -3,9 +3,15 @@ var score = 0;
 var points = 0;
 var numTrials = 16;
 var survey_data = null;
+var blockColors = ['#41D3BD','#791E94','#09BC8A','#FF4A1C','#E85D75','#A51C30','#735CDD','#F0F757','#A','#B','#C','#D','#E','#F','#G','#H'];
 
 var practice_duration = 600;
 var build_duration = 60;
+
+// trial order info
+var numTargets = 8;
+var setSize = 4; 
+var numReps = 1;
 
 var dev_mode = true;
 
@@ -217,13 +223,13 @@ function setupGame () {
 
     //console.log(turkInfo.workerId);
 
+    var structures = d.trials;
 
+    setRandomColors(structures, blockColors, numTargets = numTargets);
 
-    var trialTemplates = d.trials;
-    //setupRandomTrialList(trialTemplates); //randomize trial order and condition
-    
-    session = prePostStimList(trialTemplates);
+    console.log(structures);
 
+    session = prePostStimList(structures, numTargets = numTargets, setSize = setSize, numReps = numReps);
 
     // extra information to bind to trial list
     var additionalInfo = {
@@ -243,7 +249,7 @@ function setupGame () {
       return trial
     }));
     console.log(trials);
-    console.log(_.map(trials, function(trial){return trial['targetName']}));
+    //console.log(_.map(trials, function(trial){return trial['targetName']}));
 
     if (!dev_mode) {
 

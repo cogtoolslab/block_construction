@@ -102,6 +102,10 @@ var block_colors = [
     ;
 
 var setupEnvironment = function (env, trialObj = null) {
+    console.log(trialObj);
+
+    buildColor = trialObj.blockColor;
+    disabledColor = trialObj.blockColor;
 
     // Processing JS Function, defines initial environment.
     env.setup = function () {
@@ -321,9 +325,9 @@ var setupEnvironment = function (env, trialObj = null) {
 
 }
 
-var setupStimulus = function (p5stim, stimBlocks) {
+var setupStimulus = function (p5stim, trialObj) {
 
-    var testStim = stimBlocks;
+    var testStim = trialObj.targetBlocks;
 
     p5stim.setup = function () {
         stimulusCanvas = p5stim.createCanvas(stimCanvasWidth, stimCanvasWidth);
@@ -332,7 +336,7 @@ var setupStimulus = function (p5stim, stimBlocks) {
 
     p5stim.draw = function () {
         p5stim.background(220);
-        showStimulus(p5stim, testStim);
+        showStimulus(p5stim, testStim, individual_blocks = false, blockColor = trialObj.blockColor);
         //showGrid(p5stim);
         showFloor(p5stim);
     };
@@ -341,7 +345,7 @@ var setupStimulus = function (p5stim, stimBlocks) {
 
 var setupEnvs = function (trialObj) {
     p5stim = new p5((env) => {
-        setupStimulus(env, trialObj.targetBlocks)
+        setupStimulus(env, trialObj = trialObj)
     }, 'stimulus-canvas');
     p5env = new p5((env) => {
         setupEnvironment(env, trialObj = trialObj)
@@ -372,7 +376,7 @@ var removeStimWindow = function () {
 
 var sendData = function (eventType, trialObj) {
 
-    console.log('sending data of type: ', eventType);
+    //console.log('sending data of type: ', eventType);
     /** eventType one of:
      *  - initial, first placement of block. Sends data of type:
      *      - blockData (note that state of world can be inferred from previous settled state)

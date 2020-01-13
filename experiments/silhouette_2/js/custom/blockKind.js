@@ -56,8 +56,10 @@ function BlockKind(w,h,blockColor, blockName = ''){
         env.rectMode(env.CENTER);
         env.stroke([28,54,62,100]);
         env.strokeWeight(2);
-        fillColor = disabledBlockPlacement ? [100, 100, 100, 100] : [...this.blockColor];
-        fillColor[3] = 130;
+        //fillColor = disabledBlockPlacement ? [100, 100, 100, 100] : [...this.blockColor];
+        //fillColor[3] = 130;
+        fillColor = env.color(this.blockColor);
+        fillColor.setAlpha(150);
         env.fill(fillColor);
         if(rotated){
             env.rect(0,0,this.h*sF,this.w*sF);
