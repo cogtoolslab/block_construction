@@ -54,7 +54,13 @@ Found several missing pieces, including survey data not being sent.
 - Adjusted base compensation to $4, reflecting updated estimate of expected total time on HIT.
 
 #### `pilot4`: Minor updates to data saving
-- N = `TBD` participants.
+- N = 35 participants. N = 32 after removing.
 - Added more block number and timing data
 - Added note to say adjust zoom if windows aren't inline
+
+
+#### `pilot4`: Major changes TBD
+- Moved to silhouette_2 folder
+- N = `TBD` participants.
+- 
 

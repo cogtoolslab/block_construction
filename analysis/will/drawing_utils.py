@@ -246,4 +246,5 @@ def draw_stim_from_json(stim_name, stim_dir):
     w.populate_from_json(J)
     fig=plt.figure(figsize=(20, 20))
     draw_stim(w)
+    plt.title(stim_name)
     plt.show()
