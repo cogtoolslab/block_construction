@@ -74,6 +74,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
     // Make target a stonehenge
     //trial.targetBlocks = [{"x": 1, "y": 0, "width": 2, "height": 4}, {"x": 5, "y": 0, "width": 2, "height": 4}, {"x": 2, "y": 4, "width": 4, "height": 2}];
+    
     trial.score = score;
     trial.points = points;
     var timers = [];
@@ -107,7 +108,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       html += '</div>'
       html += '</div>'
       html += '<div class="row pt-2" id="experiment-button-col">'
-      html += '<div class="col-auto mr-auto" id="zoom-message"><p> If windows are on top of each other, please adjust zoom until they are side by side.</p></div>'
+      html += '<div class="col-auto mr-auto" id="zoom-message"><p>If silhouette window is above building window, please adjust zoom until they are side by side.</p></div>'
       html += '<div class="col-auto ml-auto button-col" id="env-buttons">'
       html += '<button type="button" class="btn btn-success btn-lg" id="done" value="done">Done</button>'
       html += '<button type="button" class="btn btn-danger btn-lg" id="reset" value="reset">Reset</button>'
@@ -484,7 +485,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       trial.nullScore = nullScore;
       trial.scoreGap = scoreGap;
 
-      occluder_text.textContent = 'Trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString();
+      occluder_text.textContent = 'Trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + '. Click to begin.';
       occluder.style.display = "block";
       occluder.addEventListener('click', startBuildPhase);
     }

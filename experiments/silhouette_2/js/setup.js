@@ -3,21 +3,21 @@ var score = 0;
 var points = 0;
 var numTrials = 16;
 var survey_data = null;
-var blockColors = ['#41D3BD','#791E94','#09BC8A','#FF4A1C','#E85D75','#A51C30','#37000A','#F0F757','#A','#B','#C','#D','#E','#F','#G','#H'];
+var blockColors = ['#78878C','#791E94','#6B4623','#FF4A1C','#E85D75','#16BF51','#82203C','#F7EA31','#A','#B','#C','#D','#E','#F','#G','#H'];
 
 var practice_duration = 600;
 var build_duration = 60;
 
 // trial order info
 var numTargets = 8;
-var setSize = 4; 
-var numReps = 1;
+var setSize = 4;
+var numReps = 2;
 
 var dev_mode = false;
 
 if (dev_mode) {
   practice_duration = 600;
-  build_duration = 1000;
+  build_duration = 5;
 }
 
 var iterationName = 'developExp2';
@@ -51,14 +51,14 @@ var consentHTML = {
 
 // add welcome page
 var instructionsHTML = {
-  'str1' : "<p> Here's how the game will work: On each trial, you will see the silhouette of a block tower on the left. Your goal is to reconstruct this tower on the right. When you are finished you want both towers to look identical. You will have 60 seconds. Here's an example: </p> <div><img src='assets/buildDemo.gif' id='example_screen'></div> <p> To build your tower, select a block from the menu by clicking on it and then click again to drop it in the environment above. The block will initially 'snap' to the grid in the background. This makes it easier to place them in the correct location. After clicking, they will fall as if subject to gravity. </p> <p> Because the tower is subject to gravity, it can become unstable and tip over, and blocks can fall if you release them from too high up. <p> Note that you cannot move a block once it has been placed, and there is no way to 'undo' the placement of a block.</p>",
-  'str2' : "<p> There are 20 trials in this HIT. In each trial you will either build a new tower, or one you've built before.</p> <p>For really accurate towers, you will receive a <b> bonus</b> between $0.01 and $0.05.</p>",
+  'str1' : "<p> Here's how the game will work: On each trial, you will see the silhouette of a block tower on the left. Your goal is to reconstruct this tower in the window on the right. When you are finished you want both towers to look identical. You will have 60 seconds. Here's an example: </p> <div><img src='assets/trialGif.gif' id='example_screen'></div> <p> To build a tower, select a block from the menu by clicking on it. Click again to place it in the window above. Be careful when you place them, as there is no way to move a block after it is placed- nor is there any way to reset your tower and start again. </p> <p> The block will initially 'snap' to the grid in the background. This makes it easier to place them in the correct location. But once placed, blocks will fall as if subject to gravity. Because the tower is subject to gravity, it can become unstable and tip over, and blocks can fall if you release them from too high up.</p><p>Your job is to try and create the most accurate tower you can on <b>every trial</b>. If you mess up, please still try your best to make the tower look like the one on the left.</p>",
+  'str2' : "<p> There are 24 trials in this HIT. In each trial you will either build a new tower, or one you've built before.</p><p>For really accurate towers, you will receive a <b> bonus</b> between $0.01 and $0.05.</p>",
   'str3' : "<p> Once you are finished, the HIT will be automatically submitted for approval. Please know that you can only perform this HIT one time.</p><p> Note: We recommend using Chrome. We have not tested this HIT in other browsers.</p>",
-  'str4' : "<p> Before we begin, let's get some practice with the building tool. On this practice trial, you will be shown the exact locations to place each block. No bonus can be earned on this practice trial. Please place the blocks precisely over these guides to ensure that you have the opportunity to proceed and participate in the experiment.</p> <p>You can also use this practice trial to play around with the blocks- as you can reset here but not in an actual trial. Please note that after you place a block, you will not be able to select a new block or press 'Done' until all of the blocks have come to rest. </p>",
+  'str4' : "<p> Before we begin, let's get some practice with the building tool. On this practice trial, you will be shown the exact locations to place each block. No bonus can be earned on this practice trial. Please place the blocks precisely over these guides to ensure that you have the opportunity to proceed and participate in the experiment.</p> <p>Please note that after you place a block, you will not be able to select a new block or press 'Done' until all of the blocks have come to rest. </p>",
 };
 
 var secondInstructionsHTML = {
-  'str1' : "<p> Note that in the main experiment you will not be shown where to place each block. However, there will be a small tick mark on the center of the floor to help you make sure your tower is in the correct location.</p>",
+  'str1' : "<p> From now on you will not be shown where to place each block. However, there will be a small tick mark on the center of the floor to help you make sure your tower is in the correct location. Also there is no 'Done' button in the following trials. If you finish early please just hold tight until the next trial.</p>",
   'str2' : "<p> That's it! When you're ready click Next to begin the first trial.</p>"
 }
 
@@ -143,7 +143,10 @@ var allTrialInfo = {
   points: points,
   bonusThresholdHigh: 0.95,
   bonusThresholdMid: 0.88,
-  bonusThresholdLow: 0.75
+  bonusThresholdLow: 0.75,
+  numTargets: numTargets,
+  setSize: setSize,
+  numReps: numReps
 };
 
 // define trial object with boilerplate
@@ -167,6 +170,7 @@ function Trial () {
   this.nPracticeAttempts = NaN;
   this.practiceAttempt = 0;
   this.pMessingAround = 0;
+  this.blockColors = blockColors
 };
 
 function PracticeTrial () {

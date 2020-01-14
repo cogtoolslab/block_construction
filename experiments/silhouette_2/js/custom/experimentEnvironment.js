@@ -80,26 +80,8 @@ var blockDims = [
 
 var blockNames = ['A','B','C','D','E'];
 
-/*
-var block_colors = [
-    [247, 239, 244, 210],
-    [84, 19, 136, 210],
-    [217, 3, 104, 210],
-    [255, 212, 0, 210],
-    [29, 223, 250, 210]]
-    ;
-*/
-
 var buildColor = [179, 47, 10, 255];
 var disabledColor = [100, 100, 100, 30];
-
-var block_colors = [
-    [179, 47, 10, 230],
-    [179, 47, 10, 230],
-    [179, 47, 10, 230],
-    [179, 47, 10, 230],
-    [179, 47, 10, 230]]
-    ;
 
 var setupEnvironment = function (env, trialObj = null) {
     console.log(trialObj);
@@ -422,6 +404,14 @@ var sendData = function (eventType, trialObj) {
         targetName: trialObj.targetName,
         targetBlocks: trialObj.targetBlocks,
         prompt: trialObj.prompt, 
+        blockColors: trialObj.blockColors,
+        blockColor: trialObj.blockColor,
+        blockColorID: trialObj.blockColorID,
+        numTargets: numTargets,
+        prePostSetSize: setSize,
+        numRepetitions: numReps,
+        repetition: trialObj.repetition,
+        targetID: trialObj.targetID,
         //global vars
         practiceDuration: trialObj.practice_duration,
         buildDuration: trialObj.build_duration,

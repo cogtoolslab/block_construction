@@ -1,13 +1,13 @@
 var worldHeight = 8;
 var worldWidth = 8;
 
-function showStimulus(p5stim, stimulus, individual_blocks = false, blockColor = [28,54,62]){
+function showStimulus(env, stimulus, individual_blocks = false, blockColor = [28,54,62,90]){
     Array.prototype.forEach.call(stimulus, block => {
-        showBlock(p5stim, block, individual_blocks = individual_blocks, blockColor = blockColor)
+        showBlock(env, block, individual_blocks = individual_blocks, blockColor = blockColor)
     });
 }
 
-function showBlock(p5stim, block, individual_blocks = false, blockColor = [28,54,62]){
+function showBlock(env, block, individual_blocks = false, blockColor = [28,54,62]){
     width = block.width;
     height = block.height;
     x_left = block.x - worldWidth/2;
@@ -17,19 +17,19 @@ function showBlock(p5stim, block, individual_blocks = false, blockColor = [28,54
     
     y_top = y_bottom - height;
 
-    p5stim.push(); //saves the current drawing style settings and transformations
-    p5stim.translate(stimX + stim_scale*x_center, (canvasHeight - floorHeight) - (canvasHeight - floorY) + stim_scale*y_center - 26);
-    p5stim.rectMode(p5stim.CENTER);
-    //p5stim.noStroke();
-    p5stim.stroke(blockColor);
-    p5stim.fill(blockColor);
+    env.push(); //saves the current drawing style settings and transformations
+    env.translate(stimX + stim_scale*x_center, (canvasHeight - floorHeight) - (canvasHeight - floorY) + stim_scale*y_center - 26);
+    env.rectMode(env.CENTER);
+    //env.noStroke();
+    env.stroke(blockColor);
+    env.fill(blockColor);
     if (individual_blocks) {
-        p5stim.strokeWeight(2);
-        p5stim.stroke(150);
-        p5stim.fill(blockColor);
+        env.strokeWeight(2);
+        env.stroke([28,54,62]);
+        env.fill(blockColor);
     }
-    p5stim.rect(0,0,stim_scale*width,stim_scale*height);
-    p5stim.pop();
+    env.rect(0,0,stim_scale*width,stim_scale*height);
+    env.pop();
     
 }
 
