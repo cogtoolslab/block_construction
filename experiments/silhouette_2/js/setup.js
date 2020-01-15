@@ -13,11 +13,11 @@ var numTargets = 8;
 var setSize = 4;
 var numReps = 2;
 
-var dev_mode = false;
+var dev_mode = true;
 
 if (dev_mode) {
   practice_duration = 600;
-  build_duration = 5;
+  build_duration = 60;
 }
 
 var iterationName = 'developExp2';
@@ -139,6 +139,8 @@ var allTrialInfo = {
   iterationName: iterationName,
   practice_duration: practice_duration,
   build_duration: build_duration,
+  timeThresholdYellow: 30000,
+  timeThresholdRed: 15000,
   score: score,
   points: points,
   bonusThresholdHigh: 0.95,
@@ -157,6 +159,7 @@ function Trial () {
   this.F1Score = 0; // F1 score
   this.normedScore = 0;
   this.currBonus = 0; // current bonus
+  this.timeBonus = 0; // current bonus
   this.nullScore = NaN;
   this.scoreGap = NaN;
   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'.
@@ -165,6 +168,8 @@ function Trial () {
   this.buildTime = 0;
   this.buildStartTime = 0;
   this.buildFinishTime = 0;
+  this.timeLastPlaced = 0;
+  this.timetoBuild = 0;
   this.trialBonus = 0;
   this.completed = false,
   this.nPracticeAttempts = NaN;

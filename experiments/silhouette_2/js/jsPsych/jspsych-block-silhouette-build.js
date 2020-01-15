@@ -20,6 +20,7 @@ var normedScore = 0; // reconstruction score for blank reconstruction
 var scoreGap = 0; // difference between nullScore and perfect score (F1 = 1)
 var rawScore = 0; // raw F1 score after phase end
 var currBonus = 0; // current bonus increment 
+var timeBonus = 0; // current bonus increment 
 var cumulBonus = 0; // cumulative bonus earned in experiment
 var points = 0;
 
@@ -97,7 +98,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       html += '<div class="container pt-1" id="experiment">'
       html += '<div class="row" id="text-bar">'
       html += `<div class="col-md-auto"><p class="scores">Points: <span id="points-meter">${points}</span> </p></div>`
-      html += `<div class="col-md-auto"><p class="scores">Bonus:<span id="bonus-meter">$${cumulBonus.toFixed(2)}</span> </p></div>`
+      html += `<div class="col-md-auto"><p class="scores">Bonus:<span id="bonus-meter">${(cumulBonus*100).toFixed(1)}¢</span> </p></div>`
       html += '<div class="col"><p id="condition-heading">Build that tower!</p></div>'
       html += '<div class="col-md-auto"><p id="timer-text">00:00</p></div>'
       html += '</div>'
@@ -197,6 +198,13 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       normedScore = getNormedScore(rawScore, nullScore, scoreGap);
       bonus = convertNormedScoreToBonus(normedScore);
       return bonus;
+    }
+
+    function getTimeBonus(timeToBuild) {
+      if (build_duration*1000 - timeToBuild > trial.timeThresholdYellow) { timeBonus = 0.01;console.log('best',timeBonus); }
+      else if (build_duration*1000 - timeToBuild > trial.timeThresholdRed) { timeBonus = 0.005; console.log('mid',timeBonus);}
+      else { timeBonus = 0; }
+      return timeBonus;
     }
 
     // hacky solution to obtaining scores at every block-settle event
@@ -348,8 +356,19 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       trialPoints = Math.max(Math.ceil(normedScore*100), 0);
 
       if (trial.condition != 'practice') {
+
+        _timeToBuild = trial.timeLastPlaced - trial.buildStartTime;
+        trial.timeToBuild = _timeToBuild > 0 ? _timeToBuild : NaN
+        console.log(trial.timeToBuild); // Caculate time
+
         currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
-        cumulBonus += parseFloat(currBonus.toFixed(2)); // TODO: this cumulBonus needs to be bundled into data sent to mongo
+
+        if (currBonus > 0) {
+          trial.timeBonus = getTimeBonus(trial.timeToBuild);
+        }
+
+        cumulBonus += parseFloat(currBonus.toFixed(2)); 
+        cumulBonus += parseFloat(trial.timeBonus.toFixed(3)); 
         points += trialPoints;
       }
 
@@ -370,13 +389,19 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
       occluder.style.fontSize = 'large';
       if (currBonus == 0.05) {
-        occluder_text.textContent = `🤩 Amazing! ${trialPoints} Points! $0.05 bonus! \r\n`;
+        occluder_text.textContent = `🤩 Amazing! ${trialPoints} Points! Maximum bonus! 5¢ \r\n`;
       } else if (currBonus == 0.03) {
-        occluder_text.textContent = `😃 Great job! ${trialPoints} Points! $0.03 bonus! \r\n`;
+        occluder_text.textContent = `😃 Great job! ${trialPoints} Points! 3¢ bonus! \r\n`;
       } else if (currBonus == 0.01) {
-        occluder_text.textContent = `🙂 Not bad! ${trialPoints} Points! $0.01 bonus! \r\n`;
+        occluder_text.textContent = `🙂 Not bad! ${trialPoints} Points! 1¢ bonus! \r\n`;
       } else {
         occluder_text.textContent = `😐 ${trialPoints} Points! Sorry, no bonus this round. \r\n`;
+      }
+
+      if (trial.timeBonus == 0.01) {
+        occluder_text.textContent = occluder_text.textContent.concat(`Maximum time bonus! 1¢ \r\n`);
+      } else if (trial.timeBonus == 0.005) {
+        occluder_text.textContent = occluder_text.textContent.concat(`Time bonus! 0.5¢ \r\n`);
       }
       
       if (trial.condition != 'practice') {

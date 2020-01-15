@@ -415,6 +415,8 @@ var sendData = function (eventType, trialObj) {
         //global vars
         practiceDuration: trialObj.practice_duration,
         buildDuration: trialObj.build_duration,
+        timeThresholdYellow: trialObj.timeThresholdYellow,
+        timeThresholdRed: trialObj.timeThresholdRed,
         devMode: trialObj.dev_mode
     };
 
@@ -491,6 +493,7 @@ var sendData = function (eventType, trialObj) {
             // Could be in Build 
 
             timeLastPlaced = Date.now();
+            trialObj.timeLastPlaced = timeLastPlaced;
 
             // test out sending newBlock info to server/mongodb
             propertyList = Object.keys(newBlock.body); // extract block properties;
@@ -528,7 +531,7 @@ var sendData = function (eventType, trialObj) {
             //console.log('block_data', block_data);
             socket.emit('currentData', block_data);
         }
-        else if (eventType == 'settled') {
+        else if ((eventType == 'settled') && (blocks.length > 0)) {
 
             lastBlock = newBlock;
 
@@ -628,7 +631,6 @@ var sendData = function (eventType, trialObj) {
                 numBlocks: bodiesForSending.length,
                 timeFinished: timeLastPlaced,
                 buildTime: timeLastPlaced - trialObj.buildStartTime
-                // need to add bonuses
             });
 
             if (eventType == 'practice_attempt') {
@@ -658,6 +660,7 @@ var sendData = function (eventType, trialObj) {
                     numBlocks: blocks.length, //number of blocks before reset pressed
                     buildStartTime: trialObj.buildStartTime,
                     buildFinishTime: trialObj.buildFinishTime,
+                    timeToBuild: trialObj.timeToBuild,
                     endReason: trialObj.endReason,
                     completed: trialObj.completed,
                     F1Score: trialObj.F1Score, // raw score
