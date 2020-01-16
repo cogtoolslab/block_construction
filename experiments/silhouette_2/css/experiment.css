@@ -50,6 +50,7 @@ p {
 }
 
 #timer-text {
+    color: #00b300;
     display: block;
     float: right;
     text-align: right;

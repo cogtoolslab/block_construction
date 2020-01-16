@@ -62,6 +62,10 @@ var rotated = false;
 var selectedBlockKind = null;
 var disabledBlockPlacement = false;
 
+var snapBodiesPostPlacement = false;
+var postSnap = false;
+
+
 // Task variables
 var block_data; // data to send to mongodb about every block placement
 var trial_data; // data to send to mongodb about every finished block structure
@@ -84,7 +88,7 @@ var buildColor = [179, 47, 10, 255];
 var disabledColor = [100, 100, 100, 30];
 
 var setupEnvironment = function (env, trialObj = null) {
-    console.log(trialObj);
+    //console.log(trialObj);
 
     buildColor = trialObj.blockColor;
     disabledColor = trialObj.blockColor;
@@ -181,10 +185,42 @@ var setupEnvironment = function (env, trialObj = null) {
             selectedBlockKind.showGhost(env, env.mouseX, env.mouseY, rotated, disabledBlockPlacement = disabledBlockPlacement);
         }
 
+        if (!postSnap && snapBodiesPostPlacement) {
+            sleeping = blocks.filter((block) => block.body.isSleeping);
+            allSleeping = sleeping.length == blocks.length;
+            if (allSleeping) {
+                blocks.forEach(block => {
+                    snapBodyToGrid(block);
+                });
+                postSnap = true;
+                blocks.forEach(b => {
+                    Matter.Sleeping.set(b, false)
+                });
+            }
+        }
+
 
     }
+
+    snapBodyToGrid = function(block) {
+        //console.log(block.body);
+        // snaps matter locations of block bodies to grid
+        // to be called after all blocks are sleeping?  
+        var currentX = block.body.position.x/worldScale;
+        var currentY = block.body.position.y/worldScale;
+        //var snappedX = (currentX+stim_scale/2)%(stim_scale) < (stim_scale/2) ? currentX - (currentX%(stim_scale/2)) : currentX - (currentX%(stim_scale)) + (stim_scale/2);
+        if (((block.blockKind.w%2 == 1) && (Math.abs(block.body.angle)%(Math.PI/2) < Math.PI/4)) || ((block.blockKind.h%2 == 1) && (Math.abs(block.body.angle)%(Math.PI/2) > Math.PI/4))) {
+            var snappedX = (currentX+stim_scale/2)%(stim_scale) < (stim_scale/2) ? currentX - (currentX%(stim_scale/2)) : currentX - (currentX%(stim_scale)) + (stim_scale/2);
+        } else {
+            var snappedX = currentX%(stim_scale) < (stim_scale/2) ? currentX - currentX%(stim_scale) : currentX - currentX%(stim_scale) + stim_scale;
+        }
+        var snappedY = currentY;
+        var snapped_location = Matter.Vector.create(snappedX*worldScale, snappedY*worldScale);
+        Matter.Body.setPosition(block.body, snapped_location);
+    }
+
     snapToGrid = function(selectedBlockKind, preciseMouseX, preciseMouseY, rotated = false, testing_placement = false){
-        // snaps X location to grid
+        // snaps X location of dropped block to grid
         if (selectedBlockKind.w%2 == 1) {
             snappedX = (preciseMouseX+stim_scale/2)%(stim_scale) < (stim_scale/2) ? preciseMouseX - (preciseMouseX%(stim_scale/2)) : preciseMouseX - (preciseMouseX%(stim_scale)) + (stim_scale/2);
             //snappedY = snappedY = preciseMouseY%(stim_scale) < (stim_scale/2) ? preciseMouseY - preciseMouseY%(stim_scale) : preciseMouseY - preciseMouseY%(stim_scale) + stim_scale;
@@ -253,6 +289,7 @@ var setupEnvironment = function (env, trialObj = null) {
 
                         newBlock = snapToGrid(selectedBlockKind, env.mouseX, env.mouseY, rotated);
                         blocks.push(newBlock);
+                        postSnap = false;
                         // blocks.push(new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated));
                         selectedBlockKind = null;
                         env.cursor();
@@ -666,9 +703,12 @@ var sendData = function (eventType, trialObj) {
                     F1Score: trialObj.F1Score, // raw score
                     normedScore: trialObj.normedScore,
                     currBonus: trialObj.currBonus,
+                    timeBonus: trialObj.timeBonus,
+                    timeToBuild: trialObj.timeToBuild,
                     score: trialObj.score,
                     buildResets: trialObj.buildResets,
                     nPracticeAttempts: trialObj.nPracticeAttempts,
+                    doNothingRepeats: trialObj.doNothingRepeats,
                     bonusThresholdHigh: trialObj.bonusThresholdHigh,
                     bonusThresholdMid: trialObj.bonusThresholdMid,
                     bonusThresholdLow: trialObj.bonusThresholdLow,

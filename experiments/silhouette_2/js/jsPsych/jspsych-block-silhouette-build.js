@@ -75,7 +75,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
     // Make target a stonehenge
     //trial.targetBlocks = [{"x": 1, "y": 0, "width": 2, "height": 4}, {"x": 5, "y": 0, "width": 2, "height": 4}, {"x": 2, "y": 4, "width": 4, "height": 2}];
-    
+
     trial.score = score;
     trial.points = points;
     var timers = [];
@@ -90,15 +90,15 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     function show_display() {
 
 
-    // ***************** SETUP *****************
-    // *****************************************
+      // ***************** SETUP *****************
+      // *****************************************
 
       var html = '';
 
       html += '<div class="container pt-1" id="experiment">'
       html += '<div class="row" id="text-bar">'
       html += `<div class="col-md-auto"><p class="scores">Points: <span id="points-meter">${points}</span> </p></div>`
-      html += `<div class="col-md-auto"><p class="scores">Bonus:<span id="bonus-meter">${(cumulBonus*100).toFixed(1)}¢</span> </p></div>`
+      html += `<div class="col-md-auto"><p class="scores">Bonus:<span id="bonus-meter">${(cumulBonus * 100).toFixed(1)}¢</span> </p></div>`
       html += '<div class="col"><p id="condition-heading">Build that tower!</p></div>'
       html += '<div class="col-md-auto"><p id="timer-text">00:00</p></div>'
       html += '</div>'
@@ -201,8 +201,8 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     }
 
     function getTimeBonus(timeToBuild) {
-      if (build_duration*1000 - timeToBuild > trial.timeThresholdYellow) { timeBonus = 0.01;console.log('best',timeBonus); }
-      else if (build_duration*1000 - timeToBuild > trial.timeThresholdRed) { timeBonus = 0.005; console.log('mid',timeBonus);}
+      if (build_duration * 1000 - timeToBuild > trial.timeThresholdYellow) { timeBonus = 0.01; console.log('best', timeBonus); }
+      else if (build_duration * 1000 - timeToBuild > trial.timeThresholdRed) { timeBonus = 0.005; console.log('mid', timeBonus); }
       else { timeBonus = 0; }
       return timeBonus;
     }
@@ -234,12 +234,21 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
         seconds = seconds < 10 ? "0" + seconds : seconds;
         timer_text.textContent = minutes + ':' + seconds;
 
+
+        if (seconds < trial.timeThresholdRed / 1000) { timer_text.style.color = '#e60000'; }
+        else if (seconds < trial.timeThresholdYellow / 1000) { timer_text.style.color = '#ffd633'; }
+
+
         if (time_left == 0) { // should happen once per timer
           clearInterval(interval)
           callback();
         }
       }, 1000);
       timers.push(interval);
+    }
+
+    function setTimerColor() {
+
     }
 
     function resetPressed() {
@@ -262,8 +271,8 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
       if (allSleeping) { // Only do something if world in resting state
 
-        if (blocks.length > 0){
-         sendData(eventType = 'settled', trial);
+        if (blocks.length > 0) {
+          sendData(eventType = 'settled', trial);
         }
 
         if (trial.condition == 'practice') {
@@ -292,8 +301,8 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
             setupEnvs(trial);
 
           } else {
-          // if practice score is good:
-          // move on
+            // if practice score is good:
+            // move on
             trial.practiceSuccess = true;
             sendData('practice_attempt', trial);
             occluder_text.textContent = practice_feedback_text['success'];
@@ -338,7 +347,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
     // *********** CLEAN UP FUNCTIONS ********** 
     // *****************************************
-    
+
 
     function clearP5Envs() {
       // Removes P5 environments to start new experiment phase or trial
@@ -348,77 +357,94 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
     function endTrial(endReason = 'end_of_phase') {
 
-      trial.buildFinishTime = Date.now();
+      if (blocks.length < 3) {
 
-      //calculate bonus earned
-      rawScore = getCurrScore();
-      normedScore = getNormedScore(rawScore, nullScore, scoreGap);
-      trialPoints = Math.max(Math.ceil(normedScore*100), 0);
+        clearP5Envs();
+        trial.doNothingRepeats += 1;
+        p5stim, p5env = setupEnvs(trial);
+        occluder_text.textContent = 'It looks like you gave up with that one... \r\nPlease try your best to build every structure, even if you mess up. \r\nClick to repeat trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString();
+        occluder.style.display = "block";
+        occluder.addEventListener('click', startBuildPhase);
 
-      if (trial.condition != 'practice') {
+      } else {
 
-        _timeToBuild = trial.timeLastPlaced - trial.buildStartTime;
-        trial.timeToBuild = _timeToBuild > 0 ? _timeToBuild : NaN
-        console.log(trial.timeToBuild); // Caculate time
+        trial.completed = true;
+        trial.buildFinishTime = Date.now();
 
-        currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
+        //calculate bonus earned
+        rawScore = getCurrScore();
+        normedScore = getNormedScore(rawScore, nullScore, scoreGap);
+        trialPoints = Math.max(Math.ceil(normedScore * 100), 0);
 
-        if (currBonus > 0) {
-          trial.timeBonus = getTimeBonus(trial.timeToBuild);
+        if (trial.condition != 'practice') {
+
+          _timeToBuild = trial.timeLastPlaced - trial.buildStartTime;
+          trial.timeToBuild = _timeToBuild > 0 ? _timeToBuild : NaN
+
+
+          currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
+
+          if (currBonus > 0) {
+            trial.timeBonus = getTimeBonus(trial.timeToBuild);
+          }
+
+          cumulBonus += parseFloat(currBonus.toFixed(2));
+          cumulBonus += parseFloat(trial.timeBonus.toFixed(3));
+          points += trialPoints;
         }
 
-        cumulBonus += parseFloat(currBonus.toFixed(2)); 
-        cumulBonus += parseFloat(trial.timeBonus.toFixed(3)); 
-        points += trialPoints;
+        // update official bonus tallies
+        trial.F1Score = rawScore;
+        trial.endReason = endReason;
+        trial.normedScore = normedScore;
+        trial.currBonus = currBonus; // update trial var to reflect current bonus earned
+        trial.score = cumulBonus; // update trial.score var to reflect cumulative bonustrial.nullScore = nullScore;
+        trial.points = points;
+        sendData('settled', trial);
+
+        // console.log('raw: ' + rawScore);
+        // console.log('null: ' + nullScore);
+        // console.log('scoregap: ' + scoreGap);
+        // console.log(endReason + '. Normed Score: ' + normedScore);
+        // console.log(endReason + '. Bonus: ' + currBonus);
+
+        occluder.style.fontSize = 'large';
+        if (currBonus == 0.05) {
+          occluder_text.textContent = `🤩 Amazing! ${trialPoints} Points! Maximum bonus! 5¢ \r\n`;
+        } else if (currBonus == 0.03) {
+          occluder_text.textContent = `😃 Great job! ${trialPoints} Points! 3¢ bonus! \r\n`;
+        } else if (currBonus == 0.01) {
+          occluder_text.textContent = `🙂 Not bad! ${trialPoints} Points! 1¢ bonus! \r\n`;
+        } else {
+          occluder_text.textContent = `😐 ${trialPoints} Points! Sorry, no bonus this round. \r\n`;
+        }
+
+        if (trial.timeBonus == 0.01) {
+          occluder_text.textContent = occluder_text.textContent.concat(`Maximum time bonus! 1¢ \r\n`);
+        } else if (trial.timeBonus == 0.005) {
+          occluder_text.textContent = occluder_text.textContent.concat(`Time bonus! 0.5¢ \r\n`);
+        }
+
+        if (trial.condition != 'practice') {
+
+          sendData(eventType = 'trial_end', trial);
+
+          jsPsych.pluginAPI.setTimeout(function () {
+            if (currBonus > 0) {
+              display_element.querySelector('#bonus-meter').style.border = "8px solid #66B03B";
+            } else {
+              display_element.querySelector('#bonus-meter').style.border = "8px solid #FFFFFF";
+            }
+          }, 4000);
+        };
+
+        occluder.style.display = "block";
+        clearP5Envs(); // Clear everything in P5
+
+        jsPsych.pluginAPI.setTimeout(function () { //edit here to add punishment timeout
+          clear_display_move_on();
+        }, 2500);
       }
-
-      // update official bonus tallies
-      trial.F1Score = rawScore;
-      trial.endReason = endReason;
-      trial.normedScore = normedScore;
-      trial.currBonus = currBonus; // update trial var to reflect current bonus earned
-      trial.score = cumulBonus; // update trial.score var to reflect cumulative bonustrial.nullScore = nullScore;
-      trial.points = points;
-      sendData('settled', trial);
-      
-      // console.log('raw: ' + rawScore);
-      // console.log('null: ' + nullScore);
-      // console.log('scoregap: ' + scoreGap);
-      // console.log(endReason + '. Normed Score: ' + normedScore);
-      // console.log(endReason + '. Bonus: ' + currBonus);
-
-      occluder.style.fontSize = 'large';
-      if (currBonus == 0.05) {
-        occluder_text.textContent = `🤩 Amazing! ${trialPoints} Points! Maximum bonus! 5¢ \r\n`;
-      } else if (currBonus == 0.03) {
-        occluder_text.textContent = `😃 Great job! ${trialPoints} Points! 3¢ bonus! \r\n`;
-      } else if (currBonus == 0.01) {
-        occluder_text.textContent = `🙂 Not bad! ${trialPoints} Points! 1¢ bonus! \r\n`;
-      } else {
-        occluder_text.textContent = `😐 ${trialPoints} Points! Sorry, no bonus this round. \r\n`;
-      }
-
-      if (trial.timeBonus == 0.01) {
-        occluder_text.textContent = occluder_text.textContent.concat(`Maximum time bonus! 1¢ \r\n`);
-      } else if (trial.timeBonus == 0.005) {
-        occluder_text.textContent = occluder_text.textContent.concat(`Time bonus! 0.5¢ \r\n`);
-      }
-      
-      if (trial.condition != 'practice') {
-        
-        sendData(eventType='trial_end', trial);
-
-        jsPsych.pluginAPI.setTimeout(function () {
-          if (currBonus > 0) {    
-            display_element.querySelector('#bonus-meter').style.border = "8px solid #66B03B"; 
-          } else {
-            display_element.querySelector('#bonus-meter').style.border = "8px solid #FFFFFF";
-          }
-        }, 4000);
-      };
-
-      occluder.style.display = "block";
-      clearP5Envs(); // Clear everything in P5
 
     }
 
@@ -456,7 +482,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     }
 
     var startBuildPhase = function () {
-      
+
       trial.buildStartTime = Date.now()
       occluder.style.display = "none";
       occluder.removeEventListener('click', startBuildPhase);
@@ -468,11 +494,9 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       //console.log('timer starting for build');
       timer(trial.build_duration, function () { //set timer for build phase
         if (trial.completed == false) {
-          trial.completed = true;
           endTrial(endReason = 'timeout'); // calculate bonuses and clear envs
         }
-
-        jsPsych.pluginAPI.setTimeout(function () { //edit here to add punishment timeout
+        /*jsPsych.pluginAPI.setTimeout(function () { //edit here to add punishment timeout
           if (trial.pMessingAround >= 0.8 && trial.normedScore < 0.5) {
             occluder.style.fontSize = 'large';
             occluder.textContent = "It seems like you're not trying 🤨 Waiting for an extra 30 seconds";
@@ -482,7 +506,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
           } else {
             clear_display_move_on();
           }
-        }, 2500);
+        }, 2500);*/
 
       });
     }
