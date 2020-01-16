@@ -13,11 +13,11 @@ var numTargets = 8;
 var setSize = 4;
 var numReps = 2;
 
-var dev_mode = false;
+var dev_mode = true;
 
 if (dev_mode) {
   practice_duration = 60;
-  build_duration = 15;
+  build_duration = 60;
 }
 
 var iterationName = 'Exp2Pilot1_testing';
