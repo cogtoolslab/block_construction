@@ -238,6 +238,47 @@ def draw_all_final_structures_and_explores(df, dfe, figsize=(40, 160)):
             ax = draw_final_structure_subplot(df, gameID, target_name, ax)
             ax.set_title(str(np.round(score,3)))
     plt.show()
+    return
+
+
+
+# draw all final structure for all participants
+def draw_all_trials(df, numTrials = 24, figsize=(40, 80)):
+    ppts = df.gameID.unique()
+    ppts.sort()
+    
+    trials = range(0, numTrials)
+    
+#     target_names = df.targetName.unique()
+#     #target_names = [f.split('.')[0] for f in listdir(stim_dir) if isfile(join(stim_dir, f))]    
+#     target_names.sort()
+
+    fig = plt.figure(figsize=figsize)
+    n = len(ppts)
+    k = 0
+    
+    for i in range(0,n):
+        gameID = ppts[i]
+        for j in range(0, numTrials):
+            k += 1
+            ax = fig.add_subplot(numTrials, n, k)
+            ax = draw_trial_subplot(df, gameID, j, ax)
+    plt.show()
+    return
+
+def draw_trial_subplot(df, gameID, trialNum, ax, world_size=900):
+    vert_dict = df.loc[(df.gameID == gameID) & (df.trialNum == trialNum),'allVertices'].apply(ast.literal_eval).values[0]
+    vertices = compress_vertices(vert_dict)
+    
+    condition = df.loc[(df.gameID == gameID) & (df.trialNum == trialNum),'condition'].values[0]
+    phase = df.loc[(df.gameID == gameID) & (df.trialNum == trialNum),'phase'].values[0]
+    c=df.loc[(df.gameID == gameID) & (df.trialNum == trialNum),'blockColor'].values[0]
+    
+    patches = get_block_patches(vertices, color=c)
+    return render_blockworld_subplot(patches,
+                                        ax,
+                                        xlim=(0,world_size),
+                                        ylim=(0,world_size))
     
     
 def draw_stim_from_json(stim_name, stim_dir):
