@@ -92,13 +92,13 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
       // ***************** SETUP *****************
       // *****************************************
-
+      
       var html = '';
-
+      
       html += '<div class="container pt-1" id="experiment">'
       html += '<div class="row" id="text-bar">'
       html += `<div class="col-md-auto"><p class="scores">Points: <span id="points-meter">${points}</span> </p></div>`
-      html += `<div class="col-md-auto"><p class="scores">Bonus:<span id="bonus-meter">${(cumulBonus * 100).toFixed(1)}¢</span> </p></div>`
+      html += `<div class="col-md-auto"><p class="scores">Bonus:<span id="bonus-meter">${cumulBonus >= 1 ? '$' + String(cumulBonus.toFixed(3)) : String((cumulBonus*100).toFixed(1)) + '¢'}</span> </p></div>`
       html += '<div class="col"><p id="condition-heading">Build that tower!</p></div>'
       html += '<div class="col-md-auto"><p id="timer-text">00:00</p></div>'
       html += '</div>'
@@ -201,8 +201,8 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     }
 
     function getTimeBonus(timeToBuild) {
-      if (build_duration * 1000 - timeToBuild > trial.timeThresholdYellow) { timeBonus = 0.01; console.log('best', timeBonus); }
-      else if (build_duration * 1000 - timeToBuild > trial.timeThresholdRed) { timeBonus = 0.005; console.log('mid', timeBonus); }
+      if (build_duration * 1000 - timeToBuild > trial.timeThresholdYellow) { timeBonus = 0.01;}
+      else if (build_duration * 1000 - timeToBuild > trial.timeThresholdRed) { timeBonus = 0.005;}
       else { timeBonus = 0; }
       return timeBonus;
     }
@@ -212,7 +212,6 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       trial.F1Score = rawScore;
       trial.endReason = endReason;
       trial.normedScore = normedScore;
-      trial.currBonus = currBonus; // update trial var to reflect current bonus earned
       trial.score = cumulBonus; // update trial.score var to reflect cumulative bonustrial.nullScore = nullScore;
       trial.points = points;
       sendData('settled', trial);
@@ -258,10 +257,6 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       timers.push(interval);
     }
 
-    function setTimerColor() {
-
-    }
-
     function resetPressed() {
       /* Called to clear building environment window. 
       Works by resetting variables then building a new p5 instance.
@@ -296,16 +291,23 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
           rawScore = getCurrScore();
           normedScore = getNormedScore(rawScore, nullScore, scoreGap);
-
+          
           trial.nPracticeAttempts += 1;
           trial.buildFinishTime = Date.now();
           sendData(eventType = 'trial_end', trial);
           trial.practiceAttempt += 1;
 
           // if-statements to be added here. Plus something that prevents multiple failures.
-          practiceThreshold = 0.98;
-          if (normedScore < practiceThreshold) {
+          if (normedScore >= trial.practiceThreshold) {
+            // if practice score is good:
+            // move on
+            trial.practiceSuccess = true;
+            sendData('practice_attempt', trial);
+            occluder_text.textContent = practice_feedback_text['success'];
+            zoom_message.style.display = "none";
+            occluder.addEventListener('click', endPractice);
 
+          } else {
             // if practice score is bad:
             // show occluder
             trial.nPracticeAttempts += 1;
@@ -316,18 +318,9 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
             sendData('practice_attempt', trial);
             clearP5Envs();
             setupEnvs(trial);
-
-          } else {
-            // if practice score is good:
-            // move on
-            trial.practiceSuccess = true;
-            sendData('practice_attempt', trial);
-            occluder_text.textContent = practice_feedback_text['success'];
-            zoom_message.style.display = "none";
-            occluder.addEventListener('click', endPractice);
           };
           occluder.style.display = "block";
-        }
+        }/*
         else { // if a normal trial, must be build phase
           if (blocks.length > 3) { //make sure they've actually built something
             trial.completed = true;
@@ -344,7 +337,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
               condition_heading.textContent = "BUILD"
             }, 2500);
           };
-        };
+        };*/
       } else { // If not all blocks are stationary, then make participant wait.
         done_button.textContent = 'Wait';
         setInterval(function () {
@@ -386,6 +379,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
         p5stim, p5env = setupEnvs(trial);
         occluder_text.textContent = 'It looks like you gave up with that one... \r\nPlease try your best to build every structure, even if you mess up. \r\nClick to repeat trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString();
         occluder.style.display = "block";
+        timer_text.style.color = '#00b300'; 
         occluder.addEventListener('click', startBuildPhase);
 
       } else {
@@ -403,22 +397,22 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
           _timeToBuild = trial.timeLastPlaced - trial.buildStartTime;
           trial.timeToBuild = _timeToBuild > 0 ? _timeToBuild : NaN
 
-          currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
+          trial.currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
 
-          if (currBonus > 0) {
+          if (trial.currBonus > 0) {
             trial.timeBonus = getTimeBonus(trial.timeToBuild);
           }
 
-          cumulBonus += parseFloat(currBonus.toFixed(2));
+          cumulBonus += parseFloat(trial.currBonus.toFixed(2));
           cumulBonus += parseFloat(trial.timeBonus.toFixed(3));
           points += trialPoints;
 
           occluder.style.fontSize = 'large';
-          if (currBonus == 0.05) {
-            occluder_text.textContent = `🤩 Amazing! ${trialPoints} Points! Maximum bonus! 5¢ \r\n`;
-          } else if (currBonus == 0.03) {
+          if (trial.currBonus == 0.05) {
+            occluder_text.textContent = `🤩 Amazing! ${trialPoints} Points! 5¢ bonus! \r\n`;
+          } else if (trial.currBonus == 0.03) {
             occluder_text.textContent = `😃 Great job! ${trialPoints} Points! 3¢ bonus! \r\n`;
-          } else if (currBonus == 0.01) {
+          } else if (trial.currBonus == 0.01) {
             occluder_text.textContent = `🙂 Not bad! ${trialPoints} Points! 1¢ bonus! \r\n`;
           } else {
             occluder_text.textContent = `😐 ${trialPoints} Points! Sorry, no bonus this round. \r\n`;
@@ -430,18 +424,18 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
             occluder_text.textContent = occluder_text.textContent.concat(`Time bonus! 0.5¢ \r\n`);
           }
 
+          updateTrialScores(trial);
+
           sendData(eventType = 'trial_end', trial);
 
           jsPsych.pluginAPI.setTimeout(function () {
-            if (currBonus > 0) {
+            if (trial.currBonus > 0) {
               display_element.querySelector('#bonus-meter').style.border = "8px solid #66B03B";
             } else {
               display_element.querySelector('#bonus-meter').style.border = "8px solid #FFFFFF";
             }
           }, 4000);
         };
-
-        updateTrialScores(trial);
 
         occluder.style.display = "block";
         clearP5Envs(); // Clear everything in P5

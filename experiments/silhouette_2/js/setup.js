@@ -1,7 +1,7 @@
 var callback;
 var score = 0;
 var points = 0;
-var numTrials = 16;
+var numTrials = 24;
 var survey_data = null;
 var blockColors = ['#78878C','#791E94','#6B4623','#FF4A1C','#E85D75','#16BF51','#82203C','#F7EA31','#A','#B','#C','#D','#E','#F','#G','#H'];
 
@@ -13,18 +13,18 @@ var numTargets = 8;
 var setSize = 4;
 var numReps = 2;
 
-var dev_mode = true;
+var dev_mode = false;
 
 if (dev_mode) {
   practice_duration = 60;
-  build_duration = 60;
+  build_duration = 30;
 }
 
-var iterationName = 'Exp2Pilot1_testing';
+var iterationName = 'Exp2Pilot1-debug';
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-console.log(randID);
-console.log('iteration: ', iterationName);
+//console.log(randID);
+//console.log('iteration: ', iterationName);
 
 function submit2AMT() {
   scoreToTurk = Math.max(score,cumulBonus);
@@ -138,6 +138,7 @@ var allTrialInfo = {
   randID: randID,
   iterationName: iterationName,
   practice_duration: practice_duration,
+  practiceThreshold: 0.98,
   build_duration: build_duration,
   timeThresholdYellow: 30000,
   timeThresholdRed: 15000,
@@ -148,7 +149,7 @@ var allTrialInfo = {
   bonusThresholdLow: 0.75,
   numTargets: numTargets,
   setSize: setSize,
-  numReps: numReps
+  numReps: numReps,
 };
 
 // define trial object with boilerplate
@@ -159,6 +160,7 @@ function Trial () {
   this.F1Score = 0; // F1 score
   this.normedScore = 0;
   this.currBonus = 0; // current bonus
+  this.cumulBonus = 0;
   this.timeBonus = 0; // current bonus
   this.nullScore = NaN;
   this.scoreGap = NaN;

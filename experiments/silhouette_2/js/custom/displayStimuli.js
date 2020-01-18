@@ -1,7 +1,7 @@
 var worldHeight = 8;
 var worldWidth = 8;
 
-function showStimulus(env, stimulus, individual_blocks = false, blockColor = [28,54,62,90]){
+function showStimulus(env, stimulus, individual_blocks = false, blockColor = [28,54,220,50]){
     Array.prototype.forEach.call(stimulus, block => {
         showBlock(env, block, individual_blocks = individual_blocks, blockColor = blockColor)
     });
@@ -25,7 +25,7 @@ function showBlock(env, block, individual_blocks = false, blockColor = [28,54,62
     env.fill(blockColor);
     if (individual_blocks) {
         env.strokeWeight(2);
-        env.stroke([28,54,62]);
+        env.stroke([201,201,201]);
         env.fill(blockColor);
     }
     env.rect(0,0,stim_scale*width,stim_scale*height);
