@@ -51,36 +51,60 @@ function BlockKind(w,h,blockColor, blockName = ''){
 
     this.showGhost = function(env, mouseX, mouseY, rotated, disabledBlockPlacement = false, snapToGrid = true) {
 
-        if(snapToGrid){
-            if (this.w%2 == 1) {
-                snappedX = (mouseX+stim_scale/2)%(stim_scale) < (stim_scale/2) ? mouseX - (mouseX%(stim_scale/2)) : mouseX - (mouseX%(stim_scale)) + (stim_scale/2);
+            if((mouseX > (sF*(this.w/2))) && (mouseX < canvasWidth-(sF*(this.w/2)))){
+
+            if(snapToGrid){
+                if (this.w%2 == 1) {
+                    snappedX = (mouseX+stim_scale/2)%(stim_scale) < (stim_scale/2) ? mouseX - (mouseX%(stim_scale/2)) : mouseX - (mouseX%(stim_scale)) + (stim_scale/2);
+                    x_index = snappedX/stim_scale - snappedX%stim_scale + 7 + 5;
+                } else {
+                    snappedX = mouseX%(stim_scale) < (stim_scale/2) ? mouseX - mouseX%(stim_scale) : mouseX - mouseX%(stim_scale) + stim_scale;
+                    x_index = snappedX/stim_scale - snappedX%stim_scale - selectedBlockKind.w/2 - 5 + 5;
+                };
+
+                mouseX = snappedX
+
+                var y = Math.round(13 - (this.h/2) - ((mouseY+(stim_scale/2))/stim_scale)) + 2;
+                var rowFree = true;
+                while (rowFree && y>=0) {
+                    y-=1;
+                    var blockEnd = x_index+selectedBlockKind.w
+                    for (let x = x_index; x < blockEnd; x++) { // check if row directly beneath block are all free at height y
+                        //console.log('checking:', y, x)
+                        rowFree = rowFree && discreteWorld[x][y];
+                    }
+
+                }
+                y_index = y+1;
+                //console.log('y_index',y_index);
+                
+                // ADD SNAP TO Y
+                snappedY = (canvasHeight - floorHeight) - (stim_scale*(selectedBlockKind.h/2)) - (stim_scale*(y_index)) + stim_scale/2 + 6;
+
+                mouseY = snappedY;
+            }
+
+            env.push();
+            env.translate(mouseX, mouseY);
+            env.rectMode(env.CENTER);
+            env.stroke([28,54,62,100]);
+            env.strokeWeight(2);
+            //fillColor = disabledBlockPlacement ? [100, 100, 100, 100] : [...this.blockColor];
+            //fillColor[3] = 130;
+            fillColor = env.color(this.blockColor);
+            fillColor.setAlpha(150);
+            env.fill(fillColor);
+            if(rotated){
+                env.rect(0,0,this.h*sF,this.w*sF);
             } else {
-                snappedX = mouseX%(stim_scale) < (stim_scale/2) ? mouseX - mouseX%(stim_scale) : mouseX - mouseX%(stim_scale) + stim_scale;
-            };
-
-            mouseX = snappedX
+                env.rect(0,0,this.w*sF,this.h*sF);
+            }
+            if (chocolateBlocks) {
+                this.drawChocolateBlocks(env);
+            }
+            env.pop();
         }
 
-        env.push();
-        env.translate(mouseX, mouseY);
-        env.rectMode(env.CENTER);
-        env.stroke([28,54,62,100]);
-        env.strokeWeight(2);
-        //fillColor = disabledBlockPlacement ? [100, 100, 100, 100] : [...this.blockColor];
-        //fillColor[3] = 130;
-        fillColor = env.color(this.blockColor);
-        fillColor.setAlpha(150);
-        env.fill(fillColor);
-        if(rotated){
-            env.rect(0,0,this.h*sF,this.w*sF);
-        } else {
-            env.rect(0,0,this.w*sF,this.h*sF);
-        }
-        if (chocolateBlocks) {
-            this.drawChocolateBlocks(env);
-        }
-        env.pop();
-        
     }
 
 }

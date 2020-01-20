@@ -74,9 +74,9 @@ function Block(blockKind, x, y, rotated, testing_placement = false, x_index = nu
         //console.log('∆x', this.body.position.x - this.originalX);
         //console.log('∆y', this.body.position.y - this.originalY);
 
-        var xMove = Math.abs(this.body.position.x - this.originalX) > sF/3;
-        var yMove = Math.abs(this.body.position.y - this.originalY) > sF/3;
-        var rotated = Math.abs(this.body.angle) > 0.79
+        var xMove = Math.abs(this.body.position.x - this.originalX) > 10;
+        var yMove = Math.abs(this.body.position.y - this.originalY) > 10;
+        var rotated = Math.abs(this.body.angle) > 0.70
 
         return (xMove || yMove || rotated)
     }

@@ -270,7 +270,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
     function endPractice() {
       trial.completed = true;
-      endTrial(endReason = 'practice_success');
+      trial.endTrial(endReason = 'practice_success');
       occluder.removeEventListener('click', endPractice);
     } 
 
@@ -361,7 +361,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       removeStimWindow();
     }
 
-    function endTrial(endReason = 'end_of_phase') {
+    trial.endTrial = function(endReason = 'end_of_phase') {
 
       // // update official bonus tallies
       // trial.F1Score = rawScore;
@@ -372,7 +372,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       // trial.points = points;
       // sendData('settled', trial);
 
-      if (blocks.length < 3) {
+      if ((blocks.length < 3) && !(endReason == 'block_motion')) {
 
         clearP5Envs();
         trial.doNothingRepeats += 1;
@@ -423,6 +423,10 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
           } else if (trial.timeBonus == 0.005) {
             occluder_text.textContent = occluder_text.textContent.concat(`Time bonus! 0.5¢ \r\n`);
           }
+
+          if (endReason == 'block_motion') {
+            occluder_text.textContent = occluder_text.textContent.concat(`Trial ended because your last block moved \r\n`);
+          } 
 
           updateTrialScores(trial);
 
@@ -494,7 +498,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       //console.log('timer starting for build');
       timer(trial.build_duration, function () { //set timer for build phase
         if (trial.completed == false) {
-          endTrial(endReason = 'timeout'); // calculate bonuses and clear envs
+          trial.endTrial(endReason = 'timeout'); // calculate bonuses and clear envs
         }
         /*jsPsych.pluginAPI.setTimeout(function () { //edit here to add punishment timeout
           if (trial.pMessingAround >= 0.8 && trial.normedScore < 0.5) {

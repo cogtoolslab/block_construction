@@ -188,10 +188,9 @@ var setupEnvironment = function (env, trialObj = null) {
         });
 
         if (isPlacingObject) {
-            //env.noCursor(); //feel like this is horribly ineffecient...
 
-            sleeping = blocks.filter((block) => block.body.isSleeping); // Would rather not be calculating this constantly.. update to eventlistener?
-            allSleeping = sleeping.length == blocks.length;
+            // sleeping = blocks.filter((block) => block.body.isSleeping); // Would rather not be calculating this constantly.. update to eventlistener?
+            // allSleeping = sleeping.length == blocks.length;
 
             selectedBlockKind.showGhost(env, env.mouseX, env.mouseY, rotated, disabledBlockPlacement = disabledBlockPlacement);
         }
@@ -251,7 +250,7 @@ var setupEnvironment = function (env, trialObj = null) {
             //snappedY = snappedY = preciseMouseY%(stim_scale) < (stim_scale/2) ? preciseMouseY - preciseMouseY%(stim_scale) : preciseMouseY - preciseMouseY%(stim_scale) + stim_scale;
             x_index = snappedX/stim_scale - snappedX%stim_scale - selectedBlockKind.w/2 - 5 + 5;
         }
-        console.log(x_index)
+        //console.log(x_index)
 
         if (!snapY) {
             snappedBlock = new Block(selectedBlockKind, snappedX, preciseMouseY, rotated, testing_placement = testing_placement, x_index = x_index); 
@@ -314,7 +313,7 @@ var setupEnvironment = function (env, trialObj = null) {
 
                 time_placing = Date.now();
 
-                if (allSleeping || (time_placing - timeLastPlaced > 3000)) {
+                if ((allSleeping || (time_placing - timeLastPlaced > 3000)) && ((env.mouseX > (sF*(selectedBlockKind.w/2))) && (env.mouseX < canvasWidth-(sF*(selectedBlockKind.w/2))))) {
                     // SEND WORLD DATA AFTER PREVIOUS BLOCK HAS SETTLED
                     // Sends information about the state of the world prior to next block being placed
 
@@ -345,9 +344,17 @@ var setupEnvironment = function (env, trialObj = null) {
                             var moved = newBlock.checkMotion();
                             if (moved) {
                                 newBlock.color = mistakeColor;
+                                var env_divs = document.getElementsByClassName("col-md env-div");
+                                Array.prototype.forEach.call(env_divs, env_div => {
+                                    env_div.style.backgroundColor = "#F02020";
+                                });
+                                
+                                jsPsych.pluginAPI.setTimeout(function () {
+                                    trialObj.endTrial(endReason ='block_motion');
+                                }, 3000);
                             }
                             console.log(moved);
-                        }, 1000);
+                        }, 1500);
                         
                         // update discrete world map
                         blockTop = newBlock.y_index + selectedBlockKind.h;
