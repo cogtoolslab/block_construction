@@ -92,15 +92,16 @@ var discreteEnvHeight = 13;
 var discreteEnvWidth = 18;
 var discreteWorld = new Array(discreteEnvWidth);
 
-for (let i = 0; i < discreteWorld.length; i++) {
-    discreteWorld[i] = new Array(discreteEnvHeight).fill(true);
-}
-
 var setupEnvironment = function (env, trialObj = null) {
     //console.log(trialObj);
 
     buildColor = trialObj.blockColor;
     disabledColor = trialObj.blockColor;
+
+    // reset discrete world representation
+    for (let i = 0; i < discreteWorld.length; i++) {
+        discreteWorld[i] = new Array(discreteEnvHeight).fill(true);
+    }
 
     // Processing JS Function, defines initial environment.
     env.setup = function () {
@@ -268,6 +269,8 @@ var setupEnvironment = function (env, trialObj = null) {
             //     y+=1;
             // }
             // //((canvasHeight/stim_scale) - (canvasHeight%stim_scale)) 
+
+            console.log(discreteWorld)
             
             // check rows from mousy y, down
             var y = Math.round(13 - (selectedBlockKind.h/2) - ((preciseMouseY+(stim_scale/2))/stim_scale)) + 2;
