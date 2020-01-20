@@ -49,6 +49,7 @@ p {
     text-align: right;
     font-family: 'Francois One', sans-serif;
     font-size: 32px;  
+    
 }
 
 .scores {
@@ -122,7 +123,7 @@ p {
   top: 40px; bottom: auto; left:0; right: 0;
   background: #FFFFFF;
   position: absolute;
-  z-index: 12;
+  z-index: 10;
   opacity: 1;
   color: black;
 }
@@ -135,7 +136,7 @@ p {
     margin: auto;
     top: 50px; bottom: auto; left:0; right: 0;
     background: #FFFFFF;
-    z-index: 12;
+    z-index: 10;
     color: black;
 }
 
@@ -146,6 +147,10 @@ p {
     font-family: 'Francois One', sans-serif;
     font-size: 28px;
     line-height: 1.8em;
+}
+
+#occluder-timer-text{
+    padding-top: 30px;
 }
 
 #progress-bar {

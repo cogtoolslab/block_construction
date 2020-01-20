@@ -126,7 +126,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
       // introduce occluder to make the inter-trial transitions less jarring
       html += '<div class="occluder" id="occluder">'
-      html += '<div><p id="occluder-text"></p></div>'
+      html += '<div><p id="occluder-text"></p><br><p id="occluder-timer-text"></p></div>'
       html += '</div>'
 
       // actually assign html to display_element.innerHTML
@@ -151,6 +151,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     var occluder_text = document.getElementById("occluder-text");
     var condition_heading = document.getElementById("condition-heading");
     var timer_text = document.getElementById("timer-text");
+    var occluder_timer_text = document.getElementById("occluder-timer-text");
     var env_divs = document.getElementsByClassName("col-md env-div");
     var zoom_message = document.getElementById("zoom-message");
 
@@ -243,6 +244,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
         minutes = minutes < 10 ? "0" + minutes : minutes;
         seconds = seconds < 10 ? "0" + seconds : seconds;
         timer_text.textContent = minutes + ':' + seconds;
+        occluder_timer_text.textContent = minutes + ':' + seconds;
 
 
         if (seconds < trial.timeThresholdRed / 1000) { timer_text.style.color = '#e60000'; }
@@ -362,6 +364,8 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     }
 
     trial.endTrial = function(endReason = 'end_of_phase') {
+
+      occluder_timer_text.textContent = '';
 
       // // update official bonus tallies
       // trial.F1Score = rawScore;
