@@ -353,9 +353,8 @@ var setupEnvironment = function (env, trialObj = null) {
                                     //trialObj.endTrial(endReason ='block_motion');
                                     trialObj.blockFell = true;
                                     trialObj.fell_over();
-                                }, 3000);
+                                }, 2000);
                             }
-                            console.log(moved);
                         }, 1500);
                         
                         // update discrete world map
@@ -641,9 +640,15 @@ var sendData = function (eventType, trialObj) {
                 timeBlockPlaced: timeLastPlaced,
                 relativePlacementTime: timeLastPlaced - trialObj.buildStartTime,
                 blockNum: blocks.length,
-                x_index: newBlock.x_index
+                x_index: newBlock.x_index,
+                y_index: newBlock.y_index,
+                x_discrete: x_index - 5,
+                y_discrete: y_index,
+                width_discrete: newBlock.blockKind.w,
+                height_discrete: newBlock.blockKind.h,
 
             })
+            //console.log(block_data);
 
             //console.log('block_data', block_data);
             socket.emit('currentData', block_data);

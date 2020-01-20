@@ -17,7 +17,7 @@ var dev_mode = true;
 
 if (dev_mode) {
   practice_duration = 60;
-  build_duration = 30;
+  build_duration = 60;
 }
 
 var iterationName = 'Exp2Pilot1-debug';
