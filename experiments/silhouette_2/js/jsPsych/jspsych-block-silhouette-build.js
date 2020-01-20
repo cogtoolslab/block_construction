@@ -5,7 +5,7 @@
  * Previous version of this experiment had preparation and build phases-
  * This is only the 'build' phase- i.e. there is no preparation beforehand
  * 
- * Plugin will not work without supporting js files, and correctly configured app.js and setup.js files
+ * Plugin will not work without supporting js files, and correctly configured app.js and setup.js files running on node
  *
  * documentation: docs.jspsych.org
  *

@@ -87,6 +87,15 @@ var blockNames = ['A','B','C','D','E'];
 var buildColor = [179, 47, 10, 255];
 var disabledColor = [100, 100, 100, 30];
 
+// discrete world representation for y-snapping
+var discreteEnvHeight = 13;
+var discreteEnvWidth = 18;
+var discreteWorld = new Array(discreteEnvWidth);
+
+for (let i = 0; i < discreteWorld.length; i++) {
+    discreteWorld[i] = new Array(discreteEnvHeight).fill(true);
+}
+
 var setupEnvironment = function (env, trialObj = null) {
     //console.log(trialObj);
 
@@ -177,7 +186,7 @@ var setupEnvironment = function (env, trialObj = null) {
         });
 
         if (isPlacingObject) {
-            env.noCursor(); //feel like this is horribly ineffecient...
+            //env.noCursor(); //feel like this is horribly ineffecient...
 
             sleeping = blocks.filter((block) => block.body.isSleeping); // Would rather not be calculating this constantly.. update to eventlistener?
             allSleeping = sleeping.length == blocks.length;
@@ -219,30 +228,70 @@ var setupEnvironment = function (env, trialObj = null) {
         Matter.Body.setPosition(block.body, snapped_location);
     }
 
-    snapToGrid = function(selectedBlockKind, preciseMouseX, preciseMouseY, rotated = false, testing_placement = false){
+    snapToGrid = function(selectedBlockKind, preciseMouseX, preciseMouseY, rotated = false, testing_placement = false, snapY = true){
+
         // snaps X location of dropped block to grid
+
+        var x_index = 0;
         if (selectedBlockKind.w%2 == 1) {
             snappedX = (preciseMouseX+stim_scale/2)%(stim_scale) < (stim_scale/2) ? preciseMouseX - (preciseMouseX%(stim_scale/2)) : preciseMouseX - (preciseMouseX%(stim_scale)) + (stim_scale/2);
             //snappedY = snappedY = preciseMouseY%(stim_scale) < (stim_scale/2) ? preciseMouseY - preciseMouseY%(stim_scale) : preciseMouseY - preciseMouseY%(stim_scale) + stim_scale;
             //snappedX =  (preciseMouseX+stim_scale/2)%(stim_scale) < 0 ? preciseMouseX - preciseMouseX%(stim_scale) - stim_scale/2 : preciseMouseX - (preciseMouseX+stim_scale/2)%(stim_scale) + stim_scale;
             //snappedY = preciseMouseY%(stim_scale) < (stim_scale/2) ? preciseMouseY - preciseMouseY%(stim_scale) : preciseMouseY - preciseMouseY%(stim_scale) - stim_scale;
+            x_index = snappedX/stim_scale - snappedX%stim_scale + 7 + 5; // + 7 for structure world, -
         } else if (selectedBlockKind.h%2 == 1) {
             snappedX =  preciseMouseX%(stim_scale) < (stim_scale/2) ? preciseMouseX - preciseMouseX%(stim_scale) : preciseMouseX - preciseMouseX%(stim_scale) + stim_scale;
             //snappedY = (preciseMouseY+stim_scale/2)%(stim_scale) < (stim_scale/2) ? preciseMouseY - (preciseMouseY%(stim_scale/2)) : preciseMouseY - (preciseMouseY%(stim_scale)) + (stim_scale/2);
+            x_index = snappedX/stim_scale - snappedX%stim_scale - selectedBlockKind.w/2 - 5 + 5;
         }
         else {
             snappedX = preciseMouseX%(stim_scale) < (stim_scale/2) ? preciseMouseX - preciseMouseX%(stim_scale) : preciseMouseX - preciseMouseX%(stim_scale) + stim_scale;
             //snappedY = snappedY = preciseMouseY%(stim_scale) < (stim_scale/2) ? preciseMouseY - preciseMouseY%(stim_scale) : preciseMouseY - preciseMouseY%(stim_scale) + stim_scale;
+            x_index = snappedX/stim_scale - snappedX%stim_scale - selectedBlockKind.w/2 - 5 + 5;
         }
+        console.log(x_index)
 
-        snappedY = preciseMouseY
+        if (!snapY) {
+            snappedBlock = new Block(selectedBlockKind, snappedX, preciseMouseY, rotated, testing_placement = testing_placement, x_index = x_index); 
+            return (snappedBlock);
+        }
+        else {
+            // // read discrete world representation
+            // var rowFree = false;
+            // var y = 0;
+            // while (!rowFree) {
+            //     var blockEnd = x_index+selectedBlockKind.w
+            //     rowFree = true;
+            //     for (let x = x_index; x < blockEnd; x++) { // check if row directly beneath block are all free at height y
+            //         rowFree = rowFree && discreteWorld[x][y];
+            //     }
+            //     y+=1;
+            // }
+            // //((canvasHeight/stim_scale) - (canvasHeight%stim_scale)) 
+            
+            // check rows from mousy y, down
+            var y = Math.round(13 - (selectedBlockKind.h/2) - ((preciseMouseY+(stim_scale/2))/stim_scale)) + 2;
+            console.log('test:', y)
+            var rowFree = true;
+            while (rowFree && y>=0) {
+                y-=1;
+                var blockEnd = x_index+selectedBlockKind.w
+                for (let x = x_index; x < blockEnd; x++) { // check if row directly beneath block are all free at height y
+                    console.log('checking:', y, x)
+                    rowFree = rowFree && discreteWorld[x][y];
+                } 
 
-        //preciseMouseX - preciseMouseX%stim_scale
-        //stim_scale*i + canvasWidth/2 - stim_scale/2, 
-        //(canvasHeight - floorHeight) - (stim_scale*j) + stim_scale/2 - 7
+            }
+            y_index = y+1;
+            console.log('y_index',y_index);
+            
+            // ADD SNAP TO Y
+            snappedY = (canvasHeight - floorHeight) - (stim_scale*(selectedBlockKind.h/2)) - (stim_scale*(y_index)) + stim_scale/2 + 6;
 
-        snappedBlock = new Block(selectedBlockKind, snappedX, snappedY, rotated, testing_placement = testing_placement);
-        return(snappedBlock);
+            snappedBlock = new Block(selectedBlockKind, snappedX, snappedY, rotated, testing_placement = testing_placement, x_index = x_index, y_index = y_index);
+
+            return (snappedBlock);
+        }
     }
 
     env.mouseClicked = function () {
@@ -270,11 +319,12 @@ var setupEnvironment = function (env, trialObj = null) {
 
                     //test whether there is a block underneath this area
 
-                    test_block = snapToGrid(selectedBlockKind, env.mouseX, env.mouseY, rotated, testing_placement = true);
+                    test_block = snapToGrid(selectedBlockKind, env.mouseX, env.mouseY, rotated, testing_placement = true); //maybe redundant with y-snapping
 
                     //test_block = new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated, testing_placement = true);
-
                     if (test_block.can_be_placed()) {
+
+                    //if (test_block.can_be_placed()) {
                         
                         if (blocks.length != 0) { //if a block has already been placed, send settled world state
                             sendData('settled', trialObj);
@@ -289,6 +339,17 @@ var setupEnvironment = function (env, trialObj = null) {
 
                         newBlock = snapToGrid(selectedBlockKind, env.mouseX, env.mouseY, rotated);
                         blocks.push(newBlock);
+
+                        // update discrete world map
+                        blockTop = newBlock.y_index + selectedBlockKind.h;
+                        blockRight = newBlock.x_index + selectedBlockKind.w;
+
+                        for (let y = newBlock.y_index; y < blockTop; y++) {
+                            for (let x = newBlock.x_index; x < blockRight; x++) {
+                                discreteWorld[x][y] = false;
+                            }
+                        }
+
                         postSnap = false;
                         // blocks.push(new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated));
                         selectedBlockKind = null;
@@ -561,7 +622,8 @@ var sendData = function (eventType, trialObj) {
                 timeBlockSelected: timeBlockSelected,
                 timeBlockPlaced: timeLastPlaced,
                 relativePlacementTime: timeLastPlaced - trialObj.buildStartTime,
-                blockNum: blocks.length
+                blockNum: blocks.length,
+                x_index: newBlock.x_index
 
             })
 
@@ -588,7 +650,8 @@ var sendData = function (eventType, trialObj) {
                 blockCenterY: lastBlock['body']['position']['y'],
                 blockVertices: vertices,
                 blockBodyProperties: blockProperties,
-                blockKind: lastBlock.blockKind.blockName
+                blockKind: lastBlock.blockKind.blockName,
+                x_index: lastBlock.x_index
             };
 
 
@@ -722,3 +785,4 @@ var sendData = function (eventType, trialObj) {
     };
 
 };
+

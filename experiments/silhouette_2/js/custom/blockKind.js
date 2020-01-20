@@ -54,12 +54,9 @@ function BlockKind(w,h,blockColor, blockName = ''){
         if(snapToGrid){
             if (this.w%2 == 1) {
                 snappedX = (mouseX+stim_scale/2)%(stim_scale) < (stim_scale/2) ? mouseX - (mouseX%(stim_scale/2)) : mouseX - (mouseX%(stim_scale)) + (stim_scale/2);
-            } else if (this.h%2 == 1) {
+            } else {
                 snappedX = mouseX%(stim_scale) < (stim_scale/2) ? mouseX - mouseX%(stim_scale) : mouseX - mouseX%(stim_scale) + stim_scale;
-            }
-            else {
-                snappedX = mouseX%(stim_scale) < (stim_scale/2) ? mouseX - mouseX%(stim_scale) : mouseX - mouseX%(stim_scale) + stim_scale;
-            }
+            };
 
             mouseX = snappedX
         }
@@ -83,7 +80,7 @@ function BlockKind(w,h,blockColor, blockName = ''){
             this.drawChocolateBlocks(env);
         }
         env.pop();
-
+        
     }
 
 }

@@ -1,7 +1,9 @@
 // Wrappers for Matter Bodies that instantiate a particular BlockKind
-function Block(blockKind, x, y, rotated, testing_placement = false) {
+function Block(blockKind, x, y, rotated, testing_placement = false, x_index = null,  y_index = null) {
 
     this.blockKind = blockKind;
+    this.x_index = x_index;
+    this.y_index = y_index;
 
     if (rotated) {
         this.w = blockKind.h * sF;
@@ -26,7 +28,7 @@ function Block(blockKind, x, y, rotated, testing_placement = false) {
         World.add(engine.world, this.body);
     }
     else {
-        this.test_body = Bodies.rectangle(x * worldScale, y * worldScale, this.w * worldScale * 0.9, this.h * worldScale * 0.9);
+        this.test_body = Bodies.rectangle(x * worldScale, y * worldScale, this.w * worldScale * 0.85, this.h * worldScale * 0.85);
         this.test_body.collisionFilter.category = 3;
     }
 
