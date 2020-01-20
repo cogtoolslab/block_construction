@@ -86,6 +86,7 @@ var blockNames = ['A','B','C','D','E'];
 
 var buildColor = [179, 47, 10, 255];
 var disabledColor = [100, 100, 100, 30];
+var mistakeColor = [215,30,30,200];
 
 // discrete world representation for y-snapping
 var discreteEnvHeight = 13;
@@ -257,7 +258,7 @@ var setupEnvironment = function (env, trialObj = null) {
             return (snappedBlock);
         }
         else {
-            // // read discrete world representation
+            // // read discrete world representation- check from bottom, up (doesn't work- will miss if you've placed things above a blank space)
             // var rowFree = false;
             // var y = 0;
             // while (!rowFree) {
@@ -269,24 +270,21 @@ var setupEnvironment = function (env, trialObj = null) {
             //     y+=1;
             // }
             // //((canvasHeight/stim_scale) - (canvasHeight%stim_scale)) 
-
-            console.log(discreteWorld)
             
             // check rows from mousy y, down
             var y = Math.round(13 - (selectedBlockKind.h/2) - ((preciseMouseY+(stim_scale/2))/stim_scale)) + 2;
-            console.log('test:', y)
             var rowFree = true;
             while (rowFree && y>=0) {
                 y-=1;
                 var blockEnd = x_index+selectedBlockKind.w
                 for (let x = x_index; x < blockEnd; x++) { // check if row directly beneath block are all free at height y
-                    console.log('checking:', y, x)
+                    //console.log('checking:', y, x)
                     rowFree = rowFree && discreteWorld[x][y];
-                } 
+                }
 
             }
             y_index = y+1;
-            console.log('y_index',y_index);
+            //console.log('y_index',y_index);
             
             // ADD SNAP TO Y
             snappedY = (canvasHeight - floorHeight) - (stim_scale*(selectedBlockKind.h/2)) - (stim_scale*(y_index)) + stim_scale/2 + 6;
@@ -343,6 +341,14 @@ var setupEnvironment = function (env, trialObj = null) {
                         newBlock = snapToGrid(selectedBlockKind, env.mouseX, env.mouseY, rotated);
                         blocks.push(newBlock);
 
+                        jsPsych.pluginAPI.setTimeout(function () {
+                            var moved = newBlock.checkMotion();
+                            if (moved) {
+                                newBlock.color = mistakeColor;
+                            }
+                            console.log(moved);
+                        }, 1000);
+                        
                         // update discrete world map
                         blockTop = newBlock.y_index + selectedBlockKind.h;
                         blockRight = newBlock.x_index + selectedBlockKind.w;

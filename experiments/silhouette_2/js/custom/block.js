@@ -4,6 +4,7 @@ function Block(blockKind, x, y, rotated, testing_placement = false, x_index = nu
     this.blockKind = blockKind;
     this.x_index = x_index;
     this.y_index = y_index;
+    this.color = this.blockKind.blockColor;
 
     if (rotated) {
         this.w = blockKind.h * sF;
@@ -24,7 +25,10 @@ function Block(blockKind, x, y, rotated, testing_placement = false, x_index = nu
         sleepThreshold: 30
     }
     if (!testing_placement) {
-        this.body = Bodies.rectangle(x * worldScale, y * worldScale, this.w * worldScale, this.h * worldScale, options);
+        this.originalX = x * worldScale;
+        this.originalY = y * worldScale;
+
+        this.body = Bodies.rectangle(this.originalX, this.originalY, this.w * worldScale, this.h * worldScale, options);
         World.add(engine.world, this.body);
     }
     else {
@@ -45,7 +49,7 @@ function Block(blockKind, x, y, rotated, testing_placement = false, x_index = nu
         env.rotate(angle);
         env.stroke([28,54,62]);
         env.strokeWeight(2);
-        env.fill(this.blockKind.blockColor);
+        env.fill(this.color);
         // if(this.body.isSleeping) {
         //     env.fill();
         // }
@@ -63,6 +67,18 @@ function Block(blockKind, x, y, rotated, testing_placement = false, x_index = nu
     this.can_be_placed = function () {
         colliding_bodies = Matter.Query.region(engine.world.bodies, this.test_body.bounds);
         return (colliding_bodies === undefined || colliding_bodies.length == 0)
+    }
+
+    this.checkMotion = function () {
+        //console.log('angle', this.body.angle);
+        //console.log('∆x', this.body.position.x - this.originalX);
+        //console.log('∆y', this.body.position.y - this.originalY);
+
+        var xMove = Math.abs(this.body.position.x - this.originalX) > sF/3;
+        var yMove = Math.abs(this.body.position.y - this.originalY) > sF/3;
+        var rotated = Math.abs(this.body.angle) > 0.79
+
+        return (xMove || yMove || rotated)
     }
 
 }
