@@ -17,7 +17,7 @@ var dev_mode = true;
 
 if (dev_mode) {
   practice_duration = 60;
-  build_duration = 60;
+  build_duration = 30;
 }
 
 var iterationName = 'Exp2Pilot1-debug';
@@ -178,7 +178,8 @@ function Trial () {
   this.practiceAttempt = 0;
   this.pMessingAround = 0;
   this.doNothingRepeats = 0;
-  this.blockColors = blockColors
+  this.blockColors = blockColors;
+  this.blockFell = false
 };
 
 function PracticeTrial () {

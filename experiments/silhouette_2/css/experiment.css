@@ -41,13 +41,6 @@ p {
     font-size: 28px;
 }
 
-#occluder-text {
-    display: inline-block;
-    text-align: center;
-    font-family: 'Francois One', sans-serif;
-    font-size: 28px;
-    line-height: 1.8em;
-}
 
 #timer-text {
     color: #00b300;
@@ -137,7 +130,7 @@ p {
 .occluder div{
     float: middle;
     border:solid 1px #FFFFFF;
-    width: 50%;
+    width: 80%;
     height: 80vh;
     margin: auto;
     top: 50px; bottom: auto; left:0; right: 0;
@@ -147,7 +140,12 @@ p {
 }
 
 .occluder p{
-    padding-top: 45%;
+    padding-top: 25%;
+    display: inline-block;
+    text-align: center;
+    font-family: 'Francois One', sans-serif;
+    font-size: 28px;
+    line-height: 1.8em;
 }
 
 #progress-bar {

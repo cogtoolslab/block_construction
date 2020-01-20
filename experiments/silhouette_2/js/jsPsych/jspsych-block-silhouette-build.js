@@ -372,7 +372,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       // trial.points = points;
       // sendData('settled', trial);
 
-      if ((blocks.length < 3) && !(endReason == 'block_motion')) {
+      if ((blocks.length < 2) && !(endReason == 'block_motion')) {
 
         clearP5Envs();
         trial.doNothingRepeats += 1;
@@ -424,10 +424,6 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
             occluder_text.textContent = occluder_text.textContent.concat(`Time bonus! 0.5¢ \r\n`);
           }
 
-          if (endReason == 'block_motion') {
-            occluder_text.textContent = occluder_text.textContent.concat(`Trial ended because your last block moved \r\n`);
-          } 
-
           updateTrialScores(trial);
 
           sendData(eventType = 'trial_end', trial);
@@ -449,6 +445,14 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
         }, 2500);
         }
 
+    }
+
+    trial.fell_over = function () {
+      if(!trial.completed){
+        occluder_text.textContent = `Careful! Trial ended because your last block moved.\r\n Please wait for the next trial to load, and to find out whether you got a bonus for this round.`;
+        //occluder_text.textContent = occluder_text.textContent.concat(`  \r\n`);
+        occluder.style.display = "block";
+      }
     }
 
     function clear_display_move_on() {
