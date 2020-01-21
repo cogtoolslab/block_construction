@@ -164,6 +164,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     version = trial.version;
 
     occluder.style.display = "block";
+    occluder_timer_text.style.display = "none";
 
 
     // **************** SCORING ****************
@@ -434,9 +435,9 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
           jsPsych.pluginAPI.setTimeout(function () {
             if (trial.currBonus > 0) {
-              display_element.querySelector('#bonus-meter').style.border = "8px solid #66B03B";
+              display_element.querySelector('#bonus-meter').style.color = "#00b300";
             } else {
-              display_element.querySelector('#bonus-meter').style.border = "8px solid #FFFFFF";
+              display_element.querySelector('#bonus-meter').style.color = "#1c363e";
             }
           }, 4000);
         };
@@ -452,10 +453,25 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     }
 
     trial.fell_over = function () {
-      if(!trial.completed){
-        occluder_text.textContent = `Careful! Trial ended because your last block moved.\r\n Please wait for the next trial to load, and to find out whether you got a bonus for this round.`;
+      if(trial.phase=='practice'){
+        occluder_text.textContent = `Oh no! A block fell! Remember that blocks falling cause the current trial to end. \r\n Resetting practice trial`;
         //occluder_text.textContent = occluder_text.textContent.concat(`  \r\n`);
         occluder.style.display = "block";
+        occluder_timer_text.style.display = "none";
+        jsPsych.pluginAPI.setTimeout(function () {
+          occluder.style.display = "none";
+          occluder_timer_text.style.display = "none";
+          Array.prototype.forEach.call(env_divs, env_div => {
+            env_div.style.backgroundColor = "#FFD819";
+          });
+          resetPressed();
+        }, 3000);
+      }
+      else if(!trial.completed){
+        occluder_text.textContent = `Oh no! A block fell! Remember that blocks falling cause the current trial to end. \r\n Please wait for the next trial to load, and to find out whether you got a bonus for this round.`;
+        //occluder_text.textContent = occluder_text.textContent.concat(`  \r\n`);
+        occluder.style.display = "block";
+        occluder_timer_text.style.display = "block";
       }
     }
 
@@ -499,8 +515,8 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       occluder.style.display = "none";
       occluder.removeEventListener('click', startBuildPhase);
 
-      jsPsych.pluginAPI.setTimeout(function () { // change color of bonus back to white
-        display_element.querySelector('#bonus-meter').style.border = "8px solid #FFFFFF";
+      jsPsych.pluginAPI.setTimeout(function () { // change color of bonus back to default
+        display_element.querySelector('#bonus-meter').style.color = "#1c363e";
       }, 3000);
 
       //console.log('timer starting for build');

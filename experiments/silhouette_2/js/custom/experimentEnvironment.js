@@ -353,7 +353,7 @@ var setupEnvironment = function (env, trialObj = null) {
                                     //trialObj.endTrial(endReason ='block_motion');
                                     trialObj.blockFell = true;
                                     trialObj.fell_over();
-                                }, 2000);
+                                }, 3500);
                             }
                         }, 1500);
                         
@@ -799,7 +799,8 @@ var sendData = function (eventType, trialObj) {
                     bonusThresholdMid: trialObj.bonusThresholdMid,
                     bonusThresholdLow: trialObj.bonusThresholdLow,
                     allVertices: allVertices,
-                    blockFell: trialObj.blockFell
+                    blockFell: trialObj.blockFell,
+                    discreteWorldMap: discreteWorld
                 });
                 //console.log('trial_end_data: ', trial_end_data);
                 socket.emit('currentData', trial_end_data);
