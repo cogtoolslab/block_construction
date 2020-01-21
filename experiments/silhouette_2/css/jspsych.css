@@ -15,6 +15,7 @@
    overflow-y: auto;
  }
 
+
  .jspsych-display-element:focus {
    outline: none;
  }

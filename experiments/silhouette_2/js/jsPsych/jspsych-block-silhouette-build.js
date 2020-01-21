@@ -189,9 +189,9 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     }
 
     function convertNormedScoreToBonus(normedScore) {
-      if (normedScore > trial.bonusThresholdHigh) { bonus = 0.05; }
-      else if (normedScore > trial.bonusThresholdMid) { bonus = 0.03; }
-      else if (normedScore > trial.bonusThresholdLow) { bonus = 0.01; }
+      if (normedScore > trial.bonusThresholdHigh) { bonus = trial.bonusHigh; }
+      else if (normedScore > trial.bonusThresholdMid) { bonus = trial.bonusMid; }
+      else if (normedScore > trial.bonusThresholdLow) { bonus = trial.bonusLow; }
       else { bonus = 0; }
       return bonus;
     }
@@ -203,8 +203,8 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     }
 
     function getTimeBonus(timeToBuild) {
-      if (build_duration * 1000 - timeToBuild > trial.timeThresholdYellow) { timeBonus = 0.01;}
-      else if (build_duration * 1000 - timeToBuild > trial.timeThresholdRed) { timeBonus = 0.005;}
+      if (build_duration * 1000 - timeToBuild > trial.timeThresholdYellow) { timeBonus = trial.timeBonusHigh;}
+      else if (build_duration * 1000 - timeToBuild > trial.timeThresholdRed) { timeBonus = trial.timeBonusLow;}
       else { timeBonus = 0; }
       return timeBonus;
     }
@@ -212,7 +212,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     function updateTrialScores(trial) {
       // update official bonus tallies
       trial.F1Score = rawScore;
-      trial.endReason = endReason;
+      //trial.endReason = endReason;
       trial.normedScore = normedScore;
       trial.score = cumulBonus; // update trial.score var to reflect cumulative bonustrial.nullScore = nullScore;
       trial.points = points;
@@ -399,37 +399,11 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
         if (trial.condition != 'practice') {
 
-          _timeToBuild = trial.timeLastPlaced - trial.buildStartTime;
-          trial.timeToBuild = _timeToBuild > 0 ? _timeToBuild : NaN
+          occluder_text.textContent = '';
 
-          trial.currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
-
-          if (trial.currBonus > 0) {
-            trial.timeBonus = getTimeBonus(trial.timeToBuild);
+          if (!trial.bonusesCalculated){
+            calculateAndDisplayBonuses();
           }
-
-          cumulBonus += parseFloat(trial.currBonus.toFixed(2));
-          cumulBonus += parseFloat(trial.timeBonus.toFixed(3));
-          points += trialPoints;
-
-          occluder.style.fontSize = 'large';
-          if (trial.currBonus == 0.05) {
-            occluder_text.textContent = `🤩 Amazing! ${trialPoints} Points! 5¢ bonus! \r\n`;
-          } else if (trial.currBonus == 0.03) {
-            occluder_text.textContent = `😃 Great job! ${trialPoints} Points! 3¢ bonus! \r\n`;
-          } else if (trial.currBonus == 0.01) {
-            occluder_text.textContent = `🙂 Not bad! ${trialPoints} Points! 1¢ bonus! \r\n`;
-          } else {
-            occluder_text.textContent = `😐 ${trialPoints} Points! Sorry, no bonus this round. \r\n`;
-          }
-
-          if (trial.timeBonus == 0.01) {
-            occluder_text.textContent = occluder_text.textContent.concat(`Maximum time bonus! 1¢ \r\n`);
-          } else if (trial.timeBonus == 0.005) {
-            occluder_text.textContent = occluder_text.textContent.concat(`Time bonus! 0.5¢ \r\n`);
-          }
-
-          updateTrialScores(trial);
 
           sendData(eventType = 'trial_end', trial);
 
@@ -468,11 +442,57 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
         }, 3000);
       }
       else if(!trial.completed){
-        occluder_text.textContent = `Oh no! A block fell! Remember that blocks falling cause the current trial to end. \r\n Please wait for the next trial to load, and to find out whether you got a bonus for this round.`;
+        occluder_text.textContent = `Oh no! A block fell! Remember that blocks falling cause the current trial to end. \r\n`;
         //occluder_text.textContent = occluder_text.textContent.concat(`  \r\n`);
         occluder.style.display = "block";
         occluder_timer_text.style.display = "block";
+        calculateAndDisplayBonuses();
+        occluder_text.textContent = occluder_text.textContent.concat('Please wait for the next trial to load\r\n ');
       }
+    }
+
+    function calculateAndDisplayBonuses() {
+
+      trial.bonusesCalculated = true;
+
+      trial.buildFinishTime = Date.now();
+
+      //calculate bonus earned
+      rawScore = getCurrScore();
+      normedScore = getNormedScore(rawScore, nullScore, scoreGap);
+      trialPoints = Math.max(Math.ceil(normedScore * 100), 0);
+
+      _timeToBuild = trial.timeLastPlaced - trial.buildStartTime;
+      trial.timeToBuild = _timeToBuild > 0 ? _timeToBuild : NaN
+
+      trial.currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
+
+      if (trial.currBonus == trial.bonusHigh) {
+        trial.timeBonus = getTimeBonus(trial.timeToBuild);
+      }
+
+      cumulBonus += parseFloat(trial.currBonus.toFixed(2));
+      cumulBonus += parseFloat(trial.timeBonus.toFixed(3));
+      points += trialPoints;
+
+      occluder.style.fontSize = 'large';
+      if (trial.currBonus == trial.bonusHigh) { //remove hardcoded bonus amounts
+        occluder_text.textContent = occluder_text.textContent.concat(`🤩 Amazing! ${trialPoints} Points! 5¢ bonus! \r\n`);
+      } else if (trial.currBonus ==trial.bonusMid) {
+        occluder_text.textContent = occluder_text.textContent.concat(`😃 Great job! ${trialPoints} Points! 3¢ bonus! \r\n`);
+      } else if (trial.currBonus ==trial.bonusLow) {
+        occluder_text.textContent = occluder_text.textContent.concat(`🙂 Not bad! ${trialPoints} Points! 1¢ bonus! \r\n`);
+      } else {
+        occluder_text.textContent = occluder_text.textContent.concat(`😐 ${trialPoints} Points! Sorry, no bonus this round. \r\n`);
+      }
+
+      if (trial.timeBonus == trial.timeBonusHigh) {
+        occluder_text.textContent = occluder_text.textContent.concat(`Maximum time bonus! 1¢ \r\n`);
+      } else if (trial.timeBonus == trial.timeBonusLow) {
+        occluder_text.textContent = occluder_text.textContent.concat(`Time bonus! 0.5¢ \r\n`);
+      }
+      updateTrialScores(trial);
+
     }
 
     function clear_display_move_on() {

@@ -3,7 +3,7 @@ var score = 0;
 var points = 0;
 var numTrials = 24;
 var survey_data = null;
-var blockColors = ['#78878C','#791E94','#6B4623','#FF4A1C','#E85D75','#16BF51','#82203C','#F7EA31','#A','#B','#C','#D','#E','#F','#G','#H'];
+var blockColors = ['#78878C','#791E94','#6B4623','#FF4A1C','#E85D75','#16BF51','#82203C','#E0B300','#A','#B','#C','#D','#E','#F','#G','#H'];
 
 var practice_duration = 600;
 var build_duration = 60;
@@ -20,7 +20,7 @@ if (dev_mode) {
   build_duration = 60;
 }
 
-var iterationName = 'Exp2Pilot2-test';
+var iterationName = 'Exp2Pilot2-build';
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 //console.log(randID);
@@ -147,6 +147,11 @@ var allTrialInfo = {
   bonusThresholdHigh: 0.95,
   bonusThresholdMid: 0.88,
   bonusThresholdLow: 0.75,
+  bonusHigh: 0.05,
+  bonusMid: 0.03,
+  bonusLow: 0.01,
+  timeBonusHigh: 0.01,
+  timeBonusLow: 0.005,
   numTargets: numTargets,
   setSize: setSize,
   numReps: numReps,
@@ -179,7 +184,8 @@ function Trial () {
   this.pMessingAround = 0;
   this.doNothingRepeats = 0;
   this.blockColors = blockColors;
-  this.blockFell = false
+  this.blockFell = false;
+  this.bonusesCalculated = false;
 };
 
 function PracticeTrial () {

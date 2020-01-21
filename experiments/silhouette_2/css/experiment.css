@@ -31,6 +31,7 @@ p {
 
 #zoom-message p{
     font-size: 18px;
+    margin: 0;
 }
 
 
@@ -58,6 +59,7 @@ p {
     text-align: left;
     font-family: 'Francois One', sans-serif;
     font-size: 24px;    
+    margin: 0px !important;
 }
 
 #bonus-meter {
@@ -162,3 +164,7 @@ p {
     border: 8px solid white;
     margin-bottom: 0px;
 }
+
+.jspsych-content p{
+    margin: 5px 10%;
+  }
