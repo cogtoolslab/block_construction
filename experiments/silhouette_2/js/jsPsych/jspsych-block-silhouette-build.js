@@ -73,6 +73,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
   plugin.trial = function (display_element, trial) {
 
+
     // Make target a stonehenge
     //trial.targetBlocks = [{"x": 1, "y": 0, "width": 2, "height": 4}, {"x": 5, "y": 0, "width": 2, "height": 4}, {"x": 2, "y": 4, "width": 4, "height": 2}];
 
@@ -84,6 +85,8 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     if (typeof trial.targetBlocks === 'undefined') {
       console.error('Required parameter "target" missing in block-silhouette');
     }
+
+    trial.targetMap = makeTargetMap(trial.targetBlocks);
 
     // wrapper function to show everything, call this when you've waited what you
     // reckon is long enough for the data to come back from the db
@@ -358,6 +361,10 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     // *****************************************
 
 
+    trial.perfectStructure = function () {
+      console.log('auto advance')
+    }
+    
     function clearP5Envs() {
       // Removes P5 environments to start new experiment phase or trial
       removeEnv();

@@ -87,12 +87,13 @@ function BlockKind(w,h,blockColor, blockName = ''){
             env.push();
             env.translate(mouseX, mouseY);
             env.rectMode(env.CENTER);
-            env.stroke([28,54,62,100]);
+            env.stroke([200,200,255]);
+            //env.stroke([28,54,62,100]);
             env.strokeWeight(2);
             //fillColor = disabledBlockPlacement ? [100, 100, 100, 100] : [...this.blockColor];
             //fillColor[3] = 130;
-            fillColor = env.color(this.blockColor);
-            fillColor.setAlpha(150);
+            fillColor = env.color([28,54,220]);
+            fillColor.setAlpha(50);
             env.fill(fillColor);
             if(rotated){
                 env.rect(0,0,this.h*sF,this.w*sF);
