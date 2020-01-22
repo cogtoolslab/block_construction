@@ -383,11 +383,6 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
     // *********** CLEAN UP FUNCTIONS ********** 
     // *****************************************
-
-
-    trial.perfectStructure = function () {
-      console.log('auto advance')
-    }
     
     function clearP5Envs() {
       // Removes P5 environments to start new experiment phase or trial

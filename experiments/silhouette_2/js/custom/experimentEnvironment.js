@@ -352,7 +352,11 @@ var setupEnvironment = function (env, trialObj = null) {
                                 //printTwoDiscreteMaps(trialObj.targetMap, discreteWorld);
                                 rawScoreDiscrete = getScoreDiscrete(trialObj.targetMap, discreteWorld);
                                 console.log(rawScoreDiscrete);
-                                console.log('normedDiscrete',trialObj.getNormedScoreDiscrete(rawScoreDiscrete, trialObj.nullScoreDiscrete, trialObj.scoreGapDiscrete));
+                                normedScoreDiscrete = trialObj.getNormedScoreDiscrete(rawScoreDiscrete, trialObj.nullScoreDiscrete, trialObj.scoreGapDiscrete);
+                                console.log('normedDiscrete', normedScoreDiscrete);
+                                if (normedScoreDiscrete == 1) {
+                                    trialObj.endTrial(endReason = 'perfect_structure');
+                                }
 
                             }
                             
