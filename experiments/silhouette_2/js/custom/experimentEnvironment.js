@@ -350,7 +350,9 @@ var setupEnvironment = function (env, trialObj = null) {
                                 // }
 
                                 //printTwoDiscreteMaps(trialObj.targetMap, discreteWorld);
-                                console.log(getDiscreteScore(trialObj.targetMap, discreteWorld));
+                                rawScoreDiscrete = getScoreDiscrete(trialObj.targetMap, discreteWorld);
+                                console.log(rawScoreDiscrete);
+                                console.log('normedDiscrete',trialObj.getNormedScoreDiscrete(rawScoreDiscrete, trialObj.nullScoreDiscrete, trialObj.scoreGapDiscrete));
 
                             }
                             

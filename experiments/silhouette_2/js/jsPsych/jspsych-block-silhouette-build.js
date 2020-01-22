@@ -24,6 +24,10 @@ var timeBonus = 0; // current bonus increment
 var cumulBonus = 0; // cumulative bonus earned in experiment
 var points = 0;
 
+var nullScoreDiscrete = 0; // reconstruction score for blank reconstruction
+var normedScoreDiscrete = 0; // reconstruction score for blank reconstruction
+var scoreGapDiscrete = 0; // difference between nullScore and perfect score (F1 = 1)
+
 // Metadata
 var gameID = 'GAMEID_PLACEHOLDER';
 var version = 'VERSION_PLACEHOLDER';
@@ -225,6 +229,26 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     // hacky solution to obtaining scores at every block-settle event
     trial.getCurrScore = getCurrScore;
     trial.getNormedScore = (rawScore) => getNormedScore(rawScore, nullScore, scoreGap);
+
+
+
+    function getCurrScoreDiscrete() {
+      // call this to get: 
+      // (1) F1 score for target vs. blank at beginning of each phase
+      // (2) F1 score for target vs. blank at end of each phase
+      current_score_to_return = getScoreDiscrete(trial.targetMap, discreteWorld);
+      return current_score_to_return;
+    }
+
+    trial.getNormedScoreDiscrete = function(rawScoreDiscrete, nullScoreDiscrete, scoreGapDiscrete) {
+      // compute relative change in score
+      deltaScoreDiscrete = math.subtract(rawScoreDiscrete, nullScoreDiscrete);
+      normedScoreDiscrete = math.divide(deltaScoreDiscrete, scoreGapDiscrete);
+      // console.log('scoreGap = ', scoreGap.toFixed(2));
+      // console.log('deltaScore = ', deltaScore.toFixed(2));
+      // console.log('normedScore = ', normedScore.toFixed(2));
+      return normedScoreDiscrete;
+    }
 
 
     // ********* TIMERS, EVENT HANDLERS ********
@@ -589,6 +613,12 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       trial.nullScore = nullScore;
       trial.scoreGap = scoreGap;
 
+      // set null score for normed score calculation
+      nullScoreDiscrete = getCurrScoreDiscrete();
+      scoreGapDiscrete = math.subtract(1, nullScoreDiscrete);
+      trial.nullScoreDiscrete = nullScoreDiscrete;
+      trial.scoreGapDiscrete = scoreGapDiscrete;
+
       occluder_text.textContent = 'Trial ' + (parseInt(trial.trialNum) + parseInt(1)).toString() + '. Click to begin.';
       occluder.style.display = "block";
       occluder.addEventListener('click', startBuildPhase);
@@ -608,10 +638,11 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       });
 
       // set null score for normed score calculation
-      nullScore = getCurrScore();
-      scoreGap = math.subtract(1, nullScore);
-      trial.nullScore = nullScore;
-      trial.scoreGap = scoreGap;
+      nullScoreDiscrete = getCurrScoreDiscrete();
+      scoreGapDiscrete = math.subtract(1, nullScoreDiscrete);
+      trial.nullScoreDiscrete = nullScoreDiscrete;
+      trial.scoreGapDiscrete = scoreGapDiscrete;
+    
 
       occluder.addEventListener('click', startPractice);
     };

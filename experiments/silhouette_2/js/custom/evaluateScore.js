@@ -205,7 +205,7 @@ function printTwoDiscreteMaps(target, built) {
 
 }
 
-function getDiscreteScore(target, built) {
+function getScoreDiscrete(target, built) {
   // input: two bitmaps- target and built structure
   // output: score
 
