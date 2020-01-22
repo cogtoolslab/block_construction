@@ -154,7 +154,8 @@ var allTrialInfo = {
   timeBonusLow: 0.005,
   numTargets: numTargets,
   setSize: setSize,
-  numReps: numReps
+  numReps: numReps,
+  incrementalNormedScoreDiscrete: 0
 };
 
 // define trial object with boilerplate
@@ -164,11 +165,15 @@ function Trial () {
   this.dev_mode = dev_mode;
   this.F1Score = 0; // F1 score
   this.normedScore = 0;
+  this.nullScore = NaN;
+  this.scoreGap = NaN;
+  this.rawScoreDiscrete = 0; // F1 score
+  this.normedScoreDiscrete = 0;
+  this.nullScoreDiscrete = NaN;
+  this.scoreGapDiscrete = NaN;
   this.currBonus = 0; // current bonus
   this.cumulBonus = 0;
   this.timeBonus = 0; // current bonus
-  this.nullScore = NaN;
-  this.scoreGap = NaN;
   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'.
   this.phase = 'NA';
   this.buildResets = 0;
@@ -197,11 +202,15 @@ function PracticeTrial () {
   this.targetName = 'any';
   this.F1Score = 0; // F1 score
   this.normedScore = 0;  // F1 score normed to area of structure
+  this.nullScore = NaN;
+  this.scoreGap = NaN;
+  this.rawScoreDiscrete = 0; // F1 score
+  this.normedScoreDiscrete = 0;
+  this.nullScoreDiscrete = NaN;
+  this.scoreGapDiscrete = NaN;
   this.currBonus = 0; // current bonus
   this.score = score; // cumulative bonus 
   this.points = 0;
-  this.nullScore = NaN;
-  this.scoreGap = NaN;
   this.endReason = 'NA'; // Why did the trial end? Either 'timeOut' or 'donePressed'. 
   this.buildResets = 0; 
   this.nPracticeAttempts = 0;

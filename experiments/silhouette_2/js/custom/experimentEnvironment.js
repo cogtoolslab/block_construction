@@ -93,6 +93,8 @@ var discreteEnvHeight = 13;
 var discreteEnvWidth = 18;
 var discreteWorld = new Array(discreteEnvWidth);
 
+var discreteWorldPrevious = new Array();
+
 var setupEnvironment = function (env, trialObj = null) {
     //console.log(trialObj);
 
@@ -314,9 +316,9 @@ var setupEnvironment = function (env, trialObj = null) {
 
                         //if (test_block.can_be_placed()) {
 
-                        if (blocks.length != 0) { //if a block has already been placed, send settled world state
-                            sendData('settled', trialObj);
-                        }
+                        // if (blocks.length != 0) { //if a block has already been placed, send settled world state
+                        //     sendData('settled', trialObj);
+                        // }
 
                         if (env.mouseY < canvasHeight / 6 && trialObj.phase == 'build') { // if dropping from a great height, assume they are messing around
                             trialObj.pMessingAround += 0.2;
@@ -339,7 +341,7 @@ var setupEnvironment = function (env, trialObj = null) {
                                 });
                                 jsPsych.pluginAPI.setTimeout(function () {
                                     //trialObj.endTrial(endReason ='block_motion');
-
+                                    discreteWorld = _.cloneDeep(discreteWorldPrevious);
                                     trialObj.fell_over();
                                 }, 3500);
                             } else { //auto advance trials
@@ -350,11 +352,10 @@ var setupEnvironment = function (env, trialObj = null) {
                                 // }
 
                                 //printTwoDiscreteMaps(trialObj.targetMap, discreteWorld);
-                                rawScoreDiscrete = getScoreDiscrete(trialObj.targetMap, discreteWorld);
-                                console.log(rawScoreDiscrete);
-                                normedScoreDiscrete = trialObj.getNormedScoreDiscrete(rawScoreDiscrete, trialObj.nullScoreDiscrete, trialObj.scoreGapDiscrete);
-                                console.log('normedDiscrete', normedScoreDiscrete);
-                                if (normedScoreDiscrete == 1) {
+
+                                
+                                if (trialObj.incrementalNormedScoreDiscrete == 1 && !trialObj.completed) {
+                                    trialObj.completed = true;
                                     trialObj.endTrial(endReason = 'perfect_structure');
                                 }
 
@@ -363,6 +364,9 @@ var setupEnvironment = function (env, trialObj = null) {
                         }, 1500);
 
                         // update discrete world map
+
+                        discreteWorldPrevious = _.cloneDeep(discreteWorld);
+
                         blockTop = newBlock.y_index + selectedBlockKind.h;
                         blockRight = newBlock.x_index + selectedBlockKind.w;
 
@@ -371,6 +375,12 @@ var setupEnvironment = function (env, trialObj = null) {
                                 discreteWorld[x][y] = false;
                             }
                         }
+
+                        rawScoreDiscrete = getScoreDiscrete(trialObj.targetMap, discreteWorld);
+                        console.log(rawScoreDiscrete);
+                        trialObj.incrementalNormedScoreDiscrete = trialObj.getNormedScoreDiscrete(rawScoreDiscrete, trialObj.nullScoreDiscrete, trialObj.scoreGapDiscrete);
+                        console.log('normedDiscrete', normedScoreDiscrete);
+                        sendData('settled', trialObj);
 
                         postSnap = false;
                         // blocks.push(new Block(selectedBlockKind, env.mouseX, env.mouseY, rotated));
@@ -516,6 +526,10 @@ var sendData = function (eventType, trialObj) {
         scoreGap: trialObj.scoreGap,
         F1Score: trialObj.F1Score,
         normedScore: trialObj.normedScore,
+        rawScoreDiscrete: trialObj.rawScoreDiscrete,
+        normedScoreDiscrete: trialObj.normedScoreDiscrete,
+        nullScoreDiscrete: trialObj.nullScoreDiscrete,
+        scoreGapDiscrete: trialObj.scoreGapDiscrete,
         currBonus: trialObj.currBonus,
         score: cumulBonus,
         points: trialObj.points,
@@ -651,6 +665,7 @@ var sendData = function (eventType, trialObj) {
                 y_discrete: y_index,
                 width_discrete: newBlock.blockKind.w,
                 height_discrete: newBlock.blockKind.h,
+                incrementalNormedScoreDiscretePrevious: trialObj.incrementalNormedScoreDiscrete
 
             })
             //console.log(block_data);
@@ -679,7 +694,8 @@ var sendData = function (eventType, trialObj) {
                 blockVertices: vertices,
                 blockBodyProperties: blockProperties,
                 blockKind: lastBlock.blockKind.blockName,
-                x_index: lastBlock.x_index
+                x_index: lastBlock.x_index,
+                incrementalNormedScoreDiscrete: trialObj.incrementalNormedScoreDiscrete
             };
 
 

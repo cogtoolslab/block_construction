@@ -19,14 +19,17 @@ var nullScore = 0; // reconstruction score for blank reconstruction
 var normedScore = 0; // reconstruction score for blank reconstruction
 var scoreGap = 0; // difference between nullScore and perfect score (F1 = 1)
 var rawScore = 0; // raw F1 score after phase end
+
+var nullScoreDiscrete = 0; // reconstruction score for blank reconstruction
+var normedScoreDiscrete = 0; // reconstruction score for blank reconstruction
+var scoreGapDiscrete = 0; // difference between nullScore and perfect score (F1 = 1)
+var rawScoreDiscrete = 0;
+
 var currBonus = 0; // current bonus increment 
 var timeBonus = 0; // current bonus increment 
 var cumulBonus = 0; // cumulative bonus earned in experiment
 var points = 0;
 
-var nullScoreDiscrete = 0; // reconstruction score for blank reconstruction
-var normedScoreDiscrete = 0; // reconstruction score for blank reconstruction
-var scoreGapDiscrete = 0; // difference between nullScore and perfect score (F1 = 1)
 
 // Metadata
 var gameID = 'GAMEID_PLACEHOLDER';
@@ -319,8 +322,13 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
         if (trial.condition == 'practice') {
 
+          // pixel-scores
           rawScore = getCurrScore();
           normedScore = getNormedScore(rawScore, nullScore, scoreGap);
+
+          // discrete-scores
+          rawScoreDiscrete = getScoreDiscrete(trial.targetMap, discreteWorld);
+          normedScoreDiscrete = trial.getNormedScoreDiscrete(rawScoreDiscrete, trial.nullScoreDiscrete, trial.scoreGapDiscrete);
           
           trial.nPracticeAttempts += 1;
           trial.buildFinishTime = Date.now();
@@ -328,7 +336,8 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
           trial.practiceAttempt += 1;
 
           // if-statements to be added here. Plus something that prevents multiple failures.
-          if (normedScore >= trial.practiceThreshold) {
+          if(normedScoreDiscrete >= trial.practiceThreshold) { // discrete score
+          //if (normedScore >= trial.practiceThreshold) { //pixel-score
             // if practice score is good:
             // move on
             trial.practiceSuccess = true;
@@ -391,6 +400,8 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     }
 
     trial.endTrial = function(endReason = 'end_of_phase') {
+      console.log('end');
+      console.log(endReason);
 
       occluder_timer_text.textContent = '';
 
@@ -403,7 +414,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       // trial.points = points;
       // sendData('settled', trial);
 
-      if ((blocks.length < 2) && !(endReason == 'block_motion')) {
+      if ((blocks.length < 2) && (endReason == 'timeout')) {
 
         clearP5Envs();
         trial.doNothingRepeats += 1;
@@ -418,10 +429,14 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
         trial.completed = true;
         trial.buildFinishTime = Date.now();
 
-        //calculate bonus earned
-        rawScore = getCurrScore();
-        normedScore = getNormedScore(rawScore, nullScore, scoreGap);
-        trialPoints = Math.max(Math.ceil(normedScore * 100), 0);
+        // //calculate bonus earned
+        // rawScore = getCurrScore();
+        // normedScore = getNormedScore(rawScore, nullScore, scoreGap);
+        // //trialPoints = Math.max(Math.ceil(normedScore * 100), 0);
+
+        // rawScoreDiscrete = getScoreDiscrete(trial.targetMap, discreteWorld);
+        // normedScoreDiscrete = trial.getNormedScoreDiscrete(rawScoreDiscrete, trial.nullScoreDiscrete, trial.scoreGapDiscrete);
+        // trialPoints = Math.max(Math.ceil(normedScoreDiscrete * 100), 0);
 
         if (trial.condition != 'practice') {
 
@@ -486,12 +501,17 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       //calculate bonus earned
       rawScore = getCurrScore();
       normedScore = getNormedScore(rawScore, nullScore, scoreGap);
-      trialPoints = Math.max(Math.ceil(normedScore * 100), 0);
+      // trialPoints = Math.max(Math.ceil(normedScore * 100), 0);
+
+      rawScoreDiscrete = getScoreDiscrete(trial.targetMap, discreteWorld);
+      normedScoreDiscrete = trial.getNormedScoreDiscrete(rawScoreDiscrete, trial.nullScoreDiscrete, trial.scoreGapDiscrete);
+      trialPoints = Math.max(Math.ceil(normedScoreDiscrete * 100), 0);
 
       _timeToBuild = trial.timeLastPlaced - trial.buildStartTime;
       trial.timeToBuild = _timeToBuild > 0 ? _timeToBuild : NaN
 
-      trial.currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
+      //trial.currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
+      trial.currBonus = convertNormedScoreToBonus(normedScoreDiscrete);
 
       if (trial.currBonus == trial.bonusHigh) {
         trial.timeBonus = getTimeBonus(trial.timeToBuild);
@@ -602,13 +622,13 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
       p5stim, p5env = setupEnvs(trial);
 
-      // set null score for normed score calculation
+      // set null score for normed score calculation (pixel)
       nullScore = getCurrScore();
       scoreGap = math.subtract(1, nullScore);
       trial.nullScore = nullScore;
       trial.scoreGap = scoreGap;
 
-      // set null score for normed score calculation
+      // set null score for normed score calculation (discrete)
       nullScoreDiscrete = getCurrScoreDiscrete();
       scoreGapDiscrete = math.subtract(1, nullScoreDiscrete);
       trial.nullScoreDiscrete = nullScoreDiscrete;
@@ -631,6 +651,11 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       Array.prototype.forEach.call(env_divs, env_div => {
         env_div.style.backgroundColor = "#FFD819";
       });
+
+      nullScore = getCurrScore();
+      scoreGap = math.subtract(1, nullScore);
+      trial.nullScore = nullScore;
+      trial.scoreGap = scoreGap;
 
       // set null score for normed score calculation
       nullScoreDiscrete = getCurrScoreDiscrete();
