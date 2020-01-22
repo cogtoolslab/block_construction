@@ -455,7 +455,9 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
               display_element.querySelector('#bonus-meter').style.color = "#1c363e";
             }
           }, 4000);
-        };
+        } else {
+          occluder_text.textContent = 'Great job! On to the real experiment';
+        }
 
         occluder.style.display = "block";
         clearP5Envs(); // Clear everything in P5
@@ -463,7 +465,8 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
         jsPsych.pluginAPI.setTimeout(function () { //edit here to add punishment timeout
           clear_display_move_on();
         }, 2500);
-        }
+      }
+        
 
     }
 
@@ -639,7 +642,7 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       occluder.addEventListener('click', startBuildPhase);
     }
     else { // this is a practice trial
-      done_button.style.display = "inline-block";
+      done_button.style.display = "none";
       trial.phase == 'practice';
       occluder_text.textContent = practice_text;
 

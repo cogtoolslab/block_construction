@@ -13,7 +13,7 @@ var numTargets = 8;
 var setSize = 4;
 var numReps = 2;
 
-var dev_mode = true;
+var dev_mode = false;
 
 if (dev_mode) {
   practice_duration = 60;
@@ -58,7 +58,7 @@ var instructionsHTML = {
 };
 
 var secondInstructionsHTML = {
-  'str1' : "<p> From now on you will not be shown where to place each block. However, there will be a small red tick mark on the center of the floor to help you make sure your tower is in the correct location. Make sure your tower is in the same place relative to this tick mark as the tower you are copying.</p><p>All trials last 60 seconds- if you finish early please just hold tight until the next trial.</p>",
+  'str1' : "<p> From now on you will not be shown where to place each block. However, there will be a small red tick mark on the center of the floor to help you make sure your tower is in the correct location. Make sure your tower is in the same place relative to this tick mark as the tower you are copying.</p><p>All trials last 60 seconds- if you finish early please just hold tight until the next trial. If your structure is a perfect copy, you'll move on to the next trial right away.</p>",
   'str2' : "<p> That's it! When you're ready click Next to begin the first trial.</p>"
 }
 
