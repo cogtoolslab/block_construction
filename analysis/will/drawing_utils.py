@@ -257,9 +257,9 @@ def draw_all_trials(df, numTrials = 24, figsize=(40, 80)):
     n = len(ppts)
     k = 0
     
-    for i in range(0,n):
-        gameID = ppts[i]
-        for j in range(0, numTrials):
+    for j in range(0, numTrials):
+        for i in range(0,n):
+            gameID = ppts[i]
             k += 1
             ax = fig.add_subplot(numTrials, n, k)
             ax = draw_trial_subplot(df, gameID, j, ax)
