@@ -377,9 +377,9 @@ var setupEnvironment = function (env, trialObj = null) {
                         }
 
                         rawScoreDiscrete = getScoreDiscrete(trialObj.targetMap, discreteWorld);
-                        console.log(rawScoreDiscrete);
+                        //console.log(rawScoreDiscrete);
                         trialObj.incrementalNormedScoreDiscrete = trialObj.getNormedScoreDiscrete(rawScoreDiscrete, trialObj.nullScoreDiscrete, trialObj.scoreGapDiscrete);
-                        console.log('normedDiscrete', normedScoreDiscrete);
+                        //console.log('normedDiscrete', normedScoreDiscrete);
                         sendData('settled', trialObj);
 
                         postSnap = false;
@@ -551,7 +551,12 @@ var sendData = function (eventType, trialObj) {
         buildDuration: trialObj.build_duration,
         timeThresholdYellow: trialObj.timeThresholdYellow,
         timeThresholdRed: trialObj.timeThresholdRed,
-        devMode: trialObj.dev_mode
+        devMode: trialObj.dev_mode,
+        discreteEnvHeight: discreteEnvHeight,
+        discreteEnvWidth: discreteEnvWidth,
+        browser: trialObj.browser,
+        browserVersion: trialObj.browserVersion,
+        os: trialObj.os
     };
 
     if (eventType == 'survey_data') {
@@ -661,11 +666,12 @@ var sendData = function (eventType, trialObj) {
                 blockNum: blocks.length,
                 x_index: newBlock.x_index,
                 y_index: newBlock.y_index,
-                x_discrete: x_index - 5,
-                y_discrete: y_index,
+                x_discrete: newBlock.x_index - 5,
+                y_discrete: newBlock.y_index,
                 width_discrete: newBlock.blockKind.w,
                 height_discrete: newBlock.blockKind.h,
-                incrementalNormedScoreDiscretePrevious: trialObj.incrementalNormedScoreDiscrete
+                incrementalNormedScoreDiscretePrevious: trialObj.incrementalNormedScoreDiscrete,
+                discreteWorld: discreteWorld
 
             })
             //console.log(block_data);
@@ -695,7 +701,11 @@ var sendData = function (eventType, trialObj) {
                 blockBodyProperties: blockProperties,
                 blockKind: lastBlock.blockKind.blockName,
                 x_index: lastBlock.x_index,
-                incrementalNormedScoreDiscrete: trialObj.incrementalNormedScoreDiscrete
+                y_index: lastBlock.y_index,
+                x_discrete: lastBlock.x_index - 5,
+                y_discrete: lastBlock.y_index,
+                incrementalNormedScoreDiscrete: trialObj.incrementalNormedScoreDiscrete,
+                blockFell: trialObj.blockFell
             };
 
 
@@ -730,7 +740,8 @@ var sendData = function (eventType, trialObj) {
                 incrementalScore: incrementalScore,
                 normedIncrementalScore: normedIncrementalScore,
                 timeBlockPlaced: timeLastPlaced,
-                relativePlacementTime: timeLastPlaced - trialObj.buildStartTime
+                relativePlacementTime: timeLastPlaced - trialObj.buildStartTime,
+                discreteWorld: discreteWorld
             });
 
             //console.log('world_data', world_data);
@@ -811,7 +822,6 @@ var sendData = function (eventType, trialObj) {
                     normedScore: trialObj.normedScore,
                     currBonus: trialObj.currBonus,
                     timeBonus: trialObj.timeBonus,
-                    timeToBuild: trialObj.timeToBuild,
                     score: trialObj.score,
                     buildResets: trialObj.buildResets,
                     nPracticeAttempts: trialObj.nPracticeAttempts,

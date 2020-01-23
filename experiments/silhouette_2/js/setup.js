@@ -20,7 +20,7 @@ if (dev_mode) {
   build_duration = 60;
 }
 
-var iterationName = 'Exp2Pilot2_turk';
+var iterationName = 'Exp2Pilot3_debug';
 
 var randID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 //console.log(randID);
@@ -51,15 +51,15 @@ var consentHTML = {
 
 // add welcome page
 var instructionsHTML = {
-  'str1' : "<p> Here's how the game will work: On each trial, you will see the silhouette of a block tower on the left. Your goal is to reconstruct this tower in the window on the right. You will have 60 seconds. Here's an example: </p> <div><img src='assets/buildDemo.gif' id='example_screen'></div> <p>To build a tower, select a block from the menu by clicking on it. Click again to place it in the window above.</p><p> There are only a certain number of viable locations, corresponding to the grid in the background. You'll see a slightly transparent block that 'snaps' to these locations, indicating where the block will appear when you click. However, you can't place a block anywhere- once placed, blocks will be subject to gravity.</p><p>This means they can fall! If this happens, your turn will end and you'll have to wait until the next trial to continue. Here's an example:</p><div><img src='assets/failDemo.gif' id='example_screen'></div> <p> Be careful when you place blocks, as there is no way to move a block after it is placed- nor is there any way to reset your tower and start again. </p><p>Your job is to try and create the most accurate tower you can on <b>every trial</b>.</p>",
-  'str2' : "<p> There are 24 trials in this HIT. In each trial you will either build a new tower, or one you've built before.</p><p>For really accurate towers, you will receive a <b> bonus</b> between $0.01 and $0.05.</p><p>You can also earn a time bonus of up to 1¢ by finishing your tower quickly, but you'll only earn this if your tower is <b>also accurate.</b></p>",
+  'str1' : "<p> Here's how the game will work: On each trial, you will see a silhouette of a block tower on the left. Your goal is to use the blocks provided to build this tower in the window on the right. Your tower and the silhouette should be in the same spot within their respective windows. You will have 60 seconds. Here's an example: </p> <div><img src='assets/buildDemo.gif' id='example_screen'></div> <p>To build a tower, select a block from the menu by clicking on it. Click again to place it in the window above.</p><p> Be careful when you place blocks, as there is no way to move a block after it is placed- nor is there any way to reset your tower and start again.</p> <p>Once placed, blocks will be subject to gravity. This means they can fall! If this happens, your turn will end and you'll have to wait for the next trial to continue. Here's an example:</p><div><img src='assets/failDemo.gif' id='example_screen'></div><p>Your goal is to create a tower that perfectly matches the silhouette on every trial.</p>",
+  'str2' : "<p>On each trial you can earn a bonus of up to $0.06.</p><p>The better your tower matches the silhouette, the higher your bonus will be (up to $0.05).</p><p>You can also earn an additional speed bonus of up to $0.01 by finishing your tower quickly, but you'll only earn this if your tower is also a <b>perfect copy</b> of the silhouette.</p><p>There are 24 trials in this HIT, and each silhouette may appear multiple times across the HIT.</p>",
   'str3' : "<p> Once you are finished, the HIT will be automatically submitted for approval. Please know that you can only perform this HIT one time.</p><p> Note: We recommend using Chrome. We have not tested this HIT in other browsers.</p>",
-  'str4' : "<p> Before we begin, let's get some practice with the building tool. On this practice trial, you will be shown the exact locations to place each block. No bonus can be earned on this practice trial. Please place the blocks precisely over these guides to ensure that you have the opportunity to proceed and participate in the experiment.</p><p>Please note that after you place a block, you will not be able to select a new block or press 'Done' until all of the blocks have come to rest. </p>",
+  'str4' : "<p> Before we begin, let's try a practice silhouette. On this trial, you will be shown the exact locations to place each block to create a perfect match. No bonus can be earned on this practice trial.</p>"
 };
 
 var secondInstructionsHTML = {
-  'str1' : "<p> From now on you will not be shown where to place each block. However, there will be a small red tick mark on the center of the floor to help you make sure your tower is in the correct location. Make sure your tower is in the same place relative to this tick mark as the tower you are copying.</p><p>All trials last 60 seconds- if you finish early please just hold tight until the next trial. If your structure is a perfect copy, you'll move on to the next trial right away.</p>",
-  'str2' : "<p> That's it! When you're ready click Next to begin the first trial.</p>"
+  'str1' : "<p> From now on you will not be shown where to place each block. However, there will be a small red tick mark on the center of the floor to help you make sure your tower is in the correct location.</p><p>All trials last 60 seconds- if you finish early please just hold tight until the next trial. Though if your tower is a perfect match, you'll move on to the next trial right away.</p>",
+  'str2' : "<p> That's it! When you're ready, click Next to begin the first trial.</p>"
 }
 
 var welcomeTrial = {
@@ -267,7 +267,10 @@ function setupGame () {
       version: d.versionInd,
       post_trial_gap: 1000, // add brief ITI between trials
       num_trials : session.length,
-      on_finish : on_finish
+      on_finish : on_finish,
+      browser: browserDetect.browser,
+      browserVersion: browserDetect.version,
+      os: browserDetect.OS
     };
 
     // Bind trial data with boilerplate

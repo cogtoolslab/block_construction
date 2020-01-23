@@ -80,7 +80,6 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
 
   plugin.trial = function (display_element, trial) {
 
-
     // Make target a stonehenge
     //trial.targetBlocks = [{"x": 1, "y": 0, "width": 2, "height": 4}, {"x": 5, "y": 0, "width": 2, "height": 4}, {"x": 2, "y": 4, "width": 4, "height": 2}];
 
@@ -222,11 +221,17 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
     function updateTrialScores(trial) {
       // update official bonus tallies
       trial.F1Score = rawScore;
-      //trial.endReason = endReason;
+      trial.endReason = endReason;
       trial.normedScore = normedScore;
+     
+      trial.rawScoreDiscrete = normedScoreDiscrete;
+      trial.scoreGapDiscrete = scoreGapDiscrete;
+      trial.normedScoreDiscrete = normedScore;
+
       trial.score = cumulBonus; // update trial.score var to reflect cumulative bonustrial.nullScore = nullScore;
       trial.points = points;
-      sendData('settled', trial);
+
+      //sendData('settled', trial);
     }
 
     // hacky solution to obtaining scores at every block-settle event
@@ -294,9 +299,10 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       /* Called to clear building environment window. 
       Works by resetting variables then building a new p5 instance.
       */
-      trial.buildResets += 1;
-      sendData('reset', trial);
+      //trial.buildResets += 1;
+      //sendData('reset', trial);
       clearP5Envs();
+      trial.blockFell = false;
       setupEnvs(trial);
 
     }
@@ -514,9 +520,9 @@ jsPsych.plugins["block-silhouette-build"] = (function () {
       trial.timeToBuild = _timeToBuild > 0 ? _timeToBuild : NaN
 
       //trial.currBonus = getBonusEarned(rawScore, nullScore, scoreGap);
-      trial.currBonus = convertNormedScoreToBonus(normedScoreDiscrete);
+      trial.currBonus = convertNormedScoreToBonus(normedScoreDiscrete); //bonus from discrete score
 
-      if (trial.currBonus == trial.bonusHigh) {
+      if (normedScoreDiscrete == 1) { // only perfect score gets time bonus
         trial.timeBonus = getTimeBonus(trial.timeToBuild);
       }
 
