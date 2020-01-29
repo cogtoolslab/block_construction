@@ -279,7 +279,26 @@ def draw_trial_subplot(df, gameID, trialNum, ax, world_size=900):
                                         ax,
                                         xlim=(0,world_size),
                                         ylim=(0,world_size))
+
+# def draw_trials(df, figsize=(40, 80)):
+#     numTrials = df.shape[0]
     
+#     trials = range(0, numTrials)
+    
+# #     target_names = df.targetName.unique()
+# #     #target_names = [f.split('.')[0] for f in listdir(stim_dir) if isfile(join(stim_dir, f))]    
+# #     target_names.sort()
+
+#     fig = plt.figure(figsize=figsize)
+#     k = 0
+#     for j in range(0, numTrials):
+#         k += 1
+#         ax = fig.add_subplot(numTrials, 0, k)
+#         ax = draw_trial_subplot(df, gameID, j, ax)
+#     plt.show()
+#     return
+
+
     
 def draw_stim_from_json(stim_name, stim_dir):
     J = open(join(stim_dir,stim_name + '.json')).read()
