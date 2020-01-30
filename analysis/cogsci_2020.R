@@ -19,7 +19,9 @@ phase_condition = lm(data = df, rawF1DiscreteScore~phase)
 phase_condition
 anova(phase_condition)
 
-#m = lmer(data = df, rawF1DiscreteScore ~ phase * condition + (1 + phase*condition | gameID) + (1 + phase*condition | targetName))
+m = lmer(data = df, rawF1DiscreteScore ~ phase * condition + (1 + phase*condition | gameID) + (1 + phase*condition | targetName))
+
+
 
 
 ## Test for difference in conditions in pre phase 
