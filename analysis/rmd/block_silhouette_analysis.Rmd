@@ -19,7 +19,7 @@ library(tidyboot)
 # Import group data
 
 ```{r}
-d <- read_csv('../results/csv/block_silhouette_pilot3.csv') 
+d <- read_csv('../results/csv/block_silhouette_pilot4.csv') 
 d
 ```
 
