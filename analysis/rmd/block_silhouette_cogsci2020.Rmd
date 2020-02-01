@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r import}
 df.full = read.csv('../results/csv/block_silhouette_Exp2Pilot3.csv')
-bis = read.csv('../results/csv/block_silhouette_bis_Exp2Pilot3.csv')
+bis.full = read.csv('../results/csv/block_silhouette_bis_Exp2Pilot3.csv')
 
 
 d <- df.full %>% 
@@ -31,93 +31,43 @@ d <- df.full %>%
   mutate(blockFell = as.logical(blockFell)) %>%
   filter(phase %in% c('pre','post'))
 
+b <- bis.full %>%
+  filter(phase %in% c('pre','post'))
 
+b
 ```
 
 ## Inspect data frame
 ```{r}
-bis
-```
+b %>% group_by(phase) %>% tally()
+``` 
 
 
 ## Modeling effect of phase x condition on accuracy (F1 score)
 
 Linear mixed effects models predicting rawF1DiscreteScore
 ```{r lmers}
-# lmm <- lmer(data=df, rawF1DiscreteScore ~ phase + (1 + phase| gameID) + (1 + phase| targetName))
-# summary(lmm)
-# 
-# lmm <- lmer(data=df, rawF1DiscreteScore ~ phase + condition + (1 + phase + condition| gameID) + (1 + phase + condition| targetName))
-# summary(lmm)
-
-# m <- lm(data=df, rawF1DiscreteScore ~ phase * condition)
-# summary(m)
-
-lmm <- lmer(data = df, accuracy ~ phase * condition + (1 + phase | gameID) + (1 | targetName))
-summary(lmm)
+m1 <- lmer(data = d, accuracy ~ phase + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = d, accuracy ~ condition + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = d, accuracy ~ phase + condition + (1 | gameID) + (1 | targetName))
+m4 <- lmer(data = d, accuracy ~ phase * condition + (1 | gameID) + (1 | targetName))
+anova(m1,m2,m3,m4)
+summary(m4)
 ```
-
-```{r}
-df2 <- df %>%
-  mutate(perfect = as.logical(ifelse(accuracy == 1,TRUE,FALSE)))
-         
-df2 %>% 
-  group_by(perfect) %>%
-  tally()
-```
-
 
 ## Modeling effect of phase x condition on build time 
 ```{r}
-lmm <- lmer(data = df, buildTime ~ phase  + (1 + phase | gameID) + (1 + phase| targetName))
+lmm <- lmer(data = d, buildTime ~ phase*condition  + (1 | gameID) + (1 | targetName))
 summary(lmm)
-
 ```
 
-
-## Balanced integration score from https://github.com/Liesefeld/BIS
-```{r BIS}
-#data = BIS(data)
-#This function combines RTs and PC into a combined measure termed 'Balanced
-#Integration Score' (Liesefeld, Fu, & Zimmer, 2015, JEP:LMC, 41, 1140-1151;
-#                    Liesefeld & Janczyk, in press)
-#the input dataframe must contain variables 'mean_rt_c' and 'pc'
-#the function calculates BIS with values standardized across all fields of the 
-#input and adds the field 'bis', which has the same format as 'rt' and 'pc'
-
-BIS <- function(data) {
-  n <- length(data$group)    # sample size to correct var()-function result (which uses n-1)
-  srt <- sqrt( ((n-1)/n) * var(data$mean_rt_c) )     # sample standard deviation across all rts
-  spc <- sqrt( ((n-1)/n) * var(data$pc) )            # sample standard deviation across all rts
-  mrt <- mean(data$mean_rt_c)                        # mean across all rts
-  mpc <- mean(data$pc)                               # mean across all pcs
-  zrt <- (data$mean_rt_c-mrt)/srt                    # standardized rts
-  zpc <- (data$pc-mpc)/spc                           # z-standardized pcs
-  data$bis <- zpc - zrt                              # Balanced Integration Score
-  
-  return(data)                                       # return data.frame with added variable 'bis'
-}
-
-
-# pc: proportion of correct responses
-
-#######################################################################################################
-#######################################################################################################
-# Example
-
-#...either create an example dataframe (here called data)
-mean_rt_c <- c(356.8,325.1,370.6,362.8,348.5,640.3,634.2,650.7,584.5,610.0)
-pc <- c(0.71,0.73,0.67,0.73,0.72,0.97,0.99,0.99,0.97,0.97)
-group <- c(1,1,1,1,1,2,2,2,2,2)
-data <- data.frame(group,mean_rt_c,pc)
-
-# call BIS with dataframe data as argument
-data <- BIS(data)
-
-data
-
+## Model effect of phase * condition on BIS
+```{r}
+m4 <- lmer(data = b, bis ~ phase*condition + (1 | targetName))
+summary(m4)
 ```
 
+## Visualize accuracy timecourse
 ```{r}
 
 ```
