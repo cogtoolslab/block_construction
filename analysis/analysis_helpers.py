@@ -13,6 +13,7 @@ def standardize(D, dv):
     game_id_list = []
     target_list = []
     condition_list = []
+    phase_list = []
     
     grouped = D.groupby('gameID')  
     ## loop through games
@@ -30,6 +31,7 @@ def standardize(D, dv):
             game_id_list.append(gamename)                           
             target_list.append(trial['targetName'].values[0])
             condition_list.append(trial['condition'].values[0])
+            phase_list.append(trial['phase'].values[0])            
             
     D2['trialNum'] = trial_list
     D2[dv] = dv_list
@@ -37,6 +39,7 @@ def standardize(D, dv):
     D2['gameID'] = game_id_list
     D2['target'] = target_list
     D2['condition'] = condition_list    
+    D2['phase'] = condition_list        
     
     return D2
 

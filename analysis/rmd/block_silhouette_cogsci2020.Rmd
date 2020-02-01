@@ -21,19 +21,22 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r import}
 df.full = read.csv('../results/csv/block_silhouette_Exp2Pilot3.csv')
+bis = read.csv('../results/csv/block_silhouette_bis_Exp2Pilot3.csv')
 
-df <- df.full %>% 
+
+d <- df.full %>% 
   select(rawF1DiscreteScore,phase,condition,trialNum,targetName,gameID, repetition,blockFell,buildTime) %>% 
   rename('accuracy'='rawF1DiscreteScore') %>%
   mutate(phase=relevel(phase, ref='pre')) %>% 
   mutate(blockFell = as.logical(blockFell)) %>%
   filter(phase %in% c('pre','post'))
-```
 
+
+```
 
 ## Inspect data frame
 ```{r}
-df
+bis
 ```
 
 
