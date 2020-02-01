@@ -1,5 +1,7 @@
 ---
 title: "block_silhouette_cogsci2020"
+author: "wmccarthy & jefan"
+date: "1/31/2019"
 output: html_document
 ---
 
@@ -15,35 +17,62 @@ library(lmerTest)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-Import data and make subset
+## Import data and apply preprocessing
 
 ```{r import}
-df.full = read.csv('results/csv/block_silhouette_Exp2Pilot3.csv')
+df.full = read.csv('../results/csv/block_silhouette_Exp2Pilot3.csv')
 
 df <- df.full %>% 
   select(rawF1DiscreteScore,phase,condition,trialNum,targetName,gameID, repetition,blockFell,buildTime) %>% 
+  rename('accuracy'='rawF1DiscreteScore') %>%
   mutate(phase=relevel(phase, ref='pre')) %>% 
-  mutate(blockFell = as.logical(blockFell))
+  mutate(blockFell = as.logical(blockFell)) %>%
+  filter(phase %in% c('pre','post'))
 ```
 
-rawF1DiscreteScore is the main F1 score used for accuracy.
 
+## Inspect data frame
+```{r}
+df
+```
+
+
+## Modeling effect of phase x condition on accuracy (F1 score)
 
 Linear mixed effects models predicting rawF1DiscreteScore
 ```{r lmers}
-lmm <- lmer(data=df, rawF1DiscreteScore ~ phase + (1 + phase| gameID) + (1 + phase| targetName))
-summary(lmm)
+# lmm <- lmer(data=df, rawF1DiscreteScore ~ phase + (1 + phase| gameID) + (1 + phase| targetName))
+# summary(lmm)
+# 
+# lmm <- lmer(data=df, rawF1DiscreteScore ~ phase + condition + (1 + phase + condition| gameID) + (1 + phase + condition| targetName))
+# summary(lmm)
 
-lmm <- lmer(data=df, rawF1DiscreteScore ~ phase + condition + (1 + phase + condition| gameID) + (1 + phase + condition| targetName))
-summary(lmm)
+# m <- lm(data=df, rawF1DiscreteScore ~ phase * condition)
+# summary(m)
 
-lmm <- lmer(data = df, rawF1DiscreteScore ~ phase * condition + (1 + phase*condition | gameID) + (1 + phase*condition | targetName))
+lmm <- lmer(data = df, accuracy ~ phase * condition + (1 + phase | gameID) + (1 | targetName))
 summary(lmm)
 ```
 
-Balanced integration score from https://github.com/Liesefeld/BIS
+```{r}
+df2 <- df %>%
+  mutate(perfect = as.logical(ifelse(accuracy == 1,TRUE,FALSE)))
+         
+df2 %>% 
+  group_by(perfect) %>%
+  tally()
+```
+
+
+## Modeling effect of phase x condition on build time 
+```{r}
+lmm <- lmer(data = df, buildTime ~ phase  + (1 + phase | gameID) + (1 + phase| targetName))
+summary(lmm)
+
+```
+
+
+## Balanced integration score from https://github.com/Liesefeld/BIS
 ```{r BIS}
 #data = BIS(data)
 #This function combines RTs and PC into a combined measure termed 'Balanced
@@ -82,4 +111,11 @@ data <- data.frame(group,mean_rt_c,pc)
 # call BIS with dataframe data as argument
 data <- BIS(data)
 
+data
+
 ```
+
+```{r}
+
+```
+
