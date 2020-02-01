@@ -39,7 +39,7 @@ def standardize(D, dv):
     D2['gameID'] = game_id_list
     D2['target'] = target_list
     D2['condition'] = condition_list    
-    D2['phase'] = condition_list        
+    D2['phase'] = phase_list        
     
     return D2
 
