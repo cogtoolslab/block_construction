@@ -50,5 +50,5 @@ def save_bis(D, csv_dir, iterationName):
     Z = z_accuracy.merge(z_buildTime) ## combine both standardized dataframes
     Z = Z.assign(bis = pd.Series(Z['rawF1DiscreteScore'] - Z['buildTime']))
     Z.to_csv(os.path.join(csv_dir,'block_silhouette_bis_{}.csv'.format(iterationName)),index=False)
-
     print('Saved BIS dataframe out!')
+    return Z
