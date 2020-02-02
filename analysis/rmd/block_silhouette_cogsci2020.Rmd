@@ -25,16 +25,17 @@ knitr::opts_chunk$set(echo = TRUE)
 df.full = read.csv('../results/csv/block_silhouette_Exp2Pilot3_good.csv')
 
 d <- df.full %>% 
-  select(rawF1DiscreteScore,phase,condition,trialNum,targetName,gameID, repetition,blockFell,buildTime,buggy) %>% 
+  select(rawF1DiscreteScore,phase,condition,trialNum,targetName,gameID,numBlocks,repetition,blockFell,buildTime,buggy) %>% 
   rename('accuracy'='rawF1DiscreteScore') %>%
   mutate(phase=relevel(phase, ref='pre')) %>%
-  mutate(blockFell = as.logical(blockFell)) #%>%
-  # filter(phase %in% c('pre','post')) 
+  mutate(blockFell = as.logical(blockFell)) %>%
+  mutate(repetition_1 = repetition + 1)
+
 ```
 
 ## Inspect data frame
 ```{r}
-d 
+d
 ``` 
 
 ## Modeling effect of phase x condition on accuracy (F1 score)
@@ -60,21 +61,27 @@ summary(m3)
 
 ## Import BIS and apply preprocessing
 ```{r}
-b = read.csv('../results/csv/block_silhouette_bis_Exp2Pilot3.csv')
-bpp <- bis.full %>%
+b.raw = read.csv('../results/csv/block_silhouette_bis_Exp2Pilot3.csv')
+
+b<-b.raw%>%
+  mutate(repetition_1 = repetition + 1)
+
+bpp <- b %>%
   filter(phase %in% c('pre','post'))
 bpp
 ```
 
+## Modeling effect of phase x condition on numBlocks
+```{r}
+dpp <- d %>% filter(phase %in% c('pre','post')) 
+m3 <- lmer(data = dpp, numBlocks ~ phase*condition  + (1 | gameID) + (1 | targetName))
+summary(m3)
+```
 
 ## Model effect of phase * condition on BIS
 ```{r}
 m4 <- lmer(data = bpp, bis ~ phase*condition + (1 | targetName))
 summary(m4)
-```
-
-```{r}
-b
 ```
 
 ## Bootstrap resample condition, repetition
@@ -84,15 +91,15 @@ bpp.boot
 ```
 
 ```{r}
-b.boot <- b %>% group_by(condition, repetition) %>% tidyboot_mean(column=bis, nboot=1000)
+b.boot <- b %>% group_by(condition, repetition_1) %>% tidyboot_mean(column=bis, nboot=100)
 b.boot
 ```
 
 
-## Visualize accuracy timecourse
+## Visualize BIS timecourse
 ```{r}
 b.boot %>%
-  ggplot(aes(x=repetition,y=empirical_stat, color=condition, fill=condition)) +
+  ggplot(aes(x=repetition_1,y=empirical_stat, color=condition, fill=condition)) +
     geom_ribbon(aes(ymin=ci_lower, ymax = ci_upper), alpha =.25, color=NA,
                 data = b.boot %>% filter(condition == 'repeated')) + # position = dodge,
     geom_line(size=1.5)+ 
@@ -102,7 +109,7 @@ b.boot %>%
     ylab("construction efficiency") +
     xlab("repetition") +
     theme_few() +
-    scale_x_continuous(breaks = round(seq(min(b.boot$repetition), max(b.boot$repetition), by =1),1)) +
+    scale_x_continuous(breaks = round(seq(min(b.boot$repetition_1), max(b.boot$repetition_1), by =1),1)) +
     scale_y_continuous(breaks = seq(-0.5,2.5,0.5)) +
     scale_color_manual(values=c("#77798c", "#1c373e")) +
     scale_fill_manual(values=c("#77798c", "#1c373e")) +
@@ -136,6 +143,7 @@ summary(m)
 q
 ```
 
+## Bootstrap resample reused proportion by quartile
 ```{r}
 q.boot <- q %>% group_by(quartile.numeric) %>% tidyboot_mean(column=reused, nboot=100)
 q.boot
@@ -157,17 +165,30 @@ ggsave('../results/plots/block_silhouette_reuse_quartile.pdf', width=7, height =
 
 ```
 
-
+## Bootstrap resample reused proportion by quartile
 ```{r}
-q.boot %>%
-  ggplot(aes(x=quartile,y=empirical_stat)) +
-  # geom_ribbon(aes(ymin=ci_lower, ymax = ci_upper), alpha =.25, color="#1c373e", fill="#1c373e") +
-  # geom_point(aes(x=quartile, y=empirical_stat),color="#1c373e") +
-  # geom_point(size = 4) +
-  geom_smooth(method='lm', formula = y ~ poly(x,1)) +
-  ylab("proportion actions reused (pre to post)") +
-  xlab("reconstruction accuracy (pre)") +
-  theme_few() +
-  theme(legend.position = c(0.8, 0.2), text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000"))  
+d.boot <- d %>% group_by(condition, repetition_1) %>% tidyboot_mean(column=numBlocks, nboot=100)
+d.boot
+```
+
+## Visualize change in numBlocks as function of repetition
+```{r}
+d.boot %>%
+  ggplot(aes(x=repetition_1,y=empirical_stat, color=condition, fill=condition)) +
+    geom_ribbon(aes(ymin=ci_lower, ymax = ci_upper), alpha =.25, color=NA,
+                data = d.boot %>% filter(condition == 'repeated')) + # position = dodge,
+    geom_line(size=1.5)+ 
+    geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
+                  data = d.boot %>% filter(condition == 'control')) +
+    geom_point(size = 5) +
+    ylab("number of blocks") +
+    xlab("repetition") +
+    theme_few() +
+    scale_x_continuous(breaks = round(seq(min(d.boot$repetition_1), max(d.boot$repetition_1), by =1),1)) +
+    scale_y_continuous(breaks = seq(-0.5,2.5,0.5)) +
+    scale_color_manual(values=c("#77798c", "#1c373e")) +
+    scale_fill_manual(values=c("#77798c", "#1c373e")) +
+    theme(legend.position = c(0.75, 0.2), text = element_text(size=14), element_line(size=1), element_rect(size=2, color="#00000"))
+ggsave('../results/plots/block_silhouette_numBlocks_timeseries.pdf', width=7, height = 10, units='cm')
 ```
 
