@@ -9,8 +9,10 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(broom)
 library(tidyverse)
+library(tidyboot)
 library(knitr)
 library(ggplot2)
+library(ggthemes)
 library(broom)
 library(lme4)
 library(lmerTest)
@@ -20,55 +22,91 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Import data and apply preprocessing
 
 ```{r import}
-df.full = read.csv('../results/csv/block_silhouette_Exp2Pilot3.csv')
-bis.full = read.csv('../results/csv/block_silhouette_bis_Exp2Pilot3.csv')
-
+df.full = read.csv('../results/csv/block_silhouette_Exp2Pilot3_good.csv')
 
 d <- df.full %>% 
-  select(rawF1DiscreteScore,phase,condition,trialNum,targetName,gameID, repetition,blockFell,buildTime) %>% 
+  select(rawF1DiscreteScore,phase,condition,trialNum,targetName,gameID, repetition,blockFell,buildTime,buggy) %>% 
   rename('accuracy'='rawF1DiscreteScore') %>%
-  mutate(phase=relevel(phase, ref='pre')) %>% 
-  mutate(blockFell = as.logical(blockFell)) %>%
-  filter(phase %in% c('pre','post'))
-
-b <- bis.full %>%
-  filter(phase %in% c('pre','post'))
-
-b
+  mutate(phase=relevel(phase, ref='pre')) %>%
+  mutate(blockFell = as.logical(blockFell)) #%>%
+  # filter(phase %in% c('pre','post')) 
 ```
 
 ## Inspect data frame
 ```{r}
-b %>% group_by(phase) %>% tally()
+d 
 ``` 
-
 
 ## Modeling effect of phase x condition on accuracy (F1 score)
 
 Linear mixed effects models predicting rawF1DiscreteScore
 ```{r lmers}
-m1 <- lmer(data = d, accuracy ~ phase + (1 | gameID) + (1 | targetName))
-m2 <- lmer(data = d, accuracy ~ condition + (1 | gameID) + (1 | targetName))
-m3 <- lmer(data = d, accuracy ~ phase + condition + (1 | gameID) + (1 | targetName))
-m4 <- lmer(data = d, accuracy ~ phase * condition + (1 | gameID) + (1 | targetName))
+## fit model to data just comparing pre/post
+dpp <- d %>% filter(phase %in% c('pre','post')) 
+m1 <- lmer(data = dpp, accuracy ~ phase + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = dpp, accuracy ~ condition + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = dpp, accuracy ~ phase + condition + (1 | gameID) + (1 | targetName))
+m4 <- lmer(data = dpp, accuracy ~ phase * condition + (1 | gameID) + (1 | targetName))
 anova(m1,m2,m3,m4)
 summary(m4)
 ```
 
 ## Modeling effect of phase x condition on build time 
 ```{r}
-lmm <- lmer(data = d, buildTime ~ phase*condition  + (1 | gameID) + (1 | targetName))
-summary(lmm)
+dpp <- d %>% filter(phase %in% c('pre','post')) 
+m3 <- lmer(data = dpp, buildTime ~ phase*condition  + (1 | gameID) + (1 | targetName))
+summary(m3)
 ```
+
+## Import BIS and apply preprocessing
+```{r}
+b = read.csv('../results/csv/block_silhouette_bis_Exp2Pilot3.csv')
+bpp <- bis.full %>%
+  filter(phase %in% c('pre','post'))
+bpp
+```
+
 
 ## Model effect of phase * condition on BIS
 ```{r}
-m4 <- lmer(data = b, bis ~ phase*condition + (1 | targetName))
+m4 <- lmer(data = bpp, bis ~ phase*condition + (1 | targetName))
 summary(m4)
 ```
 
+```{r}
+b
+```
+
+## Bootstrap resample condition, repetition
+```{r}
+bpp.boot <- bpp %>% group_by(condition, phase) %>% tidyboot_mean(column=bis, nboot=100)
+bpp.boot
+```
+
+```{r}
+b.boot <- b %>% group_by(condition, repetition) %>% tidyboot_mean(column=bis, nboot=100)
+b.boot
+```
+
+
 ## Visualize accuracy timecourse
 ```{r}
-
+b.boot %>%
+  ggplot(aes(x=repetition,y=empirical_stat, color=condition, fill=condition)) +
+    geom_ribbon(aes(ymin=ci_lower, ymax = ci_upper), alpha =.25, color=NA,
+                data = b.boot %>% filter(condition == 'repeated')) + # position = dodge,
+    geom_line(size=1.5)+ 
+    geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
+                  data = b.boot %>% filter(condition == 'control')) +
+    geom_point(size = 5) +
+    ylab("construction efficiency") +
+    xlab("repetition") +
+    theme_few() +
+    scale_x_continuous(breaks = round(seq(min(b.boot$repetition), max(b.boot$repetition), by =1),1)) +
+    scale_y_continuous(breaks = seq(-0.5,2.5,0.5)) +
+    scale_color_manual(values=c("#808080", "#163c4e")) +
+    scale_fill_manual(values=c("#808080", "#163c4e")) +
+    theme(legend.position = c(0.8, 0.2), text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000"))
+ggsave('../results/plots/block_silhouette_BIS_timeseries.pdf', width=14, height = 10, units='cm')
 ```
 
