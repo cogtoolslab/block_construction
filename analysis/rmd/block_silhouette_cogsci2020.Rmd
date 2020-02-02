@@ -194,6 +194,37 @@ ggsave('../results/plots/block_silhouette_numBlocks_timeseries.pdf', width=7, he
 
 ## To what extent do numBlocks and planReuse predict learning?
 ```{r}
-q
+r.raw <- read_csv('../results/csv/block_silhouette_reuse_Exp2Pilot3.csv')
+r<-r.raw %>%
+  mutate(delta_numBlocks = numBlocks_post - numBlocks_pre) %>%
+  mutate(delta_accuracy = rawF1DiscreteScore_post - rawF1DiscreteScore_pre) %>%
+  rename("reuse" = "prop_unchanged")
+```
+
+```{r}
+m1a <- lmer(data = r, delta_accuracy ~ reuse + (1 |gameID))
+m1b <- lmer(data = r, delta_accuracy ~ delta_numBlocks +  (1 | gameID))
+m2 <- lmer(data = r, delta_accuracy ~ delta_numBlocks + reuse + (1 | gameID))
+m3 <- lmer(data = r, delta_accuracy ~ delta_numBlocks*reuse +  (1 | gameID))
+```
+
+## extra variance explained by including numBlocks over just reuse?
+```{r}
+anova(m1a,m2)
+```
+
+## extra variance explained by including reuse over just numBlocks?
+```{r}
+anova(m1b,m2)
+```
+
+## extra variance explained by including interaction term instead of just simple effects?
+```{r}
+anova(m2,m3)
+```
+
+## winning model
+```{r}
+summary(m2)
 ```
 
