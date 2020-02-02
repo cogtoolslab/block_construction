@@ -114,7 +114,7 @@ b.boot %>%
     scale_color_manual(values=c("#77798c", "#1c373e")) +
     scale_fill_manual(values=c("#77798c", "#1c373e")) +
     theme(legend.position = c(0.8, 0.2), text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000"))
-ggsave('../results/plots/block_silhouette_BIS_timeseries.pdf', width=14, height = 10, units='cm')
+ggsave('../results/plots/block_silhouette_BIS_timeseries.pdf', width=14, height = 10, units='cm', useDingbats = F)
 ```
 
 ## Model relationship between pre-quartiles and pre-plan-reuse
@@ -161,7 +161,7 @@ q.boot %>%
   ylim(c(0,0.6)) +
   scale_x_continuous(breaks = c(1,2,3,4),labels=c('low', 'midlow','midhigh','top')) +
   theme(legend.position = c(0.8, 0.2), text = element_text(size=14), element_line(size=1), element_rect(size=2, color="#00000"))  
-ggsave('../results/plots/block_silhouette_reuse_quartile.pdf', width=7, height = 10, units='cm')
+ggsave('../results/plots/block_silhouette_reuse_quartile.pdf', width=7, height = 10, units='cm', useDingbats = F)
 
 ```
 
@@ -189,6 +189,11 @@ dpp.boot %>%
     scale_color_manual(values=c("#77798c", "#1c373e")) +
     scale_fill_manual(values=c("#77798c", "#1c373e")) +
     theme(legend.position = c(0.75, 0.2), text = element_text(size=14), element_line(size=1), element_rect(size=2, color="#00000"))
-ggsave('../results/plots/block_silhouette_numBlocks_timeseries.pdf', width=7, height = 10, units='cm')
+ggsave('../results/plots/block_silhouette_numBlocks_timeseries.pdf', width=7, height = 10, units='cm', useDingbats = F)
+```
+
+## To what extent do numBlocks and planReuse predict learning?
+```{r}
+q
 ```
 
