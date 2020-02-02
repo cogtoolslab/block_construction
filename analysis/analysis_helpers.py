@@ -37,16 +37,16 @@ def standardize(D, dv):
     D2[dv] = dv_list
     D2['repetition'] = rep_list
     D2['gameID'] = game_id_list
-    D2['target'] = target_list
+    D2['targetName'] = target_list
     D2['condition'] = condition_list    
-    D2['phase'] = condition_list        
+    D2['phase'] = phase_list        
     
     return D2
 
 def save_bis(D, csv_dir, iterationName):
 
     ## convert rep number for post from "1" to "7"
-    D.loc[(D['condition']=='control') & (D['repetition']==1),'repetition'] = 7
+    D.loc[(D['condition']=='control') & (D['repetition']==1),'repetition'] = 4
 
     z_accuracy = standardize(D, 'rawF1DiscreteScore')
     z_buildTime = standardize(D, 'buildTime')    
