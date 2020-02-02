@@ -9,8 +9,10 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(broom)
 library(tidyverse)
+library(tidyboot)
 library(knitr)
 library(ggplot2)
+library(ggthemes)
 library(broom)
 library(lme4)
 library(lmerTest)
@@ -20,55 +22,173 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Import data and apply preprocessing
 
 ```{r import}
-df.full = read.csv('../results/csv/block_silhouette_Exp2Pilot3.csv')
-bis.full = read.csv('../results/csv/block_silhouette_bis_Exp2Pilot3.csv')
-
+df.full = read.csv('../results/csv/block_silhouette_Exp2Pilot3_good.csv')
 
 d <- df.full %>% 
-  select(rawF1DiscreteScore,phase,condition,trialNum,targetName,gameID, repetition,blockFell,buildTime) %>% 
+  select(rawF1DiscreteScore,phase,condition,trialNum,targetName,gameID,numBlocks,repetition,blockFell,buildTime,buggy) %>% 
   rename('accuracy'='rawF1DiscreteScore') %>%
-  mutate(phase=relevel(phase, ref='pre')) %>% 
+  mutate(phase=relevel(phase, ref='pre')) %>%
   mutate(blockFell = as.logical(blockFell)) %>%
-  filter(phase %in% c('pre','post'))
+  mutate(repetition_1 = repetition + 1)
 
-b <- bis.full %>%
-  filter(phase %in% c('pre','post'))
-
-b
 ```
 
 ## Inspect data frame
 ```{r}
-b %>% group_by(phase) %>% tally()
+d
 ``` 
-
 
 ## Modeling effect of phase x condition on accuracy (F1 score)
 
 Linear mixed effects models predicting rawF1DiscreteScore
 ```{r lmers}
-m1 <- lmer(data = d, accuracy ~ phase + (1 | gameID) + (1 | targetName))
-m2 <- lmer(data = d, accuracy ~ condition + (1 | gameID) + (1 | targetName))
-m3 <- lmer(data = d, accuracy ~ phase + condition + (1 | gameID) + (1 | targetName))
-m4 <- lmer(data = d, accuracy ~ phase * condition + (1 | gameID) + (1 | targetName))
+## fit model to data just comparing pre/post
+dpp <- d %>% filter(phase %in% c('pre','post')) 
+m1 <- lmer(data = dpp, accuracy ~ phase + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = dpp, accuracy ~ condition + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = dpp, accuracy ~ phase + condition + (1 | gameID) + (1 | targetName))
+m4 <- lmer(data = dpp, accuracy ~ phase * condition + (1 | gameID) + (1 | targetName))
 anova(m1,m2,m3,m4)
 summary(m4)
 ```
 
 ## Modeling effect of phase x condition on build time 
 ```{r}
-lmm <- lmer(data = d, buildTime ~ phase*condition  + (1 | gameID) + (1 | targetName))
-summary(lmm)
+dpp <- d %>% filter(phase %in% c('pre','post')) 
+m3 <- lmer(data = dpp, buildTime ~ phase*condition  + (1 | gameID) + (1 | targetName))
+summary(m3)
+```
+
+## Import BIS and apply preprocessing
+```{r}
+b.raw = read.csv('../results/csv/block_silhouette_bis_Exp2Pilot3.csv')
+
+b<-b.raw%>%
+  mutate(repetition_1 = repetition + 1)
+
+bpp <- b %>%
+  filter(phase %in% c('pre','post'))
+bpp
+```
+
+## Modeling effect of phase x condition on numBlocks
+```{r}
+dpp <- d %>% filter(phase %in% c('pre','post')) 
+m3 <- lmer(data = dpp, numBlocks ~ phase*condition  + (1 | gameID) + (1 | targetName))
+summary(m3)
 ```
 
 ## Model effect of phase * condition on BIS
 ```{r}
-m4 <- lmer(data = b, bis ~ phase*condition + (1 | targetName))
+m4 <- lmer(data = bpp, bis ~ phase*condition + (1 | targetName))
 summary(m4)
 ```
 
-## Visualize accuracy timecourse
+## Bootstrap resample condition, repetition
 ```{r}
+bpp.boot <- bpp %>% group_by(condition, phase) %>% tidyboot_mean(column=bis, nboot=100)
+bpp.boot
+```
 
+```{r}
+b.boot <- b %>% group_by(condition, repetition_1) %>% tidyboot_mean(column=bis, nboot=100)
+b.boot
+```
+
+
+## Visualize BIS timecourse
+```{r}
+b.boot %>%
+  ggplot(aes(x=repetition_1,y=empirical_stat, color=condition, fill=condition)) +
+    geom_ribbon(aes(ymin=ci_lower, ymax = ci_upper), alpha =.25, color=NA,
+                data = b.boot %>% filter(condition == 'repeated')) + # position = dodge,
+    geom_line(size=1.5)+ 
+    geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
+                  data = b.boot %>% filter(condition == 'control')) +
+    geom_point(size = 5) +
+    ylab("construction efficiency") +
+    xlab("repetition") +
+    theme_few() +
+    scale_x_continuous(breaks = round(seq(min(b.boot$repetition_1), max(b.boot$repetition_1), by =1),1)) +
+    scale_y_continuous(breaks = seq(-0.5,2.5,0.5)) +
+    scale_color_manual(values=c("#77798c", "#1c373e")) +
+    scale_fill_manual(values=c("#77798c", "#1c373e")) +
+    theme(legend.position = c(0.8, 0.2), text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000"))
+ggsave('../results/plots/block_silhouette_BIS_timeseries.pdf', width=14, height = 10, units='cm')
+```
+
+## Model relationship between pre-quartiles and pre-plan-reuse
+```{r}
+q.raw = read.csv('../results/csv/block_silhouette_placement_quartiles_Exp2Pilot3.csv')
+q<-q.raw %>% 
+  mutate(quartile = factor(f1_quartile, levels = c("lowest","mid-low","mid-high","highest"))) %>%
+  mutate(quartile.numeric = as.numeric(quartile)) %>%
+  rename("reused" = "prop_unchanged") %>%
+  select(c('gameID','quartile','reused','quartile.numeric'))
+  
+```
+
+## Model relationship between pre quartile and reused proportion
+```{r}
+m <- lmer(data = q, reused ~ quartile + (1 | gameID))
+summary(m)
+```
+
+```{r}
+m <- lmer(data = q, reused ~ quartile.numeric + (1 | gameID))
+summary(m)
+```
+
+```{r}
+q
+```
+
+## Bootstrap resample reused proportion by quartile
+```{r}
+q.boot <- q %>% group_by(quartile.numeric) %>% tidyboot_mean(column=reused, nboot=100)
+q.boot
+```
+
+```{r}
+q.boot %>%
+  ggplot(aes(x=quartile.numeric,y=empirical_stat)) +
+  # geom_ribbon(aes(ymin=ci_lower, ymax = ci_upper), alpha =.25, color="#1c373e", fill="#1c373e") +
+  geom_smooth(method='lm', formula = y ~ poly(x,1), color="#1c373e", fill="#b1c4c9") +
+  geom_point(aes(x=quartile.numeric, y=empirical_stat),color="#1c373e",size = 4) +
+  ylab("proportion actions reused (pre to post)") +
+  xlab("accuracy quartile (pre)") +
+  theme_few() +
+  ylim(c(0,0.6)) +
+  scale_x_continuous(breaks = c(1,2,3,4),labels=c('low', 'midlow','midhigh','top')) +
+  theme(legend.position = c(0.8, 0.2), text = element_text(size=14), element_line(size=1), element_rect(size=2, color="#00000"))  
+ggsave('../results/plots/block_silhouette_reuse_quartile.pdf', width=7, height = 10, units='cm')
+
+```
+
+## Bootstrap resample reused proportion by quartile
+```{r}
+dpp <- d %>% filter(phase %in% c('pre','post'))  %>% mutate(phase.numeric = as.numeric(phase))
+dpp.boot <- dpp %>% group_by(phase) %>% tidyboot_mean(column=numBlocks, nboot=100)
+dpp.boot
+```
+
+
+## Visualize change in numBlocks as function of repetition
+```{r}
+dpp.boot %>%
+  ggplot(aes(x=phase,y=empirical_stat)) +
+    geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,data = dpp.boot) +
+    geom_point(aes(x=phase, y=empirical_stat),color="#1c373e",size = 4) +
+    # geom_smooth(method='lm', formula = y ~ poly(x,1), color="#1c373e", fill="#b1c4c9") +
+    ylab("number of blocks") +
+    xlab("phase") +
+    theme_few() +
+    ylim(c(6,12)) +
+    # scale_x_continuous(breaks = round(seq(min(dpp.boot$phase), max(dpp.boot$phase), by =1),1)) +
+    # scale_y_continuous(breaks = seq(0,2,10)) +
+    scale_color_manual(values=c("#77798c", "#1c373e")) +
+    scale_fill_manual(values=c("#77798c", "#1c373e")) +
+    theme(legend.position = c(0.75, 0.2), text = element_text(size=14), element_line(size=1), element_rect(size=2, color="#00000"))
+ggsave('../results/plots/block_silhouette_numBlocks_timeseries.pdf', width=7, height = 10, units='cm')
 ```
 

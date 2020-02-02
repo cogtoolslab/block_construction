@@ -45,8 +45,8 @@ def standardize(D, dv):
 
 def save_bis(D, csv_dir, iterationName):
 
-    ## convert rep number for post from "1" to "7"
-    D.loc[(D['condition']=='control') & (D['repetition']==1),'repetition'] = 4
+    ## convert rep number for post from "1" to "4"
+    D.loc[(D['condition']=='control') & (D['repetition']==1),'repetition'] = 3
 
     z_accuracy = standardize(D, 'rawF1DiscreteScore')
     z_buildTime = standardize(D, 'buildTime')    
