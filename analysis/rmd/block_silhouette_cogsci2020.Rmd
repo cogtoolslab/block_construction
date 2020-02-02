@@ -29,7 +29,8 @@ d <- df.full %>%
   rename('accuracy'='rawF1DiscreteScore') %>%
   mutate(phase=relevel(phase, ref='pre')) %>%
   mutate(blockFell = as.logical(blockFell)) %>%
-  mutate(repetition_1 = repetition + 1)
+  mutate(repetition_1 = repetition + 1) %>%
+  mutate(perfect = ifelse(accuracy>0.99, TRUE, FALSE))
 
 ```
 
@@ -52,12 +53,58 @@ anova(m1,m2,m3,m4)
 summary(m4)
 ```
 
+```{r}
+dpp %>%
+  group_by(perfect) %>%
+  tally()
+```
+
+```{r}
+m<-lm(data = dpp, buildTime ~ phase*condition*perfect)
+summary(m)
+```
+
 ## Modeling effect of phase x condition on build time 
 ```{r}
-dpp <- d %>% filter(phase %in% c('pre','post')) 
-m3 <- lmer(data = dpp, buildTime ~ phase*condition  + (1 | gameID) + (1 | targetName))
+
+dpp <- d %>% 
+  filter(phase %in% c('pre','post')) %>%
+  mutate(repetition_1 = repetition + 1) %>% 
+  mutate(phase.numeric = as.numeric(phase))
+
+m3 <- lmer(data = dpp, buildTime ~ phase*condition*perfect  + (1 | gameID) + (1 | targetName))
 summary(m3)
 ```
+
+
+```{r}
+dpp.boot <- dpp %>% group_by(condition, phase) %>% tidyboot_mean(column=buildTime, nboot=100)
+dpp.boot
+```
+
+## Visualize buildTime timecourse
+```{r}
+dpp.boot %>%
+  ggplot(aes(x=phase.numeric,y=empirical_stat, color=condition, fill=condition)) +
+    geom_ribbon(aes(ymin=ci_lower, ymax = ci_upper), alpha =.25, color=NA,
+                data = dpp.boot %>% filter(condition == 'repeated')) + # position = dodge,
+    geom_line(size=1.5)+ 
+    geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
+                  data = dpp.boot %>% filter(condition == 'control')) +
+    geom_point(size = 5) +
+    ylab("build time") +
+    xlab("repetition") +
+    theme_few() +
+    scale_x_continuous(breaks = round(seq(1, 4, by =1),1)) +
+    # ylim(c(40,55)) +
+    # scale_y_continuous(breaks = seq(-0.5,2.5,0.5)) +
+    scale_color_manual(values=c("#77798c", "#1c373e")) +
+    scale_fill_manual(values=c("#77798c", "#1c373e")) +
+    theme(legend.position = c(0.8, 0.2), text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000"))
+ggsave('../results/plots/block_silhouette_buildTime_timeseries.pdf', width=14, height = 10, units='cm', useDingbats = F)
+```
+
+
 
 ## Import BIS and apply preprocessing
 ```{r}
@@ -114,7 +161,7 @@ b.boot %>%
     scale_color_manual(values=c("#77798c", "#1c373e")) +
     scale_fill_manual(values=c("#77798c", "#1c373e")) +
     theme(legend.position = c(0.8, 0.2), text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000"))
-ggsave('../results/plots/block_silhouette_BIS_timeseries.pdf', width=14, height = 10, units='cm')
+ggsave('../results/plots/block_silhouette_BIS_timeseries.pdf', width=14, height = 10, units='cm', useDingbats = F)
 ```
 
 ## Model relationship between pre-quartiles and pre-plan-reuse
@@ -161,7 +208,7 @@ q.boot %>%
   ylim(c(0,0.6)) +
   scale_x_continuous(breaks = c(1,2,3,4),labels=c('low', 'midlow','midhigh','top')) +
   theme(legend.position = c(0.8, 0.2), text = element_text(size=14), element_line(size=1), element_rect(size=2, color="#00000"))  
-ggsave('../results/plots/block_silhouette_reuse_quartile.pdf', width=7, height = 10, units='cm')
+ggsave('../results/plots/block_silhouette_reuse_quartile.pdf', width=7, height = 10, units='cm', useDingbats = F)
 
 ```
 
@@ -189,6 +236,42 @@ dpp.boot %>%
     scale_color_manual(values=c("#77798c", "#1c373e")) +
     scale_fill_manual(values=c("#77798c", "#1c373e")) +
     theme(legend.position = c(0.75, 0.2), text = element_text(size=14), element_line(size=1), element_rect(size=2, color="#00000"))
-ggsave('../results/plots/block_silhouette_numBlocks_timeseries.pdf', width=7, height = 10, units='cm')
+ggsave('../results/plots/block_silhouette_numBlocks_timeseries.pdf', width=7, height = 10, units='cm', useDingbats = F)
+```
+
+## To what extent do numBlocks and planReuse predict learning?
+```{r}
+r.raw <- read_csv('../results/csv/block_silhouette_reuse_Exp2Pilot3.csv')
+r<-r.raw %>%
+  mutate(delta_numBlocks = numBlocks_post - numBlocks_pre) %>%
+  mutate(delta_accuracy = rawF1DiscreteScore_post - rawF1DiscreteScore_pre) %>%
+  rename("reuse" = "prop_unchanged")
+```
+
+```{r}
+m1a <- lmer(data = r, delta_accuracy ~ reuse + (1 |gameID))
+m1b <- lmer(data = r, delta_accuracy ~ delta_numBlocks +  (1 | gameID))
+m2 <- lmer(data = r, delta_accuracy ~ delta_numBlocks + reuse + (1 | gameID))
+m3 <- lmer(data = r, delta_accuracy ~ delta_numBlocks*reuse +  (1 | gameID))
+```
+
+## extra variance explained by including numBlocks over just reuse?
+```{r}
+anova(m1a,m2)
+```
+
+## extra variance explained by including reuse over just numBlocks?
+```{r}
+anova(m1b,m2)
+```
+
+## extra variance explained by including interaction term instead of just simple effects?
+```{r}
+anova(m2,m3)
+```
+
+## winning model
+```{r}
+summary(m2)
 ```
 
