@@ -54,6 +54,13 @@ summary(m4)
 ```
 
 ```{r}
+d%>%
+  group_by(perfect) %>%
+  tally()
+```
+
+
+```{r}
 dpp %>%
   group_by(perfect) %>%
   tally()
@@ -66,7 +73,6 @@ summary(m)
 
 ## Modeling effect of phase x condition on build time 
 ```{r}
-
 dpp <- d %>% 
   filter(phase %in% c('pre','post')) %>%
   mutate(repetition_1 = repetition + 1) %>% 
@@ -200,8 +206,9 @@ q.boot
 q.boot %>%
   ggplot(aes(x=quartile.numeric,y=empirical_stat)) +
   # geom_ribbon(aes(ymin=ci_lower, ymax = ci_upper), alpha =.25, color="#1c373e", fill="#1c373e") +
+  geom_point(aes(x=quartile.numeric, y=reused), data=q, size = 3, alpha = 0.5, color="#b1c4c9") +
   geom_smooth(method='lm', formula = y ~ poly(x,1), color="#1c373e", fill="#b1c4c9") +
-  geom_point(aes(x=quartile.numeric, y=empirical_stat),color="#1c373e",size = 4) +
+  geom_point(aes(x=quartile.numeric, y=empirical_stat),color="#1c373e",size = 5) +
   ylab("proportion actions reused (pre to post)") +
   xlab("accuracy quartile (pre)") +
   theme_few() +
