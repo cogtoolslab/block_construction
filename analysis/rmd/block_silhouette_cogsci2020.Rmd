@@ -60,7 +60,7 @@ dpp %>%
 ```
 
 ```{r}
-m<-lm(data = dpp, buildTime ~ phase*condition*perfect)
+m<-lm(data = dpp, buildTime ~ phase*condition)
 summary(m)
 ```
 
@@ -112,9 +112,10 @@ b.raw = read.csv('../results/csv/block_silhouette_bis_Exp2Pilot3.csv')
 
 b<-b.raw%>%
   mutate(repetition_1 = repetition + 1)
+  
 
 bpp <- b %>%
-  filter(phase %in% c('pre','post'))
+  filter(phase %in% c('pre','post')) 
 bpp
 ```
 
