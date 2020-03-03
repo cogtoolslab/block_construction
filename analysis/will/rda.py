@@ -1,5 +1,6 @@
 from scipy.spatial import distance
 import numpy as np
+import warnings
 
 
 # def rda_df(df, 
@@ -97,10 +98,10 @@ def rda_from_df(df,
                         if (value_df.shape[0] > 0):
                             all_values[i_r,i_l,i_sm,:] = value_df.iloc[0]
                             if (value_df.shape[0] > 1):
-                                message = "More than one value in dataframe for " + \
-                                                        str(row_val) + ", " + \
-                                                        str(layer_val), + ", " + \
-                                                        str(sm_val) + ". Using first value found."
+                                message = "More than one value in dataframe for " +\
+                                                        row_col + ": " + str(row_val) + ", " +\
+                                                        layer_col + ": " + str(layer_val) + ", " +\
+                                                        small_multiple_col + ": " + str(sm_val) + ". Using first value found."
                                 warnings.warn(message)
                         else: 
                              all_values[i_r,i_l,i_sm,:] =  0 #np.nan
@@ -114,8 +115,8 @@ def rda_from_df(df,
                         all_values[i_r,i_l,0,:] = value_df.iloc[0]
                         if (value_df.shape[0] > 1):
                             message = "More than one value in dataframe for " + \
-                                                    str(row_val) + ", " + \
-                                                    str(layer_val), + ", " + \
+                                                    row_col + ": " + str(row_val) + ", " + \
+                                                    layer_col + ": " +str(layer_val), + ", " + \
                                                     ". Using first value found."
                             warnings.warn(message)
                     else: 
@@ -131,8 +132,8 @@ def rda_from_df(df,
                     all_values[i_r,1,i_sm,:] = value_df.iloc[0]
                     if (value_df.shape[0] > 1):
                         message = "More than one value in dataframe for " + \
-                                                str(row_val) + ", " + \
-                                                str(sm_val) + ". Using first value found."
+                                                row_col + ": " + str(row_val) + ", " + \
+                                                small_multiple_col + ": " + str(sm_val) + ". Using first value found."
                         warnings.warn(message)
                 else: 
                      all_values[i_r,i_l,i_sm,:] =  0 #np.nan
@@ -144,7 +145,7 @@ def rda_from_df(df,
                 all_values[i_r,1,1,:] = value_df.iloc[0]
                 if (value_df.shape[0] > 1):
                     message = "More than one value in dataframe for " + \
-                                            str(row_val) + ", " + \
+                                            row_col + ": " + str(row_val) + ", " + \
                                             ". Using first value found."
                     warnings.warn(message)
             else: 
@@ -217,6 +218,7 @@ def caclulate_distances(mat,
                     vec_col = mat[col, layer, multiple, :]
                     all_dists[row, col, layer, multiple] = distance_measure(vec_row, vec_col)
     
+    print('Created distance matrix: ' + str(all_dists.shape))
     return all_dists, mat
 
 # def rda_mat(mat, 
