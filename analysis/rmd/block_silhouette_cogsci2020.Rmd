@@ -100,7 +100,7 @@ ggsave('../results/plots/block_silhouette_accuracy_timeseries.pdf', width=7, hei
 
 
 ```{r}
-m<-lm(data = dpp, buildTime ~ phase*condition*perfect)
+m<-lm(data = dpp, buildTime ~ phase*condition)
 summary(m)
 ```
 
