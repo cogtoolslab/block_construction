@@ -51,7 +51,7 @@ def get_jaccard(arr1, arr2):
     false_neg = np.sum(np.subtract(arr1,prod))
     
     denomenator = np.add(false_neg,np.add(false_pos,true_pos))
-    jaccard = 1
+    jaccard = np.nan
     if denomenator > 0:
         jaccard = np.divide(true_pos,denomenator)
     return jaccard
