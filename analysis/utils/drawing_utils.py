@@ -71,6 +71,12 @@ def get_block_patches(blocks, color='#29335C'):
         patches.append(get_patch(b,color=color))
     return patches
 
+def get_block_patches_colored(blocks, colors):
+    patches = []
+    for i, b in enumerate(blocks):
+        patches.append(get_patch(b,color=colors[i]))
+    return patches
+
 def get_patches_stim(blocks):
     patches = []
     for (b) in blocks:
@@ -280,15 +286,29 @@ def draw_trial_subplot(df, gameID, trialNum, ax, world_size=900):
                                         xlim=(0,world_size),
                                         ylim=(0,world_size))
 
-def draw_reconstruction_subplot(df, gameID, targetName, ax, world_size=900):
+def draw_reconstruction_subplot(df, gameID, targetName, ax, world_size=900, cmap = 'YlGnBu', n_colors = 0):
     vert_dict = df.loc[(df.gameID == gameID) & (df.targetName == targetName),'allVertices'].apply(ast.literal_eval).values[0]
     vertices = compress_vertices(vert_dict)
     
     condition = df.loc[(df.gameID == gameID) & (df.targetName == targetName),'condition'].values[0]
     phase = df.loc[(df.gameID == gameID) & (df.targetName == targetName),'phase'].values[0]
-    c = df.loc[(df.gameID == gameID) & (df.targetName == targetName),'blockColor'].values[0]
     
-    patches = get_block_patches(vertices, color=c)
+    cmap=plt.get_cmap(cmap)
+    n_blocks = df[(df.gameID == gameID) & (df.targetName == targetName)]['numBlocks'].values[0]
+    
+    colors = ['#000000' for i in range(n_blocks)]
+    
+    if n_colors == 0:
+        n_colors = n_blocks
+#         cmap_vals = np.linspace(0, 1, n_blocks)
+#         colors = [cmap(x) for x in cmap_vals]
+
+    cmap_vals = np.linspace(0, 1, n_colors)
+    colors[0:n_colors] = [cmap(x) for x in cmap_vals]
+    
+#     c = df.loc[(df.gameID == gameID) & (df.targetName == targetName),'blockColor'].values[0]
+    print(len(colors))
+    patches = get_block_patches_colored(vertices, colors=colors)
     return render_blockworld_subplot(patches,
                                         ax,
                                         xlim=(0,world_size),
