@@ -280,6 +280,20 @@ def draw_trial_subplot(df, gameID, trialNum, ax, world_size=900):
                                         xlim=(0,world_size),
                                         ylim=(0,world_size))
 
+def draw_reconstruction_subplot(df, gameID, targetName, ax, world_size=900):
+    vert_dict = df.loc[(df.gameID == gameID) & (df.targetName == targetName),'allVertices'].apply(ast.literal_eval).values[0]
+    vertices = compress_vertices(vert_dict)
+    
+    condition = df.loc[(df.gameID == gameID) & (df.targetName == targetName),'condition'].values[0]
+    phase = df.loc[(df.gameID == gameID) & (df.targetName == targetName),'phase'].values[0]
+    c = df.loc[(df.gameID == gameID) & (df.targetName == targetName),'blockColor'].values[0]
+    
+    patches = get_block_patches(vertices, color=c)
+    return render_blockworld_subplot(patches,
+                                        ax,
+                                        xlim=(0,world_size),
+                                        ylim=(0,world_size))
+
 # def draw_trials(df, figsize=(40, 80)):
 #     numTrials = df.shape[0]
     
