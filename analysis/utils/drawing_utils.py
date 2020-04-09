@@ -300,14 +300,10 @@ def draw_reconstruction_subplot(df, gameID, targetName, ax, world_size=900, cmap
     
     if n_colors == 0:
         n_colors = n_blocks
-#         cmap_vals = np.linspace(0, 1, n_blocks)
-#         colors = [cmap(x) for x in cmap_vals]
 
     cmap_vals = np.linspace(0, 1, n_colors)
     colors[0:n_colors] = [cmap(x) for x in cmap_vals]
     
-#     c = df.loc[(df.gameID == gameID) & (df.targetName == targetName),'blockColor'].values[0]
-    print(len(colors))
     patches = get_block_patches_colored(vertices, colors=colors)
     return render_blockworld_subplot(patches,
                                         ax,
