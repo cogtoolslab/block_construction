@@ -328,6 +328,30 @@ def draw_reconstruction_subplot(df, gameID, targetName, ax, world_size=900, cmap
 #     plt.show()
 #     return
 
+def draw_from_actions_subplot(df, ax, world_size = [18,13], cmap = 'YlGnBu'):
+    values = np.linspace(0, 1, len(df))
+
+    world = np.zeros([world_size[0],world_size[1]])
+
+    c = 0
+    for _, block in df.iterrows():
+        for i in range(block.x, block.x+block.w):
+            for j in range(block.y, block.y+block.h):
+                world[i,j] = values[c]
+        c += 1
+
+    world = np.rot90(world)
+
+    # show grid
+    for i in range(0,world_size[0]):
+        ax.axvline(x=i-0.5, ymin=0, ymax=world_size[1], color='white', linewidth=1,alpha = 0.4)
+
+    for j in range(0,world_size[1]):
+        ax.axhline(y=j-0.5, xmin=0, xmax=world_size[0], color='white', linewidth=1, alpha = 0.4)
+
+    # show world
+    ax.axis('off')
+    ax.imshow(world, cmap = cmap)
 
     
 def draw_stim_from_json(stim_name, stim_dir):
