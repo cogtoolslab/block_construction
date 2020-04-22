@@ -71,6 +71,12 @@ def get_block_patches(blocks, color='#29335C'):
         patches.append(get_patch(b,color=color))
     return patches
 
+def get_block_patches_colored(blocks, colors):
+    patches = []
+    for i, b in enumerate(blocks):
+        patches.append(get_patch(b,color=colors[i]))
+    return patches
+
 def get_patches_stim(blocks):
     patches = []
     for (b) in blocks:
@@ -280,6 +286,30 @@ def draw_trial_subplot(df, gameID, trialNum, ax, world_size=900):
                                         xlim=(0,world_size),
                                         ylim=(0,world_size))
 
+def draw_reconstruction_subplot(df, gameID, targetName, ax, world_size=900, cmap = 'YlGnBu', n_colors = 0):
+    vert_dict = df.loc[(df.gameID == gameID) & (df.targetName == targetName),'allVertices'].apply(ast.literal_eval).values[0]
+    vertices = compress_vertices(vert_dict)
+    
+    condition = df.loc[(df.gameID == gameID) & (df.targetName == targetName),'condition'].values[0]
+    phase = df.loc[(df.gameID == gameID) & (df.targetName == targetName),'phase'].values[0]
+    
+    cmap=plt.get_cmap(cmap)
+    n_blocks = df[(df.gameID == gameID) & (df.targetName == targetName)]['numBlocks'].values[0]
+    
+    colors = ['#000000' for i in range(n_blocks)]
+    
+    if n_colors == 0:
+        n_colors = n_blocks
+
+    cmap_vals = np.linspace(0, 1, n_colors)
+    colors[0:n_colors] = [cmap(x) for x in cmap_vals]
+    
+    patches = get_block_patches_colored(vertices, colors=colors)
+    return render_blockworld_subplot(patches,
+                                        ax,
+                                        xlim=(0,world_size),
+                                        ylim=(0,world_size))
+
 # def draw_trials(df, figsize=(40, 80)):
 #     numTrials = df.shape[0]
     
@@ -298,6 +328,30 @@ def draw_trial_subplot(df, gameID, trialNum, ax, world_size=900):
 #     plt.show()
 #     return
 
+def draw_from_actions_subplot(df, ax, world_size = [18,13], cmap = 'YlGnBu'):
+    values = np.linspace(0, 1, len(df))
+
+    world = np.zeros([world_size[0],world_size[1]])
+
+    c = 0
+    for _, block in df.iterrows():
+        for i in range(block.x, block.x+block.w):
+            for j in range(block.y, block.y+block.h):
+                world[i,j] = values[c]
+        c += 1
+
+    world = np.rot90(world)
+
+    # show grid
+    for i in range(0,world_size[0]):
+        ax.axvline(x=i-0.5, ymin=0, ymax=world_size[1], color='white', linewidth=1,alpha = 0.4)
+
+    for j in range(0,world_size[1]):
+        ax.axhline(y=j-0.5, xmin=0, xmax=world_size[0], color='white', linewidth=1, alpha = 0.4)
+
+    # show world
+    ax.axis('off')
+    ax.imshow(world, cmap = cmap)
 
     
 def draw_stim_from_json(stim_name, stim_dir):
