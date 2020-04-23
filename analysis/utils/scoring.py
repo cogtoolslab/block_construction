@@ -42,8 +42,11 @@ def get_f1_score(arr1, arr2):
     precision = get_precision(arr1, arr2)
     numerator = np.multiply(precision, recall)
     denominator = np.add(precision, recall)
-    quotient = np.divide(numerator, denominator)
-    f1Score = np.multiply(2, quotient)
+    if (denominator>0):
+        quotient = np.divide(numerator, denominator)
+        f1Score = np.multiply(2, quotient)
+    else:
+        f1Score = 0
     #print('recall ' + recall);
     return f1Score
 
