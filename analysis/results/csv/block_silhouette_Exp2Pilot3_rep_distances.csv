@@ -1,4 +1,4 @@
-,targetName,gameID,level_2,phase_a,phase_b,actual_euclidean_distance,phase_pair,optimal_euclidean_distance,temporal_distance,phase_a_rawF1DiscreteScore,phase_b_rawF1DiscreteScore,condition
+,targetName,gameID,level_2,phase_a,phase_b,actual_euclidean_distance,phase_pair,optimal_euclidean_distance,temporal_similarity,phase_a_rawF1DiscreteScore,phase_b_rawF1DiscreteScore,condition
 0,hand_selected_004,0145-8cab6010-6b88-4e57-b04d-b9e9b4b7c959,0,pre,post,5.088994464875246,pre to post,3.1009252125773314,0.4666666666666666,0.8333333333333333,0.4999999999999999,control
 1,hand_selected_004,0443-fd078367-c19d-495d-84d5-3519a281435d,0,pre,repetition 1,2.711420257356676,pre to repetition 1,0.8442906280527738,0.41818181818181815,0.9454545454545454,1.0,repeated
 2,hand_selected_004,0443-fd078367-c19d-495d-84d5-3519a281435d,1,pre,repetition 2,2.4902310469162687,pre to repetition 2,0.8442906280527738,0.5272727272727272,0.9454545454545454,1.0,repeated
