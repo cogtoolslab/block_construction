@@ -1,0 +1,59 @@
+---
+title: "block_silhouette_cogsci2020"
+author: "wmccarthy & jefan"
+date: "1/31/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(broom)
+library(tidyverse)
+library(tidyboot)
+library(knitr)
+library(ggplot2)
+library(ggthemes)
+library(broom)
+library(lme4)
+library(lmerTest)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Import data and apply preprocessing
+
+```{r import}
+df.action.metrics.full = read.csv('../results/csv/block_silhouette_Exp2Pilot3_rep_distances.csv')
+
+# d <- df.full %>% 
+#   select(rawF1DiscreteScore,phase,phase_extended,condition,trialNum,targetName,gameID,numBlocks,repetition,blockFell,buildTime,buggy) %>% 
+#   rename('accuracy'='rawF1DiscreteScore') %>%
+#   mutate(phase=factor(phase, levels=c('pre','repeated','post'))) %>%
+#   mutate(phase_extended=factor(phase_extended, levels=c("pre","repeated","post"))) %>%
+#   mutate(blockFell = as.logical(blockFell)) %>%
+#   mutate(repetition_1 = repetition + 1) %>%
+#   mutate(perfect = ifelse(accuracy>0.99, TRUE, FALSE))
+
+```
+
+```{r}
+df.action.metrics.full
+```
+```{r}
+## fit model for mean Euclidean distance of best action mapping
+d.displacement <- df.action.metrics.full %>% filter(condition=='repeated')
+m1 <- lmer(data = d.displacement, optimal_euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
+# m3 <- lmer(data = dp2p, optimal_euclidean_distance ~ phase + condition + (1 | gameID) + (1 | targetName))
+# m4 <- lmer(data = dp2p, optimal_euclidean_distance ~ phase * condition + (1 | gameID) + (1 | targetName))
+anova(m1)
+summary(m1)
+```
+
+```{r}
+## fit model for temporal distance
+d.displacement <- df.action.metrics.full %>% filter(condition=='repeated')
+m1 <- lmer(data = d.displacement, temporal_similarity ~ phase_pair + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = d.displacement, temporal_similarity ~ phase_pair + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = d.displacement, temporal_similarity ~ phase_pair * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+anova(m1, m2, m3)
+summary(m2)
+```

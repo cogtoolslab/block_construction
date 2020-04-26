@@ -1,6 +1,12 @@
 import numpy as np
 import pandas as pd
 import os
+import json
+
+target_maps = {}
+
+with open(os.path.abspath('../results/csv/targetMaps.txt')) as json_file:
+    target_maps = json.load(json_file)
 
 def get_precision(arr1,arr2):
     prod = np.multiply(arr1,arr2)
@@ -36,13 +42,18 @@ def get_f1_score(arr1, arr2):
     precision = get_precision(arr1, arr2)
     numerator = np.multiply(precision, recall)
     denominator = np.add(precision, recall)
-    quotient = np.divide(numerator, denominator)
-    f1Score = np.multiply(2, quotient)
+    if (denominator>0):
+        quotient = np.divide(numerator, denominator)
+        f1Score = np.multiply(2, quotient)
+    else:
+        f1Score = 0
     #print('recall ' + recall);
     return f1Score
 
-def get_f1_score_ambda(row):
-    return(getF1Score(row['targetName'], row['discreteWorld']))
+def get_f1_score_lambda(row):
+    target_map = 1*np.logical_not(np.array(target_maps[row['targetName']]))
+    discrete_world = row['discreteWorld']
+    return(get_f1_score(target_map, discrete_world))
 
 def get_jaccard(arr1, arr2):
     prod = np.multiply(arr1,arr2)
