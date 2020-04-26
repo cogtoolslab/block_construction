@@ -284,7 +284,11 @@ def plot_trajectory_graph(data = [],
                           target = 'hand_selected_004', 
                           phase = 'pre', 
                           save=False, 
-                          extension = ''):
+                          extension = '',
+                          x_lower_bound = 4,
+                          x_upper_bound = 13,
+                          edge_width_scale_factor = 0.8,
+                          node_size_scale_factor = 0.8):
     '''
     makes F1 world state trajectory graph for specific target structure and phase    
     '''
@@ -304,7 +308,7 @@ def plot_trajectory_graph(data = [],
     node_xs, node_ys, edge_xs, edge_ys, node_sizes, edge_ws  = t.get_coords()
     
     ### HACKY POSTPROCESSING
-    node_sizes = [i * 0.8 for i in node_sizes]
+    node_sizes = [i * node_size_scale_factor for i in node_sizes]
     ## pretty structure names
     pretty_names = ['structure {}'.format(i+1) for i in np.arange(len(targets))]
     hs2pn = dict(zip(targets,pretty_names))   
@@ -327,7 +331,7 @@ def plot_trajectory_graph(data = [],
                 go.Scatter(
                         x=(edge_xs[i*2],edge_xs[i*2+1]),
                         y=(edge_ys[i*2],edge_ys[i*2+1]),
-                        line=dict(width=edge_ws[i]*0.8,
+                        line=dict(width=edge_ws[i]*edge_width_scale_factor,
                                   color='#2e2e2e'),
                         opacity= O[edge_ws[i]] if edge_ws[i] in O.keys() else 0.95,
                         hoverinfo='none',
@@ -351,16 +355,7 @@ def plot_trajectory_graph(data = [],
             opacity = 1.,
             line_width=0,
             line_color='#FFF'))
-    
-    ### LEFT / RIGHT BOUNDS
-    padding = 0
-    midpt = np.mean(node_xs)
-    lb = np.min(node_xs) - padding
-    ub = np.max(node_xs) + padding
-    lb = 4 # hardcoded
-    ub = 13 # hardcoded
-    
-    
+        
     ### FIGURE DEFINITION
     fig = go.Figure(data=edge_trace + [node_trace],
                  layout=go.Layout(
@@ -374,7 +369,7 @@ def plot_trajectory_graph(data = [],
                         showarrow=False,
                         xref="paper", yref="paper",
                         x=0.005, y=-0.002 ) ],
-                    xaxis={'range':[lb,ub], 'showgrid': False, 'zeroline': True, 'visible': False},
+                    xaxis={'range':[x_lower_bound,x_upper_bound], 'showgrid': False, 'zeroline': True, 'visible': False},
                     yaxis={'range':[-0.1,1.05], 'showgrid': False})
                     )
 
@@ -386,9 +381,9 @@ def plot_trajectory_graph(data = [],
     )
     
     ### HORIZONTAL REF LINES
-    fig.add_shape(type='line',x0=lb, y0=1, x1=ub, y1=1,
+    fig.add_shape(type='line',x0=x_lower_bound, y0=1, x1=x_upper_bound, y1=1,
                   line={'color':'black','width':1, 'dash':'dot'})  
-    fig.add_shape(type='line',x0=lb, y0=0, x1=ub, y1=0,
+    fig.add_shape(type='line',x0=x_lower_bound, y0=0, x1=x_upper_bound, y1=0,
                   line={'color':'black','width':1, 'dash':'dot'})      
     
     fig.show()
