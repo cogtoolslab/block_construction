@@ -38,36 +38,54 @@ df.action.metrics.full = read.csv('../results/csv/block_silhouette_Exp2Pilot3_re
 ```{r}
 df.action.metrics.full
 ```
-```{r}
-## fit model for mean Euclidean distance of best action mapping
-d.displacement <- df.action.metrics.full %>% filter(condition=='repeated')
-m1 <- lmer(data = d.displacement, optimal_euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
-# m3 <- lmer(data = dp2p, optimal_euclidean_distance ~ phase + condition + (1 | gameID) + (1 | targetName))
-# m4 <- lmer(data = dp2p, optimal_euclidean_distance ~ phase * condition + (1 | gameID) + (1 | targetName))
-anova(m1)
-summary(m1)
+## Convergence plots (distance to final solution)
+
+```{r displacement}
+d.conv <- df.action.metrics.full %>% 
+  filter(condition=='repeated') %>% 
+  filter(phase_pair %in% c('pre to post', 'repetition 1 to post','repetition 2 to post'))
 ```
+
 
 ```{r}
 ## fit model for temporal distance
-d.displacement <- df.action.metrics.full %>% filter(condition=='repeated')
-m1 <- lmer(data = d.displacement, temporal_similarity ~ phase_pair + (1 | gameID) + (1 | targetName))
-m2 <- lmer(data = d.displacement, temporal_similarity ~ phase_pair + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
-m3 <- lmer(data = d.displacement, temporal_similarity ~ phase_pair * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m1 <- lmer(data = d.conv, temporal_similarity ~ phase_pair + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = d.conv, temporal_similarity ~ phase_pair + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = d.conv, temporal_similarity ~ phase_pair * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+
 anova(m1, m2, m3)
 summary(m2)
 ```
 
 
+
 ```{r}
 ## fit model for mean Euclidean distance of best action mapping
-d.displacement <- df.action.metrics.full %>% filter(condition=='repeated')
-m1 <- lmer(data = d.displacement, optimal_euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
-# m3 <- lmer(data = dp2p, optimal_euclidean_distance ~ phase + condition + (1 | gameID) + (1 | targetName))
-# m4 <- lmer(data = dp2p, optimal_euclidean_distance ~ phase * condition + (1 | gameID) + (1 | targetName))
-anova(m1)
+m1 <- lmer(data = d.conv, optimal_euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = d.conv, optimal_euclidean_distance ~ phase_pair + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = d.conv, optimal_euclidean_distance ~ phase_pair * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+
+anova(m1,m2,m3)
 summary(m1)
 ```
+
+
+## Derivative plots (consequetive phases)
+
+```{r derivative}
+d.derivative <- df.action.metrics.full %>% 
+  filter(phase_pair %in% c('pre to repetition 1', 'repetition 1 to repetition 2','repetition 2 to post'))
+```
+
+```{r}
+## fit model for mean Euclidean distance of best action mapping
+m1 <- lmer(data = d.derivative, optimal_euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = d.derivative, optimal_euclidean_distance ~ phase_pair + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = d.derivative, optimal_euclidean_distance ~ phase_pair * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+anova(m1,m2,m3)
+summary(m1)
+```
+
 
 ```{r}
 df.action.metrics.full %>% 
@@ -76,6 +94,7 @@ df.action.metrics.full %>%
   quantile(prob = c(0.15, 0.25, 0.35))
 
 ```
+
 # Sequence Similarity predicted by F1 score
 Does high performance mean that similar build sequences will be used next time?
 
@@ -89,19 +108,16 @@ dpp <- df.action.metrics.full %>%
 dpp$pre.f1.quartile <- ntile(dpp$phase_a_rawF1DiscreteScore, 4) 
 ```
 
-### Model relationship between pre quartile and optimal Euclidean similarity
-```{r}
-m <- lmer(data = dpp, optimal_euclidean_distance ~ pre.f1.quartile + (1 | gameID))
-summary(m)
-```
 
-## Model relationship between pre quartile and temporal similarity
+## Temporal similarity
+
+### Model relationship between pre quartile and temporal similarity
 ```{r}
 m <- lmer(data = dpp, temporal_similarity ~ pre.f1.quartile + (1 | gameID))
 summary(m)
 ```
 
-## Bootstrap temporal similarity by quartile
+### Bootstrap temporal similarity by quartile
 ```{r}
 
 dpp.T <- dpp %>% select(c('gameID','pre.f1.quartile','temporal_similarity'))
@@ -125,9 +141,17 @@ dpp.boot.T %>%
 ```
 
 
+## Optimal Euclidean Distance
+
+### Model relationship between pre quartile and optimal Euclidean similarity
+```{r}
+m <- lmer(data = dpp, optimal_euclidean_distance ~ pre.f1.quartile + (1 | gameID))
+summary(m)
+```
+
 ```{r}
 dpp.OEu <- dpp %>% select(c('gameID','pre.f1.quartile','optimal_euclidean_distance'))
-dpp.boot.OEu <- dpp %>% group_by(pre.f1.quartile) %>% tidyboot_mean(column=optimal_euclidean_distance, nboot=1000)
+dpp.boot.OEu <- dpp %>% group_by(pre.f1.quartile) %>% tidyboot_mean(column=optimal_euclidean_distance, nboot=100)
 dpp.boot.OEu
 ```
 
@@ -144,9 +168,4 @@ dpp.boot.OEu %>%
   #ylim(c(0,0.6)) +
   scale_x_continuous(breaks = c(1,2,3,4),labels=c('1st', '2nd','3rd','4th')) +
   theme(legend.position = c(0.8, 0.2), text = element_text(size=14), element_line(size=1), element_rect(size=2, color="#00000"))
-```
-
-```{r}
-dpp %>% 
-  select(pre.f1.quartile,optimal_euclidean_distance)
 ```
