@@ -41,7 +41,7 @@ df.action.metrics.full
 ## Convergence plots (distance to final solution)
 
 ```{r displacement}
-d.conv <- df.action.metrics.full %>% 
+d.disp <- df.action.metrics.full %>% 
   filter(condition=='repeated') %>% 
   filter(phase_pair %in% c('pre to post', 'repetition 1 to post','repetition 2 to post'))
 ```
@@ -49,9 +49,9 @@ d.conv <- df.action.metrics.full %>%
 
 ```{r}
 ## fit model for temporal distance
-m1 <- lmer(data = d.conv, temporal_similarity ~ phase_pair + (1 | gameID) + (1 | targetName))
-m2 <- lmer(data = d.conv, temporal_similarity ~ phase_pair + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
-m3 <- lmer(data = d.conv, temporal_similarity ~ phase_pair * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m1 <- lmer(data = d.disp, temporal_similarity ~ phase_pair + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = d.disp, temporal_similarity ~ phase_pair + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = d.disp, temporal_similarity ~ phase_pair * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
 
 anova(m1, m2, m3)
 summary(m2)
@@ -61,9 +61,9 @@ summary(m2)
 
 ```{r}
 ## fit model for mean Euclidean distance of best action mapping
-m1 <- lmer(data = d.conv, optimal_euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
-m2 <- lmer(data = d.conv, optimal_euclidean_distance ~ phase_pair + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
-m3 <- lmer(data = d.conv, optimal_euclidean_distance ~ phase_pair * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m1 <- lmer(data = d.disp, optimal_euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = d.disp, optimal_euclidean_distance ~ phase_pair + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = d.disp, optimal_euclidean_distance ~ phase_pair * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
 
 anova(m1,m2,m3)
 summary(m1)
