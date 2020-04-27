@@ -57,3 +57,93 @@ m3 <- lmer(data = d.displacement, temporal_similarity ~ phase_pair * phase_a_raw
 anova(m1, m2, m3)
 summary(m2)
 ```
+
+
+```{r}
+## fit model for mean Euclidean distance of best action mapping
+d.displacement <- df.action.metrics.full %>% filter(condition=='repeated')
+m1 <- lmer(data = d.displacement, optimal_euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
+# m3 <- lmer(data = dp2p, optimal_euclidean_distance ~ phase + condition + (1 | gameID) + (1 | targetName))
+# m4 <- lmer(data = dp2p, optimal_euclidean_distance ~ phase * condition + (1 | gameID) + (1 | targetName))
+anova(m1)
+summary(m1)
+```
+
+```{r}
+df.action.metrics.full %>% 
+  filter(phase_a=='pre') %>% 
+  select(phase_a_rawF1DiscreteScore) %>% 
+  quantile(prob = c(0.15, 0.25, 0.35))
+
+```
+# Plan Reuse
+Does high performance mean that similar build sequences will be used next time?
+
+##Looking only at pre and post:
+
+### Find quartiles of pretest accuracy (QUARTILES OF THAT SUBSET- SHOULD THIS BE QUARTILES OF WHOLE DATASET?)
+```{r}
+dpp <- df.action.metrics.full %>% 
+  filter(phase_a=='pre' && phase_b=='post')
+
+dpp$pre.f1.quartile <- ntile(dpp$phase_a_rawF1DiscreteScore, 4) 
+```
+
+### Model relationship between pre quartile and optimal Euclidean similarity
+```{r}
+m <- lmer(data = dpp, optimal_euclidean_distance ~ pre.f1.quartile + (1 | gameID))
+summary(m)
+```
+
+## Model relationship between pre quartile and temporal similarity
+```{r}
+m <- lmer(data = dpp, temporal_similarity ~ pre.f1.quartile + (1 | gameID))
+summary(m)
+```
+
+## Bootstrap temporal similarity by quartile
+```{r}
+dpp.boot <- dpp %>% group_by(pre.f1.quartile) %>% tidyboot_mean(column=temporal_similarity, nboot=100)
+dpp.boot
+```
+
+```{r}
+dpp.boot %>%
+  ggplot(aes(x=pre.f1.quartile,y=empirical_stat)) +
+  # geom_ribbon(aes(ymin=ci_lower, ymax = ci_upper), alpha =.25, color="#1c373e", fill="#1c373e") +
+  geom_point(aes(x=pre.f1.quartile, y=temporal_similarity), data=dpp, size = 3, alpha = 0.5, color="#b1c4c9") +
+  geom_smooth(method='lm', formula = y ~ poly(x,1), color="#1c373e", fill="#b1c4c9") +
+  geom_point(aes(x=pre.f1.quartile, y=empirical_stat),color="#1c373e",size = 5) +
+  ylab("temporal similarity between pre to post") +
+  xlab("accuracy quartile (pre)") +
+  theme_few() +
+  ylim(c(0,0.6)) +
+  scale_x_continuous(breaks = c(1,2,3,4),labels=c('1st', '2nd','3rd','4th')) +
+  theme(legend.position = c(0.8, 0.2), text = element_text(size=14), element_line(size=1), element_rect(size=2, color="#00000"))
+```
+
+
+```{r}
+dpp.boot.Eu <- dpp %>% group_by(pre.f1.quartile) %>% tidyboot_mean(column=optimal_euclidean_distance, nboot=100)
+dpp.boot.Eu
+```
+
+```{r}
+dpp.boot.Eu %>%
+  ggplot(aes(x=pre.f1.quartile,y=empirical_stat)) +
+  # geom_ribbon(aes(ymin=ci_lower, ymax = ci_upper), alpha =.25, color="#1c373e", fill="#1c373e") +
+  geom_point(aes(x=pre.f1.quartile, y=optimal_euclidean_distance), data=dpp, size = 3, alpha = 0.5, color="#b1c4c9") +
+  geom_smooth(method='lm', formula = y ~ poly(x,1), color="#1c373e", fill="#b1c4c9") +
+  geom_point(aes(x=pre.f1.quartile, y=empirical_stat),color="#1c373e",size = 5) +
+  ylab("temporal similarity between pre to post") +
+  xlab("accuracy quartile (pre)") +
+  theme_few() +
+  ylim(c(0,0.6)) +
+  scale_x_continuous(breaks = c(1,2,3,4),labels=c('1st', '2nd','3rd','4th')) +
+  theme(legend.position = c(0.8, 0.2), text = element_text(size=14), element_line(size=1), element_rect(size=2, color="#00000"))
+```
+
+```{r}
+dpp %>% 
+  select(pre.f1.quartile,optimal_euclidean_distance)
+```
