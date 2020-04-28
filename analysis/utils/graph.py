@@ -409,11 +409,13 @@ def convert_to_prob_dist(DICT):
     P = dict(zip(list(DICT.keys()),list(pdist)))
     return P                
             
-def get_entropy_over_states(data = [],
-                          target = 'hand_selected_004', 
-                          phase = 'pre'):
+def get_sparsity_over_states(data = [],
+                             target = 'hand_selected_004', 
+                             phase = 'pre',
+                             metric='entropy'):
     '''
-    calculate entropy over states visited for particular target and phase
+    calculate sparsity over states visited for particular target and phase
+    metric: ['entropy', 'mean']            
     '''
     
     # check to make sure data was passed in
@@ -440,7 +442,64 @@ def get_entropy_over_states(data = [],
     # convert counts to probabilities
     P = convert_to_prob_dist(W)
     
-    # calculate entropy over probability dist
-    h = entropy(list(P.values()))
+    if metric=='entropy':
+        # calculate entropy over probability dist
+        stat = entropy(list(P.values()))
+    elif metric=='mean':
+        stat = np.mean(list(W.values()))
     
-    return h,P            
+    return stat,P   
+
+
+def get_sparsity_over_edges(data = [],
+                          target = 'hand_selected_004', 
+                          phase = 'pre',
+                          metric='entropy'):
+    '''
+    calculate entropy over states visited for particular target and phase
+    '''
+    
+    # check to make sure data was passed in
+    if len(data)==0:
+        raise Exception('No data was passed in! Please pass in data.')
+
+    # Create graph
+    t = GenericBuildGraph() # make new tree
+
+    a = data[(data.targetName==target) & (data.phase_extended==phase)]
+    a = a.groupby('gameID')
+    a.apply(lambda g: t.add_build_path(g))
+
+    # generate state-state pairs and number of participants traveling between them
+    W = dict()
+    parent_xs = []
+    parent_ys = []
+    child_xs = []
+    child_ys = []
+    edge_ws = []
+    for i, (k1, layer) in enumerate(t.world_layers.items()):
+        for j, (k2, node) in enumerate(layer.nodes.items()):
+            parent_x = node.x
+            parent_y = node.y
+            for _, e in enumerate(node.out_edges):  
+                child_y = e.target.y
+                child_x = e.target.x
+                parent_xs.append(parent_x)
+                child_xs.append(child_x)
+                parent_ys.append(parent_y)
+                child_ys.append(child_y)
+                edge_ws.append(e.visits)            
+
+    ## data frame to extract edge entropies
+    E = pd.DataFrame([parent_xs,parent_ys,child_xs,child_ys,edge_ws]).transpose()
+    E.columns = ['parent_x', 'parent_y', 'child_x', 'child_y', 'edge_weight']
+    E['edge_freq'] = E['edge_weight'] / E['edge_weight'].sum()
+    assert np.isclose(E['edge_freq'].sum(),1)
+    
+    if metric=='entropy':
+        # calculate entropy over probability dist
+        stat = entropy(E['edge_freq'])
+    elif metric=='mean':
+        stat = np.mean(E['edge_weight'])    
+    
+    return stat, E
