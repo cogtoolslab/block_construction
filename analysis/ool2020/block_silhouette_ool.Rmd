@@ -85,24 +85,6 @@ d.Eu.boot %>%
 ggsave('../results/plots/block_silhouette_Euclidean_distances.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
 
-## Convergence plots (distance to final solution)
-```{r}
-df.action.metrics.full %>% 
-  filter(phase_pair %in% c('pre to repetition 1', 'repetition 1 to repetition 2','repetition 2 to post')) %>%
-  ggplot(aes(x=phase_pair, y=optimal_euclidean_distance)) +
-  # geom_ribbon(aes(ymin=ci_lower, ymax = ci_upper), alpha =.25, color="#1c373e", fill="#1c373e") +
-  #geom_smooth(method='lm', formula = y ~ poly(x,1), color="#1c373e", fill="#b1c4c9") +
-  #geom_errorbar(aes(x=phase_pair, y=optimal_euclidean_distance),color="#1c373e",size = 5) +
-  geom_line(aes(x=phase_pair, y=optimal_euclidean_distance),color="#1c373e",size = 2) +
-  #ylab("") +
-  #xlab("") +
-  theme_few() +
-  #ylim(c(0,4)) +
-  theme(legend.position = c(0.8, 0.2), text = element_text(size=14), element_line(size=1), element_rect(size=2, color="#00000"))
-```
-```
-
-
 ```{r displacement}
 d.disp <- df.action.metrics.full %>% 
   filter(condition=='repeated') %>% 
@@ -257,4 +239,12 @@ dpp.boot.OEu %>%
   #ylim(c(0,4)) +
   scale_x_continuous(breaks = c(1,2,3,4),labels=c('1st', '2nd','3rd','4th')) +
   theme(legend.position = c(0.8, 0.2), text = element_text(size=14), element_line(size=1), element_rect(size=2, color="#00000"))
+```
+
+
+# Between-subject variance in action sequences
+```{r import.btw.ppt}
+ppt.var <- read.csv('../results/csv/block_silhouette_Exp2Pilot3_ppt_variance_separate.csv')
+
+ppt.var
 ```
