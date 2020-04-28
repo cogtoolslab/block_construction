@@ -1,0 +1,260 @@
+---
+title: "block_silhouette_cogsci2020"
+author: "wmccarthy & jefan"
+date: "1/31/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(broom)
+library(tidyverse)
+library(tidyboot)
+library(knitr)
+library(ggplot2)
+library(ggthemes)
+library(broom)
+library(lme4)
+library(lmerTest)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Import data and apply preprocessing
+
+```{r import}
+df.action.metrics.full = read.csv('../results/csv/block_silhouette_Exp2Pilot3_rep_distances.csv')
+
+# d <- df.full %>% 
+#   select(rawF1DiscreteScore,phase,phase_extended,condition,trialNum,targetName,gameID,numBlocks,repetition,blockFell,buildTime,buggy) %>% 
+#   rename('accuracy'='rawF1DiscreteScore') %>%
+#   mutate(phase=factor(phase, levels=c('pre','repeated','post'))) %>%
+#   mutate(phase_extended=factor(phase_extended, levels=c("pre","repeated","post"))) %>%
+#   mutate(blockFell = as.logical(blockFell)) %>%
+#   mutate(repetition_1 = repetition + 1) %>%
+#   mutate(perfect = ifelse(accuracy>0.99, TRUE, FALSE))
+
+```
+
+```{r}
+df.action.metrics.full
+```
+```{r}
+df.Euclidean.long <- df.action.metrics.full %>% 
+  # mutate(phase.pair.numeric = as.numeric(phase_pair)) %>% 
+  select(gameID,targetName, phase_pair,actual_euclidean_distance,optimal_euclidean_distance) %>%
+  pivot_longer(c(optimal_euclidean_distance,actual_euclidean_distance), names_to='distance_type') %>% 
+  rename("euclidean_distance" = "value")
+
+
+df.Euclidean.long$distance_type = gsub("\\_.*","",df.Euclidean.long$distance_type)
+df.Euclidean.long
+```
+
+
+```{r}
+
+d.Eu <- df.Euclidean.long %>% 
+  filter(phase_pair %in% c('pre to repetition 1', 'repetition 1 to repetition 2','repetition 2 to post'))
+
+d.Eu.boot<-d.Eu %>%
+  group_by(phase_pair,distance_type) %>%
+  tidyboot_mean(column=euclidean_distance, nboot=100)
+
+d.Eu.boot
+```
+
+```{r}
+d.Eu.boot %>%
+  ggplot(aes(x=phase_pair,y=empirical_stat, color=distance_type, fill=distance_type, group = distance_type)) +
+    geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
+                 data = d.Eu.boot %>% filter(distance_type == 'actual')) +  
+    geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
+                 data = d.Eu.boot %>% filter(distance_type == 'optimal')) +
+    geom_line(size=1.5) +
+    geom_point(size = 5) +
+    ylab("mean Euclidean distance") +
+    xlab("repetition pair") +
+    theme_few() +
+    #xlim(c(0.5,3.5)) +  
+    ylim(c(0.6,3.5)) +
+    # scale_y_continuous(breaks = seq(-0.5,2.5,0.5)) +
+    scale_color_manual(values=c("#1c373e","#77798c")) +
+    scale_fill_manual(values=c("#1c373e","#77798c")) +
+    scale_x_discrete(labels= c(1,2,3)) + 
+    theme(legend.position = c(0.75, 0.88), legend.title=element_blank(), text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000"))
+ggsave('../results/plots/block_silhouette_Euclidean_distances.pdf', width=7, height = 10, units='cm', useDingbats = F)
+```
+
+## Convergence plots (distance to final solution)
+```{r}
+df.action.metrics.full %>% 
+  filter(phase_pair %in% c('pre to repetition 1', 'repetition 1 to repetition 2','repetition 2 to post')) %>%
+  ggplot(aes(x=phase_pair, y=optimal_euclidean_distance)) +
+  # geom_ribbon(aes(ymin=ci_lower, ymax = ci_upper), alpha =.25, color="#1c373e", fill="#1c373e") +
+  #geom_smooth(method='lm', formula = y ~ poly(x,1), color="#1c373e", fill="#b1c4c9") +
+  #geom_errorbar(aes(x=phase_pair, y=optimal_euclidean_distance),color="#1c373e",size = 5) +
+  geom_line(aes(x=phase_pair, y=optimal_euclidean_distance),color="#1c373e",size = 2) +
+  #ylab("") +
+  #xlab("") +
+  theme_few() +
+  #ylim(c(0,4)) +
+  theme(legend.position = c(0.8, 0.2), text = element_text(size=14), element_line(size=1), element_rect(size=2, color="#00000"))
+```
+```
+
+
+```{r displacement}
+d.disp <- df.action.metrics.full %>% 
+  filter(condition=='repeated') %>% 
+  filter(phase_pair %in% c('pre to post', 'repetition 1 to post','repetition 2 to post'))
+```
+
+
+```{r}
+## fit model for temporal distance
+m1 <- lmer(data = d.disp, temporal_similarity ~ phase_pair + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = d.disp, temporal_similarity ~ phase_pair + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = d.disp, temporal_similarity ~ phase_pair * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+
+anova(m1, m2, m3)
+summary(m2)
+```
+
+
+
+```{r}
+## fit model for mean Euclidean distance of best action mapping
+m1 <- lmer(data = d.disp, optimal_euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = d.disp, optimal_euclidean_distance ~ phase_pair + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = d.disp, optimal_euclidean_distance ~ phase_pair * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+
+anova(m1,m2,m3)
+summary(m1)
+```
+
+
+## Derivative plots (consequetive phases)
+
+```{r derivative}
+d.derivative <- df.action.metrics.full %>% 
+  filter(phase_pair %in% c('pre to repetition 1', 'repetition 1 to repetition 2','repetition 2 to post'))
+```
+
+```{r}
+## fit model for mean Euclidean distance of best action mapping
+m1 <- lmer(data = d.derivative, optimal_euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = d.derivative, optimal_euclidean_distance ~ phase_pair + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = d.derivative, optimal_euclidean_distance ~ phase_pair * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+anova(m1,m2,m3)
+summary(m1)
+```
+
+
+```{r}
+df.action.metrics.full %>% 
+  filter(phase_a=='pre') %>% 
+  select(phase_a_rawF1DiscreteScore) %>% 
+  quantile(prob = c(0.15, 0.25, 0.35))
+
+```
+
+# Sequence Similarity predicted by F1 score
+Does high performance mean that similar build sequences will be used next time?
+
+##Looking only at pre and post:
+
+### Find quartiles of pretest accuracy (QUARTILES OF THAT SUBSET- SHOULD THIS BE QUARTILES OF WHOLE DATASET?)
+```{r}
+dpp <- df.action.metrics.full %>% 
+  filter(phase_a=='pre' && phase_b=='post')
+
+dpp$pre.f1.quartile <- ntile(dpp$phase_a_rawF1DiscreteScore, 4) 
+```
+
+
+## Temporal similarity
+
+### Model relationship between pre quartile and temporal similarity
+```{r}
+m <- lmer(data = dpp, temporal_similarity ~ pre.f1.quartile + (1 | gameID))
+summary(m)
+```
+
+### Bootstrap temporal similarity by quartile
+```{r}
+
+dpp.T <- dpp %>% select(c('gameID','pre.f1.quartile','temporal_similarity'))
+dpp.boot.T <- dpp.T %>% group_by(pre.f1.quartile) %>% tidyboot_mean(column=temporal_similarity, nboot=100)
+dpp.boot.T
+```
+
+```{r}
+dpp.boot.T %>%
+  ggplot(aes(x=pre.f1.quartile,y=empirical_stat)) +
+  # geom_ribbon(aes(ymin=ci_lower, ymax = ci_upper), alpha =.25, color="#1c373e", fill="#1c373e") +
+  geom_point(aes(x=pre.f1.quartile, y=temporal_similarity), data=dpp.T, size = 3, alpha = 0.5, color="#b1c4c9") +
+  geom_smooth(method='lm', formula = y ~ poly(x,1), color="#1c373e", fill="#b1c4c9") +
+  geom_point(aes(x=pre.f1.quartile, y=empirical_stat),color="#1c373e",size = 5) +
+  ylab("temporal similarity between pre to post") +
+  xlab("accuracy quartile (pre)") +
+  theme_few() +
+  #ylim(c(0,0.6)) +
+  scale_x_continuous(breaks = c(1,2,3,4),labels=c('1st', '2nd','3rd','4th')) +
+  theme(legend.position = c(0.8, 0.2), text = element_text(size=14), element_line(size=1), element_rect(size=2, color="#00000"))
+```
+
+
+## Optimal Euclidean Distance
+
+### Model relationship between pre quartile and optimal Euclidean similarity
+```{r}
+m <- lmer(data = dpp, optimal_euclidean_distance ~ pre.f1.quartile + (1 | gameID))
+summary(m)
+```
+
+```{r}
+dpp.Eu <- dpp %>% select(c('gameID','pre.f1.quartile','actual_euclidean_distance'))
+dpp.boot.Eu <- dpp %>% group_by(pre.f1.quartile) %>% tidyboot_mean(column=actual_euclidean_distance, nboot=100)
+dpp.boot.Eu
+```
+
+```{r}
+dpp.boot.Eu %>%
+  ggplot(aes(x=pre.f1.quartile,y=empirical_stat)) +
+  # geom_ribbon(aes(ymin=ci_lower, ymax = ci_upper), alpha =.25, color="#1c373e", fill="#1c373e") +
+  geom_point(aes(x=pre.f1.quartile, y=actual_euclidean_distance), data=dpp.Eu, size = 3, alpha = 0.5, color="#b1c4c9") +
+  geom_smooth(method='lm', formula = y ~ poly(x,1), color="#1c373e", fill="#b1c4c9") +
+  geom_point(aes(x=pre.f1.quartile, y=empirical_stat),color="#1c373e",size = 5) +
+  ylab("Mean euclidean distance between pre to post actions") +
+  xlab("accuracy quartile (pre)") +
+  theme_few() +
+  #ylim(c(0,0.6)) +
+  scale_x_continuous(breaks = c(1,2,3,4),labels=c('1st', '2nd','3rd','4th')) +
+  theme(legend.position = c(0.8, 0.2), text = element_text(size=14), element_line(size=1), element_rect(size=2, color="#00000"))
+```
+
+```{r}
+m <- lmer(data = dpp, optimal_euclidean_distance ~ pre.f1.quartile + (1 | gameID))
+summary(m)
+```
+
+```{r}
+dpp.OEu <- dpp %>% select(c('gameID','pre.f1.quartile','optimal_euclidean_distance'))
+dpp.boot.OEu <- dpp %>% group_by(pre.f1.quartile) %>% tidyboot_mean(column=optimal_euclidean_distance, nboot=100)
+dpp.boot.OEu
+```
+
+```{r}
+dpp.boot.OEu %>%
+  ggplot(aes(x=pre.f1.quartile,y=empirical_stat)) +
+  # geom_ribbon(aes(ymin=ci_lower, ymax = ci_upper), alpha =.25, color="#1c373e", fill="#1c373e") +
+  geom_point(aes(x=pre.f1.quartile, y=optimal_euclidean_distance), data=dpp.OEu, size = 3, alpha = 0.5, color="#b1c4c9") +
+  geom_smooth(method='lm', formula = y ~ poly(x,1), color="#1c373e", fill="#b1c4c9") +
+  geom_point(aes(x=pre.f1.quartile, y=empirical_stat),color="#1c373e",size = 5) +
+  ylab("Mean euclidean distance between optimal mappings of pre to post actions") +
+  xlab("accuracy quartile (pre)") +
+  theme_few() +
+  #ylim(c(0,4)) +
+  scale_x_continuous(breaks = c(1,2,3,4),labels=c('1st', '2nd','3rd','4th')) +
+  theme(legend.position = c(0.8, 0.2), text = element_text(size=14), element_line(size=1), element_rect(size=2, color="#00000"))
+```
