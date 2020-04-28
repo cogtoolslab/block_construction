@@ -81,8 +81,8 @@ d.Eu.boot %>%
     scale_color_manual(values=c("#1c373e","#77798c")) +
     scale_fill_manual(values=c("#1c373e","#77798c")) +
     scale_x_discrete(labels= c(1,2,3)) + 
-    theme(legend.position = c(0.82, 0.88), legend.title=element_blank(), text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000"))
-#ggsave('../results/plots/block_silhouette_accuracy_timeseries.pdf', width=7, height = 10, units='cm', useDingbats = F)
+    theme(legend.position = c(0.75, 0.88), legend.title=element_blank(), text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000"))
+ggsave('../results/plots/block_silhouette_Euclidean_distances.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
 
 ## Convergence plots (distance to final solution)
