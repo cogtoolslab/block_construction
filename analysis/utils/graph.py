@@ -284,6 +284,7 @@ def plot_trajectory_graph(data = [],
                           target = 'hand_selected_004', 
                           phase = 'pre', 
                           save=False, 
+                          out_dir='./plots',
                           extension = '',
                           x_lower_bound = 4,
                           x_upper_bound = 13,
@@ -314,6 +315,7 @@ def plot_trajectory_graph(data = [],
     hs2pn = dict(zip(targets,pretty_names))   
     ## opacity dictionary
     O = {1:0.1, 2: 0.3, 3:0.5, 4: 0.7}
+
 
     def make_edge(x, y, width):
         return  go.Scatter(
@@ -359,27 +361,26 @@ def plot_trajectory_graph(data = [],
     ### FIGURE DEFINITION
     fig = go.Figure(data=edge_trace + [node_trace],
                  layout=go.Layout(
-                    title='<br>  ' + str(hs2pn[target]) + ' | ' + str(phase),
-                    titlefont_size=24,
+                    title= str(hs2pn[target]) + ' | ' + str(phase),
+                    titlefont_size=22,                     
                     showlegend=False,
                     hovermode='closest',
-                    margin=dict(b=20,l=5,r=5,t=40),
-                    annotations=[ dict(
-                        text="",
-                        showarrow=False,
-                        xref="paper", yref="paper",
-                        x=0.005, y=-0.002 ) ],
+                    margin=dict(b=20,l=5,r=5,t=40),                                       
                     xaxis={'range':[x_lower_bound,x_upper_bound], 'showgrid': False, 'zeroline': True, 'visible': False},
                     yaxis={'range':[-0.1,1.05], 'showgrid': False})
                     )
 
     ### FIG DIMENSIONS AND THEME
+    fig.update_yaxes(tickfont=dict(family='Helvetica', color='black', size=24), title_text='F1 score',
+                     title_font=dict(size=24, family='Helvetica', color='black')) 
+    
+   
     fig.update_layout(
         width=600,
         height=400,
-        template='simple_white'
+        template='simple_white'               
     )
-    
+        
     ### HORIZONTAL REF LINES
     fig.add_shape(type='line',x0=x_lower_bound, y0=1, x1=x_upper_bound, y1=1,
                   line={'color':'black','width':1, 'dash':'dot'})  
@@ -389,11 +390,10 @@ def plot_trajectory_graph(data = [],
     fig.show()
     
     if save:
-        plot_dir = "plot_exports"
         
-        if not os.path.exists(plot_dir):
-            os.mkdir(plot_dir)
+        if not os.path.exists(out_dir):
+            os.mkdir(out_dir)
     
-        plot_path =  os.path.join(plot_dir, (target_name + '_' + phase + '_' + extension +'.pdf'))
+        plot_path =  os.path.join(out_dir, 'state_trajectory', (target + '_' + phase + '_' + extension +'.pdf'))
         fig.write_image(plot_path)
             
