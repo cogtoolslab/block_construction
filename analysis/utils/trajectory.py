@@ -74,6 +74,54 @@ def convert_to_str(flat_world):
     res = "".join(s)
     return res
 
+def prettyTtest(x, crit_val = 0):
+    t,p = stats.ttest_1samp(x, crit_val)
+    print('t({}) = {} | p = {}'.format(len(x)-1, np.round(t,5), np.round(p,5)))    
+    return t,p
+
+def bootstrapCI(x,nIter=1000,crit_val = 0,
+                ci=95, verbose=False, compareNull=True):
+    '''
+    input: x = an array, 
+    nIter = number of iterations, 
+    crit_val = hypothetical null value
+    verbose = a flag to set whether to pretty print output
+    compareNull = a flag to set whether to compare against crit_val or not
+    
+    output: U,lb,ub,p1,p2
+    U = mean
+    lb = lower bound of 95% CI
+    ub = upper bound of 95% CI
+    p1 = proportion of bootstrapped iterations less than critical value
+    p2 = proportion of bootstrapped iterations greater than critical value
+    ci = what kind of confidence interval do you want? 95% by default
+    '''
+    u = []
+    for i in np.arange(nIter):
+        inds = np.random.RandomState(i).choice(len(x),len(x))
+        boot = x[inds]
+        u.append(np.mean(boot))
+
+    p1 = len([i for i in u if i<crit_val])/len(u) * 2 ## first version of p-value reflects number of samples that have value below crit_val
+    p2 = len([i for i in u if i>crit_val])/len(u) * 2 ## second version of p-value reflects number of samples that have value above crit_val
+    U = np.mean(u)
+    lb = np.percentile(u,(100-ci)/2)
+    ub = np.percentile(u,100-(100-ci)/2)
+    
+    if verbose:
+        print('Original mean = {}. Bootstrapped mean = {}.'.format(np.mean(x).round(5),U.round(5)))
+        print('{}% CI = [{}, {}].'.format(ci, lb.round(5), ub.round(5)))
+        if compareNull:
+            print('p<{}={} | p>{}={}.'.format(crit_val,np.round(p1,5),crit_val,np.round(p2,5)))        
+    
+    return U,lb,ub,p1,p2
+
+def statsPrint(x,nIter=1000,crit_val = 0,
+                ci=95, verbose=True, compareNull=True):
+    prettyTtest(x, crit_val = crit_val)
+    bootstrapCI(x,nIter=nIter,crit_val = crit_val,
+                ci=ci, verbose=verbose, compareNull=compareNull)
+            
 ### MAJOR UTILS 
 class GenericNode:
     '''
