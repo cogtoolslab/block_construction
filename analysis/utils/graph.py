@@ -54,10 +54,9 @@ import importlib
 import scoring
 import rda
 
-#from pyvis.network import Network
-import networkx as nx
-import plotly.graph_objects as go
+from scipy.stats import entropy
 
+import plotly.graph_objects as go
 import plotly
 import plotly.io as pio
 pio.orca.config.use_xvfb = True
@@ -396,4 +395,52 @@ def plot_trajectory_graph(data = [],
     
         plot_path =  os.path.join(out_dir, 'state_trajectory', (target + '_' + phase + '_' + extension +'.pdf'))
         fig.write_image(plot_path)
+           
             
+def convert_to_prob_dist(DICT):
+    '''
+    convert the count values in a dictionary DICT to probabilities    
+    '''
+    pdist = np.array(list(DICT.values())) / np.sum(list(DICT.values()))
+    try:
+        assert np.isclose(np.sum(pdist),1.)   
+    except:
+        print('Sum of pdist = {}, but should be 1.'.format(np.sum(pdist)))
+    P = dict(zip(list(DICT.keys()),list(pdist)))
+    return P                
+            
+def get_entropy_over_states(data = [],
+                          target = 'hand_selected_004', 
+                          phase = 'pre'):
+    '''
+    calculate entropy over states visited for particular target and phase
+    '''
+    
+    # check to make sure data was passed in
+    if len(data)==0:
+        raise Exception('No data was passed in! Please pass in data.')
+    
+    # this is what an empty world looks like (does not count towards entropy)
+    empty_world = '[0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0]'      
+
+    # Create graph
+    t = GenericBuildGraph() # make new tree
+
+    a = data[(data.targetName==target) & (data.phase_extended==phase)]
+    a = a.groupby('gameID')
+    a.apply(lambda g: t.add_build_path(g))
+    
+    # create dictionary of world strings to num visits
+    W = dict()
+    for i, (k1, layer) in enumerate(t.world_layers.items()):
+        for j, (k2, node) in enumerate(layer.nodes.items()):
+            if k2 != empty_world:
+                W[k2]=node.visits
+        
+    # convert counts to probabilities
+    P = convert_to_prob_dist(W)
+    
+    # calculate entropy over probability dist
+    h = entropy(list(P.values()))
+    
+    return h,P            
