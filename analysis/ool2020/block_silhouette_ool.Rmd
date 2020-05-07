@@ -72,10 +72,11 @@ m2 <- lmer(data = dpp, accuracy ~ condition + (1 | gameID) + (1 | targetName))
 m3 <- lmer(data = dpp, accuracy ~ phase + condition + (1 | gameID) + (1 | targetName))
 m4 <- lmer(data = dpp, accuracy ~ phase * condition + (1 | gameID) + (1 | targetName))
 anova(m1,m2,m3,m4)
-summary(m4)
+summary(m3)
 
 ```
 
+# Actions
 
 ```{r import.actions}
 df.action.metrics.full = read.csv('../results/csv/block_silhouette_Exp2Pilot3_all_rep_distances.csv')
@@ -216,6 +217,21 @@ dpp <- dpp %>%
   mutate(pre.f1.quartile=ntile(phase_a_rawF1DiscreteScore, 4))
 ```
 
+See if people make more radical updates to plans when they've acquired more task-general knowledge
+```{r attempt.similarity}
+d.attempt <- df.action.metrics.full %>% 
+  filter((condition=='control' & phase_pair=='pre to post') | (condition=='repeated' & phase_pair=='pre to repetition 1'))
+
+m1 <- lmer(data = d.attempt, optimal_euclidean_distance ~ condition + (1 | gameID) + (1 | targetName))
+summary(m1)
+```
+
+```{r attempt.similarity}
+d.attempt <- df.action.metrics.full %>% 
+  filter(phase_pair %in% c('pre to repetition 1', 'repetition 1 to repetition 2','repetition 2 to post'))
+```
+
+
 
 <!-- ## Temporal similarity -->
 
@@ -344,14 +360,15 @@ d.conseq %>%
   geom_smooth(method='lm', formula = y ~ poly(x,1))
 ```
 
+
 # Between-subject variance in action sequences
 ```{r import.btw.ppt}
 # here variance is calculated with both conditions lumped together
-ppt.var <- read.csv('../results/csv/block_silhouette_Exp2Pilot3_ppt_variance.csv')
+ppt.var <- read.csv('../results/csv/block_silhouette_Exp2Pilot3_all_ppt_variance.csv')
 ppt.var
 
 # here variance is calculated separately for conditions
-ppt.var.sep <- read.csv('../results/csv/block_silhouette_Exp2Pilot3_ppt_variance_separate.csv')
+ppt.var.sep <- read.csv('../results/csv/block_silhouette_Exp2Pilot3_all_ppt_variance_separate.csv')
 ppt.var.sep
 ```
 
