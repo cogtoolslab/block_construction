@@ -59,7 +59,7 @@ from scipy.stats import entropy
 import plotly.graph_objects as go
 import plotly
 import plotly.io as pio
-pio.orca.config.use_xvfb = True
+pio.orca.config.use_xvfb = False
 plotly.io.orca.config.save()
 
 
@@ -67,6 +67,11 @@ plotly.io.orca.config.save()
 targets = ['hand_selected_004', 'hand_selected_005', 'hand_selected_006',
        'hand_selected_008', 'hand_selected_009', 'hand_selected_011',
        'hand_selected_012', 'hand_selected_016']
+
+target_maps = {}
+
+with open(os.path.abspath('../results/csv/targetMaps.txt')) as json_file:
+    target_maps = json.load(json_file)
 
 ### MINOR UTILS
 def convert_to_str(flat_world):
@@ -130,7 +135,7 @@ class GenericNode:
     Each Node can have multiple children.
     '''
     
-    def __init__(self, discrete_world, f1_score):
+    def __init__(self, discrete_world, f1_score,target_name):
         self.out_edges = [] #list of edges (child, ppt, rep)
         self.discrete_world = discrete_world 
         self.world_str = convert_to_str(discrete_world)
@@ -144,6 +149,9 @@ class GenericNode:
         self.y = self.f1_score
         
         #self.x = np.sum(discrete_world)
+        self.precision = scoring.get_precision(1*np.logical_not(target_maps[target_name]),discrete_world)
+        if np.isnan(self.precision):
+            self.precision = 1
         
         
         # consider only upper portion of structure
@@ -219,7 +227,7 @@ class GenericWorldLayer:
     def __repr__(self):
         return(str(len(self.nodes)) + ' nodes in layer')
     
-    def get_world_node(self, discrete_world, f1_score):
+    def get_world_node(self, discrete_world, f1_score, target_name):
         '''
         add world state into layer
         if already exists, then returns the existing node.
@@ -233,7 +241,7 @@ class GenericWorldLayer:
             assert existing_node.f1_score == f1_score
             return existing_node
         else:
-            new_node = GenericNode(discrete_world, f1_score)
+            new_node = GenericNode(discrete_world, f1_score, target_name)
             self.nodes[world_str] = new_node
             return new_node
         
@@ -245,7 +253,7 @@ class GenericBuildGraph:
         
         # Add layer for every multiple of two, or add manually?
         
-        self.root = self.world_layers[0].get_world_node(np.zeros((18,13)).astype(int), 0) # start with one node with empty world
+        self.root = self.world_layers[0].get_world_node(np.zeros((18,13)).astype(int), 0, target_name) # start with one node with empty world
         self.prev_node = self.root
         
         
@@ -262,7 +270,7 @@ class GenericBuildGraph:
             
         # get node for this world state (if exists)
         layer = self.world_layers[world_squares]
-        new_node = layer.get_world_node(row.discreteWorld, row.rawF1DiscreteScore)
+        new_node = layer.get_world_node(row.discreteWorld, row.rawF1DiscreteScore, self.target_name)
         
         # link previous nodes to current node
         self.prev_node.add_child(new_node)
@@ -294,20 +302,24 @@ class GenericBuildGraph:
         node_xs = []
         node_ys = []
         node_sizes = []
+        node_colors = []
         edge_xs = []
         edge_ys = []
         edge_ws = []
+        edge_colors = []
         
         for i, (k1, layer) in enumerate(self.world_layers.items()):
             for j, (k2, node) in enumerate(layer.nodes.items()):
                 #n_x = (j+1)/(len(layer.nodes)+1) #12 should be max width
-                n_y = node.y
-                n_x = node.x
-                n_size = node.visits
-                #node.y = n_y
-                node_xs.append(n_x)
-                node_ys.append(n_y)
-                node_sizes.append(n_size)
+#                 n_y = node.y
+#                 n_x = node.x
+#                 n_size = node.visits
+#                 node_color = node.precision
+                node_xs.append(node.x)
+                node_ys.append(node.y)
+                node_sizes.append(node.visits)
+                node_colors.append(int(node.precision==1))
+                
         
         for i, (k1, layer) in enumerate(self.world_layers.items()):
             for j, (k2, node) in enumerate(layer.nodes.items()):
@@ -318,17 +330,15 @@ class GenericBuildGraph:
                     child_x = e.target.x
                     edge_xs.append(parent_x)
                     edge_xs.append(child_x)
-                    #edge_xs.append(None)
                     edge_ys.append(parent_y)
                     edge_ys.append(child_y)
-                    #edge_ys.append(None)
                     edge_ws.append(e.visits)
-                    #edge_ws.append(0)
+                    edge_colors.append(int(e.target.precision==1))
                 
-        return (node_xs, node_ys, edge_xs, edge_ys, node_sizes, edge_ws)
+        return (node_xs, node_ys, edge_xs, edge_ys, node_sizes, edge_ws, node_colors, edge_colors)
     
 def plot_trajectory_graph(data = [],
-                          target = 'hand_selected_004', 
+                          target_name = 'hand_selected_004', 
                           phase = 'pre', 
                           save=False, 
                           out_dir='./plots',
@@ -346,14 +356,14 @@ def plot_trajectory_graph(data = [],
         raise Exception('No data was passed in! Please pass in data.')
     
     # Create graph
-    t = GenericBuildGraph() # make new tree
+    t = GenericBuildGraph(target_name = target_name) # make new tree
 
-    a = data[(data.targetName==target) & (data.phase_extended==phase)]
+    a = data[(data.targetName==target_name) & (data.phase_extended==phase)]
     a = a.groupby('gameID')
     a.apply(lambda g: t.add_build_path(g))
     
     ### EXTRACT DATA VALS
-    node_xs, node_ys, edge_xs, edge_ys, node_sizes, edge_ws  = t.get_coords()
+    node_xs, node_ys, edge_xs, edge_ys, node_sizes, edge_ws, node_colors, edge_colors  = t.get_coords()
     
     ### HACKY POSTPROCESSING
     node_sizes = [i * node_size_scale_factor for i in node_sizes]
@@ -380,8 +390,9 @@ def plot_trajectory_graph(data = [],
                 go.Scatter(
                         x=(edge_xs[i*2],edge_xs[i*2+1]),
                         y=(edge_ys[i*2],edge_ys[i*2+1]),
+                        #colorscale = ['#636EFA', '#EF553B'],
                         line=dict(width=edge_ws[i]*edge_width_scale_factor,
-                                  color='#2e2e2e'),
+                                  color=["#EF553B", "#1c373e"][edge_colors[i]]),
                         opacity= O[edge_ws[i]] if edge_ws[i] in O.keys() else 0.95,
                         hoverinfo='none',
                         mode='lines'))
@@ -397,10 +408,12 @@ def plot_trajectory_graph(data = [],
         mode='markers',
         hoverinfo='text',
         marker=dict(
-            colorscale='Greys',            
+            #colorscale='Greys',            
+            colorscale = ["#1c373e","#EF553B"],
             reversescale=True,
             size = node_sizes,
-            color = '#2e2e2e',
+            #color = '#2e2e2e',
+            color = node_colors,
             opacity = 1.,
             line_width=0,
             line_color='#FFF'))
@@ -408,7 +421,7 @@ def plot_trajectory_graph(data = [],
     ### FIGURE DEFINITION
     fig = go.Figure(data=edge_trace + [node_trace],
                  layout=go.Layout(
-                    title= str(hs2pn[target]) + ' | ' + str(phase),
+                    title= str(hs2pn[target_name]) + ' | ' + str(phase),
                     titlefont_size=22,                     
                     showlegend=False,
                     hovermode='closest',
@@ -441,7 +454,7 @@ def plot_trajectory_graph(data = [],
         if not os.path.exists(out_dir):
             os.mkdir(out_dir)
     
-        plot_path =  os.path.join(out_dir, 'state_trajectory', (target + '_' + phase + '_' + extension +'.pdf'))
+        plot_path =  os.path.join(out_dir, 'state_trajectory', (target_name + '_' + phase + '_' + extension +'.pdf'))
         fig.write_image(plot_path)
            
             

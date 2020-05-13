@@ -22,15 +22,15 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Import data and apply preprocessing
 
 ```{r import}
-df.full = read.csv('../results/csv/block_silhouette_Exp2Pilot3_good.csv')
+df.full = read.csv('../results/csv/block_silhouette_Exp2Pilot3_all_good.csv')
 
 d <- df.full %>% 
-  select(rawF1DiscreteScore,phase,phase_extended,condition,trialNum,targetName,gameID,numBlocks,repetition,blockFell,buildTime,buggy) %>% 
+  select(rawF1DiscreteScore,phase,phase_extended,phase_number,condition,trialNum,targetName,gameID,numBlocks,repetition,blockFell,buildTime,buggy) %>% 
   rename('accuracy'='rawF1DiscreteScore') %>%
   mutate(phase=factor(phase, levels=c('pre','repeated','post'))) %>%
   mutate(phase_extended=factor(phase_extended, levels=c("pre","repeated","post"))) %>%
   mutate(blockFell = as.logical(blockFell)) %>%
-  mutate(repetition_1 = repetition + 1) %>%
+  #mutate(repetition_1 = repetition + 1) %>%
   mutate(perfect = ifelse(accuracy>0.99, TRUE, FALSE))
 
 ```
@@ -52,13 +52,13 @@ summary(m4)
 
 ## Compute accuracy in each phase
 ```{r}
-dpp <- d %>% #filter(phase %in% c('pre','post')) %>%
-  #mutate(phase = factor(phase,levels=c("pre","post"))) %>% 
+dpp <- d %>% filter(phase %in% c('pre','post')) %>%
+  mutate(phase = factor(phase,levels=c("pre","post"))) %>% 
   mutate(phase.numeric = as.numeric(phase)) %>%
-  mutate(repetition_1 = repetition + 1) 
+  mutate(phase_number = repetition + 1) 
 
 dpp.boot<-dpp %>%
-  group_by(repetition_1,condition) %>%
+  group_by(phase_number,condition) %>%
   tidyboot_mean(column=accuracy, nboot=100)
 
 dpp.boot
@@ -68,15 +68,14 @@ dpp.boot
 ```{r}
 
 dpp <- d %>%  
-  mutate(phase.numeric = as.numeric(phase)) %>%
-  mutate(repetition_1 = repetition + 1) 
+  mutate(phase.numeric = as.numeric(phase))
 
 dpp.boot<-dpp %>%
-  group_by(repetition_1,condition) %>%
+  group_by(phase_number,condition) %>%
   tidyboot_mean(column=accuracy, nboot=100)
 
 dpp.boot %>%
-  ggplot(aes(x=repetition_1,y=empirical_stat, color=condition, fill=condition)) +
+  ggplot(aes(x=phase_number,y=empirical_stat, color=condition, fill=condition)) +
     geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
                   data = dpp.boot %>% filter(condition == 'control')) +  
     geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
@@ -93,7 +92,7 @@ dpp.boot %>%
     scale_color_manual(values=c("#77798c", "#1c373e")) +
     scale_fill_manual(values=c("#77798c", "#1c373e")) +
     theme(legend.position = c(0.8, 0.2), text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000"))
-ggsave('../results/plots/block_silhouette_accuracy_timeseries.pdf', width=7, height = 10, units='cm', useDingbats = F)
+#ggsave('../results/plots/block_silhouette_accuracy_timeseries.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
 
 
@@ -109,7 +108,7 @@ summary(m)
 dpp <- d %>%
   filter(phase %in% c('pre','post')) %>%
   mutate(repetition_1 = repetition + 1) %>%
-  mutate(phase.numeric = as.numeric(phase)) %>%
+  mutate(phase.numeric = as.numeric(phase)) %>%c
   mutate(phase = factor(phase,levels=c('pre','post'))) %>%
   mutate(buildTimeSec = buildTime/1000)
 
@@ -119,7 +118,7 @@ summary(m3)
 
 
 ```{r}
-m3 <- lmer(data = dpp %>% filter(condition=='repeated'), buildTime ~ repetition_1  + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = dpp %>% filter(condition=='repeated'), buildTime ~ phase_number  + (1 | gameID) + (1 | targetName))
 summary(m3)
 ```
 
@@ -141,7 +140,7 @@ dpp.boot
 ## Visualize buildTime timecourse
 ```{r}
 dpp.boot %>%
-  ggplot(aes(x=repetition_1,y=empirical_stat, color=condition, fill=condition)) +
+  ggplot(aes(x=phase,y=empirical_stat, color=condition, fill=condition)) +
     geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
                 data = dpp.boot %>% filter(condition == 'repeated')) + # position = dodge,
     geom_line(size=1.5)+ 
