@@ -47,7 +47,7 @@ dpp <- d %>% filter(phase %in% c('pre','post')) %>%
   mutate(phase = factor(phase,levels=c("pre","post")))
 
 dpp.boot<-dpp %>%
-  group_by(phase_number,condition) %>%
+  group_by(phase_number) %>%
   tidyboot_mean(column=accuracy, nboot=100)
 
 dpp.boot
@@ -60,7 +60,7 @@ dperf <- dpp %>%
   mutate(perfect = ifelse(perfectScore, 1, 0)) 
 
 dperf.boot<- dperf %>%
-  group_by(phase_number,condition) %>% 
+  group_by(phase_number) %>% 
   tidyboot_mean(column=perfect, nboot=100)
 
 dperf.boot
@@ -89,7 +89,7 @@ dperf.boot
 
 ```{r structure.accuracy}
 dstruct.boot <- dpp %>%
-  group_by(targetName,phase,condition) %>%
+  group_by(targetName,phase) %>%
   tidyboot_mean(column=accuracy, nboot=100)
 
 dstruct.boot
@@ -103,7 +103,7 @@ m2 <- lmer(data = dpp, accuracy ~ condition + (1 | gameID) + (1 | targetName))
 m3 <- lmer(data = dpp, accuracy ~ phase + condition + (1 | gameID) + (1 | targetName))
 m4 <- lmer(data = dpp, accuracy ~ phase * condition + (1 | gameID) + (1 | targetName))
 anova(m1,m2,m3,m4)
-summary(m3)
+summary(m4)
 
 ```
 
@@ -138,6 +138,18 @@ dpp.boot %>%
 ggsave('../results/plots/block_silhouette_accuracy_timeseries.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
 
+```{r lmers}
+## fit model to data just comparing pre/post
+dpp <- d %>% filter(phase %in% c('pre','post')) %>% mutate(phase = factor(phase,levels=c("pre","post")))
+m1 <- lmer(data = dpp, numBlocks ~ phase + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = dpp, numBlocks ~ condition + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = dpp, numBlocks ~ phase + condition + (1 | gameID) + (1 | targetName))
+m4 <- lmer(data = dpp, numBlocks ~ phase * condition + (1 | gameID) + (1 | targetName))
+anova(m1,m2,m3,m4)
+summary(m4)
+
+```
+
 # Actions
 
 ```{r import.actions}
@@ -149,7 +161,7 @@ df.action.metrics.full
 ```{r}
 df.Euclidean.long <- df.action.metrics.full %>% 
   # mutate(phase.pair.numeric = as.numeric(phase_pair)) %>% 
-  select(gameID,targetName, phase_pair,actual_euclidean_distance,optimal_euclidean_distance) %>%
+  select(gameID,targetName, phase_a_rawF1DiscreteScore, phase_pair,actual_euclidean_distance,optimal_euclidean_distance) %>%
   pivot_longer(c(optimal_euclidean_distance,actual_euclidean_distance), names_to='distance_type') %>% 
   rename("euclidean_distance" = "value")
 
@@ -163,7 +175,7 @@ df.Euclidean.long
 
 d.Eu <- df.Euclidean.long %>% 
   filter(phase_pair %in% c('pre to repetition 1', 'repetition 1 to repetition 2','repetition 2 to post')) %>% 
-  mutate(phase_pair = ordered(phase_pair,levels=c('pre to repetition 1', 'repetition 1 to repetition 2','repetition 2 to post')))
+  mutate(phase_pair = ordered(phase_pair,levels=c('pre to repetition 1','repetition 1 to repetition 2','repetition 2 to post')))
 
 d.Eu.boot<-d.Eu %>%
   group_by(phase_pair,distance_type) %>%
@@ -193,14 +205,55 @@ d.Eu.boot %>%
     theme(legend.position ='FALSE', legend.title=element_blank(), text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000"))
 ggsave('../results/plots/block_silhouette_Euclidean_distances.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
+
+
 ```{r}
 m1 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
 m2 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + distance_type + (1 | gameID) + (1 | targetName))
 m3 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * distance_type + (1 | gameID) + (1 | targetName))
-m4 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * distance_type + (1 + phase_pair * distance_type | gameID) + (1 + phase_pair *distance_type  | targetName))
+m4 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * distance_type + (1 | gameID) + (1 | targetName))
 anova(m1,m2,m3,m4)
 summary(m4)
 ```
+```{r}
+m1 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + distance_type + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + distance_type + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m4 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * distance_type + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m5 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * distance_type * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+anova(m1,m2,m3,m4,m5)
+summary(m4)
+```
+
+```{r}
+m1 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + distance_type + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + distance_type + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m4 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + distance_type * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m5 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * distance_type * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+anova(m1,m2,m3,m4,m5)
+summary(m4)
+```
+
+```{r}
+m1 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + distance_type + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + distance_type + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m4 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * phase_a_rawF1DiscreteScore + distance_type + (1 | gameID) + (1 | targetName))
+m5 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * distance_type * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+anova(m1,m2,m3,m4,m5)
+summary(m4)
+```
+
+```{r}
+m1 <- lmer(data = d.Eu, euclidean_distance ~ 
+             phase_pair + distance_type + phase_a_rawF1DiscreteScore +
+             (1 + phase_pair * distance_type | gameID) +
+             (1 + phase_pair * distance_type | targetName))
+anova(m1)
+summary(m1)
+```
+
 
 <!-- ```{r displacement} -->
 <!-- d.disp <- df.action.metrics.full %>%  -->
@@ -389,6 +442,8 @@ dpp.boot.OEu %>%
 
 ggsave('../results/plots/block_silhouette_accuracy_seq_diff.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
+
+
 ```{r}
 
 d.conseq <- df.action.metrics.full %>% 
@@ -422,6 +477,7 @@ d.conseq.boot.OEu %>%
   scale_x_continuous(breaks = c(1,2,3,4),labels=c('1st', '2nd','3rd','4th')) +
   theme(legend.position = c(0.8, 0.8), text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000"))
 ```
+
 ```{r}
 d.conseq %>% 
   ggplot(aes(x=phase_a_rawF1DiscreteScore, y = optimal_euclidean_distance,color=phase_pair)) +
@@ -435,6 +491,7 @@ d.conseq %>%
 ggsave('../results/plots/block_silhouette_accuracy_seq_diff.pdf', width=7, height = 10, units='cm', useDingbats = F)
 
 ```
+
 ```{r}
 ## fit model for mean Euclidean distance of best action mapping
 m1 <- lmer(data = d.conseq, optimal_euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
@@ -454,8 +511,8 @@ ppt.var <- read.csv('../results/csv/block_silhouette_Exp2Pilot3_all_ppt_variance
 ppt.var
 
 # here variance is calculated separately for conditions
-ppt.var.sep <- read.csv('../results/csv/block_silhouette_Exp2Pilot3_all_ppt_variance_separate.csv')
-ppt.var.sep
+#ppt.var.sep <- read.csv('../results/csv/block_silhouette_Exp2Pilot3_all_ppt_variance_separate.csv')
+#ppt.var.sep
 ```
 
 ```{r}
@@ -465,7 +522,7 @@ ppt.var %>%
   ggplot(aes(x=phase_extended, y=variance, color=targetName, fill=targetName, group = targetName)) +
   geom_line(size=1.5) +
   geom_point(size = 5) +
-  ylab("variance") +
+  ylab("sequence variance") +
   xlab("phase") +
   ylim(c(0,4)) + 
   theme_few() +
