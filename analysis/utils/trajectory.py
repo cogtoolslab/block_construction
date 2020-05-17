@@ -16,6 +16,7 @@ from scipy.spatial import distance
 from scipy import ndimage
 from random import random
 from sklearn.cluster import SpectralBiclustering
+import sklearn.metrics as metrics
 import itertools
 
 import pymongo as pm
@@ -487,7 +488,7 @@ def get_sparsity_over_states(data = [],
     empty_world = '[0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0][0 0 0 0 0 0 0 0 0 0 0 0 0]'      
 
     # Create graph
-    t = GenericBuildGraph() # make new tree
+    t = GenericBuildGraph(target_name = target) # make new tree
 
     a = data[(data.targetName==target) & (data.phase_extended==phase)]
     a = a.groupby('gameID')
@@ -508,7 +509,9 @@ def get_sparsity_over_states(data = [],
         stat = entropy(list(P.values()))
     elif metric=='mean':
         stat = np.mean(list(W.values()))
-    
+    elif metric=='gini':
+        stat = gini_coefficient(list(W.values()))
+
     return stat,P   
 
 
@@ -525,7 +528,7 @@ def get_sparsity_over_edges(data = [],
         raise Exception('No data was passed in! Please pass in data.')
 
     # Create graph
-    t = GenericBuildGraph() # make new tree
+    t = GenericBuildGraph(target_name = target) # make new tree
 
     a = data[(data.targetName==target) & (data.phase_extended==phase)]
     a = a.groupby('gameID')
@@ -561,6 +564,19 @@ def get_sparsity_over_edges(data = [],
         # calculate entropy over probability dist
         stat = entropy(E['edge_freq'])
     elif metric=='mean':
-        stat = np.mean(E['edge_weight'])    
+        stat = np.mean(E['edge_weight'])   
+    elif metric=='gini':
+        stat = gini_coefficient(list(W.values()))
     
     return stat, E
+
+def gini_coefficient(visits):
+    visits = np.array(visits)[:,None]
+    numerator = np.sum(metrics.pairwise_distances(visits))
+    denomenator = 2 * (len(visits)**2) * np.mean(visits)
+    if denomenator == 0:
+        g = 0
+    else:
+        g = numerator/denomenator
+    return g
+
