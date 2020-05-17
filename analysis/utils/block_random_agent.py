@@ -40,7 +40,10 @@ import separation_axis_theorem as sat
 def cls():
     os.system('cls' if os.name=='nt' else 'clear')
 
+import uuid
+    
 import scoring
+
     
     
 ## directory & file hierarchy
@@ -156,12 +159,12 @@ def run_agent(targets,
     
     #block_dims.reverse()
     
-    columns = ['targetName','run','blockNum','discreteWorld','perfect','x','y','w','h']
+    columns = ['targetName','run','runID','blockNum','discreteWorld','perfect','x','y','w','h']
 
     df = pd.DataFrame(columns=columns)
     
     for target in targets:
-        print('running '+ target)
+        # print('running '+ target)
 
         if provide_actual_target:
             target_map = target
@@ -169,6 +172,8 @@ def run_agent(targets,
             target_map = np.logical_not(np.array(target_maps[target]))
 
         for run in range(0,niter):
+               
+            runID = uuid.uuid1()
             
             discrete_world = np.zeros([18,13]).astype(bool)
 
@@ -237,6 +242,7 @@ def run_agent(targets,
                                     completed = np.all(np.equal(discrete_world,target_map))
                                     df = df.append({'targetName': str(target),
                                                    'run': run,
+                                                   'runID': runID,
                                                    'blockNum': block_num,
                                                    'discreteWorld':discrete_world.copy(),
                                                    'perfect':completed,
@@ -265,9 +271,7 @@ def run_agent(targets,
                     tested_all_blocks = True
                     
                     
-    out_path = os.path.join(agent_results_dir,'block_silhouette_initial_random_agent_' + str(niter) + '.csv')
-    df.to_csv(out_path)
-    print('done!')
+    return df 
     
 
     
@@ -278,7 +282,15 @@ if __name__ == "__main__":
     parser.add_argument('--niter', type=int, 
                                    help='how many iterations for each target?', \
                                    default=1)
+    
+    parser.add_argument('--suffix', type=str, 
+                                   help='add suffix to csv', \
+                                   default='')
     args = parser.parse_args()
     
     
-    run_agent(targets,args.niter,verbose=False)
+    df = run_agent(targets,args.niter,verbose=False)
+    
+    out_path = os.path.join(agent_results_dir,'block_silhouette_initial_random_agent_' + str(args.niter) + '_' + args.suffix + '.csv')
+    df.to_csv(out_path)
+    #print('done!')
