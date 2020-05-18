@@ -21,28 +21,147 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Import data and apply preprocessing
 
-```{r import}
-df.action.metrics.full = read.csv('../results/csv/block_silhouette_Exp2Pilot3_rep_distances.csv')
+```{r}
+iterationName = 'Exp2Pilot3_all'
+paste('../results/csv/block_silhouette_',iterationName,'_good.csv', sep='')
+```
 
-# d <- df.full %>% 
-#   select(rawF1DiscreteScore,phase,phase_extended,condition,trialNum,targetName,gameID,numBlocks,repetition,blockFell,buildTime,buggy) %>% 
-#   rename('accuracy'='rawF1DiscreteScore') %>%
-#   mutate(phase=factor(phase, levels=c('pre','repeated','post'))) %>%
-#   mutate(phase_extended=factor(phase_extended, levels=c("pre","repeated","post"))) %>%
-#   mutate(blockFell = as.logical(blockFell)) %>%
-#   mutate(repetition_1 = repetition + 1) %>%
-#   mutate(perfect = ifelse(accuracy>0.99, TRUE, FALSE))
+```{r import}
+
+iterationName = 'Exp2Pilot3_all'
+
+df.full = read.csv(paste('../results/csv/block_silhouette_',iterationName,'_good.csv', sep=''))
+
+d <- df.full %>%
+  select(rawF1DiscreteScore,phase,phase_extended,phase_number,condition,trialNum,targetName,gameID,numBlocks,repetition,blockFell,buildTime,buggy,perfectScore) %>%
+  rename('accuracy'='rawF1DiscreteScore') %>%
+  mutate(phase=factor(phase, levels=c('pre','repeated','post'))) %>%
+  mutate(phase_extended=factor(phase_extended, levels=c("pre","repeated","post"))) %>%
+  mutate(blockFell = as.logical(blockFell)) %>%
+  mutate(perfect = ifelse(accuracy>0.99, TRUE, FALSE))
 
 ```
 
+```{r phase.accuracy}
+dpp <- d %>% filter(phase %in% c('pre','post')) %>%
+  mutate(phase = factor(phase,levels=c("pre","post")))
+
+dpp.boot<-dpp %>%
+  group_by(phase_number) %>%
+  tidyboot_mean(column=accuracy, nboot=100)
+
+dpp.boot
+
+```
+
+```{r phase.perfect}
+
+dperf <- dpp %>%
+  mutate(perfect = ifelse(perfectScore, 1, 0)) 
+
+dperf.boot<- dperf %>%
+  group_by(phase_number) %>% 
+  tidyboot_mean(column=perfect, nboot=100)
+
+dperf.boot
+
+```
+
+Add a logitstic regression of perfect scores here
+```{r perf.logistic}
+# m1 <- lmer(data = dperf, perfect ~ phase + (1 | gameID) + (1 | targetName))
+# m2 <- lmer(data = dperf, perfect ~ condition + (1 | gameID) + (1 | targetName))
+# m3 <- lmer(data = dperf, perfect ~ phase + condition + (1 | gameID) + (1 | targetName))
+# m4 <- lmer(data = dperf, perfect ~ phase * condition + (1 | gameID) + (1 | targetName))
+# anova(m1,m2,m3,m4)
+# summary(m3)
+```
+
+```{r phase.perfect}
+dperf.boot<- dpp %>%
+  mutate(perfect = ifelse(perfectScore, 1, 0)) %>% 
+  group_by(phase_number,condition) %>%
+  tidyboot_mean(column=perfect, nboot=100)
+
+dperf.boot
+
+```
+
+```{r structure.accuracy}
+dstruct.boot <- dpp %>%
+  group_by(targetName,phase) %>%
+  tidyboot_mean(column=accuracy, nboot=100)
+
+dstruct.boot
+```
+
+```{r lmers}
+## fit model to data just comparing pre/post
+dpp <- d %>% filter(phase %in% c('pre','post')) %>% mutate(phase = factor(phase,levels=c("pre","post")))
+m1 <- lmer(data = dpp, accuracy ~ phase + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = dpp, accuracy ~ condition + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = dpp, accuracy ~ phase + condition + (1 | gameID) + (1 | targetName))
+m4 <- lmer(data = dpp, accuracy ~ phase * condition + (1 | gameID) + (1 | targetName))
+anova(m1,m2,m3,m4)
+summary(m4)
+
+```
+
+## Visualize change in accuracy
 ```{r}
+
+dpp <- d %>%  
+  mutate(phase.numeric = as.numeric(phase))
+
+dpp.boot<-dpp %>%
+  group_by(phase_number,condition) %>%
+  tidyboot_mean(column=accuracy, nboot=100)
+
+dpp.boot %>%
+  ggplot(aes(x=phase_number,y=empirical_stat, color=condition, fill=condition)) +
+    geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
+                  data = dpp.boot %>% filter(condition == 'control')) +  
+    geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
+                data = dpp.boot %>% filter(condition == 'repeated')) + # position = dodge,
+    geom_line(size=1.5)+
+    geom_point(size = 5) +
+    ylab("F1 score") +
+    xlab("repetition") +
+    theme_few() +
+    # scale_x_continuous(breaks = round(seq(1, 4, by =1),1)) +
+    xlim(c(0.5,4.5)) +  
+    ylim(c(0.6,1)) +
+    # scale_y_continuous(breaks = seq(-0.5,2.5,0.5)) +
+    scale_color_manual(values=c("#77798c", "#1c373e")) +
+    scale_fill_manual(values=c("#77798c", "#1c373e")) +
+    theme(legend.position = c(0.8, 0.2), text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000"))
+ggsave('../results/plots/block_silhouette_accuracy_timeseries.pdf', width=7, height = 10, units='cm', useDingbats = F)
+```
+
+```{r lmers}
+## fit model to data just comparing pre/post
+dpp <- d %>% filter(phase %in% c('pre','post')) %>% mutate(phase = factor(phase,levels=c("pre","post")))
+m1 <- lmer(data = dpp, numBlocks ~ phase + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = dpp, numBlocks ~ condition + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = dpp, numBlocks ~ phase + condition + (1 | gameID) + (1 | targetName))
+m4 <- lmer(data = dpp, numBlocks ~ phase * condition + (1 | gameID) + (1 | targetName))
+anova(m1,m2,m3,m4)
+summary(m4)
+
+```
+
+# Actions
+
+```{r import.actions}
+df.action.metrics.full = read.csv('../results/csv/block_silhouette_Exp2Pilot3_all_rep_distances.csv')
+
 df.action.metrics.full
 ```
 
 ```{r}
 df.Euclidean.long <- df.action.metrics.full %>% 
   # mutate(phase.pair.numeric = as.numeric(phase_pair)) %>% 
-  select(gameID,targetName, phase_pair,actual_euclidean_distance,optimal_euclidean_distance) %>%
+  select(gameID,targetName, phase_a_rawF1DiscreteScore, phase_pair,actual_euclidean_distance,optimal_euclidean_distance) %>%
   pivot_longer(c(optimal_euclidean_distance,actual_euclidean_distance), names_to='distance_type') %>% 
   rename("euclidean_distance" = "value")
 
@@ -56,7 +175,7 @@ df.Euclidean.long
 
 d.Eu <- df.Euclidean.long %>% 
   filter(phase_pair %in% c('pre to repetition 1', 'repetition 1 to repetition 2','repetition 2 to post')) %>% 
-  mutate(phase_pair = ordered(phase_pair,levels=c('pre to repetition 1', 'repetition 1 to repetition 2','repetition 2 to post')))
+  mutate(phase_pair = ordered(phase_pair,levels=c('pre to repetition 1','repetition 1 to repetition 2','repetition 2 to post')))
 
 d.Eu.boot<-d.Eu %>%
   group_by(phase_pair,distance_type) %>%
@@ -74,18 +193,67 @@ d.Eu.boot %>%
                  data = d.Eu.boot %>% filter(distance_type == 'optimal')) +
     geom_line(size=1.5) +
     geom_point(size = 5) +
-    ylab("mean Euclidean distance") +
+    ylab("Euclidean distance") +
     xlab("repetition pair") +
     theme_few() +
     #xlim(c(0.5,3.5)) +  
-    ylim(c(0.6,3.5)) +
+    ylim(c(0,5)) +
     # scale_y_continuous(breaks = seq(-0.5,2.5,0.5)) +
-    scale_color_manual(values=c("#1c373e","#77798c")) +
-    scale_fill_manual(values=c("#1c373e","#77798c")) +
+    scale_color_manual(values=c("#77798c","#1c373e")) +
+    scale_fill_manual(values=c("#77798c","#1c373e")) +
     scale_x_discrete(labels= c(1,2,3)) + 
-    theme(legend.position ='FALSE', legend.title=element_blank(), text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000"))
+    theme(legend.position ='FALSE', legend.title=element_blank(), text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000"))
 ggsave('../results/plots/block_silhouette_Euclidean_distances.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
+
+
+```{r}
+m1 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + distance_type + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * distance_type + (1 | gameID) + (1 | targetName))
+m4 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * distance_type + (1 | gameID) + (1 | targetName))
+anova(m1,m2,m3,m4)
+summary(m4)
+```
+```{r}
+m1 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + distance_type + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + distance_type + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m4 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * distance_type + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m5 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * distance_type * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+anova(m1,m2,m3,m4,m5)
+summary(m4)
+```
+
+```{r}
+m1 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + distance_type + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + distance_type + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m4 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + distance_type * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m5 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * distance_type * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+anova(m1,m2,m3,m4,m5)
+summary(m4)
+```
+
+```{r}
+m1 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + distance_type + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + distance_type + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m4 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * phase_a_rawF1DiscreteScore + distance_type + (1 | gameID) + (1 | targetName))
+m5 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * distance_type * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+anova(m1,m2,m3,m4,m5)
+summary(m4)
+```
+
+```{r}
+m1 <- lmer(data = d.Eu, euclidean_distance ~ 
+             phase_pair + distance_type + phase_a_rawF1DiscreteScore +
+             (1 + phase_pair * distance_type | gameID) +
+             (1 + phase_pair * distance_type | targetName))
+anova(m1)
+summary(m1)
+```
+
 
 <!-- ```{r displacement} -->
 <!-- d.disp <- df.action.metrics.full %>%  -->
@@ -126,11 +294,22 @@ d.derivative <- df.action.metrics.full %>%
 
 ```{r}
 ## fit model for mean Euclidean distance of best action mapping
+m1 <- lmer(data = d.derivative, actual_euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = d.derivative, actual_euclidean_distance ~ phase_pair + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = d.derivative, actual_euclidean_distance ~ phase_pair * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+anova(m1,m2,m3)
+summary(m2)
+```
+
+
+
+```{r}
+## fit model for mean Euclidean distance of best action mapping
 m1 <- lmer(data = d.derivative, optimal_euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
 m2 <- lmer(data = d.derivative, optimal_euclidean_distance ~ phase_pair + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
 m3 <- lmer(data = d.derivative, optimal_euclidean_distance ~ phase_pair * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
 anova(m1,m2,m3)
-summary(m1)
+summary(m2)
 ```
 
 
@@ -139,13 +318,40 @@ Does high performance mean that similar build sequences will be used next time?
 
 ##Looking only at pre and post:
 
+
+
 ### Find quartiles of pretest accuracy (QUARTILES OF THAT SUBSET- SHOULD THIS BE QUARTILES OF WHOLE DATASET?)
 ```{r}
 dpp <- df.action.metrics.full %>% 
-  filter(phase_a=='pre' && phase_b=='post')
+  filter(phase_a=='pre' & phase_b=='post')
 
-dpp$pre.f1.quartile <- ntile(dpp$phase_a_rawF1DiscreteScore, 4) 
+# quartiles for everyone
+# dpp$pre.f1.quartile <- ntile(dpp$phase_a_rawF1DiscreteScore, 4) 
+
+# quartile for that subject
+dpp <- dpp %>%
+  group_by(gameID) %>% 
+  mutate(pre.f1.quartile=ntile(phase_a_rawF1DiscreteScore, 4))
 ```
+
+```{r}
+dpp
+```
+
+See if people make more radical updates to plans when they've acquired more task-general knowledge
+```{r attempt.similarity}
+d.attempt <- df.action.metrics.full %>% 
+  filter((condition=='control' & phase_pair=='pre to post') | (condition=='repeated' & phase_pair=='pre to repetition 1'))
+
+m1 <- lmer(data = d.attempt, optimal_euclidean_distance ~ condition + (1 | gameID) + (1 | targetName))
+summary(m1)
+```
+
+```{r attempt.similarity}
+d.attempt <- df.action.metrics.full %>% 
+  filter(phase_pair %in% c('pre to repetition 1', 'repetition 1 to repetition 2','repetition 2 to post'))
+```
+
 
 
 <!-- ## Temporal similarity -->
@@ -227,26 +433,86 @@ dpp.boot.OEu %>%
   geom_point(aes(x=pre.f1.quartile, y=optimal_euclidean_distance), data=dpp.OEu, size = 3, alpha = 0.5, color="#b1c4c9") +
   geom_smooth(method='lm', formula = y ~ poly(x,1), color="#1c373e", fill="#b1c4c9") +
   geom_point(aes(x=pre.f1.quartile, y=empirical_stat),color="#1c373e",size = 5) +
-  ylab("min Euclidean distance") +
+  ylab("Euclidean distance") +
   xlab("accuracy quartile (pre)") +
+  theme_few() +
+  ylim(c(0,5)) +
+  scale_x_continuous(breaks = c(1,2,3,4),labels=c('1st', '2nd','3rd','4th')) +
+  theme(legend.position = c(0.8, 0.2), text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000"))
+
+ggsave('../results/plots/block_silhouette_accuracy_seq_diff.pdf', width=7, height = 10, units='cm', useDingbats = F)
+```
+
+
+```{r}
+
+d.conseq <- df.action.metrics.full %>% 
+  filter(phase_pair %in% c('pre to repetition 1','repetition 1 to repetition 2', 'repetition 2 to post'))
+
+# quartiles for everyone
+#d.conseq$phase_a.f1.quartile <- ntile(d.conseq$phase_a_rawF1DiscreteScore, 4)
+
+# quartile for that subject
+d.conseq <- d.conseq %>%
+  group_by(gameID) %>% 
+  mutate(phase_a.f1.quartile=ntile(phase_a_rawF1DiscreteScore, 4))
+
+
+#d.conseq.OEu <- d.conseq %>% select(c('gameID','phase_a.f1.quartile','optimal_euclidean_distance'))
+d.conseq.boot.OEu <- d.conseq %>% group_by(phase_pair,phase_a.f1.quartile) %>% tidyboot_mean(column=optimal_euclidean_distance, nboot=100)
+d.conseq.boot.OEu
+```
+
+```{r}
+d.conseq.boot.OEu %>%
+  ggplot(aes(x=phase_a.f1.quartile,y=empirical_stat)) +
+  # geom_ribbon(aes(ymin=ci_lower, ymax = ci_upper), alpha =.25, color="#1c373e", fill="#1c373e") +
+  geom_point(aes(x=phase_a.f1.quartile, y=optimal_euclidean_distance), data=d.conseq, size = 3, alpha = 0.5, color="#b1c4c9") +
+  geom_smooth(method='lm', formula = y ~ poly(x,1), color="#1c373e", fill="#b1c4c9") +
+  geom_point(aes(x=phase_a.f1.quartile, y=empirical_stat, color = phase_pair),size = 5) +
+  ylab("Euclidean distance") +
+  xlab("first phase accuracy quartile") +
   theme_few() +
   #ylim(c(0,4)) +
   scale_x_continuous(breaks = c(1,2,3,4),labels=c('1st', '2nd','3rd','4th')) +
-  theme(legend.position = c(0.8, 0.2), text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000"))
-
-ggsave('../results/plots/block_silhouette_accuracy_seq_diff.pdf', width=15, height = 10, units='cm', useDingbats = F)
+  theme(legend.position = c(0.8, 0.8), text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000"))
 ```
+
+```{r}
+d.conseq %>% 
+  ggplot(aes(x=phase_a_rawF1DiscreteScore, y = optimal_euclidean_distance,color=phase_pair)) +
+  geom_point(size = 0.2) +
+  ylab("Euclidean distance") +
+  xlab("Accuracy of first phase") +
+  geom_smooth(method='lm', formula = y ~ poly(x,1)) +
+  ylim(c(0,5)) +
+  theme_few() +
+  theme(legend.position = 'FALSE',text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000"))
+ggsave('../results/plots/block_silhouette_accuracy_seq_diff.pdf', width=7, height = 10, units='cm', useDingbats = F)
+
+```
+
+```{r}
+## fit model for mean Euclidean distance of best action mapping
+m1 <- lmer(data = d.conseq, optimal_euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = d.conseq, optimal_euclidean_distance ~ phase_pair + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = d.conseq, optimal_euclidean_distance ~ phase_pair * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
+anova(m1,m2,m3)
+summary(m2)
+```
+
+
 
 
 # Between-subject variance in action sequences
 ```{r import.btw.ppt}
 # here variance is calculated with both conditions lumped together
-ppt.var <- read.csv('../results/csv/block_silhouette_Exp2Pilot3_ppt_variance.csv')
+ppt.var <- read.csv('../results/csv/block_silhouette_Exp2Pilot3_all_ppt_variance.csv')
 ppt.var
 
 # here variance is calculated separately for conditions
-ppt.var.sep <- read.csv('../results/csv/block_silhouette_Exp2Pilot3_ppt_variance_separate.csv')
-ppt.var.sep
+#ppt.var.sep <- read.csv('../results/csv/block_silhouette_Exp2Pilot3_all_ppt_variance_separate.csv')
+#ppt.var.sep
 ```
 
 ```{r}
@@ -256,16 +522,29 @@ ppt.var %>%
   ggplot(aes(x=phase_extended, y=variance, color=targetName, fill=targetName, group = targetName)) +
   geom_line(size=1.5) +
   geom_point(size = 5) +
-  ylab("variance") +
+  ylab("sequence variance") +
   xlab("phase") +
-  ylim(c(0.6,3.3)) + 
+  ylim(c(0,4)) + 
   theme_few() +
   #scale_color_manual(values=c("#1c373e","#77798c")) +
-  #scale_fill_manual(values=c("#1c373e","#77798c")) +
-  theme(legend.position = 'FALSE', text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000")) +
+  #scale_fill_manual( values=c("#1c373e","#77798c")) +
+  theme(legend.position = 'right', text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000")) +
   scale_color_discrete(name = "target", labels = c(1,2,3,4,5,6,7,8)) +
   guides(size = FALSE, fill=FALSE)
-ggsave('../results/plots/block_silhouette_ppt_variance.pdf', width=7, height = 10, units='cm', useDingbats = F)
+ggsave('../results/plots/block_silhouette_ppt_variance.pdf', width=14, height = 10, units='cm', useDingbats = F)
 ```
 
+
+```{r}
+ppt.var.mean <- ppt.var %>% 
+  filter(phase_extended %in% c('pre','post')) %>% 
+  mutate(phase_extended = ordered(phase_extended,levels=c('pre','post')))
+
+ppt.var.mean.pre <- ppt.var.mean %>% 
+  filter(phase_extended=='pre')
+
+ppt.var.mean.post <- ppt.var.mean %>% 
+  filter(phase_extended=='post')
+
+t.test(ppt.var.mean.pre$variance, ppt.var.mean.post$variance, paired = TRUE, alternative = "greater")
 ```
