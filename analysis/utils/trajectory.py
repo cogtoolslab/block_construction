@@ -59,8 +59,6 @@ from scipy.stats import entropy
 import plotly.graph_objects as go
 import plotly
 import plotly.io as pio
-pio.orca.config.use_xvfb = True
-plotly.io.orca.config.save()
 
 
 #### GLOBAL VARS
@@ -440,7 +438,8 @@ def plot_trajectory_graph(data = [],
         
         if not os.path.exists(out_dir):
             os.mkdir(out_dir)
-    
+        if not os.path.exists(os.path.join(out_dir, 'state_trajectory')):
+            os.mkdir(os.path.join(out_dir, 'state_trajectory'))    
         plot_path =  os.path.join(out_dir, 'state_trajectory', (target + '_' + phase + '_' + extension +'.pdf'))
         fig.write_image(plot_path)
            
