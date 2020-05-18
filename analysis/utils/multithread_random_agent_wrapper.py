@@ -32,3 +32,4 @@ if __name__ == "__main__":
         cmd_string = 'python block_random_agent.py --niter {} --suffix {}'.format(int(args.niter/args.nthread), thread_suffix)
         print(cmd_string)
         thread.start_new_thread(os.system,(cmd_string,))
+    print('done!')

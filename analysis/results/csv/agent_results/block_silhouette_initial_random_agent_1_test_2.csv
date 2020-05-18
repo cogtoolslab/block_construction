@@ -1,0 +1,3457 @@
+,targetName,run,blockNum,discreteWorld,perfect,x,y,w,h
+0,hand_selected_004,0,0,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,6,0,2,4
+1,hand_selected_004,0,1,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,10,0,2,4
+2,hand_selected_004,0,2,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,10,4,1,2
+3,hand_selected_004,0,3,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,7,4,1,2
+4,hand_selected_004,0,4,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,11,4,1,2
+5,hand_selected_004,0,5,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,10,6,2,2
+6,hand_selected_004,0,6,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,8,0,1,2
+7,hand_selected_004,0,7,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,5,0,1,2
+8,hand_selected_004,0,8,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,7,6,1,2
+9,hand_selected_004,0,9,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,8,2,1,2
+10,hand_selected_004,0,10,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,8,4,1,2
+11,hand_selected_004,0,11,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,8,6,1,2
+12,hand_selected_005,0,0,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,5,0,2,1
+13,hand_selected_005,0,1,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,8,0,2,1
+14,hand_selected_005,0,2,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,11,0,1,2
+15,hand_selected_005,0,3,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,10,0,1,2
+16,hand_selected_005,0,4,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,10,2,2,2
+17,hand_selected_005,0,5,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,10,4,2,4
+18,hand_selected_005,0,6,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,5,1,2,2
+19,hand_selected_005,0,7,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,8,1,2,1
+20,hand_selected_005,0,8,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,5,3,2,1
+21,hand_selected_005,0,9,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,8,2,1,2
+22,hand_selected_005,0,10,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,8,4,1,2
+23,hand_selected_005,0,11,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,8,6,1,2
+24,hand_selected_006,0,0,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,7,0,1,2
+25,hand_selected_006,0,1,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,9,0,4,2
+26,hand_selected_006,0,2,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,11,2,2,2
+27,hand_selected_006,0,3,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,11,4,2,1
+28,hand_selected_006,0,4,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,6,0,1,2
+29,hand_selected_006,0,5,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,11,5,1,2
+30,hand_selected_006,0,6,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,6,2,1,2
+31,hand_selected_006,0,7,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,6,4,1,2
+32,hand_selected_006,0,8,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,6,6,1,2
+33,hand_selected_008,0,0,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,6,0,2,4
+34,hand_selected_008,0,1,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,8,0,2,1
+35,hand_selected_008,0,2,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,10,0,2,1
+36,hand_selected_008,0,3,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True False False False  True  True False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,5,4,4,2
+37,hand_selected_008,0,4,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True False False False  True  True False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,11,1,1,2
+38,hand_selected_008,0,5,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True False False False  True  True False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,9,1,2,1
+39,hand_selected_008,0,6,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True False False False  True  True False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,9,2,2,1
+40,hand_selected_008,0,7,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,9,3,2,1
+41,hand_selected_008,0,8,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True  True False False False False False
+  False]
+ [ True False False False  True  True  True False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,7,6,2,1
+42,hand_selected_008,0,9,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True  True False False False False False
+  False]
+ [ True False False False  True  True  True False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,9,4,1,2
+43,hand_selected_008,0,10,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True  True False False False False False
+  False]
+ [ True False False False  True  True  True False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,9,6,1,2
+44,hand_selected_008,0,11,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True  True False False False False False
+  False]
+ [ True False False False  True  True  True False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,10,4,1,2
+45,hand_selected_008,0,12,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True  True False False False False False
+  False]
+ [ True False False False  True  True  True False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,10,6,1,2
+46,hand_selected_009,0,0,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,11,0,2,4
+47,hand_selected_009,0,1,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,5,0,2,1
+48,hand_selected_009,0,2,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,8,0,2,4
+49,hand_selected_009,0,3,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,5,1,2,2
+50,hand_selected_009,0,4,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,7,4,4,2
+51,hand_selected_009,0,5,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,5,3,2,1
+52,hand_selected_009,0,6,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,5,4,2,1
+53,hand_selected_009,0,7,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,9,6,1,2
+54,hand_selected_009,0,8,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,8,6,1,2
+55,hand_selected_009,0,9,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,12,4,1,2
+56,hand_selected_009,0,10,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [ True  True False False  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False  True  True False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,7,0,1,2
+57,hand_selected_009,0,11,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [ True  True False False  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True False False  True  True False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,10,0,1,2
+58,hand_selected_009,0,12,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True False False False False False
+  False]
+ [ True  True False False  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True False False  True  True False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,6,5,1,2
+59,hand_selected_009,0,13,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True False False False False False
+  False]
+ [ True  True False False  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True False False  True  True  True  True False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",True,10,6,1,2
+60,hand_selected_011,0,0,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,8,0,2,2
+61,hand_selected_011,0,1,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,6,0,2,4
+62,hand_selected_011,0,2,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,8,2,2,4
+63,hand_selected_011,0,3,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,10,0,2,2
+64,hand_selected_011,0,4,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,10,2,1,2
+65,hand_selected_011,0,5,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True False False  True  True False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,7,6,4,2
+66,hand_selected_011,0,6,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True False False  True  True False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,11,2,1,2
+67,hand_selected_011,0,7,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True False False  True  True False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,11,4,1,2
+68,hand_selected_011,0,8,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True False False  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True False False  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,11,6,1,2
+69,hand_selected_011,0,9,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True False False  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True False False  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,6,4,1,2
+70,hand_selected_012,0,0,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,8,0,4,2
+71,hand_selected_012,0,1,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,8,2,2,1
+72,hand_selected_012,0,2,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True False False False False False
+  False]
+ [ True  True  True  True  True  True  True False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,8,3,2,4
+73,hand_selected_012,0,3,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,8,7,2,1
+74,hand_selected_012,0,4,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,5,0,1,2
+75,hand_selected_012,0,5,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,11,2,1,2
+76,hand_selected_012,0,6,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,11,4,1,2
+77,hand_selected_012,0,7,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,5,2,1,2
+78,hand_selected_012,0,8,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,5,4,1,2
+79,hand_selected_012,0,9,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,5,6,1,2
+80,hand_selected_012,0,10,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,11,6,1,2
+81,hand_selected_016,0,0,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,11,0,1,2
+82,hand_selected_016,0,1,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,12,0,1,2
+83,hand_selected_016,0,2,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,5,0,2,1
+84,hand_selected_016,0,3,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,11,2,2,4
+85,hand_selected_016,0,4,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,11,6,1,2
+86,hand_selected_016,0,5,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,12,6,1,2
+87,hand_selected_016,0,6,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,10,0,1,2
+88,hand_selected_016,0,7,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,6,1,1,2
+89,hand_selected_016,0,8,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,7,0,1,2
+90,hand_selected_016,0,9,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,10,2,1,2
+91,hand_selected_016,0,10,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [ True  True False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,10,4,1,2
+92,hand_selected_016,0,11,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,7,2,1,2
+93,hand_selected_016,0,12,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [ True  True  True  True False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,10,6,1,2
+94,hand_selected_016,0,13,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,7,4,1,2
+95,hand_selected_016,0,14,"[[False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True False False False False False False False False False False False
+  False]
+ [ True  True  True False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [ True  True  True  True  True  True  True  True False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]
+ [False False False False False False False False False False False False
+  False]]",False,7,6,1,2

@@ -500,9 +500,11 @@ def get_sparsity_over_states(data = [],
         for j, (k2, node) in enumerate(layer.nodes.items()):
             if k2 != empty_world:
                 W[k2]=node.visits
-        
+    
+    _ = W.pop(empty_world, None)
     # convert counts to probabilities
     P = convert_to_prob_dist(W)
+    
     
     if metric=='entropy':
         # calculate entropy over probability dist
@@ -512,7 +514,7 @@ def get_sparsity_over_states(data = [],
     elif metric=='gini':
         stat = gini_coefficient(list(W.values()))
 
-    return stat,P   
+    return stat,P,W   
 
 
 def get_sparsity_over_edges(data = [],
@@ -566,7 +568,7 @@ def get_sparsity_over_edges(data = [],
     elif metric=='mean':
         stat = np.mean(E['edge_weight'])   
     elif metric=='gini':
-        stat = gini_coefficient(list(W.values()))
+        stat = gini_coefficient(E['edge_weight'])
     
     return stat, E
 

@@ -270,6 +270,8 @@ def run_agent(targets,
                     if verbose: print('no viable blocks- giving up')
                     tested_all_blocks = True
                     
+    df['rawF1DiscreteScore'] = df.apply(scoring.get_f1_score_lambda, axis = 1)
+    df['discreteWorld'] = df['discreteWorld'].apply(lambda a: a*1)
                     
     return df 
     
