@@ -16,20 +16,28 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--niter', type=int, 
-                                   help='how many iterations total?', \
+                                   help='how many iterations in each batch?', \
+                                   default=10)
+    
+    parser.add_argument('--nbatches', type=int, 
+                                   help='how many batches per iteration?', \
                                    default=10)
     
     parser.add_argument('--nthread', type=int, 
-                                   help='how many threads to spread across', \
+                                   help='how many threads?', \
                                    default=10)
+    
+    parser.add_argument('--suffix', type=str, 
+                                   help='add suffix', \
+                                   default='')
     args = parser.parse_args()
     
     
-    thread_suffixes = ['thread_' + str(i) for i in range(0, args.nthread)]
+    thread_suffixes = ['thread_' + str(i) + args.suffix for i in range(0, args.nthread)]
 
     print('Now running ...')
     for thread_suffix in thread_suffixes:
-        cmd_string = 'python block_random_agent.py --niter {} --suffix {}'.format(int(args.niter/args.nthread), thread_suffix)
+        cmd_string = 'python block_random_agent.py --niter {} --suffix {} --nbatch {}'.format(args.niter, thread_suffix, args.nbatches)
         print(cmd_string)
         thread.start_new_thread(os.system,(cmd_string,))
     print('done!')
