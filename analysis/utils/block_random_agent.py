@@ -1,3 +1,7 @@
+'''
+For next time, this should output discreteworld as single integers in multiple columns, to avoid costly string operations when importing results from csv
+'''
+
 from __future__ import division
 
 import numpy as np
@@ -64,7 +68,7 @@ if os.path.join(proj_dir,'stimuli') not in sys.path:
 if not os.path.exists(csv_dir):
     os.makedirs(csv_dir)   
     
-agent_results_dir = os.path.abspath(os.path.join(csv_dir,'agent_results'))
+agent_results_dir = os.path.join(csv_dir,'agent_results')
 
 #### Target maps: grab the bitmap representation of each stim
 
@@ -165,6 +169,7 @@ def run_agent(targets,
     df = pd.DataFrame(columns=columns)
     
     for batch_i in range(0, nbatches):
+
         batchID = uuid.uuid1()
 
         for target in targets:
@@ -288,20 +293,36 @@ if __name__ == "__main__":
 
     parser.add_argument('--niter', type=int, 
                                    help='how many iterations for each target?', \
-                                   default=1)
-    
-    parser.add_argument('--nbatches', type=int, 
-                               help='how many batches per iteration?', \
-                               default=10)
+                                   default=105)
     
     parser.add_argument('--suffix', type=str, 
                                    help='add suffix to csv', \
                                    default='')
+    
+        
+    parser.add_argument('--nbatches', type=int, 
+                               help='how many batches per iteration?', \
+                               default=1)
+    
+    parser.add_argument('--thread', type=int, 
+                                   help='number thread', \
+                                   default=1)
+    
     args = parser.parse_args()
     
+    total = 1000
+    big_folder = os.path.join(agent_results_dir,'1000')
     
-    df = run_agent(targets,args.niter,nbatches=args.nbatches,verbose=False)
+    df = run_agent(targets,args.niter,nbatches=1,verbose=False)
     
-    out_path = os.path.join(agent_results_dir,'block_silhouette_initial_random_agent_' + str(args.niter) + '_' + args.suffix + '.csv')
+    completed_inds = np.array([(i.split('_')[-1].split('.')[0]) for i in os.listdir(big_folder)]).astype(int)
+    still_to_run = [i for i in np.arange(0,total) if i not in completed_inds]
+    next_number = min(still_to_run)
+    
+    print('saving file', next_number)
+    
+    out_path = os.path.join(big_folder,'block_silhouette_initial_random_agent_{}_{}_{}.csv'.format(str(args.niter),args.suffix, next_number))
+    
+    
     df.to_csv(out_path)
-    #print('done!')
+    #print('thread {} csv saved'.format(args.thread))
