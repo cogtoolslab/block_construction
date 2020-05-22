@@ -454,7 +454,7 @@ def plot_trajectory_graph(data = [],
             os.mkdir(out_dir)
         if not os.path.exists(os.path.join(out_dir, 'state_trajectory')):
             os.mkdir(os.path.join(out_dir, 'state_trajectory'))    
-        plot_path =  os.path.join(out_dir, 'state_trajectory', (target + '_' + phase + '_' + extension +'.pdf'))
+        plot_path =  os.path.join(out_dir, 'state_trajectory', (target_name + '_' + phase + '_' + extension +'.pdf'))
         fig.write_image(plot_path)
            
             

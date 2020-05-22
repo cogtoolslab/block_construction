@@ -126,7 +126,7 @@ dpp.boot %>%
     geom_line(size=1.5)+
     geom_point(size = 5) +
     ylab("F1 score") +
-    xlab("repetition") +
+    xlab("build attempt") +
     theme_few() +
     # scale_x_continuous(breaks = round(seq(1, 4, by =1),1)) +
     xlim(c(0.5,4.5)) +  
@@ -134,7 +134,7 @@ dpp.boot %>%
     # scale_y_continuous(breaks = seq(-0.5,2.5,0.5)) +
     scale_color_manual(values=c("#77798c", "#1c373e")) +
     scale_fill_manual(values=c("#77798c", "#1c373e")) +
-    theme(legend.position = c(0.8, 0.2), text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000"))
+    theme(legend.position = 'FALSE', text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000"))
 ggsave('../results/plots/block_silhouette_accuracy_timeseries.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
 
@@ -175,7 +175,7 @@ df.Euclidean.long
 
 d.Eu <- df.Euclidean.long %>% 
   filter(phase_pair %in% c('pre to repetition 1', 'repetition 1 to repetition 2','repetition 2 to post')) %>% 
-  mutate(phase_pair = ordered(phase_pair,levels=c('pre to repetition 1','repetition 1 to repetition 2','repetition 2 to post')))
+  mutate(phase_pair = ordered(phase_pair,levels=c('pre to repetition 1','repetition 1 to repetition 2','repetition 2 to post'))) %>% within(d.Eu, phase_pair <- relevel(phase_pair, ref = 'pre to repetition 1'))
 
 d.Eu.boot<-d.Eu %>%
   group_by(phase_pair,distance_type) %>%
@@ -215,6 +215,9 @@ m4 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * distance_type + (1 | g
 anova(m1,m2,m3,m4)
 summary(m4)
 ```
+# Full models of Euclidean distance
+
+
 
 ```{r}
 m1 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
@@ -484,7 +487,7 @@ d.conseq %>%
   ggplot(aes(x=phase_a_rawF1DiscreteScore, y = optimal_euclidean_distance,color=phase_pair)) +
   geom_point(size = 0.2) +
   ylab("Euclidean distance") +
-  xlab("Accuracy of first phase") +
+  xlab("accuracy of first phase") +
   geom_smooth(method='lm', formula = y ~ poly(x,1)) +
   ylim(c(0,5)) +
   theme_few() +
@@ -529,10 +532,10 @@ ppt.var %>%
   theme_few() +
   #scale_color_manual(values=c("#1c373e","#77798c")) +
   #scale_fill_manual( values=c("#1c373e","#77798c")) +
-  theme(legend.position = 'right', text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000")) +
+  theme(legend.position = 'FALSE', text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000")) +
   scale_color_discrete(name = "target", labels = c(1,2,3,4,5,6,7,8)) +
   guides(size = FALSE, fill=FALSE)
-ggsave('../results/plots/block_silhouette_ppt_variance.pdf', width=14, height = 10, units='cm', useDingbats = F)
+ggsave('../results/plots/block_silhouette_ppt_variance.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
 
 
@@ -549,3 +552,64 @@ ppt.var.mean.post <- ppt.var.mean %>%
 
 t.test(ppt.var.mean.pre$variance, ppt.var.mean.post$variance, paired = TRUE, alternative = "greater")
 ```
+
+```{r}
+
+iterationName = 'Exp2Pilot3_all'
+file_path = paste('../results/csv/block_silhouette_',iterationName,'_ngram_gini_final.csv', sep='')
+
+ginis <- read_csv(file_path)
+
+ginis
+```
+
+
+Model distinguishing human from agent trajectories
+```{r}
+??m1 <- lmer(data = d.conseq, gini ~ (nlevel^2)*(iter) + (1 | targetName))
+
+```
+
+
+Model distinguishing pre from post
+```{r}
+human_ginis <- ginis %>% 
+  filter(human==TRUE) %>% 
+  mutate(nlevel.squared = nlevel^2)
+
+m1 <- lmer(data = human_ginis, gini ~ nlevel.squared + (1 | targetName))
+m2 <- lmer(data = human_ginis, gini ~ nlevel.squared*phase + (1 | targetName))
+anova(m1, m2)
+summary(m2)
+```
+
+```{r}
+mp.1 <- lm(gini~ nlevel*phase + poly(nlevel,1), 
+                data = human_ginis)
+mp.2 <- lm(gini~ nlevel*phase + poly(nlevel,2), 
+                data = human_ginis)
+mp.3 <- lm(gini~ nlevel*phase + poly(nlevel,3), 
+                data = human_ginis)
+anova(mp.1,mp.2,mp.3)
+summary(mp.2)
+```
+```{r}
+ginis %>%
+  ggplot(aes(x=nlevel, y=gini, group=phase)) +
+    geom_line(aes(color=phase), width = 0, size = 1.5,
+                 data = ginis %>% filter(human == 'TRUE') %>% group_by(phase)) +  
+    # geom_line(width = 0, size = 1.5,
+    #              data = ginis %>% filter(human == 'FALSE')) +
+    ylab("structure (G)") +
+    xlab("n") +
+    theme_few() +
+    #xlim(c(0.5,3.5)) +  
+    ylim(c(0,1)) +
+    # scale_y_continuous(breaks = seq(-0.5,2.5,0.5)) +
+    #scale_color_manual(values=c("#77798c","#1c373e")) +
+    #scale_fill_manual(values=c("#77798c","#1c373e")) +
+    #scale_x_discrete(labels= c(1,2,3)) + 
+    theme(legend.position ='FALSE', legend.title=element_blank(), text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000"))
+#ggsave('../results/plots/.pdf', width=7, height = 10, units='cm', useDingbats = F)
+```
+

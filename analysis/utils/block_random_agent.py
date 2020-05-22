@@ -1,3 +1,7 @@
+'''
+For next time, this should output discreteworld as single integers in multiple columns, to avoid costly string operations when importing results from csv
+'''
+
 from __future__ import division
 
 import numpy as np
@@ -64,7 +68,7 @@ if os.path.join(proj_dir,'stimuli') not in sys.path:
 if not os.path.exists(csv_dir):
     os.makedirs(csv_dir)   
     
-agent_results_dir = os.path.abspath(os.path.join(csv_dir,'agent_results'))
+agent_results_dir = os.path.join(csv_dir,'agent_results')
 
 #### Target maps: grab the bitmap representation of each stim
 
@@ -138,7 +142,8 @@ def find_positions(world, block, x_offset = 5):
     
 
 def run_agent(targets, 
-        niter, 
+        niter,
+        nbatches = 1,
         verbose = False, 
         provide_actual_target=False,
            block_dims = [{'width':1,
@@ -159,116 +164,121 @@ def run_agent(targets,
     
     #block_dims.reverse()
     
-    columns = ['targetName','run','runID','blockNum','discreteWorld','perfect','x','y','w','h']
+    columns = ['targetName','run','runID','blockNum','discreteWorld','perfect','x','y','w','h','batch']
 
     df = pd.DataFrame(columns=columns)
     
-    for target in targets:
-        # print('running '+ target)
+    for batch_i in range(0, nbatches):
 
-        if provide_actual_target:
-            target_map = target
-        else:
-            target_map = np.logical_not(np.array(target_maps[target]))
+        batchID = uuid.uuid1()
 
-        for run in range(0,niter):
-               
-            runID = uuid.uuid1()
-            
-            discrete_world = np.zeros([18,13]).astype(bool)
+        for target in targets:
+            # print('running '+ target)
 
-            block_num = 0
-            completed = False
-            tested_all_blocks = False
+            if provide_actual_target:
+                target_map = target
+            else:
+                target_map = np.logical_not(np.array(target_maps[target]))
 
-            while (~completed & ~tested_all_blocks):
+            for run in range(0,niter):
 
-                placed = False
+                runID = uuid.uuid1()
 
-                random.shuffle(block_dims)
+                discrete_world = np.zeros([18,13]).astype(bool)
 
-                b = 0
-                while((b < len(block_dims)) & ~placed): #keep trying blocks until placed or none left
+                block_num = 0
+                completed = False
+                tested_all_blocks = False
 
-                    #select next block from shuffled list
-                    block = block_dims[b]
-                    if verbose: print(" "*0,'block:', block)
+                while (~completed & ~tested_all_blocks):
 
-                    # position-centric
-                    # enumerate all positions for that block
-                    positions = find_positions(discrete_world[world_bounds['left']:world_bounds['right'],0:8], block, x_offset=5)
-                    if verbose: print(positions)
+                    placed = False
 
-                    random.shuffle(positions) # shuffle positions
-                    p = 0
+                    random.shuffle(block_dims)
 
-                    while(~placed & (p < len(positions))): #keep trying positions until placed or none left
-                        position = positions[p]
-                        if verbose: print(" "*4,'position:', position)
+                    b = 0
+                    while((b < len(block_dims)) & ~placed): #keep trying blocks until placed or none left
 
-                        x_loc = position['x']
-                        y_loc = position['y']
+                        #select next block from shuffled list
+                        block = block_dims[b]
+                        if verbose: print(" "*0,'block:', block)
 
-                        # check if valid location
-                        # check if in silhouette
-                        within_silhouette = check_overlap(x_loc,
-                                                          y_loc,block['width'],
-                                                          block['height'], 
-                                                          target_map, 
-                                                          mode = 'inside')
-                        if verbose: print(" "*4,'within silhouette:', within_silhouette)
+                        # position-centric
+                        # enumerate all positions for that block
+                        positions = find_positions(discrete_world[world_bounds['left']:world_bounds['right'],0:8], block, x_offset=5)
+                        if verbose: print(positions)
 
-                        if within_silhouette:
-                             # check if free in current world
-                            free_space = check_overlap(x_loc,
-                                                       y_loc,
-                                                       block['width'],
-                                                       block['height'], 
-                                                       discrete_world,
-                                                       mode = 'outside')
-                            
-                            if verbose: print(" "*5,'free space:', free_space)
+                        random.shuffle(positions) # shuffle positions
+                        p = 0
 
-                            if free_space:
+                        while(~placed & (p < len(positions))): #keep trying positions until placed or none left
+                            position = positions[p]
+                            if verbose: print(" "*4,'position:', position)
 
-                                # check stability
-                                stable = check_stability(x_loc, y_loc, block['width'], block['height'], discrete_world)
-                                if verbose: print(" "*6,'stable:', stable)
+                            x_loc = position['x']
+                            y_loc = position['y']
 
-                                #if added:
-                                if stable:
-                                    # add to world
-                                    discrete_world[x_loc:x_loc+block['width'],y_loc:y_loc+block['height']] = 1
-                                    completed = np.all(np.equal(discrete_world,target_map))
-                                    df = df.append({'targetName': str(target),
-                                                   'run': run,
-                                                   'runID': runID,
-                                                   'blockNum': block_num,
-                                                   'discreteWorld':discrete_world.copy(),
-                                                   'perfect':completed,
-                                                   'x':x_loc,
-                                                   'y':y_loc,
-                                                   'w':block['width'],
-                                                   'h':block['height']}, ignore_index=True)
-                                    if verbose: print(np.rot90(discrete_world.astype(int)))
-                                    placed = True
-                                    
-                                    if (completed & verbose):
-                                        print('completed structure!')
-                                    block_num += 1
+                            # check if valid location
+                            # check if in silhouette
+                            within_silhouette = check_overlap(x_loc,
+                                                              y_loc,block['width'],
+                                                              block['height'], 
+                                                              target_map, 
+                                                              mode = 'inside')
+                            if verbose: print(" "*4,'within silhouette:', within_silhouette)
+
+                            if within_silhouette:
+                                 # check if free in current world
+                                free_space = check_overlap(x_loc,
+                                                           y_loc,
+                                                           block['width'],
+                                                           block['height'], 
+                                                           discrete_world,
+                                                           mode = 'outside')
+
+                                if verbose: print(" "*5,'free space:', free_space)
+
+                                if free_space:
+
+                                    # check stability
+                                    stable = check_stability(x_loc, y_loc, block['width'], block['height'], discrete_world)
+                                    if verbose: print(" "*6,'stable:', stable)
+
+                                    #if added:
+                                    if stable:
+                                        # add to world
+                                        discrete_world[x_loc:x_loc+block['width'],y_loc:y_loc+block['height']] = 1
+                                        completed = np.all(np.equal(discrete_world,target_map))
+                                        df = df.append({'targetName': str(target),
+                                                       'run': run,
+                                                       'runID': runID,
+                                                       'blockNum': block_num,
+                                                       'discreteWorld':discrete_world.copy(),
+                                                       'perfect':completed,
+                                                       'x':x_loc,
+                                                       'y':y_loc,
+                                                       'w':block['width'],
+                                                       'h':block['height'],
+                                                       'batch':batchID}, ignore_index=True)
+                                        if verbose: print(np.rot90(discrete_world.astype(int)))
+                                        placed = True
+
+                                        if (completed & verbose):
+                                            print('completed structure!')
+                                        block_num += 1
+                                    else:
+                                        p += 1 # check next position
                                 else:
                                     p += 1 # check next position
                             else:
                                 p += 1 # check next position
-                        else:
-                            p += 1 # check next position
 
-                    if(p == len(positions)): # if no positions work
-                        b += 1 # check next block
+                        if(p == len(positions)): # if no positions work
+                            b += 1 # check next block
 
-                if b == len(block_dims):
-                    if verbose: print('no viable blocks- giving up')
-                    tested_all_blocks = True
+                    if b == len(block_dims):
+                        if verbose: print('no viable blocks- giving up')
+                        tested_all_blocks = True
                     
     df['rawF1DiscreteScore'] = df.apply(scoring.get_f1_score_lambda, axis = 1)
     df['discreteWorld'] = df['discreteWorld'].apply(lambda a: a*1)
@@ -283,16 +293,36 @@ if __name__ == "__main__":
 
     parser.add_argument('--niter', type=int, 
                                    help='how many iterations for each target?', \
-                                   default=1)
+                                   default=105)
     
     parser.add_argument('--suffix', type=str, 
                                    help='add suffix to csv', \
                                    default='')
+    
+        
+    parser.add_argument('--nbatches', type=int, 
+                               help='how many batches per iteration?', \
+                               default=1)
+    
+    parser.add_argument('--thread', type=int, 
+                                   help='number thread', \
+                                   default=1)
+    
     args = parser.parse_args()
     
+    total = 1000
+    big_folder = os.path.join(agent_results_dir,'1000')
     
-    df = run_agent(targets,args.niter,verbose=False)
+    df = run_agent(targets,args.niter,nbatches=1,verbose=False)
     
-    out_path = os.path.join(agent_results_dir,'block_silhouette_initial_random_agent_' + str(args.niter) + '_' + args.suffix + '.csv')
+    completed_inds = np.array([(i.split('_')[-1].split('.')[0]) for i in os.listdir(big_folder)]).astype(int)
+    still_to_run = [i for i in np.arange(0,total) if i not in completed_inds]
+    next_number = min(still_to_run)
+    
+    print('saving file', next_number)
+    
+    out_path = os.path.join(big_folder,'block_silhouette_initial_random_agent_{}_{}_{}.csv'.format(str(args.niter),args.suffix, next_number))
+    
+    
     df.to_csv(out_path)
-    #print('done!')
+    #print('thread {} csv saved'.format(args.thread))
