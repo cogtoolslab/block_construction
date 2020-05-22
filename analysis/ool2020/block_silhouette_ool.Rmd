@@ -1,7 +1,7 @@
 ---
-title: "block_silhouette_cogsci2020"
+title: "block_silhouette_"
 author: "wmccarthy & jefan"
-date: "1/31/2019"
+date: "5/17/2020"
 output: html_document
 ---
 
@@ -193,7 +193,7 @@ d.Eu.boot %>%
                  data = d.Eu.boot %>% filter(distance_type == 'optimal')) +
     geom_line(size=1.5) +
     geom_point(size = 5) +
-    ylab("Euclidean distance") +
+    ylab("euclidean distance") +
     xlab("repetition pair") +
     theme_few() +
     #xlim(c(0.5,3.5)) +  
@@ -215,6 +215,7 @@ m4 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * distance_type + (1 | g
 anova(m1,m2,m3,m4)
 summary(m4)
 ```
+
 ```{r}
 m1 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
 m2 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + distance_type + (1 | gameID) + (1 | targetName))
