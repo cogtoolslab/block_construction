@@ -1,7 +1,7 @@
 ---
-title: "block_silhouette_cogsci2020"
+title: "block_silhouette_"
 author: "wmccarthy & jefan"
-date: "1/31/2019"
+date: "5/17/2020"
 output: html_document
 ---
 
@@ -186,9 +186,15 @@ d.Eu.boot %>%
     geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
                  data = d.Eu.boot %>% filter(distance_type == 'optimal')) +
     geom_line(size=1.5) +
+<<<<<<< HEAD
     geom_point(size = 4) +
     ylab("Euclidean distance") +
     xlab("attempt pair") +
+=======
+    geom_point(size = 5) +
+    ylab("euclidean distance") +
+    xlab("repetition pair") +
+>>>>>>> 35d6387322cb25f4fb0808841e95ba07068f7a8c
     theme_few() +
     #xlim(c(0.5,3.5)) +  
     ylim(c(0,4.5)) +
@@ -215,6 +221,7 @@ summary(m4)
 d.Eu <- d.Eu %>% 
   mutate(phase_pair = as.numeric(phase_pair))
 ```
+
 
 ```{r}
 m1 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
