@@ -16,6 +16,7 @@ library(ggthemes)
 library(broom)
 library(lme4)
 library(lmerTest)
+library(numform)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -68,14 +69,6 @@ dperf.boot
 ```
 
 Add a logitstic regression of perfect scores here
-```{r perf.logistic}
-# m1 <- lmer(data = dperf, perfect ~ phase + (1 | gameID) + (1 | targetName))
-# m2 <- lmer(data = dperf, perfect ~ condition + (1 | gameID) + (1 | targetName))
-# m3 <- lmer(data = dperf, perfect ~ phase + condition + (1 | gameID) + (1 | targetName))
-# m4 <- lmer(data = dperf, perfect ~ phase * condition + (1 | gameID) + (1 | targetName))
-# anova(m1,m2,m3,m4)
-# summary(m3)
-```
 
 ```{r phase.perfect}
 dperf.boot<- dpp %>%
@@ -124,7 +117,7 @@ dpp.boot %>%
     geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
                 data = dpp.boot %>% filter(condition == 'repeated')) + # position = dodge,
     geom_line(size=1.5)+
-    geom_point(size = 5) +
+    geom_point(size = 4) +
     ylab("F1 score") +
     xlab("build attempt") +
     theme_few() +
@@ -182,6 +175,7 @@ d.Eu.boot<-d.Eu %>%
   tidyboot_mean(column=euclidean_distance, nboot=100)
 
 d.Eu.boot
+
 ```
 
 ```{r}
@@ -192,12 +186,12 @@ d.Eu.boot %>%
     geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
                  data = d.Eu.boot %>% filter(distance_type == 'optimal')) +
     geom_line(size=1.5) +
-    geom_point(size = 5) +
+    geom_point(size = 4) +
     ylab("Euclidean distance") +
-    xlab("repetition pair") +
+    xlab("attempt pair") +
     theme_few() +
     #xlim(c(0.5,3.5)) +  
-    ylim(c(0,5)) +
+    ylim(c(0,4.5)) +
     # scale_y_continuous(breaks = seq(-0.5,2.5,0.5)) +
     scale_color_manual(values=c("#77798c","#1c373e")) +
     scale_fill_manual(values=c("#77798c","#1c373e")) +
@@ -217,6 +211,10 @@ summary(m4)
 ```
 # Full models of Euclidean distance
 
+```{r}
+d.Eu <- d.Eu %>% 
+  mutate(phase_pair = as.numeric(phase_pair))
+```
 
 ```{r}
 m1 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
@@ -247,45 +245,6 @@ m5 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * distance_type * phase_
 anova(m1,m2,m3,m4,m5)
 summary(m4)
 ```
-
-```{r}
-m1 <- lmer(data = d.Eu, euclidean_distance ~ 
-             phase_pair + distance_type + phase_a_rawF1DiscreteScore +
-             (1 + phase_pair * distance_type | gameID) +
-             (1 + phase_pair * distance_type | targetName))
-anova(m1)
-summary(m1)
-```
-
-
-<!-- ```{r displacement} -->
-<!-- d.disp <- df.action.metrics.full %>%  -->
-<!--   filter(condition=='repeated') %>%  -->
-<!--   filter(phase_pair %in% c('pre to post', 'repetition 1 to post','repetition 2 to post')) -->
-<!-- ``` -->
-
-
-<!-- ```{r} -->
-<!-- ## fit model for temporal distance -->
-<!-- m1 <- lmer(data = d.disp, temporal_similarity ~ phase_pair + (1 | gameID) + (1 | targetName)) -->
-<!-- m2 <- lmer(data = d.disp, temporal_similarity ~ phase_pair + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName)) -->
-<!-- m3 <- lmer(data = d.disp, temporal_similarity ~ phase_pair * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName)) -->
-
-<!-- anova(m1, m2, m3) -->
-<!-- summary(m2) -->
-<!-- ``` -->
-
-
-
-<!-- ```{r} -->
-<!-- ## fit model for mean Euclidean distance of best action mapping -->
-<!-- m1 <- lmer(data = d.disp, optimal_euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName)) -->
-<!-- m2 <- lmer(data = d.disp, optimal_euclidean_distance ~ phase_pair + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName)) -->
-<!-- m3 <- lmer(data = d.disp, optimal_euclidean_distance ~ phase_pair * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName)) -->
-
-<!-- anova(m1,m2,m3) -->
-<!-- summary(m1) -->
-<!-- ``` -->
 
 
 ## Derivative plots (consequetive phases)
@@ -354,39 +313,6 @@ summary(m1)
 d.attempt <- df.action.metrics.full %>% 
   filter(phase_pair %in% c('pre to repetition 1', 'repetition 1 to repetition 2','repetition 2 to post'))
 ```
-
-
-
-<!-- ## Temporal similarity -->
-
-<!-- ### Model relationship between pre quartile and temporal similarity -->
-<!-- ```{r} -->
-<!-- m <- lmer(data = dpp, temporal_similarity ~ pre.f1.quartile + (1 | gameID)) -->
-<!-- summary(m) -->
-<!-- ``` -->
-
-<!-- ### Bootstrap temporal similarity by quartile -->
-<!-- ```{r} -->
-
-<!-- dpp.T <- dpp %>% select(c('gameID','pre.f1.quartile','temporal_similarity')) -->
-<!-- dpp.boot.T <- dpp.T %>% group_by(pre.f1.quartile) %>% tidyboot_mean(column=temporal_similarity, nboot=100) -->
-<!-- dpp.boot.T -->
-<!-- ``` -->
-
-<!-- ```{r} -->
-<!-- dpp.boot.T %>% -->
-<!--   ggplot(aes(x=pre.f1.quartile,y=empirical_stat)) + -->
-<!--   # geom_ribbon(aes(ymin=ci_lower, ymax = ci_upper), alpha =.25, color="#1c373e", fill="#1c373e") + -->
-<!--   geom_point(aes(x=pre.f1.quartile, y=temporal_similarity), data=dpp.T, size = 3, alpha = 0.5, color="#b1c4c9") + -->
-<!--   geom_smooth(method='lm', formula = y ~ poly(x,1), color="#1c373e", fill="#b1c4c9") + -->
-<!--   geom_point(aes(x=pre.f1.quartile, y=empirical_stat),color="#1c373e",size = 5) + -->
-<!--   ylab("temporal similarity between pre to post") + -->
-<!--   xlab("accuracy quartile (pre)") + -->
-<!--   theme_few() + -->
-<!--   #ylim(c(0,0.6)) + -->
-<!--   scale_x_continuous(breaks = c(1,2,3,4),labels=c('1st', '2nd','3rd','4th')) + -->
-<!--   theme(legend.position = c(0.8, 0.2), text = element_text(size=14), element_line(size=1), element_rect(size=2, color="#00000")) -->
-<!-- ``` -->
 
 
 ## Optimal Euclidean Distance
@@ -486,10 +412,11 @@ d.conseq %>%
   ggplot(aes(x=phase_a_rawF1DiscreteScore, y = optimal_euclidean_distance,color=phase_pair)) +
   geom_point(size = 0.2) +
   ylab("Euclidean distance") +
-  xlab("accuracy of first phase") +
+  xlab("F1 in previous attempt") +
   geom_smooth(method='lm', formula = y ~ poly(x,1)) +
-  ylim(c(0,5)) +
+  ylim(c(0,4.5)) +
   theme_few() +
+  scale_color_manual(values=c("#EF553B","#B8422E","#70281C")) +
   theme(legend.position = 'FALSE',text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000"))
 ggsave('../results/plots/block_silhouette_accuracy_seq_diff.pdf', width=7, height = 10, units='cm', useDingbats = F)
 
@@ -522,17 +449,17 @@ ppt.var
 ppt.var %>% 
   filter(phase_extended %in% c('pre','post')) %>% 
   mutate(phase_extended = ordered(phase_extended,levels=c('pre','post'))) %>%
-  ggplot(aes(x=phase_extended, y=variance, color=targetName, fill=targetName, group = targetName)) +
-  geom_line(size=1.5) +
-  geom_point(size = 5) +
-  ylab("sequence variance") +
-  xlab("phase") +
+  ggplot(aes(x=phase_extended, y=variance, fill=targetName, group = targetName)) +
+  geom_line(size=1.5, color="#1c373e") +
+  geom_point(size = 4, color="#1c373e") +
+  ylab("action variability") +
+  xlab("attempt") +
   ylim(c(0,4)) + 
   theme_few() +
   #scale_color_manual(values=c("#1c373e","#77798c")) +
   #scale_fill_manual( values=c("#1c373e","#77798c")) +
+  scale_x_discrete(labels = c("first","final")) + 
   theme(legend.position = 'FALSE', text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000")) +
-  scale_color_discrete(name = "target", labels = c(1,2,3,4,5,6,7,8)) +
   guides(size = FALSE, fill=FALSE)
 ggsave('../results/plots/block_silhouette_ppt_variance.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
@@ -563,23 +490,11 @@ ginis
 ```
 
 
-Model distinguishing human from agent trajectories
-```{r}
-??m1 <- lmer(data = d.conseq, gini ~ (nlevel^2)*(iter) + (1 | targetName))
-
-```
-
-
 Model distinguishing pre from post
 ```{r}
 human_ginis <- ginis %>% 
-  filter(human==TRUE) %>% 
-  mutate(nlevel.squared = nlevel^2)
-
-m1 <- lmer(data = human_ginis, gini ~ nlevel.squared + (1 | targetName))
-m2 <- lmer(data = human_ginis, gini ~ nlevel.squared*phase + (1 | targetName))
-anova(m1, m2)
-summary(m2)
+  filter(human==TRUE) %>%
+  mutate(phase = factor(phase,levels=c("pre","post","random agent")))
 ```
 
 ```{r}
@@ -593,22 +508,75 @@ anova(mp.1,mp.2,mp.3)
 summary(mp.2)
 ```
 ```{r}
-ginis %>%
-  ggplot(aes(x=nlevel, y=gini, group=phase)) +
-    geom_line(aes(color=phase), width = 0, size = 1.5,
-                 data = ginis %>% filter(human == 'TRUE') %>% group_by(phase)) +  
-    # geom_line(width = 0, size = 1.5,
-    #              data = ginis %>% filter(human == 'FALSE')) +
-    ylab("structure (G)") +
+mean_human_ginis <- ginis %>% 
+  filter(human == 'TRUE') %>% 
+  group_by(nlevel,phase) %>% 
+  summarise_at(vars(gini),
+               list(mean.gini = mean))
+
+mean_human_ginis
+```
+```{r}
+mean_agent_ginis <- ginis %>% 
+  filter(human == 'FALSE') %>% 
+  group_by(batch, nlevel) %>% 
+  summarise_at(vars(gini),
+               list(mean.gini = mean)) %>% 
+  ungroup()
+
+mean_agent_ginis
+
+grand_mean_agent_ginis <- mean_agent_ginis %>% 
+  group_by(nlevel) %>% 
+  summarise_at(vars(mean.gini),
+               list(grandmean.gini = mean,
+                    sd = sd)) %>% 
+  ungroup()
+
+grand_mean_agent_ginis
+```
+```{r}
+
+agent_gini_CIs <- mean_agent_ginis %>% 
+  group_by(nlevel) %>% 
+   do(tidy(t(quantile(.$mean.gini,probs = c(0.025,0.975)))))
+
+grand_mean_agent_ginis <- left_join(grand_mean_agent_ginis,agent_gini_CIs, cols = c('nlevel'))
+
+grand_mean_agent_ginis
+
+```
+
+```{r}
+mean_agent_ginis %>% 
+  aggregate(by=c('nlevel'), FUN = max)
+```
+
+```{r}
+mean_human_ginis
+```
+
+```{r}
+mean_agent_ginis %>%
+  ggplot(aes(x=nlevel)) +
+    geom_line(aes(color=phase, y= mean.gini), width = 0, size = 1.5,
+                 data = mean_human_ginis) +
+    scale_color_manual(values=c("#70281C","#EF553B")) +
+    # geom_point(aes(color=phase), width = 0, size = 4
+                 # data = mean_human_ginis) +
+    geom_line(aes(y=grandmean.gini), width = 0, size =1, 
+              data = grand_mean_agent_ginis, color="#77798c", linetype = "dashed") +
+    geom_errorbar(aes(ymin=X2.5., ymax = X97.5.), width = 0, size = 1, data = grand_mean_agent_ginis, color="#77798c") +  
+    ylab("systematicity (G)") +
     xlab("n") +
     theme_few() +
     #xlim(c(0.5,3.5)) +  
-    ylim(c(0,1)) +
+    ylim(c(0,0.65)) +
+    scale_y_continuous(labels = numform::ff_num(zero = 0), n.breaks = 5, limits = c(0,0.65)) + 
     # scale_y_continuous(breaks = seq(-0.5,2.5,0.5)) +
-    #scale_color_manual(values=c("#77798c","#1c373e")) +
     #scale_fill_manual(values=c("#77798c","#1c373e")) +
-    #scale_x_discrete(labels= c(1,2,3)) + 
+    scale_x_continuous(name="sequence length (n)", n.breaks = 6) + 
     theme(legend.position ='FALSE', legend.title=element_blank(), text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000"))
-#ggsave('../results/plots/.pdf', width=7, height = 10, units='cm', useDingbats = F)
+ggsave('../results/plots/giningrams.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
 
