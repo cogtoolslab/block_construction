@@ -22,11 +22,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Import data and apply preprocessing
 
-```{r}
-iterationName = 'Exp2Pilot3_all'
-paste('../results/csv/block_silhouette_',iterationName,'_good.csv', sep='')
-```
-
 ```{r import}
 
 iterationName = 'Exp2Pilot3_all'
@@ -34,7 +29,8 @@ iterationName = 'Exp2Pilot3_all'
 df.full = read.csv(paste('../results/csv/block_silhouette_',iterationName,'_good.csv', sep=''))
 
 d <- df.full %>%
-  select(rawF1DiscreteScore,phase,phase_extended,phase_number,condition,trialNum,targetName,gameID,numBlocks,repetition,blockFell,buildTime,buggy,perfectScore) %>%
+  select(rawF1DiscreteScore,phase,phase_extended,phase_number,condition,trialNum,targetName,gameID,numBlocks,repetition,blockFell,buildTime,buggy,perfectScore,meanIBI,thinkingTime) %>%
+  rename('preparationTime'='thinkingTime') %>%
   rename('accuracy'='rawF1DiscreteScore') %>%
   mutate(phase=factor(phase, levels=c('pre','repeated','post'))) %>%
   mutate(phase_extended=factor(phase_extended, levels=c("pre","repeated","post"))) %>%
@@ -44,7 +40,6 @@ d <- df.full %>%
 
 dpp <- d %>% filter(phase %in% c('pre','post')) %>%
   mutate(phase = factor(phase,levels=c("pre","post")))
-
 ```
 
 ```{r phase.accuracy}
@@ -97,6 +92,16 @@ dstruct.boot <- dpp %>%
 
 dstruct.boot
 ```
+
+```{r}
+d.blockFell <- dpp %>% 
+  group_by(phase) %>% 
+  tidyboot_mean(column=blockFell, nboot=100)
+
+d.blockFell
+
+```
+
 
 ```{r lmers}
 ## fit model to data just comparing pre/post
@@ -172,6 +177,7 @@ ggsave('../results/plots/cogsci/block_silhouette_buildTime_timeseries.pdf', widt
 ## build time
 ```{r}
 dpp.boot <- dpp %>%
+  filter(phase %in% c('pre','post')) %>% 
   group_by(phase_number, perfectScore, condition) %>%
   tidyboot_mean(column=buildTimeSec, nboot=100)
 
@@ -347,8 +353,28 @@ anova(m1,m2,m3,m4)
 summary(m4)
 ```
 
+# Task fluency (inter-block-interval)
+```{r}
+dpp <- d %>% filter(phase %in% c('pre','post')) %>% mutate(phase = factor(phase,levels=c("pre","post")))
+m1 <- lmer(data = dpp, meanIBI ~ phase + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = dpp, meanIBI ~ condition + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = dpp, meanIBI ~ phase + condition + (1 | gameID) + (1 | targetName))
+m4 <- lmer(data = dpp, meanIBI ~ phase * condition + (1 | gameID) + (1 | targetName))
+anova(m1,m2,m3,m4)
+summary(m4)
+```
 
 
+# Preparation time (time before first block placement)
+```{r}
+dpp <- d %>% filter(phase %in% c('pre','post')) %>% mutate(phase = factor(phase,levels=c("pre","post")))
+m1 <- lmer(data = dpp, preparationTime ~ phase + (1 | gameID) + (1 | targetName))
+m2 <- lmer(data = dpp, preparationTime ~ condition + (1 | gameID) + (1 | targetName))
+m3 <- lmer(data = dpp, preparationTime ~ phase + condition + (1 | gameID) + (1 | targetName))
+m4 <- lmer(data = dpp, preparationTime ~ phase * condition + (1 | gameID) + (1 | targetName))
+anova(m1,m2,m3,m4)
+summary(m4)
+```
 
 # Actions
 
