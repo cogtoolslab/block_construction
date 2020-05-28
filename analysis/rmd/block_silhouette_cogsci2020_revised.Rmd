@@ -74,17 +74,6 @@ dperf.boot
 
 ```
 
-Add a logitstic regression of perfect scores here
-```{r phase.perfect}
-dperf.boot<- dpp %>%
-  mutate(perfect = ifelse(perfectScore, 1, 0)) %>% 
-  group_by(phase_number,condition) %>%
-  tidyboot_mean(column=perfect, nboot=100)
-
-dperf.boot
-
-```
-
 ```{r structure.accuracy}
 dstruct.boot <- dpp %>%
   group_by(targetName,phase) %>%
@@ -96,11 +85,13 @@ dstruct.boot
 ```{r}
 d.blockFell <- dpp %>% 
   group_by(phase) %>% 
-  tidyboot_mean(column=blockFell, nboot=100)
+  tidyboot_mean(column=blockFell, nboot=1000)
 
 d.blockFell
 
 ```
+
+
 
 
 ```{r lmers}
@@ -131,11 +122,12 @@ dpp.boot %>%
     geom_line(size=1.5)+
     geom_point(size = 4) +
     ylab("F1 score") +
-    xlab("build attempt") +
+    xlab("attempt") +
     theme_few() +
     # scale_x_continuous(breaks = round(seq(1, 4, by =1),1)) +
     xlim(c(0.5,4.5)) +  
     ylim(c(0.6,1)) +
+    scale_x_continuous(breaks = c(1,2,3,4),labels=c('first', '2nd','3rd','final')) +
     # scale_y_continuous(breaks = seq(-0.5,2.5,0.5)) +
     scale_color_manual(values=c("#77798c", "#1c373e")) +
     scale_fill_manual(values=c("#77798c", "#1c373e")) +
@@ -145,6 +137,7 @@ ggsave('../results/plots/cogsci/block_silhouette_accuracy_timeseries.pdf', width
 ## build time
 ```{r}
 dpp.boot <- d %>%
+  filter(blockFell==FALSE) %>% 
   group_by(phase_number, condition) %>%
   tidyboot_mean(column=buildTimeSec, nboot=100)
 
@@ -162,7 +155,7 @@ dpp.boot %>%
                   data = dpp.boot %>% filter(condition == 'control')) +
     geom_point(size = 5) +
     ylab("build time (s)") +
-    xlab("repetition") +
+    xlab("attempt") +
     theme_few() +
     scale_x_continuous(breaks = round(seq(1, 4, by =1),1)) +
     xlim(c(0.5,4.5)) +
@@ -173,11 +166,18 @@ dpp.boot %>%
     theme(legend.position = 'none', text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000"))
 ggsave('../results/plots/cogsci/block_silhouette_buildTime_timeseries.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
+```{r}
+d %>% 
+  group_by(perfect) %>% 
+  tally()
 
+564/(1956+564)
+```
 ## build time
 ```{r}
-dpp.boot <- dpp %>%
-  filter(phase %in% c('pre','post')) %>% 
+dpp.boot <- d %>%
+  filter(blockFell==FALSE) %>% 
+  #filter(phase %in% c('pre','post')) %>% 
   group_by(phase_number, perfectScore, condition) %>%
   tidyboot_mean(column=buildTimeSec, nboot=100)
 
@@ -187,29 +187,35 @@ dpp.boot
 ## Visualize buildTime timecourse with perfect structures
 ```{r}
 dpp.boot %>%
-  ggplot(aes(x=phase_number,y=empirical_stat, color=condition, fill=perfectScore, linetype=perfectScore)) +
+  ggplot(aes(x=phase_number,y=empirical_stat, color=condition)) +
     geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
-                data = dpp.boot %>% filter(condition == 'repeated')) + # position = dodge,
-    geom_line(size=1.5) +
+                data = dpp.boot %>% filter(perfectScore == 'True')) + # position = dodge,
+    geom_line(size=1.5,data = dpp.boot %>% filter(perfectScore == 'True')) +
     geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
-                  data = dpp.boot %>% filter(condition == 'control')) +
+                  data = dpp.boot %>% filter(perfectScore == 'False')) +
+    geom_line(size=1.5,data = dpp.boot %>% filter(perfectScore == 'False'), linetype='dashed') +
     geom_point(size = 5) +
     ylab("build time (s)") +
-    xlab("repetition") +
+    xlab("attempt") +
     theme_few() +
-    scale_x_continuous(breaks = round(seq(1, 4, by =1),1)) +
+    #scale_x_continuous(breaks = round(seq(1, 4, by =1),1)) +
     xlim(c(0.5,4.5)) +
     #ylim(c(40,55)) +
-    # scale_y_continuous(breaks = seq(30,55, by=5)) +
+    #scale_y_continuous(breaks = seq(30,55, by=5)) +
+    scale_y_continuous(n.breaks = 5, limits = c(35,60)) + 
     scale_color_manual(values=c("#77798c", "#1c373e")) +
     scale_fill_manual(values=c("#77798c", "#1c373e")) +
-    theme(text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000"))
-#ggsave('../results/plots/cogsci/block_silhouette_buildTime_timeseries.pdf', width=7, height = 10, units='cm', useDingbats = F)
+    theme(legend.position = 'none',text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000"))
+ggsave('../results/plots/cogsci/block_silhouette_buildTime_timeseries_withperfect.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
 ### Model for build time
 ```{r lmers}
 ## fit model to data just comparing pre/post
-dpp <- d %>% filter(phase %in% c('pre','post')) %>% mutate(phase = factor(phase,levels=c("pre","post")))
+dpp <- d %>% 
+  filter(phase %in% c('pre','post')) %>% 
+  mutate(phase = factor(phase,levels=c("pre","post"))) %>% 
+  filter(blockFell==FALSE)
+
 m1 <- lmer(data = dpp, buildTimeSec ~ phase + (1 | gameID) + (1 | targetName))
 m2 <- lmer(data = dpp, buildTimeSec ~ condition + (1 | gameID) + (1 | targetName))
 m3 <- lmer(data = dpp, buildTimeSec ~ phase + condition + (1 | gameID) + (1 | targetName))
@@ -219,9 +225,14 @@ m6 <- lmer(data = dpp, buildTimeSec ~ phase * perfectScore * condition +  (1 | g
 anova(m1,m2,m3,m4,m5,m6)
 summary(m4)
 ```
+
 ```{r lmers}
 ## fit model to data just comparing pre/post
-dpp <- d %>% filter(phase %in% c('pre','post')) %>% mutate(phase = factor(phase,levels=c("pre","post")))
+dpp <- d %>% 
+  filter(phase %in% c('pre','post')) %>% 
+  mutate(phase = factor(phase,levels=c("pre","post"))) %>% 
+  filter(blockFell==FALSE)
+
 m1 <- lmer(data = dpp, buildTimeSec ~ phase + (1 | gameID) + (1 | targetName))
 m2 <- lmer(data = dpp, buildTimeSec ~ condition + (1 | gameID) + (1 | targetName))
 m3 <- lmer(data = dpp, buildTimeSec ~ phase + condition + (1 | gameID) + (1 | targetName))
@@ -234,7 +245,11 @@ summary(m5)
 
 ```{r lmers}
 ## fit model to data just comparing pre/post
-dpp <- d %>% filter(phase %in% c('pre','post')) %>% mutate(phase = factor(phase,levels=c("pre","post")))
+dpp <- d %>% 
+  filter(phase %in% c('pre','post')) %>% 
+  mutate(phase = factor(phase,levels=c("pre","post"))) %>% 
+  filter(blockFell==FALSE)
+
 m1 <- lmer(data = dpp, buildTimeSec ~ phase + (1 | gameID) + (1 | targetName))
 m2 <- lmer(data = dpp, buildTimeSec ~ condition + (1 | gameID) + (1 | targetName))
 m3 <- lmer(data = dpp, buildTimeSec ~ phase + perfectScore + (1 | gameID) + (1 | targetName))
@@ -244,6 +259,7 @@ m6 <- lmer(data = dpp, buildTimeSec ~ phase * perfectScore * condition +  (1 | g
 anova(m1,m2,m3,m4,m5,m6)
 summary(m5)
 ```
+
 ```{r}
 d 
 ```
@@ -282,6 +298,7 @@ d.withprev %>%
 d.withprev
 
 ```
+
 ```{r}
 # BT ~ attempt + condition + perfect_{t-1} + attempt*perfect_{t-1} + (1 + attempt*perfect_{t-1} | gameID) + (1 + attempt*perfect_{t-1} | targetID)
 
@@ -291,16 +308,22 @@ time.data <- d.withprev %>%
 
 m1 <- lmer(data = time.data, diff_time ~
              phase_number +
-             previous_accuracy + 
-             phase_number * previous_accuracy + 
+             previous_accuracy +
              (1 | gameID) +
              (1 | targetName))
 
 summary(m1)
 ```
+
 ```{r}
 d.withprev %>% filter(condition=='repeated') %>% 
   ggplot(aes(x=previous_accuracy, y=diff_time, color = previous_blockFell)) +
+  geom_point()
+```
+
+```{r}
+d.withprev %>% filter(condition=='repeated') %>% 
+  ggplot(aes(x=previous_accuracy, y=accuracy, color = previous_blockFell)) +
   geom_point()
 ```
 
@@ -344,13 +367,14 @@ dpp.nblocks.boot %>%
 
 ```{r lmers}
 ## fit model to data just comparing pre/post
-dpp <- d %>% filter(phase %in% c('pre','post')) %>% mutate(phase = factor(phase,levels=c("pre","post")))
+dpp <- d %>% filter(phase %in% c('pre','post')) %>% mutate(phase = factor(phase,levels=c("pre","post"))) %>% 
+  filter(blockFell==FALSE)
 m1 <- lmer(data = dpp, numBlocks ~ phase + (1 | gameID) + (1 | targetName))
 m2 <- lmer(data = dpp, numBlocks ~ condition + (1 | gameID) + (1 | targetName))
 m3 <- lmer(data = dpp, numBlocks ~ phase + condition + (1 | gameID) + (1 | targetName))
 m4 <- lmer(data = dpp, numBlocks ~ phase * condition + (1 | gameID) + (1 | targetName))
 anova(m1,m2,m3,m4)
-summary(m4)
+summary(m3)
 ```
 
 # Task fluency (inter-block-interval)
