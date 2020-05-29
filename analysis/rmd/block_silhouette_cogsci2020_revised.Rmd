@@ -63,7 +63,7 @@ dpp.boot
 
 ```{r phase.perfect}
 
-dperf <- dpp %>%
+dperf <- d %>%
   mutate(perfect = ifelse(perfectScore, 1, 0)) 
 
 dperf.boot<- dperf %>%
@@ -127,7 +127,7 @@ dpp.boot %>%
     # scale_x_continuous(breaks = round(seq(1, 4, by =1),1)) +
     xlim(c(0.5,4.5)) +  
     ylim(c(0.6,1)) +
-    scale_x_continuous(breaks = c(1,2,3,4),labels=c('first', '2nd','3rd','final')) +
+    scale_x_continuous(limits = c(0.6,4.4), breaks = c(1,2,3,4),labels=c('first', '2nd','3rd','final')) +
     # scale_y_continuous(breaks = seq(-0.5,2.5,0.5)) +
     scale_color_manual(values=c("#77798c", "#1c373e")) +
     scale_fill_manual(values=c("#77798c", "#1c373e")) +
@@ -163,6 +163,7 @@ dpp.boot %>%
     # scale_y_continuous(breaks = seq(30,55, by=5)) +
     scale_color_manual(values=c("#77798c", "#1c373e")) +
     scale_fill_manual(values=c("#77798c", "#1c373e")) +
+    scale_x_continuous(breaks = c(1,2,3,4),labels=c('first', '2nd','3rd','final')) +
     theme(legend.position = 'none', text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000"))
 ggsave('../results/plots/cogsci/block_silhouette_buildTime_timeseries.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
@@ -173,6 +174,10 @@ d %>%
 
 564/(1956+564)
 ```
+```{r}
+d
+```
+
 ## build time
 ```{r}
 dpp.boot <- d %>%
@@ -193,8 +198,8 @@ dpp.boot %>%
     geom_line(size=1.5,data = dpp.boot %>% filter(perfectScore == 'True')) +
     geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
                   data = dpp.boot %>% filter(perfectScore == 'False')) +
-    geom_line(size=1.5,data = dpp.boot %>% filter(perfectScore == 'False'), linetype='dashed') +
-    geom_point(size = 5) +
+    geom_line(size=1.5,data = dpp.boot %>% filter(perfectScore == 'False'), linetype='dotted') +
+    geom_point(size = 4) +
     ylab("build time (s)") +
     xlab("attempt") +
     theme_few() +
@@ -203,9 +208,10 @@ dpp.boot %>%
     #ylim(c(40,55)) +
     #scale_y_continuous(breaks = seq(30,55, by=5)) +
     scale_y_continuous(n.breaks = 5, limits = c(35,60)) + 
+    scale_x_continuous(limits = c(0.6,4.4), breaks = c(1,2,3,4),labels=c('first', '2nd','3rd','final')) +
     scale_color_manual(values=c("#77798c", "#1c373e")) +
     scale_fill_manual(values=c("#77798c", "#1c373e")) +
-    theme(legend.position = 'none',text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000"))
+    theme(legend.position = 'none',text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000"))
 ggsave('../results/plots/cogsci/block_silhouette_buildTime_timeseries_withperfect.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
 ### Model for build time
