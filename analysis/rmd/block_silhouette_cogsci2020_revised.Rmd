@@ -63,14 +63,14 @@ dpp.boot
 
 ```{r phase.perfect}
 
-dperf <- d %>%
-  mutate(perfect = ifelse(perfectScore, 1, 0)) 
-
-dperf.boot<- dperf %>%
-  group_by(phase_number) %>% 
-  tidyboot_mean(column=perfect, nboot=100)
-
-dperf.boot
+# dperf <- d %>%
+#   mutate(perfect = ifelse(perfectScore, 1, 0)) 
+# 
+# dperf.boot<- dperf %>%
+#   group_by(phase_number) %>% 
+#   tidyboot_mean(column=perfect, nboot=100)
+# 
+# dperf.boot
 
 ```
 
@@ -94,7 +94,7 @@ d.blockFell
 
 
 
-```{r lmers}
+```{r}
 ## fit model to data just comparing pre/post
 dpp <- d %>% filter(phase %in% c('pre','post')) %>% mutate(phase = factor(phase,levels=c("pre","post")))
 m1 <- lmer(data = dpp, accuracy ~ phase + (1 | gameID) + (1 | targetName))
@@ -198,7 +198,7 @@ dpp.boot %>%
     geom_line(size=1.5,data = dpp.boot %>% filter(perfectScore == 'True')) +
     geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
                   data = dpp.boot %>% filter(perfectScore == 'False')) +
-    geom_line(size=1.5,data = dpp.boot %>% filter(perfectScore == 'False'), linetype='dotted') +
+    geom_line(size=1.5,data = dpp.boot %>% filter(perfectScore == 'False'), linetype='dashed') +
     geom_point(size = 4) +
     ylab("build time (s)") +
     xlab("attempt") +
@@ -207,7 +207,7 @@ dpp.boot %>%
     xlim(c(0.5,4.5)) +
     #ylim(c(40,55)) +
     #scale_y_continuous(breaks = seq(30,55, by=5)) +
-    scale_y_continuous(n.breaks = 5, limits = c(35,60)) + 
+    scale_y_continuous(breaks = 5, limits = c(35,60)) + 
     scale_x_continuous(limits = c(0.6,4.4), breaks = c(1,2,3,4),labels=c('first', '2nd','3rd','final')) +
     scale_color_manual(values=c("#77798c", "#1c373e")) +
     scale_fill_manual(values=c("#77798c", "#1c373e")) +
@@ -215,7 +215,7 @@ dpp.boot %>%
 ggsave('../results/plots/cogsci/block_silhouette_buildTime_timeseries_withperfect.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
 ### Model for build time
-```{r lmers}
+```{r}
 ## fit model to data just comparing pre/post
 dpp <- d %>% 
   filter(phase %in% c('pre','post')) %>% 
@@ -232,7 +232,7 @@ anova(m1,m2,m3,m4,m5,m6)
 summary(m4)
 ```
 
-```{r lmers}
+```{r}
 ## fit model to data just comparing pre/post
 dpp <- d %>% 
   filter(phase %in% c('pre','post')) %>% 
@@ -249,7 +249,7 @@ anova(m1,m2,m3,m4,m5,m6)
 summary(m5)
 ```
 
-```{r lmers}
+```{r}
 ## fit model to data just comparing pre/post
 dpp <- d %>% 
   filter(phase %in% c('pre','post')) %>% 
@@ -371,7 +371,7 @@ dpp.nblocks.boot %>%
 #ggsave('../results/plots/block_silhouette_numBlocks_timeseries.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
 
-```{r lmers}
+```{r}
 ## fit model to data just comparing pre/post
 dpp <- d %>% filter(phase %in% c('pre','post')) %>% mutate(phase = factor(phase,levels=c("pre","post"))) %>% 
   filter(blockFell==FALSE)
@@ -431,7 +431,7 @@ df.Euclidean.long
 
 d.Eu <- df.Euclidean.long %>% 
   filter(phase_pair %in% c('pre to repetition 1', 'repetition 1 to repetition 2','repetition 2 to post')) %>% 
-  mutate(phase_pair = ordered(phase_pair,levels=c('pre to repetition 1','repetition 1 to repetition 2','repetition 2 to post'))) %>% within(d.Eu, phase_pair <- relevel(phase_pair, ref = 'pre to repetition 1'))
+  mutate(phase_pair = ordered(phase_pair,levels=c('pre to repetition 1','repetition 1 to repetition 2','repetition 2 to post'))) %>% within(df.Euclidean.long, phase_pair <- relevel(phase_pair, ref = 'pre to repetition 1'))
 
 d.Eu.boot<-d.Eu %>%
   group_by(phase_pair,distance_type) %>%
@@ -565,7 +565,7 @@ dpp
 ```
 
 See if people make more radical updates to plans when they've acquired more task-general knowledge
-```{r attempt.similarity}
+```{r}
 d.attempt <- df.action.metrics.full %>% 
   filter((condition=='control' & phase_pair=='pre to post') | (condition=='repeated' & phase_pair=='pre to repetition 1'))
 
@@ -812,15 +812,6 @@ grand_mean_agent_ginis
 ```
 
 ```{r}
-mean_agent_ginis %>% 
-  aggregate(by=c('nlevel'), FUN = max)
-```
-
-```{r}
-mean_human_ginis
-```
-
-```{r}
 mean_agent_ginis %>%
   ggplot(aes(x=nlevel)) +
     geom_line(aes(color=phase, y= mean.gini), width = 0, size = 1.5,
@@ -836,10 +827,10 @@ mean_agent_ginis %>%
     theme_few() +
     #xlim(c(0.5,3.5)) +  
     ylim(c(0,0.65)) +
-    scale_y_continuous(labels = numform::ff_num(zero = 0), n.breaks = 5, limits = c(0,0.65)) + 
+    scale_y_continuous(labels = numform::ff_num(zero = 0), breaks = 5, limits = c(0,0.65)) + 
     # scale_y_continuous(breaks = seq(-0.5,2.5,0.5)) +
     #scale_fill_manual(values=c("#77798c","#1c373e")) +
-    scale_x_continuous(name="sequence length (n)", n.breaks = 6) + 
+    scale_x_continuous(name="sequence length (n)", breaks = 6) + 
     theme(legend.position ='FALSE', legend.title=element_blank(), text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000"))
 ggsave('../results/plots/giningrams.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
