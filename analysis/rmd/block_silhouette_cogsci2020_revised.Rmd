@@ -1,7 +1,7 @@
 ---
 title: "block_silhouette_"
 author: "wmccarthy & jefan"
-date: "5/17/2020"
+date: "5/28/2020"
 output: html_document
 ---
 
@@ -46,7 +46,7 @@ dpp <- d %>% filter(phase %in% c('pre','post')) %>%
 
 dpp.boot<-dpp %>%
   group_by(phase_number) %>%
-  tidyboot_mean(column=accuracy, nboot=100)
+  tidyboot_mean(column=accuracy, nboot=1000)
 
 dpp.boot
 
@@ -55,7 +55,7 @@ dpp.boot
 
 dpp.boot<-dpp %>%
   group_by(condition) %>%
-  tidyboot_mean(column=accuracy, nboot=100)
+  tidyboot_mean(column=accuracy, nboot=1000)
 
 dpp.boot
 
@@ -77,7 +77,7 @@ dpp.boot
 ```{r structure.accuracy}
 dstruct.boot <- dpp %>%
   group_by(targetName,phase) %>%
-  tidyboot_mean(column=accuracy, nboot=100)
+  tidyboot_mean(column=accuracy, nboot=1000)
 
 dstruct.boot
 ```
@@ -111,7 +111,7 @@ summary(m4)
 
 dpp.boot<- d %>%
   group_by(phase_number,condition) %>%
-  tidyboot_mean(column=accuracy, nboot=100)
+  tidyboot_mean(column=accuracy, nboot=1000)
 
 dpp.boot %>%
   ggplot(aes(x=phase_number,y=empirical_stat, color=condition, fill=condition)) +
@@ -139,7 +139,7 @@ ggsave('../results/plots/cogsci/block_silhouette_accuracy_timeseries.pdf', width
 dpp.boot <- d %>%
   filter(blockFell==FALSE) %>% 
   group_by(phase_number, condition) %>%
-  tidyboot_mean(column=buildTimeSec, nboot=100)
+  tidyboot_mean(column=buildTimeSec, nboot=1000)
 
 dpp.boot
 ```
@@ -184,7 +184,7 @@ dpp.boot <- d %>%
   filter(blockFell==FALSE) %>% 
   #filter(phase %in% c('pre','post')) %>% 
   group_by(phase_number, perfectScore, condition) %>%
-  tidyboot_mean(column=buildTimeSec, nboot=100)
+  tidyboot_mean(column=buildTimeSec, nboot=1000)
 
 dpp.boot
 ```
@@ -352,7 +352,7 @@ summary(m1)
 
 # Number of blocks
 ```{r}
-dpp.nblocks.boot <- d %>% group_by(phase_number,condition) %>% tidyboot_mean(column=numBlocks, nboot=100)
+dpp.nblocks.boot <- d %>% group_by(phase_number,condition) %>% tidyboot_mean(column=numBlocks, nboot=1000)
 dpp.nblocks.boot %>%
   ggplot(aes(x=phase_number,y=empirical_stat,fill=condition)) +
     geom_bar(stat="identity", aes(x=phase_number, y=empirical_stat,fill=condition), position=position_dodge(.9)) +
@@ -435,7 +435,7 @@ d.Eu <- df.Euclidean.long %>%
 
 d.Eu.boot<-d.Eu %>%
   group_by(phase_pair,distance_type) %>%
-  tidyboot_mean(column=euclidean_distance, nboot=100)
+  tidyboot_mean(column=euclidean_distance, nboot=1000)
 
 d.Eu.boot
 
@@ -589,7 +589,7 @@ summary(m)
 
 ```{r}
 dpp.Eu <- dpp %>% select(c('gameID','pre.f1.quartile','actual_euclidean_distance'))
-dpp.boot.Eu <- dpp %>% group_by(pre.f1.quartile) %>% tidyboot_mean(column=actual_euclidean_distance, nboot=100)
+dpp.boot.Eu <- dpp %>% group_by(pre.f1.quartile) %>% tidyboot_mean(column=actual_euclidean_distance, nboot=1000)
 dpp.boot.Eu
 ```
 
@@ -615,7 +615,7 @@ summary(m)
 
 ```{r}
 dpp.OEu <- dpp %>% select(c('gameID','pre.f1.quartile','optimal_euclidean_distance'))
-dpp.boot.OEu <- dpp %>% group_by(pre.f1.quartile) %>% tidyboot_mean(column=optimal_euclidean_distance, nboot=100)
+dpp.boot.OEu <- dpp %>% group_by(pre.f1.quartile) %>% tidyboot_mean(column=optimal_euclidean_distance, nboot=1000)
 dpp.boot.OEu
 ```
 
@@ -652,7 +652,7 @@ d.conseq <- d.conseq %>%
 
 
 #d.conseq.OEu <- d.conseq %>% select(c('gameID','phase_a.f1.quartile','optimal_euclidean_distance'))
-d.conseq.boot.OEu <- d.conseq %>% group_by(phase_pair,phase_a.f1.quartile) %>% tidyboot_mean(column=optimal_euclidean_distance, nboot=100)
+d.conseq.boot.OEu <- d.conseq %>% group_by(phase_pair,phase_a.f1.quartile) %>% tidyboot_mean(column=optimal_euclidean_distance, nboot=1000)
 d.conseq.boot.OEu
 ```
 
