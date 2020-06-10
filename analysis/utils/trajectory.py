@@ -183,7 +183,7 @@ class GenericNode:
         
         if node.world_str in self.child_edges.keys():
             self.child_edges[node.world_str].visit()
-        else: 
+        else:
             new_edge = GenericEdge(self, node)
             self.child_edges[node.world_str] = new_edge
             self.out_edges.append(new_edge) 
@@ -345,7 +345,8 @@ def plot_trajectory_graph(data = [],
                           x_lower_bound = 4,
                           x_upper_bound = 13,
                           edge_width_scale_factor = 0.8,
-                          node_size_scale_factor = 0.8):
+                          node_size_scale_factor = 0.8,
+                          colors = ["#1c373e","#EF553B"]):
     '''
     makes F1 world state trajectory graph for specific target structure and phase    
     '''
@@ -371,6 +372,7 @@ def plot_trajectory_graph(data = [],
     hs2pn = dict(zip(targets,pretty_names))   
     ## opacity dictionary
     O = {1:0.1, 2: 0.3, 3:0.5, 4: 0.7}
+    
 
 
     def make_edge(x, y, width):
@@ -391,7 +393,7 @@ def plot_trajectory_graph(data = [],
                         y=(edge_ys[i*2],edge_ys[i*2+1]),
                         #colorscale = ['#636EFA', '#EF553B'],
                         line=dict(width=edge_ws[i]*edge_width_scale_factor,
-                                  color=["#EF553B", "#1c373e"][edge_colors[i]]),
+                                  color=(list(reversed(colors)))[edge_colors[i]]),
                         opacity= O[edge_ws[i]] if edge_ws[i] in O.keys() else 0.95,
                         hoverinfo='none',
                         mode='lines'))
@@ -408,7 +410,7 @@ def plot_trajectory_graph(data = [],
         hoverinfo='text',
         marker=dict(
             #colorscale='Greys',            
-            colorscale = ["#1c373e","#EF553B"],
+            colorscale = colors,
             reversescale=True,
             size = node_sizes,
             #color = '#2e2e2e',
@@ -420,7 +422,7 @@ def plot_trajectory_graph(data = [],
     ### FIGURE DEFINITION
     fig = go.Figure(data=edge_trace + [node_trace],
                  layout=go.Layout(
-                    title= str(hs2pn[target_name]) + ' | ' + str(phase),
+                    #title= str(hs2pn[target_name]) + ' | ' + str(phase),
                     titlefont_size=22,                     
                     showlegend=False,
                     hovermode='closest',
