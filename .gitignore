@@ -123,3 +123,7 @@ node_modules/
 # VS Code
 block_construction_nightingale.code-workspace
 .Rproj.user
+
+#results
+analysis/results/csv/agent_action_batches/
+analysis/results/plots/state_trajectory/
