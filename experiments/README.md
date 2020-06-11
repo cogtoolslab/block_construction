@@ -2,7 +2,7 @@
 
 This directory will contain subdirs containing different versions of the `block_construction` experiment. Each directory will contain all the necessary code (i.e., HTML/CSS/JavaScript) to actually run the human construction experiments. Node scripts in the main directory control server-side processes.
 
-### Checklist before collecting next batch of data: 
+### Checklist before collecting a batch of data: 
 - [ ]  double check `iterationName` is what it should be
 - [ ] double check `devMode = False`
 - [ ] set `blockResearchers = True`
@@ -59,8 +59,27 @@ Found several missing pieces, including survey data not being sent.
 - Added note to say adjust zoom if windows aren't inline
 
 
-#### `pilot4`: Major changes TBD
-- Moved to silhouette_2 folder
-- N = `TBD` participants.
-- 
+_______________________________________________________________
 
+### `Exp2Pilot1`: Major changes
+- Moved to silhouette_2 folder
+- Small app.js changes
+- Snap to grid
+- Snap blocks down to top of structure to prevent people breaking structure
+- Change to pre-post design. i.e. repeatedly build all structures, except 'control' condition structures which are build only twice.
+- Use 8 of the hand-selected structures from previous version
+
+### `Exp2Pilot2`: Update scoring functions
+- Implement discrete world map and scoring
+- Change to discrete scoring functions
+- Small batch- some scoring variables not saved properly
+
+### `Exp2Pilot3`: First batch of data for cogsci2020
+- N = 51 participants, 2 of these excluded as missing data
+
+#### `Exp2Pilot3_batch2`: Second batch of data for cogsci2020
+- Same as above, more data to balance conditions
+- N = 56
+
+#### `Exp2Pilot3_all`: Combines two datasets from above for cogsci2020
+- N = 107 total, 2 of these excluded for missing data
