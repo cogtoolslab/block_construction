@@ -1,18 +1,22 @@
 # Learning to build physical structures- Block Construction
 
-<p align="left">
-  <img width="100%" src="experiments/silhouette_2/assets/trialGif.gif"></img>
+<p align="center">
+  <img width="100%" src="experiments/silhouette_2/assets/trial_demo.gif"></img>
 </p>
 
 Project investigating human physical construction behavior.
 
 ## Building environment
-Our block construction environment allows people to build 2D towers in their browser with simulated physics (using [Matter.js](https://github.com/liabru/matter-js)).
-In this version, block snap to valid grid locations just above available horizontal surface.
+Our block construction environment allows people to build 2D block towers under simulated physics (using [Matter.js](https://github.com/liabru/matter-js)) from their browser. In this version, block snap to valid grid locations just above available horizontal surface.
 
-## Experimemt
+## Experiment
 Participants built 8 block towers, either 2 or 4 times, over the course of an experimental session.
 They could use any blocks, and were rewarded for accuracy and speed.
+
+<p align="center">
+  <img width="80%" src="experiments/silhouette_2/assets/structures.png"></img>
+</p>
+
 
 ## Analysis
 Our latest analyses can be found in `/analysis/cogsci2020`.
