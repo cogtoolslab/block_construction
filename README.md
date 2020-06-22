@@ -10,13 +10,13 @@ Project investigating human physical construction behavior.
 Our block construction environment allows people to build 2D block towers under simulated physics (using [Matter.js](https://github.com/liabru/matter-js)) from their browser. In this version, block snap to valid grid locations just above available horizontal surface.
 
 ## Experiment
-Participants built 8 block towers, either 2 or 4 times, over the course of an experimental session.
+We ran an experiment to see how people's construction procedures change over repeated attempts.
+Over an experimental session, participants build 8 block towers, either 2 or 4 times.
 They could use any blocks, and were rewarded for accuracy and speed.
 
 <p align="center">
-  <img width="80%" src="experiments/silhouette_2/assets/structures.png"></img>
+  <img width="100%" src="experiments/silhouette_2/assets/structures.png"></img>
 </p>
-
 
 ## Analysis
 Our latest analyses can be found in `/analysis/cogsci2020`.
