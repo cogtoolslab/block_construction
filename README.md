@@ -1,4 +1,4 @@
-# Learning to build physical structures- Block Construction
+# Learning to build physical structures
 
 <p align="center">
   <img width="100%" src="experiments/silhouette_2/assets/trial_demo.gif"></img>
@@ -6,16 +6,16 @@
 
 Project investigating human physical construction behavior.
 
-## Building environment
-Our block construction environment allows people to build 2D block towers under simulated physics (using [Matter.js](https://github.com/liabru/matter-js)) from their browser. In this version, block snap to valid grid locations just above available horizontal surface.
+## Block construction environment
+Our block construction environment allows people to build 2D block towers under simulated physics ([Matter.js](https://github.com/liabru/matter-js)). In this version, block snap to valid grid locations just above available horizontal surface.
 
 ## Experiment
 We ran an experiment to see how people's construction procedures change over repeated attempts.
-Over an experimental session, participants build 8 block towers, either 2 or 4 times.
-They could use any blocks, and were rewarded for accuracy and speed.
+Over an experimental session, participants saw the silhouettes of 8 block towers (below), either 2 or 4 times.
+They attempted to recreate the silhouette using the blocks provided, and were rewarded for accuracy and speed.
 
 <p align="center">
-  <img width="100%" src="experiments/silhouette_2/assets/structures.png"></img>
+  <img width="80%" src="experiments/silhouette_2/assets/structures.png"></img>
 </p>
 
 ## Analysis
@@ -27,8 +27,11 @@ We devide analysis of building procedures between two additional notebooks:
 
 In `block_silhouette_action_sequences.ipynb` we analyze sequences of block-placements, and how these change throughout the experiment.
 
-
 In `block_silhouette_state_trajectory_analysis.ipynb` we look at the evolving state of the building environment during a reconstruction. We construct graphs containing multiple people's building trajectories, to quantify how similarly people build to each other at the start and end of the experiment.
+
+<p align="left">
+  <img width="100%" src="results/plots/talks/structure_1_staggered-06.png"></img>
+</p>
 
 Helper functions can be found in `/analysis/utils/`.
 
