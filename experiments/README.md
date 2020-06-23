@@ -13,16 +13,17 @@ This directory will contain subdirs containing different versions of the `block_
 
 #### `dev`: Test UI
 
+## /pilot/
+Experiment used to get data for SPP abstract
 
-
-### All pilots have the following parameters
-
+Had the following params
 - practiceDuration: 600
 - exploreDuration: 30
 - buildDuration: 60
 - bonusThresholdHigh: 0.93 ($0.05)
 - bonusThresholdMid: 0.85 ($0.03)
 - bonusThresholdLow: 0.7 ($0.01)
+
 
 #### `pilot0`: Test UI
 
@@ -60,6 +61,9 @@ Found several missing pieces, including survey data not being sent.
 
 
 _______________________________________________________________
+## /silhouette_2/
+Experiment reported in CogSci 2020 and ICML 2020 OOL workshop
+
 
 ### `Exp2Pilot1`: Major changes
 - Moved to silhouette_2 folder
