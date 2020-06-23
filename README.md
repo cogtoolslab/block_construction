@@ -1,6 +1,6 @@
 # Learning to build physical structures
 
-<p align="center">
+<p align="center" style="font-size: smaller">
   <img width="100%" src="experiments/silhouette_2/assets/trial_demo.gif"></img>
 </p>
 
@@ -14,7 +14,7 @@ We ran an experiment to see how people's construction procedures change over rep
 Over an experimental session, participants saw the silhouettes of 8 block towers (below), either 2 or 4 times.
 They attempted to recreate the silhouette using the blocks provided, and were rewarded for accuracy and speed.
 
-<p align="center">
+<p align="center" style="font-size: smaller">
   <img width="80%" src="experiments/silhouette_2/assets/structures.png"></img><br/>
   Silhouettes shown to all participants
 </p>
@@ -28,7 +28,7 @@ We devide analysis of building procedures between two additional notebooks:
 
 In `block_silhouette_action_sequences.ipynb` we analyze sequences of block-placements, and how these change throughout the experiment.
 
-<p align="center">
+<p align="center" style="font-size: smaller">
   <img width="100%" src="results/plots/talks/action_similarity.png"></img><br/>
   Measuring similarity of two sequences of actions taken in first and final build attempts
 </p>
@@ -36,7 +36,7 @@ In `block_silhouette_action_sequences.ipynb` we analyze sequences of block-place
 
 In `block_silhouette_state_trajectory_analysis.ipynb` we look at the evolving state of the building environment during a reconstruction. We construct graphs containing multiple people's building trajectories, to quantify how similarly people build to each other at the start and end of the experiment.
 
-<p align="center">
+<p align="center" style="font-size: smaller">
   <img width="100%" src="results/plots/talks/structure_1_staggered-06.png"></img><br/>
   Example state trajectory graphs for one structure
 </p>
