@@ -7,7 +7,7 @@
 Project investigating human physical construction behavior.
 
 ## Block construction environment
-Our block construction environment allows people to build 2D block towers under simulated physics ([Matter.js](https://github.com/liabru/matter-js)). In this version, block snap to valid grid locations just above available horizontal surface.
+Our block construction environment allows people to build 2D block towers under simulated physics ([Matter.js](https://github.com/liabru/matter-js)). In this version, blocks snap to valid grid locations just above available horizontal surface.
 
 ## Experiment
 We ran an experiment to see how people's construction procedures change over repeated attempts.
