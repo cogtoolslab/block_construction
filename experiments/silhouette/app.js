@@ -6,21 +6,26 @@ const
   https = require('https'),
   fs = require('fs'),
   app = require('express')(),
+  express = require('express'),
   _ = require('lodash'),
   parser = require('xmldom').DOMParser,
   XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest,
   sendPostRequest = require('request').post;
 
+
+  
 var gameport;
 var researchers = ['A4SSYO0HDVD4E', 'A1BOIDKD33QSDK', 'A1MMCS8S8CTWKU', 'A1MMCS8S8CTWKV', 'A1MMCS8S8CTWKS', 'A1RFS3YXD1ZIKG'];
-var blockResearcher = true;
+var blockResearcher = false;
+
+app.use(express.static('static'));
 
 if (argv.gameport) {
   var gameport = argv.gameport;
   console.log('using port ' + gameport);
 } else {
-  var gameport = 8888;
-  console.log('no gameport specified: using 8888\nUse the --gameport flag to change');
+  var gameport = 8887;
+  console.log('no gameport specified: using 8887\nUse the --gameport flag to change');
 }
 
 try {
@@ -38,11 +43,14 @@ try {
 
 // serve stuff that the client requests
 app.get('/*', (req, res) => {
+  console.log('requesting')
   serveFile(req, res);
 });
 
 
 io.on('connection', function (socket) {
+
+  console.log('connected');
 
   // Recover query string information and set condition
   var hs = socket.request;
@@ -128,7 +136,7 @@ function checkPreviousParticipant(workerId, callback) {
 function initializeWithTrials(socket) {
   var gameid = UUID();
   var colname = 'block-construction-silhouette-exp02';
-  sendPostRequest('http://localhost:8000/db/getstims', {
+  sendPostRequest('http://localhost:8001/db/getstims', {
     json: {
       dbname: 'stimuli',
       colname: colname,
@@ -164,7 +172,7 @@ function UUID() {
 };
 
 var writeDataToMongo = function (data) {
-  sendPostRequest('http://localhost:8000/db/insert',
+  sendPostRequest('http://localhost:8001/db/insert',
     { json: data },
     (error, res, body) => {
       if (!error && res.statusCode === 200) {

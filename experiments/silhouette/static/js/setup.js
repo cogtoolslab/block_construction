@@ -267,10 +267,10 @@ function setupGame () {
       version: d.versionInd,
       post_trial_gap: 1000, // add brief ITI between trials
       num_trials : session.length,
-      on_finish : on_finish,
-      browser: browserDetect.browser,
-      browserVersion: browserDetect.version,
-      os: browserDetect.OS
+      on_finish : on_finish
+      // browser: browserDetect.browser,
+      // browserVersion: browserDetect.version,
+      // os: browserDetect.OS
     };
 
     // Bind trial data with boilerplate
