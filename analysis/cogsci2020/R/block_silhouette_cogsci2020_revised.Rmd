@@ -26,7 +26,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 iterationName = 'Exp2Pilot3_all'
 
-df.full = read.csv(paste('../results/csv/block_silhouette_',iterationName,'_good.csv', sep=''))
+df.full = read.csv(paste('../../results/csv/block_silhouette_',iterationName,'_good.csv', sep=''))
 
 d <- df.full %>%
   select(rawF1DiscreteScore,phase,phase_extended,phase_number,condition,trialNum,targetName,gameID,numBlocks,repetition,blockFell,buildTime,buggy,perfectScore,meanIBI,thinkingTime) %>%
