@@ -51,8 +51,8 @@ Helper functions can be found in `/analysis/utils/`.
 - `/analysis/utils/` contains helper functions for e.g. scoring, random agents
 
 ### Experiment
-- `/experiments/silhouette_2/` contains source code for experiment
-- `/experiments/silhouette_2/js/jsPsych/jspsych-block-silhouette-build` is a custom jsPsych plugin created for this experiment. It depends on other files in `js/custom/`, as well as `app.js`
+- `/experiments/silhouette/` contains source code for experiment
+- `/experiments/silhouette/static/js/jsPsych/jspsych-block-silhouette-build` is a custom jsPsych plugin created for this experiment. It depends on other files in `js/custom/`, as well as `app.js`
   
 ### Data
 - `/analysis/results/csv/` contains preprocessed and anonymized CSVs for all 105 participants
