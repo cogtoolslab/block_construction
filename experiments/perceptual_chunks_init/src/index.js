@@ -1,22 +1,15 @@
+// compiled into main.js by webpack 
+
 import _ from 'lodash';
 
+var canvases = require('../static/js/chunkCanvases.js');
+
 var customConfig = require('../config.json');
+// var chunkCanvases = require('../static/js/chunkCanvases.js');
 
 window.onload = function(){
 
-  function component() {
-    const element = document.createElement('div');
-  
-    // Lodash, currently included via a script, is required for this line to work
-    element.innerHTML = _.join(['Hello', 'webpack'], ' ');
-  
-    return element;
-  }
-  
-  document.body.appendChild(component());
-  
-
-  console.log('welcome!');
+  canvases.setupCanvas();
 
   window.addEventListener('beforeunload', function (e) {
     if (!game.finished) {
@@ -26,6 +19,19 @@ window.onload = function(){
       e.returnValue = '';
     }
   });  
+
+
+
+  // Add something to canvas:
+  // function component() {
+  //   const element = document.createElement('div');
+
+  //   element.innerHTML = _.join(['Hello', 'webpack'], ' ');
+  
+  //   return element;
+  // }
+  
+  // document.body.appendChild(component());
 
 };
 
