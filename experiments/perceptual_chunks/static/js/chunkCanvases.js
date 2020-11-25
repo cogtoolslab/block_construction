@@ -1,7 +1,7 @@
 var dispConfig = require('./displayConfig.js');
-var gridDisplay = require('./grid.js');
-var trials = require('./trials.js');
+var gridDisplay = require('./gridDisplay.js')['gridDisplay'];
 var p5 = require('./p5.js');
+var ChunkGame = require('./chunkGame.js')['ChunkGame'];
 
 function setupChunkingCanvas(p5Canvas, trialObj) {
 
@@ -10,15 +10,15 @@ function setupChunkingCanvas(p5Canvas, trialObj) {
     p5Canvas.setup = function () {
         stimulusCanvas = p5Canvas.createCanvas(dispConfig.canvasHeight, dispConfig.canvasWidth);
         stimulusCanvas.parent('chunking-canvas'); // add parent div 
-        gridDisplay.grid.setup();
-        trials.printStructure();
+        game = new ChunkGame(gridDisplay);
+
+        game.startTrial();
 
     };
 
     p5Canvas.draw = function () {
         p5Canvas.background(220);
-        gridDisplay.grid.show(p5Canvas);
-
+        gridDisplay.show(p5Canvas);
 
     };
 

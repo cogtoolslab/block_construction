@@ -1,8 +1,59 @@
 var config = require("./displayConfig.js");
-var bitmaps = require("../assets/bitmapStructures.js");
+var structures = require("../assets/bitmapStructures.js");
 
-var printStructure = function(){
-    console.log(bitmaps.hand_selected_005);
+var targetNames = Object.keys(structures.bitmaps);
+var ntargets = targetNames.length;
+
+var printStructure = function(trialNumber){
+    console.log(structures.bitmaps[targetNames[trialNumber]]);
 }
 
-module.exports = {printStructure: printStructure};
+class Trial {
+
+    constructor(trialNum, targetName) {
+        this.trialNum = trialNum;
+        this.targetName = targetName;
+        this.bitmap = structures.bitmaps[this.targetName];
+        this.stimGrid = this.setupStimGrid();
+    }
+
+    setupStimGrid(){
+
+        var stimGrid = Array(config.discreteEnvWidth).fill().map(() => Array(config.discreteEnvHeight).fill(0));
+
+        const yOffset = 0;
+        const xOffset = 5;
+
+        var x = 0
+        while (x < this.bitmap.length){
+            var y = 0
+            while (y < this.bitmap[x].length){
+                stimGrid[xOffset+x][yOffset+y] = this.bitmap[x][y];
+                y = y+1;
+            }
+            x = x+1;
+        }
+        return stimGrid;
+    }
+
+}
+
+
+function setupTrials() {
+
+    var trialList = [];
+
+    var trialNum = 0
+    targetNames.forEach(targetName => {
+        trialList.push(new Trial(trialNum,targetName));
+    });
+
+    return trialList
+}
+
+
+module.exports = {
+    printStructure: printStructure,
+    setupTrials: setupTrials,
+    Trial: Trial
+    };

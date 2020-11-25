@@ -1,4 +1,3 @@
-
 var displayConfig = {
   canvasHeight: 450,
   canvasWidth: 450,
@@ -8,6 +7,10 @@ var displayConfig = {
   buildColors: [
     [179, 47, 10, 255],
     [10, 47, 179, 255],
+  ],
+  highlightColors: [
+    [200, 200, 200, 100],
+    [120, 120, 200],
   ],
   menuColor: [236, 232, 226],
   disabledColor: [100, 100, 100],
@@ -21,6 +24,7 @@ var displayConfig = {
   worldScale: 2.2, //scaling factor within matterjs
   menuOffset: 70
 };
+
 
 displayConfig.floorHeight = displayConfig.canvasHeight / 4.2; //grabbed from silhouette
 
