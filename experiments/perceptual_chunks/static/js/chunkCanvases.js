@@ -1,20 +1,25 @@
 var dispConfig = require('./displayConfig.js');
+var gridDisplay = require('./grid.js');
+var trials = require('./trials.js');
 var p5 = require('./p5.js');
 
-function setupChunkingCanvas(p5stim, trialObj) {
+function setupChunkingCanvas(p5Canvas, trialObj) {
 
     //var testStim = trialObj.targetBlocks;
 
-    p5stim.setup = function () {
-        stimulusCanvas = p5stim.createCanvas(dispConfig.canvasHeight, dispConfig.canvasWidth);
+    p5Canvas.setup = function () {
+        stimulusCanvas = p5Canvas.createCanvas(dispConfig.canvasHeight, dispConfig.canvasWidth);
         stimulusCanvas.parent('chunking-canvas'); // add parent div 
+        gridDisplay.grid.setup();
+        trials.printStructure();
+
     };
 
-    p5stim.draw = function () {
-        p5stim.background(220);
-        // showStimulus(p5stim, testStim, individual_blocks = false, blockColor = trialObj.blockColor);
-        //showGrid(p5stim);
-        // showFloor(p5stim);
+    p5Canvas.draw = function () {
+        p5Canvas.background(220);
+        gridDisplay.grid.show(p5Canvas);
+
+
     };
 
 };

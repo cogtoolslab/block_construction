@@ -16,10 +16,15 @@ var displayConfig = {
   floorColor: [28, 54, 62],
   stimColor: [28, 54, 62],
   revealedTargetColor: [28, 54, 62, 200],
-  discreteEnvHeight: 10, // discrete world representation for y-snapping
-  discreteEnvWidth: 12,
+  discreteEnvHeight: 13, // discrete world representation for y-snapping
+  discreteEnvWidth: 18,
   worldScale: 2.2, //scaling factor within matterjs
   menuOffset: 70
 };
+
+displayConfig.floorHeight = displayConfig.canvasHeight / 4.2; //grabbed from silhouette
+
+displayConfig.sF = displayConfig.canvasWidth / displayConfig.discreteEnvWidth; //scaling factor to change appearance of blocks
+displayConfig.stimScale = displayConfig.sF; //scale of stimulus silhouette (same as sF here)
 
 module.exports = displayConfig;

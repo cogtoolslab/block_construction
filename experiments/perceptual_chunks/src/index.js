@@ -10,6 +10,7 @@ var customConfig = require('../config.json');
 window.onload = function(){
 
   canvases.setupCanvas();
+  
 
   window.addEventListener('beforeunload', function (e) {
     if (!game.finished) {
