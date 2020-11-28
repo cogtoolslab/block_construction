@@ -150,7 +150,7 @@ class ChunkCanvas {
     return this.p5chunks;
   }
 
-  reset(game) {
+  reset(game) { //nothing to do with reset env button!
     this.oldp5chunks = this.p5chunks;
     this.oldp5chunks ? this.oldp5chunks.remove() : false;
 

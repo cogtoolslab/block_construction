@@ -24,6 +24,10 @@ class ChunkGame {
 
         this.currentTrial.nReset += 1;
         this.newGrid();
+
+        $("#chunk-counter").text(
+            this.nChunksHighlighted().toString() + " chunks selected"
+          );
   
         // This prevents the form from submitting & disconnecting person
         return false;
