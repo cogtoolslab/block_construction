@@ -31,7 +31,6 @@ class ChunkGame {
   }
 
   nextTrial() {
-    console.log("next trial");
 
     this.currentTrial = this.trialList.shift();
 
@@ -69,6 +68,7 @@ class ChunkGame {
     /**
      * Returns list of chunk numbers that are presently used to highlight
      */
+    // console.log(_.uniq(_.flatten(this.gameGrid)));
     return _.uniq(_.flatten(this.gameGrid));
   }
 
@@ -76,6 +76,7 @@ class ChunkGame {
     /**
      * Returns number of active highlight colors
      */
+
     return this.activeChunks().length - 1;
   }
 

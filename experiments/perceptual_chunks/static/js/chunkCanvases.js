@@ -68,16 +68,20 @@ class ChunkCanvas {
           p5Canvas.mouseX > 0 &&
           p5Canvas.mouseX < dispConfig.canvasWidth
         ) {
-          // query grid display object
+          // query grid display object to get game coords
           let [i, j] = gridDisplay.queryGrid(p5Canvas.mouseX, p5Canvas.mouseY);
           let onTarget = game.onTarget(i, j);
 
           if (onTarget) {
-            //should be inside game?
+            if (game.gameGrid[i][j] == 0) { // if starting new chunk, make newest color
+                let new_color = game.nChunksHighlighted() + 1;
+                game.gameGrid[i][j] = new_color < game.nColors + 1 ? new_color : 1;
+            }
             dragging = true;
             dragSetGroup = game.gameGrid[i][j];
             // game.increment(i,j);
-            dragSet[i][j]=1;
+            dragSet[i][j] = 1;
+
           } else {
             dragging = false;
           }
@@ -94,9 +98,13 @@ class ChunkCanvas {
       ) {
         if (dragging) {
           let [i, j] = gridDisplay.queryGrid(p5Canvas.mouseX, p5Canvas.mouseY);
-          if (dragSet[i][j] == 0) {
-            game.gameGrid[i][j] = dragSetGroup;
-            dragSet[i][j] = 1;
+          let onTarget = game.onTarget(i, j);
+
+          if (onTarget) {
+            if (dragSet[i][j] == 0) {
+              game.gameGrid[i][j] = dragSetGroup;
+              dragSet[i][j] = 1;
+            }
           }
         }
       } else {
@@ -107,26 +115,30 @@ class ChunkCanvas {
     p5Canvas.mouseReleased = function () {
       //console.log(dragSet);
 
-      if (p5Canvas.mouseY > 0 && (p5Canvas.mouseY < (dispConfig.canvasHeight - dispConfig.floorHeight)) &&
-        (p5Canvas.mouseX > 0 && p5Canvas.mouseX < dispConfig.canvasWidth)) {
+      if (
+        p5Canvas.mouseY > 0 &&
+        p5Canvas.mouseY < dispConfig.canvasHeight - dispConfig.floorHeight &&
+        p5Canvas.mouseX > 0 &&
+        p5Canvas.mouseX < dispConfig.canvasWidth
+      ) {
+        let [i, j] = gridDisplay.queryGrid(p5Canvas.mouseX, p5Canvas.mouseY);
+        let onTarget = game.onTarget(i, j);
 
-            let [i,j]  = gridDisplay.queryGrid(p5Canvas.mouseX, p5Canvas.mouseY);
-            let onTarget = game.onTarget(i,j);
-
-            if(onTarget){
-                if (_.sum(_.flatten(dragSet)) == 1) {
-                    game.increment(i,j);
-                }
-            }
-
+        if (onTarget) {
+          if (_.sum(_.flatten(dragSet)) == 1) {
+            game.increment(i, j);
+          }
         }
-
+      }
 
       dragging = false;
-      dragSet = (this.gameGrid = Array(dispConfig.discreteEnvWidth)
-      .fill()
-      .map(() => Array(dispConfig.discreteEnvHeight).fill(0)));
-      game.nChunksHighlighted();
+      dragSet = this.gameGrid = Array(dispConfig.discreteEnvWidth)
+        .fill()
+        .map(() => Array(dispConfig.discreteEnvHeight).fill(0));
+
+      $("#chunk-counter").text(
+        game.nChunksHighlighted().toString() + " chunks selected"
+      );
     };
   }
 
@@ -141,6 +153,11 @@ class ChunkCanvas {
   reset(game) {
     this.oldp5chunks = this.p5chunks;
     this.oldp5chunks ? this.oldp5chunks.remove() : false;
+
+    $("#chunk-counter").text(
+      game.nChunksHighlighted().toString() + " chunks selected"
+    );
+
     this.p5chunks = this.setupCanvas(game);
   }
 }
