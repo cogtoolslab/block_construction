@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 var config = require("./displayConfig.js");
 var structures = require("../assets/bitmapStructures.js");
 
@@ -48,12 +50,13 @@ function setupTrials() {
         trialList.push(new Trial(trialNum,targetName));
     });
 
+    trialList = _.shuffle(trialList);
+
     return trialList
 }
 
 
 module.exports = {
     printStructure: printStructure,
-    setupTrials: setupTrials,
-    Trial: Trial
+    setupTrials: setupTrials
     };
