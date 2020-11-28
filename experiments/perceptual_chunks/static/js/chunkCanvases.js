@@ -59,12 +59,18 @@ class ChunkCanvas{
 
         p5Canvas.mouseDragged = function () {
 
-            if (dragging) {
-                let [i,j]  = gridDisplay.queryGrid(p5Canvas.mouseX, p5Canvas.mouseY);
-                if (!dragSet.includes([i,j])){
-                    game.gameGrid[i][j] = dragSetGroup;
-                    dragSet.push([i,j]);
+            if (p5Canvas.mouseY > 0 && (p5Canvas.mouseY < (dispConfig.canvasHeight - dispConfig.floorHeight)) &&
+                (p5Canvas.mouseX > 0 && p5Canvas.mouseX < dispConfig.canvasWidth)) {
+
+                if (dragging) {
+                    let [i,j]  = gridDisplay.queryGrid(p5Canvas.mouseX, p5Canvas.mouseY);
+                    if (!dragSet.includes([i,j])){
+                        game.gameGrid[i][j] = dragSetGroup;
+                        dragSet.push([i,j]);
+                    }
                 }
+            } else {
+                dragging = false;
             }
 
         }
