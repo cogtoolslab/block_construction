@@ -17,6 +17,7 @@ class Trial {
         this.targetName = targetName;
         this.bitmap = structures.bitmaps[this.targetName];
         this.stimGrid = this.setupStimGrid();
+        this.nReset = 0;
     }
 
     setupStimGrid(){

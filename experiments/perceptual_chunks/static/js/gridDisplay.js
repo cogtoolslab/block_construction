@@ -79,7 +79,8 @@ class GridDisplay {
           // env.translate(this.stimGrid_xs[i], this.stimGrid_ys[j]);
         } else { // outside of target
           var squareColor = config.gridColor;
-          env.stroke([190, 190, 255]);
+          // env.stroke([190, 190, 255]);
+          env.noStroke();
           env.fill(squareColor);
         }
         env.rect(0, 0, config.stimScale, config.stimScale);

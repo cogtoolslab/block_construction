@@ -8,8 +8,10 @@ var displayConfig = {
     [179, 47, 10, 255],
     [10, 47, 179, 255],
   ],
-  gridColor: [200, 200, 200, 100],
+  gridColor: [220, 220, 220, 100],
+  backgroundColor: [220, 220, 220, 100],
   highlightColors:[
+    [120, 120, 120, 100], // first is default color
     [30, 200, 150, 100],
     [120, 120, 200],
     [150, 80, 120],
