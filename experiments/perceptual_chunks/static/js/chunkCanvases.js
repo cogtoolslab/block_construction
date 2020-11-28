@@ -1,101 +1,96 @@
 var dispConfig = require('./displayConfig.js');
 var gridDisplay = require('./gridDisplay.js')['gridDisplay'];
 var p5 = require('./p5.js');
-var ChunkGame = require('./chunkGame.js')['ChunkGame'];
 
+class ChunkCanvas{
 
-function setupChunkingCanvas(p5Canvas, trialObj) {
+    constructor(){
+        this.p5chunks = null;
+    }
 
-    //var testStim = trialObj.targetBlocks;
+    setupChunkingCanvas(p5Canvas, game) {
 
-    p5Canvas.setup = function () {
-        stimulusCanvas = p5Canvas.createCanvas(dispConfig.canvasHeight, dispConfig.canvasWidth);
-        stimulusCanvas.parent('chunking-canvas'); // add parent div 
-        p5Canvas.game = new ChunkGame(gridDisplay);
+        //var testStim = trialObj.targetBlocks;
 
-        p5Canvas.game.startTrial();
+        p5Canvas.setup = function () {
+            let stimulusCanvas = p5Canvas.createCanvas(dispConfig.canvasHeight, dispConfig.canvasWidth);
+            stimulusCanvas.parent('chunking-canvas'); // add parent div 
 
-        $("#done-button").click(() => {
-            //check if any blocks placed this turn, and let partner know if none placed
-            p5Canvas.game.nextTrial();
-        
-            // This prevents the form from submitting & disconnecting person
-            return false;
-          });
+            game.startTrial();
 
-    };
+        };
 
-    p5Canvas.draw = function () {
-        p5Canvas.background(220);
-        gridDisplay.show(p5Canvas);
+        p5Canvas.draw = function () {
+            p5Canvas.background(220);
+            gridDisplay.show(p5Canvas);
 
-    };
+        };
 
-    let dragging = false;
-    let dragSet = [];
-    let dragSetGroup = [0,0,0];
+        let dragging = false;
+        let dragSet = [];
+        let dragSetGroup = [0,0,0];
 
-    p5Canvas.mousePressed = function () {
-        
-        //var toolSelected = true; // some condition to prevent clicking
+        p5Canvas.mousePressed = function () {
+            
+            //var toolSelected = true; // some condition to prevent clicking
 
-        if (!dragging) {
-  
-          // if mouse in main environment
-          if (p5Canvas.mouseY > 0 && (p5Canvas.mouseY < (dispConfig.canvasHeight - dispConfig.floorHeight)) &&
-            (p5Canvas.mouseX > 0 && p5Canvas.mouseX < dispConfig.canvasWidth)) {
+            if (!dragging) {
+    
+            // if mouse in main environment
+            if (p5Canvas.mouseY > 0 && (p5Canvas.mouseY < (dispConfig.canvasHeight - dispConfig.floorHeight)) &&
+                (p5Canvas.mouseX > 0 && p5Canvas.mouseX < dispConfig.canvasWidth)) {
 
-                // query grid display object
-                [i,j]  = gridDisplay.queryGrid(p5Canvas.mouseX, p5Canvas.mouseY);
-                onTarget = p5Canvas.game.onTarget(i,j);
+                    // query grid display object
+                    let [i,j]  = gridDisplay.queryGrid(p5Canvas.mouseX, p5Canvas.mouseY);
+                    let onTarget = game.onTarget(i,j);
 
-                if(onTarget){ //should be inside game?
-                    dragging = true;
-                    p5Canvas.game.increment(i,j);
-                    dragSetGroup = p5Canvas.game.gameGrid[i][j];
-                    dragSet.push([i,j]);
-                } else {
-                    dragging = false;
+                    if(onTarget){ //should be inside game?
+                        dragging = true;
+                        game.increment(i,j);
+                        dragSetGroup = game.gameGrid[i][j];
+                        dragSet.push([i,j]);
+                    } else {
+                        dragging = false;
+                    }
+
                 }
-
             }
-          }
-      }.bind(this);
+        }.bind(this);
 
-      p5Canvas.mouseDragged = function () {
+        p5Canvas.mouseDragged = function () {
 
-        if (dragging) {
-            [i,j]  = gridDisplay.queryGrid(p5Canvas.mouseX, p5Canvas.mouseY);
-            if (!dragSet.includes([i,j])){
-                p5Canvas.game.gameGrid[i][j] = dragSetGroup;
-                dragSet.push([i,j]);
+            if (dragging) {
+                let [i,j]  = gridDisplay.queryGrid(p5Canvas.mouseX, p5Canvas.mouseY);
+                if (!dragSet.includes([i,j])){
+                    game.gameGrid[i][j] = dragSetGroup;
+                    dragSet.push([i,j]);
+                }
             }
-          }
 
-      }
+        }
 
-      p5Canvas.mouseReleased = function () {
-        dragging = false;
-      }
+        p5Canvas.mouseReleased = function () {
+            dragging = false;
+        }
 
-};
+    };
 
-function setupCanvas(trialObj) {
-    p5chunks = new p5((env) => {
-        setupChunkingCanvas(env, trialObj = trialObj)
-    }, 'chunking-canvas');
-    return p5chunks
-}
+    setupCanvas(game) {
+        this.p5chunks 
+        this.p5chunks = new p5((env) => {
+            this.setupChunkingCanvas(env, game)
+        }, 'chunking-canvas');
+        return this.p5chunks
+    };
 
-
-function reset() {
-    // remove environment
-    p5chunks.remove();
-    setup();
+    reset(game){
+        this.oldp5chunks = this.p5chunks;
+        this.oldp5chunks ? this.oldp5chunks.remove() : false;
+        this.p5chunks = this.setupCanvas(game);
+    };
 
 }
 
 module.exports = {
-    setupCanvas, 
-    reset
+    ChunkCanvas: new ChunkCanvas()
     };

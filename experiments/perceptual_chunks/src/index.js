@@ -2,14 +2,14 @@
 
 import _ from 'lodash';
 
-var canvases = require('../static/js/chunkCanvases.js');
-
-var customConfig = require('../config.json');
+var ChunkGame = require('../static/js/chunkGame.js')['ChunkGame'];
+var gridDisplay = require('../static/js/gridDisplay.js')['gridDisplay'];
+// var customConfig = require('../static/js/config.json');
 // var chunkCanvases = require('../static/js/chunkCanvases.js');
 
 window.onload = function(){
 
-  canvases.setupCanvas();
+  let game = new ChunkGame(gridDisplay);
 
   window.addEventListener('beforeunload', function (e) {
     if (!game.finished) {

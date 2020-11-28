@@ -1,5 +1,6 @@
 var config = require("./displayConfig.js");
 var trials = require('./trials.js');
+var ChunkCanvas = require('./chunkCanvases.js')['ChunkCanvas'];
 
 class ChunkGame {
 
@@ -9,19 +10,35 @@ class ChunkGame {
         this.trialList = trials.setupTrials();
         this.nColors = config.highlightColors.length;
 
-        this.currentTrial = this.nextTrial();
+        this.nextTrial();
         this.gridDisplay.setStimGrid(this.currentTrial.stimGrid); // add stim to grid display
+
+        $("#done-button").click(() => {
+            //check if any blocks placed this turn, and let partner know if none placed
+            this.nextTrial();
         
+            // This prevents the form from submitting & disconnecting person
+            return false;
+          });
+
+
     }
 
     nextTrial(){
         console.log('next trial');
+
+        this.currentTrial = this.trialList.shift();
+
+        // reset stim grid
+        this.gridDisplay.setStimGrid(this.currentTrial.stimGrid); 
+
         // new empty array for coloring
         this.gameGrid = Array(config.discreteEnvWidth).fill().map(() => Array(config.discreteEnvHeight).fill(0));
         this.gridDisplay.setGameGrid(this.gameGrid);
 
-        // start new trial
-        return(this.trialList.shift());
+        ChunkCanvas.p5chunks ? ChunkCanvas.p5chunks.remove() : false;
+        ChunkCanvas.reset(this);
+        return false;
 
     }
 
