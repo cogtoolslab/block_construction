@@ -3,6 +3,7 @@ var gridDisplay = require('./gridDisplay.js')['gridDisplay'];
 var p5 = require('./p5.js');
 var ChunkGame = require('./chunkGame.js')['ChunkGame'];
 
+
 function setupChunkingCanvas(p5Canvas, trialObj) {
 
     //var testStim = trialObj.targetBlocks;
@@ -13,6 +14,14 @@ function setupChunkingCanvas(p5Canvas, trialObj) {
         p5Canvas.game = new ChunkGame(gridDisplay);
 
         p5Canvas.game.startTrial();
+
+        $("#done-button").click(() => {
+            //check if any blocks placed this turn, and let partner know if none placed
+            p5Canvas.game.nextTrial();
+        
+            // This prevents the form from submitting & disconnecting person
+            return false;
+          });
 
     };
 

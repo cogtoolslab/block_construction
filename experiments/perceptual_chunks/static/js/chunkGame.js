@@ -10,12 +10,12 @@ class ChunkGame {
         this.nColors = config.highlightColors.length;
 
         this.currentTrial = this.nextTrial();
-        console.log('current trial: ', this.currentTrial.stimGrid);
         this.gridDisplay.setStimGrid(this.currentTrial.stimGrid); // add stim to grid display
         
     }
 
     nextTrial(){
+        console.log('next trial');
         // new empty array for coloring
         this.gameGrid = Array(config.discreteEnvWidth).fill().map(() => Array(config.discreteEnvHeight).fill(0));
         this.gridDisplay.setGameGrid(this.gameGrid);

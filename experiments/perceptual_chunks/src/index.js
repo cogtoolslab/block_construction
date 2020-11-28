@@ -10,7 +10,6 @@ var customConfig = require('../config.json');
 window.onload = function(){
 
   canvases.setupCanvas();
-  
 
   window.addEventListener('beforeunload', function (e) {
     if (!game.finished) {
@@ -20,9 +19,6 @@ window.onload = function(){
       e.returnValue = '';
     }
   });  
-
-
-
   // Add something to canvas:
   // function component() {
   //   const element = document.createElement('div');
