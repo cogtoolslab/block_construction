@@ -12,26 +12,7 @@ class ChunkGame {
     this.nextTrial();
     this.gridDisplay.setStimGrid(this.currentTrial.stimGrid); // add stim to grid display
 
-    $("#done-button").click(() => {
-      //check if any blocks placed this turn, and let partner know if none placed
-      this.nextTrial();
-
-      // This prevents the form from submitting & disconnecting person
-      return false;
-    });
-
-    $("#reset-button").click(() => {
-
-        this.currentTrial.nReset += 1;
-        this.newGrid();
-
-        $("#chunk-counter").text(
-            this.nChunksHighlighted().toString() + " chunks selected"
-          );
-  
-        // This prevents the form from submitting & disconnecting person
-        return false;
-      });
+    this.setupElements();
   }
 
   nextTrial() {
@@ -82,6 +63,62 @@ class ChunkGame {
      */
 
     return this.activeChunks().length - 1;
+  }
+
+  nSquaresHighlighted() {
+    let nHighlightedSquares = _.sum(_.map(_.flatten(this.gameGrid), (x) => {return (x > 0 ? 1 : 0)}));
+    return nHighlightedSquares;
+  }
+
+  filledShape(){
+    return this.nSquaresHighlighted() == this.currentTrial.nSquaresInTarget();
+  }
+
+
+  setupElements(){
+
+    /**
+     * These button interactions are in a silly place- I should move them outside of this class at some point
+     */
+
+    $("#done-button").click(() => {
+        //check if any blocks placed this turn, and let partner know if none placed
+  
+        if (this.nSquaresHighlighted() == this.currentTrial.nSquaresInTarget()){
+          this.nextTrial();
+        }
+        else {
+          console.log('you haven\'t filled in the whole structure!');
+        }
+  
+        // This prevents the form from submitting & disconnecting person
+        return false;
+      });
+
+    $("#done-button")
+    .mouseover(() => {
+        if (!this.filledShape()){
+            $("#unfinished-shape").show();
+        }
+    })
+    .mouseout(() => {
+        $("#unfinished-shape").hide();
+    })
+    ;
+  
+    $("#reset-button").click(() => {
+  
+          this.currentTrial.nReset += 1;
+          this.newGrid();
+  
+          $("#chunk-counter").text(
+              this.nChunksHighlighted().toString() + " chunks selected"
+            );
+    
+          // This prevents the form from submitting & disconnecting person
+          return false;
+        });
+
   }
 
 }

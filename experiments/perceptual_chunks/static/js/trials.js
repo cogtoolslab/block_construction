@@ -39,6 +39,11 @@ class Trial {
         return stimGrid;
     }
 
+    nSquaresInTarget(){
+        //console.log(_.sum(_.flatten(this.bitmap)));
+        return _.sum(_.flatten(this.bitmap));
+    }
+
 }
 
 

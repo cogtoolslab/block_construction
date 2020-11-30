@@ -243,3 +243,8 @@ body{
 #trial-number p{
     text-align: center;
 }
+
+#unfinished-shape{
+    margin-top: 80%;
+    color: maroon;
+}
