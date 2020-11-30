@@ -1,6 +1,7 @@
 var config = require("./displayConfig.js");
 var trials = require("./trials.js");
 var ChunkCanvas = require("./chunkCanvases.js")["ChunkCanvas"];
+const socket = io.connect();
 
 class ChunkGame {
   constructor(gridDisplay) {
@@ -85,6 +86,11 @@ class ChunkGame {
         //check if any blocks placed this turn, and let partner know if none placed
   
         if (this.nSquaresHighlighted() == this.currentTrial.nSquaresInTarget()){
+        
+        //   const config_data = require('../../config.json')
+        //   data = _.extend(config_data, this.currentTrial);
+        //   socket.emit('currentData', data);
+
           this.nextTrial();
         }
         else {
