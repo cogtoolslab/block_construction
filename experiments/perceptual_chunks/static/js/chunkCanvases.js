@@ -28,7 +28,8 @@ class ChunkCanvas {
       .fill()
       .map(() => Array(dispConfig.discreteEnvHeight).fill(0)));
     let dragSetGroup = 0;
-    let selectedSquare = null;
+    let dragSource = null;
+    let nSquaresChanged = 0;
 
     // p5Canvas.mouseClicked = function () {
 
@@ -72,10 +73,13 @@ class ChunkCanvas {
           let [i, j] = gridDisplay.queryGrid(p5Canvas.mouseX, p5Canvas.mouseY);
           let onTarget = game.onTarget(i, j);
 
+          dragSource = [i, j];
+
           if (onTarget) {
             if (game.gameGrid[i][j] == 0) { // if starting new chunk, make newest color
                 let new_color = game.nChunksHighlighted() + 1;
                 game.gameGrid[i][j] = new_color < game.nColors + 1 ? new_color : 1;
+                nSquaresChanged += 1;
             }
             dragging = true;
             dragSetGroup = game.gameGrid[i][j];
@@ -102,8 +106,11 @@ class ChunkCanvas {
 
           if (onTarget) {
             if (dragSet[i][j] == 0) {
-              game.gameGrid[i][j] = dragSetGroup;
-              dragSet[i][j] = 1;
+              if(game.gameGrid[i][j] != dragSetGroup){
+                nSquaresChanged += 1;
+                game.gameGrid[i][j] = dragSetGroup; // or move these inside conditional to only add new squares to dragset?
+                dragSet[i][j] = 1;
+              }
             }
           }
         }
@@ -125,12 +132,32 @@ class ChunkCanvas {
         let onTarget = game.onTarget(i, j);
 
         if (onTarget) {
+          // if clicking a single square
           if (_.sum(_.flatten(dragSet)) == 1) {
-            game.increment(i, j);
+            // game.increment(i, j); dealt with elsewhere
           }
         }
       }
 
+      if(nSquaresChanged > 0){
+
+        let colorChangeData = {
+          colorType: nSquaresChanged > 1 ? 'drag' : 'click',
+          dragSource: dragSource,
+          squaresSelected: dragSet,
+          nSquaresSelected: _.sum(_.flatten(dragSet)),
+          nSquaresChanged: nSquaresChanged,
+          totalChunkSize: _.sum(_.map(_.flatten(game.gameGrid), (x) => {return (x == game.gameGrid[dragSource[0]][dragSource[1]] ? 1 : 0)})),
+          newColorGroup: game.gameGrid[dragSource[0]][dragSource[1]]
+        }
+
+        game.saveData('color-change', colorChangeData);
+      
+      }
+
+      // reset local vars
+      dragSource = null
+      nSquaresChanged = 0;
       dragging = false;
       dragSet = this.gameGrid = Array(dispConfig.discreteEnvWidth)
         .fill()

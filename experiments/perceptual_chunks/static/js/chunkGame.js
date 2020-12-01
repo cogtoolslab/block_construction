@@ -144,7 +144,7 @@ class ChunkGame {
     $("#exit_survey").show();
   }
 
-  saveData(eventType){
+  saveData(eventType, event_data) {
 
     let gameConfig = require('../../config.json');
 
@@ -160,6 +160,10 @@ class ChunkGame {
       highlightColors: config.highlightColors
       }
     );
+
+    if(eventType=='color-change'){
+      data = _.extend(data, event_data);
+    }
 
     socket.emit('currentData', data);
 
