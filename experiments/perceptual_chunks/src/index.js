@@ -1,6 +1,6 @@
 // compiled into main.js by webpack 
 
-import _ from 'lodash';
+var _ = require('lodash');
 
 var ChunkGame = require('../static/js/chunkGame.js')['ChunkGame'];
 var gridDisplay = require('../static/js/gridDisplay.js')['gridDisplay'];

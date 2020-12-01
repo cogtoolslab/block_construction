@@ -1,8 +1,8 @@
 var displayConfig = {
   canvasHeight: 450,
   canvasWidth: 450,
-  worldHeight: 10,
-  worldWidth: 12,
+  // worldHeight: 10,
+  // worldWidth: 12,
   buildColor: [30, 30, 200],
   buildColors: [
     [179, 47, 10, 255],
@@ -15,7 +15,9 @@ var displayConfig = {
     [30, 200, 150, 100],
     [120, 120, 200],
     [150, 80, 120],
-    [180, 150, 50]
+    [180, 150, 50],
+    [70, 180, 200],
+    [180, 100, 50]
   ],
   menuColor: [236, 232, 226],
   disabledColor: [100, 100, 100],

@@ -1,6 +1,7 @@
 var config = require("./displayConfig.js");
 var trials = require("./trials.js");
 var ChunkCanvas = require("./chunkCanvases.js")["ChunkCanvas"];
+var io = require('socket.io-client');
 const socket = io.connect();
 
 class ChunkGame {
@@ -8,6 +9,7 @@ class ChunkGame {
     //setup in here
     this.gridDisplay = gridDisplay;
     this.trialList = trials.setupTrials();
+    this.ntrials = this.trialList.length;
     this.nColors = config.highlightColors.length - 1; // -1 because first is default color
 
     this.nextTrial();
@@ -25,6 +27,8 @@ class ChunkGame {
 
     // new empty array for coloring
     this.newGrid();
+
+    $("#trial-counter").text('Trial ' + this.currentTrial.trialNum.toString() + ' of ' + this.ntrials.toString());
 
     ChunkCanvas.p5chunks ? ChunkCanvas.p5chunks.remove() : false;
     ChunkCanvas.reset(this);
@@ -75,6 +79,34 @@ class ChunkGame {
     return this.nSquaresHighlighted() == this.currentTrial.nSquaresInTarget();
   }
 
+  done(){
+    //check if any blocks placed this turn, and let partner know if none placed
+    if (this.nSquaresHighlighted() == this.currentTrial.nSquaresInTarget()){
+
+      this.saveData('trialEnd');
+
+      if (this.currentTrial.trialNum == this.ntrials) {
+        this.endGame();
+      }
+      else {
+        this.nextTrial();
+      }
+    }
+    else {
+      console.log('you haven\'t filled in the whole structure!');
+    }
+
+  }
+
+  reset(){
+    this.currentTrial.nReset += 1;
+    this.newGrid();
+
+    $("#chunk-counter").text(
+        this.nChunksHighlighted().toString() + " chunks selected"
+      );
+  }
+
 
   setupElements(){
 
@@ -83,20 +115,7 @@ class ChunkGame {
      */
 
     $("#done-button").click(() => {
-        //check if any blocks placed this turn, and let partner know if none placed
-  
-        if (this.nSquaresHighlighted() == this.currentTrial.nSquaresInTarget()){
-        
-        //   const config_data = require('../../config.json')
-        //   data = _.extend(config_data, this.currentTrial);
-        //   socket.emit('currentData', data);
-
-          this.nextTrial();
-        }
-        else {
-          console.log('you haven\'t filled in the whole structure!');
-        }
-  
+        this.done();
         // This prevents the form from submitting & disconnecting person
         return false;
       });
@@ -113,17 +132,36 @@ class ChunkGame {
     ;
   
     $("#reset-button").click(() => {
-  
-          this.currentTrial.nReset += 1;
-          this.newGrid();
-  
-          $("#chunk-counter").text(
-              this.nChunksHighlighted().toString() + " chunks selected"
-            );
-    
+          this.reset();
           // This prevents the form from submitting & disconnecting person
           return false;
         });
+
+  }
+
+  endGame(){
+    $("#main_div").hide();
+    $("#exit_survey").show();
+  }
+
+  saveData(eventType){
+
+    let gameConfig = require('../../config.json');
+
+    let data = _.extend(this.currentTrial, 
+      {
+      dbname: gameConfig.dbname,
+      colname: gameConfig.colname,
+      iterationName: gameConfig.iterationName,
+      absoluteTime: Date.now(),
+      eventType: eventType,
+      gameGrid : this.gameGrid,
+      nChunksHighlighted: this.nChunksHighlighted(),
+      highlightColors: config.highlightColors
+      }
+    );
+
+    socket.emit('currentData', data);
 
   }
 

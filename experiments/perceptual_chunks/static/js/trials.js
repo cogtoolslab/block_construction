@@ -51,12 +51,12 @@ function setupTrials() {
 
     var trialList = [];
 
-    var trialNum = 0
-    targetNames.forEach(targetName => {
+    var trialNum = 0;
+
+    _.shuffle(targetNames).forEach(targetName => {
+        trialNum += 1;
         trialList.push(new Trial(trialNum,targetName));
     });
-
-    trialList = _.shuffle(trialList);
 
     return trialList
 }

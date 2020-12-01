@@ -22,7 +22,7 @@ if (argv.gameport) {
   var gameport = argv.gameport;
   console.log('using port ' + gameport);
 } else {
-  var gameport = 8887;
+  var gameport = 8886;
   console.log('no gameport specified: using 8887\nUse the --gameport flag to change');
 }
 
@@ -32,11 +32,15 @@ try {
     intermed = fs.readFileSync('/etc/letsencrypt/live/cogtoolslab.org/chain.pem'),
     options = { key: privateKey, cert: certificate, ca: intermed },
     server = require('https').createServer(options, app).listen(gameport),
-    io = require('socket.io')(server);
+    io = require('socket.io')(server,{
+      pingTimeout:60000
+        });
 } catch (err) {
   console.log("cannot find SSL certificates; falling back to http");
   var server = app.listen(gameport),
-    io = require('socket.io')(server);
+  io = require('socket.io')(server,{
+	  pingTimeout:60000
+      });
 }
 
 // serve stuff that the client requests
@@ -111,7 +115,7 @@ function checkPreviousParticipant(workerId, callback) {
     projection: { '_id': 1 }
   };
   sendPostRequest(
-    'http://localhost:8000/db/exists',
+    'http://localhost:5000/db/exists',
     { json: postData },
     (error, res, body) => {
       try {
@@ -133,27 +137,27 @@ function checkPreviousParticipant(workerId, callback) {
 
 function initializeWithTrials(socket) {
   var gameid = UUID();
-  var colname = 'block-construction-silhouette-exp02';
-  sendPostRequest('http://localhost:8001/db/getstims', {
-    json: {
-      dbname: 'stimuli',
-      colname: colname,
-      numTrials: 1,
-      gameid: gameid
-    }
-  }, (error, res, body) => {
-    if (!error && res.statusCode === 200) {
-      // send trial list (and id) to client
-      var packet = {
-        gameid: gameid,
-        trials: body.meta,
-        version: body.version
-      };
-      socket.emit('onConnected', packet);
-    } else {
-      console.log(`error getting stims: ${error} ${body}`);
-    }
-  });
+  var colname = 'block-construction-perceptual-chunks';
+  // sendPostRequest('http://localhost:5000/db/getstims', {
+  //   json: {
+  //     dbname: 'stimuli',
+  //     colname: colname,
+  //     numTrials: 1,
+  //     gameid: gameid
+  //   }
+  // }, (error, res, body) => {
+  //   if (!error && res.statusCode === 200) {
+  //     // send trial list (and id) to client
+  //     var packet = {
+  //       gameid: gameid,
+  //       trials: body.meta,
+  //       version: body.version
+  //     };
+  //     socket.emit('onConnected', packet);
+  //   } else {
+  //     console.log(`error getting stims: ${error} ${body}`);
+  //   }
+  // });
 }
 
 function UUID() {
@@ -170,7 +174,7 @@ function UUID() {
 };
 
 var writeDataToMongo = function (data) {
-  sendPostRequest('http://localhost:8001/db/insert',
+  sendPostRequest('http://localhost:5000/db/insert',
     { json: data },
     (error, res, body) => {
       if (!error && res.statusCode === 200) {
