@@ -28,7 +28,12 @@ class ChunkGame {
     // new empty array for coloring
     this.newGrid();
 
-    $("#trial-counter").text('Trial ' + this.currentTrial.trialNum.toString() + ' of ' + this.ntrials.toString());
+    if (this.currentTrial.trialType == 'normal-trial'){
+      $("#trial-counter").show();
+      $("#trial-counter").text('Trial ' + this.currentTrial.trialNum.toString() + ' of ' + this.ntrials.toString());
+    } else {
+      $("#trial-counter").hide();
+    }
 
     ChunkCanvas.p5chunks ? ChunkCanvas.p5chunks.remove() : false;
     ChunkCanvas.reset(this);
@@ -156,6 +161,7 @@ class ChunkGame {
       dbname: gameConfig.dbname,
       colname: gameConfig.colname,
       iterationName: gameConfig.iterationName,
+      devMode: gameConfig.devMode,
       absoluteTime: Date.now(),
       eventType: eventType,
       gameGrid : this.gameGrid,

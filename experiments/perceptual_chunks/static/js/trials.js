@@ -1,21 +1,25 @@
 var _ = require('lodash');
 
 var config = require("./displayConfig.js");
+var gameConfig = require("../../config.json");
 var structures = require("../assets/bitmapStructures.js");
 
-var targetNames = Object.keys(structures.bitmaps);
+var targetNames = Object.keys(structures.targets);
 var ntargets = targetNames.length;
-
-var printStructure = function(trialNumber){
-    console.log(structures.bitmaps[targetNames[trialNumber]]);
-}
 
 class Trial {
 
-    constructor(trialNum, targetName) {
+    constructor(trialNum, targetName, trialType) {
+        this.trialType = trialType;
         this.trialNum = trialNum;
         this.targetName = targetName;
-        this.bitmap = structures.bitmaps[this.targetName];
+        
+        if (trialType == 'practice') {
+            this.bitmap = structures.practice[this.targetName];
+        } else {
+            this.bitmap = structures.targets[this.targetName];
+        }
+
         this.stimGrid = this.setupStimGrid();
         this.nReset = 0;
     }
@@ -49,13 +53,19 @@ class Trial {
 
 function setupTrials() {
 
-    var trialList = [];
+    let trialList = [];
+    
+    if (!gameConfig.devMode){
+        trialList.push(new Trial(0,'practice-structure-1','practice'));
+        trialList.push(new Trial(0,'practice-structure-2','practice'));
+        trialList.push(new Trial(0,'practice-structure-3','practice'));
+        trialList.push(new Trial(0,'practice-structure-4','practice'));
+    }
 
-    var trialNum = 0;
-
+    let trialNum = 0;
     _.shuffle(targetNames).forEach(targetName => {
         trialNum += 1;
-        trialList.push(new Trial(trialNum,targetName));
+        trialList.push(new Trial(trialNum,targetName,'normal-trial'));
     });
 
     return trialList
@@ -63,6 +73,5 @@ function setupTrials() {
 
 
 module.exports = {
-    printStructure: printStructure,
     setupTrials: setupTrials
     };
