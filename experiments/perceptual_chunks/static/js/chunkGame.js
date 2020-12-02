@@ -148,7 +148,10 @@ class ChunkGame {
 
     let gameConfig = require('../../config.json');
 
-    let data = _.extend(this.currentTrial, 
+    let data = {};
+
+    data = _.extend(data,
+      this.currentTrial, 
       {
       dbname: gameConfig.dbname,
       colname: gameConfig.colname,
@@ -161,9 +164,11 @@ class ChunkGame {
       }
     );
 
-    if(eventType=='color-change'){
+    if(eventType == 'color-change'){
       data = _.extend(data, event_data);
     }
+
+    console.log(data);
 
     socket.emit('currentData', data);
 

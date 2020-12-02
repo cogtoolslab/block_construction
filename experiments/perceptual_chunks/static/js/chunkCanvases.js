@@ -30,6 +30,7 @@ class ChunkCanvas {
     let dragSetGroup = 0;
     let dragSource = null;
     let nSquaresChanged = 0;
+    let alreadyColored = false;
 
     // p5Canvas.mouseClicked = function () {
 
@@ -77,9 +78,11 @@ class ChunkCanvas {
 
           if (onTarget) {
             if (game.gameGrid[i][j] == 0) { // if starting new chunk, make newest color
-                let new_color = game.nChunksHighlighted() + 1;
+                let new_color = _.max(_.flatten(game.gameGrid)) + 1;
                 game.gameGrid[i][j] = new_color < game.nColors + 1 ? new_color : 1;
                 nSquaresChanged += 1;
+            } else {
+              alreadyColored = true;
             }
             dragging = true;
             dragSetGroup = game.gameGrid[i][j];
@@ -133,8 +136,9 @@ class ChunkCanvas {
 
         if (onTarget) {
           // if clicking a single square
-          if (_.sum(_.flatten(dragSet)) == 1) {
-            // game.increment(i, j); dealt with elsewhere
+          if ((_.sum(_.flatten(dragSet))) == 1 & (alreadyColored)) {
+            game.increment(i, j);
+            nSquaresChanged += 1;
           }
         }
       }
@@ -156,7 +160,8 @@ class ChunkCanvas {
       }
 
       // reset local vars
-      dragSource = null
+      alreadyColored = false;
+      dragSource = null;
       nSquaresChanged = 0;
       dragging = false;
       dragSet = this.gameGrid = Array(dispConfig.discreteEnvWidth)
