@@ -93,7 +93,7 @@
 /*! exports provided: email, projectName, experimentName, iterationName, anonymizeCSV, bonusAmt, dataStore, dbname, colname, numHorizontalCells, numVerticalCells, cellDimensions, devMode, default */
 /***/ (function(module) {
 
-eval("module.exports = JSON.parse(\"{\\\"email\\\":\\\"cogtoolslab.requester@gmail.com\\\",\\\"projectName\\\":\\\"block_construction\\\",\\\"experimentName\\\":\\\"perceptual_chunks\\\",\\\"iterationName\\\":\\\"dev\\\",\\\"anonymizeCSV\\\":true,\\\"bonusAmt\\\":0,\\\"dataStore\\\":[\\\"csv\\\",\\\"mongo\\\"],\\\"dbname\\\":\\\"block_construction\\\",\\\"colname\\\":\\\"perceptual_chunks\\\",\\\"numHorizontalCells\\\":3,\\\"numVerticalCells\\\":1,\\\"cellDimensions\\\":{\\\"height\\\":300,\\\"width\\\":300},\\\"devMode\\\":false}\");\n\n//# sourceURL=webpack:///./config.json?");
+eval("module.exports = JSON.parse(\"{\\\"email\\\":\\\"cogtoolslab.requester@gmail.com\\\",\\\"projectName\\\":\\\"block_construction\\\",\\\"experimentName\\\":\\\"perceptual_chunks\\\",\\\"iterationName\\\":\\\"dev\\\",\\\"anonymizeCSV\\\":true,\\\"bonusAmt\\\":0,\\\"dataStore\\\":[\\\"csv\\\",\\\"mongo\\\"],\\\"dbname\\\":\\\"block_construction\\\",\\\"colname\\\":\\\"perceptual_chunks\\\",\\\"numHorizontalCells\\\":3,\\\"numVerticalCells\\\":1,\\\"cellDimensions\\\":{\\\"height\\\":300,\\\"width\\\":300},\\\"devMode\\\":true}\");\n\n//# sourceURL=webpack:///./config.json?");
 
 /***/ }),
 
