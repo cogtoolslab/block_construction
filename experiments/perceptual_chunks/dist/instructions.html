@@ -20,9 +20,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
     integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
     crossorigin="anonymous"></script>
+    <script type="text/javascript" src="../static/js/getURLParams.js"></script>
+
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  
   
     <link rel="stylesheet" href="/static/css/experiment.css" type="text/css">
 </head>
@@ -38,21 +39,122 @@
       <div class="row pt-2 instructions-div">
         <div class="col">
           <h2>Instructions:</h2>
-          <p>Welome to our HIT! We are scientists at the University of California San Diego, studying how people see complex shapes.</p>
-          <p>In this study you will be shown a series of different shapes, and asked to color them in according to how you see different parts of the shape.</p>
+          <p>Welome to our HIT! We are cognitive scientists at the University of California San Diego, studying how people see complex shapes. In this study you will be shown a series of different shapes, and asked to color them in according to how you see the <b>parts</b> of the shape.</p>
           <p>For example, look at this shape:</p>
+          <img src='../static/assets/demo-1a.png' class='mx-auto d-block' alt="demo-1a" style="width:320px;height:320px">
           <p>To many people, this shape looks like it could be made from two squares, like this:</p>
-          <p>In this study, we'll be asking you to color in shapes like this, with different colors for the different parts you identify. As the shapes you'll be working with are a bit more complex, there won't be a single correct way of coloring them in. However, you should try to color them in a way that is obvious to you- so that if you saw the shape again you would probably find the same shapes next time.</p>
-          <p>As long as different parts are designated by different colors, the specific colors you choose do not matter. These two are equivalent:</p>
-          <p>But make sure you have selected different colors each time: the two </p>
-          
+          <img src='../static/assets/demo-1b.png' class='mx-auto d-block' alt="demo-1b" style="width:320px;height:320px">
+          <p>In this study, we'll be asking you to <b>color in</b> shapes like this, with different colors for the different parts you identify. As the shapes you'll be working with are a bit more complex, there won't be a single correct way of coloring them in. However, you should try to color them in a way that is obvious to you- so that if you saw the shape again you would be likely to identify the same parts. If you are unsure, try to find a set of parts that looks right to you.</p>
+          <p>The specific colors you choose <b>do not matter</b>- in fact they are randomized whenever you start coloring in a new part of the shape. But there are a limited number of colors you can choose, so make sure you use <b>different colors for different parts</b>. Here, for example, you would be indicating that you think the two green squares are the same part:</p>
+          <img src='../static/assets/demo-2a.png' class='mx-auto d-block' alt="demo-2a" style="width:320px;height:320px">
+          <p>To indicate that they are different parts, you would need to use different colors:</p>
+          <img src='../static/assets/demo-2b.png' class='mx-auto d-block' alt="demo-2b" style="width:320px;height:320px">
+          <p>Each part can be as large as you like, but please don't use a single color for the whole shape- remember that you're trying to break the <b>whole shape into smaller parts</b>. This also means you need to <b>color in the whole shape</b> before moving on to the next one (like in these examples). If it's still a little confusing right now, don't worry- next we'll run through some examples with the interface you'll be using. </p>
 
         </div>
 
       </div>
 
+      <div class="well" style="width:800px; margin: 0 auto">
+
+        <h4>Comprehension quiz</h4>
+
+        </br>
+        There is only one correct way to color in each shape.
+        </br>
+        <input type="radio" name="oneCorrect" value="yes"> True
+        </br>
+        <input type="radio" name="oneCorrect" value="no"> False
+        </br>
+
+        </br>
+        You must color in the whole shape to move on to the next one.
+        </br>
+        <input type="radio" name="wholeShape" value="yes"> True
+        </br>
+        <input type="radio" name="wholeShape" value="no"> False
+        </br>
+
+        </br>
+        You should use different colors for different parts you identify.
+        </br>
+        <input type="radio" name="diffColors" value="yes"> True
+        </br>
+        <input type="radio" name="diffColors" value="no"> False
+        </br>
+
+
+        </br>
+        If you are unsure about the parts, you should randomly color in the shape.
+        </br>
+        <input type="radio" name="unsureRandom" value="yes"> True
+        </br>
+        <input type="radio" name="unsureRandom" value="no"> False
+        </br>
+
+      </br>
+      <div class="error" id="quiz-error1" style="display:none; color:red"> Ooops! Looks like you made a mistake - take another look at your responses. </div>
+      <div class="error" id="quiz-error2" style="display:none; color:red"> You have one more try- only press submit if you're sure! </div>
+
+      <div class="row">
+        <div class="col text-center">
+          <input class="btn btn-primary btn-sm mb-4" id="quiz_submit" type="submit">
+        </div>
+      </div>
+
+      <!-- <input id="quiz_submit" type="submit" value="Submit"> --> 
+
+  </div> <!-- /container -->
     </div> <!-- end: main_div -->
   </div> <!-- end: container-fluid -->
+
+  <script type="text/javascript">
+
+  startTime = Date.now();
+  counter = 0;
+
+    document.getElementById("quiz_submit").onclick = function () {
+      var ans1 = $('input[name="oneCorrect"]:checked').val();
+      var ans2 = $('input[name="wholeShape"]:checked').val();
+      var ans3 = $('input[name="diffColors"]:checked').val();
+      var ans4 = $('input[name="unsureRandom"]:checked').val();
+
+      submitTime = Date.now();
+      console.log('submit time:', submitTime.toString());
+
+      timeInInstructions = submitTime - startTime;
+      console.log('time in instructions:', timeInInstructions.toString());
+
+      if (ans1 == "no" && ans2 == "yes" && ans3 == "yes" &&
+          ans4 == "no") {
+          location.replace("./index.html?workerId=" + urlParams.workerId
+            + "&assignmentId=" + urlParams.assignmentId
+            + "&hitId=" + urlParams.hitId + "&turkSubmitTo=" + urlParams.turkSubmitTo);
+      } else if (timeInInstructions < 20000) { // if submitted a wrong answer in <20 seconds, block from experiment
+        console.log('too fast!');
+        location.replace("../static/html/please_return_hit.html?workerId=" + urlParams.workerId
+        + "&assignmentId=" + urlParams.assignmentId
+        + "&hitId=" + urlParams.hitId + "&turkSubmitTo=" + urlParams.turkSubmitTo
+        + "&failType=instructionsQuiz");
+      } else if (counter == 2) {
+                location.replace("../static/html/please_return_hit.html?workerId=" + urlParams.workerId
+        + "&assignmentId=" + urlParams.assignmentId
+        + "&hitId=" + urlParams.hitId + "&turkSubmitTo=" + urlParams.turkSubmitTo
+        + "&failType=instructionsQuiz");
+      } else if (counter == 0){
+          $('#quiz-error1').show()
+          counter += 1;
+      } else{
+          $('#quiz-error2').show()
+          counter += 1;
+      };
+
+    };
+
+  </script>
+
+  <!-- <script src="./validate-form.js"></script> -->
+
 </body>
 
 </html>

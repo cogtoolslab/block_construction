@@ -9,10 +9,11 @@ var ntargets = targetNames.length;
 
 class Trial {
 
-    constructor(trialNum, targetName, trialType) {
+    constructor(trialNum, targetName, trialType, trialText="") {
         this.trialType = trialType;
         this.trialNum = trialNum;
         this.targetName = targetName;
+        this.trialText = trialText;
         
         if (trialType == 'practice') {
             this.bitmap = structures.practice[this.targetName];
@@ -56,10 +57,13 @@ function setupTrials() {
     let trialList = [];
     
     if (!gameConfig.devMode){
-        trialList.push(new Trial(0,'practice-structure-1','practice'));
-        trialList.push(new Trial(0,'practice-structure-2','practice'));
-        trialList.push(new Trial(0,'practice-structure-3','practice'));
-        trialList.push(new Trial(0,'practice-structure-4','practice'));
+        // trialList.push(new Trial(0,'demo-1','practice'));
+        // trialList.push(new Trial(0,'demo-2','practice'));
+        // trialList.push(new Trial(0,'demo-3','practice'));
+        trialList.push(new Trial(0,'practice-structure-1','practice',trialText="Clicking a single square will change its color. Clicking and dragging will spread the color from that square to adjacent squares. Have a play, then try coloring this square with a single color, before pressing \'Done\'."));
+        trialList.push(new Trial(0,'practice-structure-2','practice',trialText="Clicking and dragging is usually the fastest way to color multiple squares. Color this strip of squares, then press \'Done\'."));
+        trialList.push(new Trial(0,'practice-structure-3','practice',trialText="Clicking on a grey grid-square will give you a new color (if there is one available). Remember that the specific colors don't matter, but you should use different colors for different 'parts'. The parts in this example are obvious, because they are not touching each other- try coloring them each in a different color."));
+        trialList.push(new Trial(0,'practice-structure-4','practice', trialText="Great job! The parts in this shape are less certain. It kind of looks like the letter \'H\'. Can you color in the two vertical bars, then the four squares making up the bar in the middle? This is the last practice shape- after this one you'll start the actual shapes."));
     }
 
     let trialNum = 0;

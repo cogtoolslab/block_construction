@@ -9,7 +9,8 @@ class ChunkGame {
     //setup in here
     this.gridDisplay = gridDisplay;
     this.trialList = trials.setupTrials();
-    this.ntrials = this.trialList.length;
+    this.ntrials = _.filter(this.trialList,(trial)=>{return trial.trialType!='practice'}).length;
+    console.log(this.ntrials);
     this.nColors = config.highlightColors.length - 1; // -1 because first is default color
 
     this.nextTrial();
@@ -29,10 +30,14 @@ class ChunkGame {
     this.newGrid();
 
     if (this.currentTrial.trialType == 'normal-trial'){
-      $("#trial-counter").show();
-      $("#trial-counter").text('Trial ' + this.currentTrial.trialNum.toString() + ' of ' + this.ntrials.toString());
+      $("#reminders").show();
+      $("#trial-counter").text('Shape ' + this.currentTrial.trialNum.toString() + ' of ' + this.ntrials.toString());
+      $("#trial-text").hide();
     } else {
-      $("#trial-counter").hide();
+      $("#trial-counter").text('Practice Shape');
+      $("#reminders").hide();
+      $("#trial-text").text(this.currentTrial.trialText);
+      $("#trial-text").show();  
     }
 
     ChunkCanvas.p5chunks ? ChunkCanvas.p5chunks.remove() : false;
@@ -108,7 +113,7 @@ class ChunkGame {
     this.newGrid();
 
     $("#chunk-counter").text(
-        this.nChunksHighlighted().toString() + " chunks selected"
+        this.nChunksHighlighted().toString() + " parts selected"
       );
   }
 
@@ -174,7 +179,7 @@ class ChunkGame {
       data = _.extend(data, event_data);
     }
 
-    console.log(data);
+    // console.log(data);
 
     socket.emit('currentData', data);
 

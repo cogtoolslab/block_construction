@@ -38,9 +38,13 @@
 
       <div class="row pt-2 env-div">
         <div class="col">
-          <h3>Instructions:</h3>
+          <h3 id='trial-counter'>Instructions:</h3>
+          <span id='reminders'>
+          <p>You're now on the actual experiment! Please try your best to identify the parts of these shapes. Remember there isn't a single right answer. As before:</p>
           <p><strong>Click once</strong> to change the color of a square.</p>
           <p><strong>Click and drag</strong> to spread color to other squares.</p>
+         </span>
+          <p id="trial-text"></p>
 
           <p id="unfinished-shape" style="display: none;">You haven't filled in the whole shape yet. Please make sure every square is colored in before submitting.</p>
         </div>
@@ -52,8 +56,7 @@
 
         <div class="col text-center">
           <div id="tools"></div>
-          <p id="trial-counter"></p>
-          <p id="chunk-counter"></p>
+          <p class="mt-4" id="chunk-counter"></p>
           <button id="reset-button" type="button" class="btn btn-danger">reset</button>
         </div>
 

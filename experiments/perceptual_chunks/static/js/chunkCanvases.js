@@ -169,7 +169,7 @@ class ChunkCanvas {
         .map(() => Array(dispConfig.discreteEnvHeight).fill(0));
 
       $("#chunk-counter").text(
-        game.nChunksHighlighted().toString() + " chunks selected"
+        game.nChunksHighlighted().toString() + " parts selected"
       );
     };
   }
@@ -187,7 +187,7 @@ class ChunkCanvas {
     this.oldp5chunks ? this.oldp5chunks.remove() : false;
 
     $("#chunk-counter").text(
-      game.nChunksHighlighted().toString() + " chunks selected"
+      game.nChunksHighlighted().toString() + " parts selected"
     );
 
     this.p5chunks = this.setupCanvas(game);
