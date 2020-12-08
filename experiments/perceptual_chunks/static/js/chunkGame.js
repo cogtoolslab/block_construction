@@ -10,7 +10,6 @@ class ChunkGame {
     this.gridDisplay = gridDisplay;
     this.trialList = trials.setupTrials();
     this.ntrials = _.filter(this.trialList,(trial)=>{return trial.trialType!='practice'}).length;
-    console.log(this.ntrials);
     this.nColors = config.highlightColors.length - 1; // -1 because first is default color
 
     this.nextTrial();
@@ -28,6 +27,8 @@ class ChunkGame {
 
     // new empty array for coloring
     this.newGrid();
+    
+    $('#practice-feedback').hide();
 
     if (this.currentTrial.trialType == 'normal-trial'){
       $("#reminders").show();
@@ -93,20 +94,39 @@ class ChunkGame {
     //check if any blocks placed this turn, and let partner know if none placed
     if (this.nSquaresHighlighted() == this.currentTrial.nSquaresInTarget()){
 
-      this.saveData('trialEnd');
+      if(this.currentTrial.successCondition !== null){
+        if(this.currentTrial.successCondition(this.gameGrid)){
+          this.saveData('trialEnd');
 
-      if (this.currentTrial.trialNum == this.ntrials) {
-        this.endGame();
-      }
-      else {
-        this.nextTrial();
-      }
+          if (this.currentTrial.trialNum == this.ntrials) {
+            this.endGame();
+          }
+          else {
+            this.nextTrial();
+          };
+        } else {
+          console.log('did not pass condition');
+          $('#practice-feedback').show();
+        };
+      } else {
+        console.log('skipped condition');
+
+        this.saveData('trialEnd');
+
+        if (this.currentTrial.trialNum == this.ntrials) {
+          this.endGame();
+        }
+        else {
+          this.nextTrial();
+        };
+        
+      };
     }
     else {
       console.log('you haven\'t filled in the whole structure!');
-    }
+    };
 
-  }
+  };
 
   reset(){
     this.currentTrial.nReset += 1;
