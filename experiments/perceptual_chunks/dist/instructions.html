@@ -46,7 +46,7 @@
           <img src='../static/assets/demo-1b.png' class='mx-auto d-block' alt="demo-1b" style="width:320px;height:320px">
           <p>In this study, we'll be asking you to <b>color in</b> shapes like this, with different colors for the different parts you identify.</p>
           <img src='../static/assets/paintDemo.gif' class='mx-auto d-block' alt="demo-1b" style="width:650px;">
-          <p> As the shapes you'll be working with are a bit more complex, there won't be a single correct way of coloring them in. However, you should try to break them into parts in a way that <b>looks right</b> or <b>feels natural</b> to you. You want a collection of parts such that, if you saw the shape again, you would be likely to identify the same parts.</p>
+          <p> The shapes you'll be working with are a bit more complex than this, so there won't be a single correct way of coloring them in. However, you should try to break them into parts in a way that <b>looks right</b> or <b>feels natural</b> to you. Ideally, you want to color in parts of the shape such that, if you saw the shape again, you would be likely to identify the same parts. </p>
           <p>The specific colors you choose <b>do not matter</b>- in fact they are randomized whenever you start coloring in a new part of the shape- but make sure you use <b>different colors for different parts</b>. Here, for example, you would be indicating that you think the two green squares are the same part:</p>
           <img src='../static/assets/demo-2a.png' class='mx-auto d-block' alt="demo-2a" style="width:320px;height:320px">
           <p>To indicate that they are different parts, you would need to use different colors:</p>
@@ -129,21 +129,46 @@
       timeInInstructions = submitTime - startTime;
       console.log('time in instructions:', timeInInstructions.toString());
 
+      // //turk
+      // if (ans1 == "no" && ans2 == "yes" && ans3 == "yes" &&
+      //     ans4 == "no") {
+      //     location.replace("./index.html?workerId=" + urlParams.workerId
+      //       + "&assignmentId=" + urlParams.assignmentId
+      //       + "&hitId=" + urlParams.hitId + "&turkSubmitTo=" + urlParams.turkSubmitTo);
+      // } else if (timeInInstructions < 20000) { // if submitted a wrong answer in <20 seconds, block from experiment
+      //   console.log('too fast!');
+      //   location.replace("../static/html/please_return_hit.html?workerId=" + urlParams.workerId
+      //   + "&assignmentId=" + urlParams.assignmentId
+      //   + "&hitId=" + urlParams.hitId + "&turkSubmitTo=" + urlParams.turkSubmitTo
+      //   + "&failType=instructionsQuiz");
+      // } else if (counter == 2) {
+      //           location.replace("../static/html/please_return_hit.html?workerId=" + urlParams.workerId
+      //   + "&assignmentId=" + urlParams.assignmentId
+      //   + "&hitId=" + urlParams.hitId + "&turkSubmitTo=" + urlParams.turkSubmitTo
+      //   + "&failType=instructionsQuiz");
+      // } else if (counter == 0){
+      //     $('#quiz-error1').show()
+      //     counter += 1;
+      // } else{
+      //     $('#quiz-error2').show()
+      //     counter += 1;
+      // };
+
       if (ans1 == "no" && ans2 == "yes" && ans3 == "yes" &&
           ans4 == "no") {
-          location.replace("./index.html?workerId=" + urlParams.workerId
-            + "&assignmentId=" + urlParams.assignmentId
-            + "&hitId=" + urlParams.hitId + "&turkSubmitTo=" + urlParams.turkSubmitTo);
+          location.replace("./index.html?PROLIFIC_PID=" + urlParams.PROLIFIC_PID
+            + "&STUDY_ID=" + urlParams.STUDY_ID
+            + "&SESSION_ID=" + urlParams.SESSION_ID);
       } else if (timeInInstructions < 20000) { // if submitted a wrong answer in <20 seconds, block from experiment
         console.log('too fast!');
-        location.replace("../static/html/please_return_hit.html?workerId=" + urlParams.workerId
-        + "&assignmentId=" + urlParams.assignmentId
-        + "&hitId=" + urlParams.hitId + "&turkSubmitTo=" + urlParams.turkSubmitTo
+        location.replace("../static/html/please_return_hit.html?PROLIFIC_PID=" + urlParams.PROLIFIC_PID
+        + "&STUDY_ID=" + urlParams.STUDY_ID
+        + "&SESSION_ID=" + urlParams.SESSION_ID
         + "&failType=instructionsQuiz");
       } else if (counter == 2) {
-                location.replace("../static/html/please_return_hit.html?workerId=" + urlParams.workerId
-        + "&assignmentId=" + urlParams.assignmentId
-        + "&hitId=" + urlParams.hitId + "&turkSubmitTo=" + urlParams.turkSubmitTo
+                location.replace("../static/html/please_return_hit.html?PROLIFIC_PID=" + urlParams.PROLIFIC_PID
+        + "&STUDY_ID=" + urlParams.STUDY_ID
+        + "&SESSION_ID=" + urlParams.SESSION_ID
         + "&failType=instructionsQuiz");
       } else if (counter == 0){
           $('#quiz-error1').show()
@@ -152,6 +177,7 @@
           $('#quiz-error2').show()
           counter += 1;
       };
+
 
     };
 

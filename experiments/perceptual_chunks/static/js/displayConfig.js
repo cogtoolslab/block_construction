@@ -8,19 +8,43 @@ var displayConfig = {
     [179, 47, 10, 255],
     [10, 47, 179, 255],
   ],
-  gridColor: [220, 220, 220, 100],
-  backgroundColor: [220, 220, 220, 100],
+  gridColor: [255, 255, 255],
+  gridLineColor: [150, 150, 235],
+  backgroundColor: [255, 255, 255],
   highlightColors:[
     [120, 120, 120, 100], // first is default color
-    [30, 200, 150, 100],
-    [120, 120, 200],
-    [150, 80, 120],
-    [180, 150, 50],
-    [70, 180, 200],
-    [180, 100, 50],
-    [1, 25, 89],
-    [60,109,86]
+    [168,55,101],
+    [185,240,214],
+    [154,124,222],
+    [3,27,87],
+    [237,212,47],
+    [41,97,72],
+    [106,9,0],
+    [177,100,42]
   ],
+  // highlightColors:[
+  //   [120, 120, 120, 100], // first is default color
+  //   [30, 220, 150, 100],
+  //   [180, 80, 120],
+  //   [110, 110, 200],
+  //   [1, 25, 89],
+  //   [180, 150, 50],
+  //   [80, 220, 250],
+  //   [180, 100, 50],
+  //   [60,109,86]
+  // ],
+  // highlightColors:[
+  //   [120, 120, 120, 100], // first is default color
+  //   [1, 25, 89], 
+  //   [250, 204, 250],
+  //   [129, 130,  50],
+  //   [241, 157, 107],
+  //   [34, 96, 97],
+  //   [17, 67, 96],
+  //   [253, 180, 180],
+  //   [190, 144,  53],
+  //   [ 76, 114,  77]
+  // ],
 //   highlightColors:[ 
 //     [120, 120, 120, 100],
 //     [1, 25, 89], //using Batlow colorpalette
@@ -38,7 +62,7 @@ var displayConfig = {
   disabledColor: [100, 100, 100],
   mistakeColor: [215, 30, 30, 200],
   structureGhostColor: [30, 30, 200, 100],
-  floorColor: [28, 54, 62],
+  floorColor: [255, 255, 255],
   stimColor: [28, 54, 62],
   revealedTargetColor: [28, 54, 62, 200],
   discreteEnvHeight: 13, // discrete world representation for y-snapping

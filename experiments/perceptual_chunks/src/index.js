@@ -12,7 +12,7 @@ window.onload = function(){
   let game = new ChunkGame(gridDisplay);
 
   window.addEventListener('beforeunload', function (e) {
-    if (!game.finished) {
+    if (!game.gameFinished) {
       // If you prevent default behavior in Mozilla Firefox prompt will always be shown
       e.preventDefault(); 
       // Chrome requires returnValue to be set
