@@ -16,6 +16,8 @@ class ChunkGame {
     this.gridDisplay.setStimGrid(this.currentTrial.stimGrid); // add stim to grid display
 
     this.setupElements();
+
+    this.gameStartTime = Date.now();
   }
 
   nextTrial() {
@@ -98,27 +100,17 @@ class ChunkGame {
         if(this.currentTrial.successCondition(this.gameGrid)){
           this.saveData('trialEnd');
 
-          if (this.currentTrial.trialNum == this.ntrials) {
-            this.endGame();
-          }
-          else {
-            this.nextTrial();
-          };
+          this.currentTrial.trialNum == this.ntrials ? this.endGame() : this.nextTrial();
+
         } else {
           console.log('did not pass condition');
           $('#practice-feedback').show();
         };
       } else {
-        console.log('skipped condition');
 
         this.saveData('trialEnd');
 
-        if (this.currentTrial.trialNum == this.ntrials) {
-          this.endGame();
-        }
-        else {
-          this.nextTrial();
-        };
+        this.currentTrial.trialNum == this.ntrials ? this.endGame() : this.nextTrial();
         
       };
     }
@@ -130,6 +122,7 @@ class ChunkGame {
 
   reset(){
     this.currentTrial.nReset += 1;
+    this.currentTrial.timeReset = Date.now();
     this.newGrid();
 
     $("#chunk-counter").text(
@@ -167,7 +160,48 @@ class ChunkGame {
           return false;
         });
 
+    $('#surveySubmit').click(() => {
+      this.submit();
+      return false;
+    });
+
+    // $('.form-group').change({},this.dropdownTip)
+
   }
+
+  submit () {
+    $('#thanks').show();
+    $('#surveySubmit').hide();
+    let surveyData = _.extend(this.dropdownData ,{
+      'comments' : $('#comments').val().trim().replace(/\./g, '~~~'),
+      'strategy' : $('#strategy').val().trim().replace(/\./g, '~~~'),
+      'didCorrectly' : $('#didCorrectly option:selected').text(),
+      'color' : $('#color option:selected').text(),
+      'totalLength' : Date.now() - this.gameStartTime
+    });
+    //console.log("data is...");
+    //console.log(game.data);
+    this.saveData('survey-data', surveyData);
+    // if(_.size(game.urlParams) >= 4) {
+    //   turk.submit(game.data, true);
+    // } else {
+    //   console.log("would have submitted the following :")
+    //   console.log(game.data);
+    // }
+  }
+
+  // dropdownTip(){
+  //   var data = $(this).find('option:selected').val();
+  //   // console.log(data);
+  //   var commands = data.split('::');
+  //   switch(commands[0]) {
+  //   case 'color' :
+  //     this.dropdownData = _.extend(this.dropdownData, {'ratePartner' : commands[1]}); break;
+  //   case 'didCorrectly' :
+  //     this.dropdownData = _.extend(this.dropdownData, {'confused' : commands[1]}); break;
+  //   }
+
+  // }
 
   endGame(){
     $("#main_div").hide();
@@ -195,7 +229,7 @@ class ChunkGame {
       }
     );
 
-    if(eventType == 'color-change'){
+    if(eventType != 'trialEnd'){
       data = _.extend(data, event_data);
     }
 

@@ -71,22 +71,11 @@
       <p>Email cogtoolslab.requester@gmail.com if you have any issues submitting the HIT.</p>
 
       <div class="form-group row">
-        <label for="language" class="col-sm-4 col-form-label"> Are you a native English speaker? </label>
-        <div class="col-sm-2">
-          <select id="language" class="form-control">
-	    <option value="language::noResponse"></option>
-	    <option value="language::yes">Yes</option>
-	    <option value="language::no">No</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-group row">
         <label for="didCorrectly" class="col-sm-4 col-form-label">
           Did you read the instructions and do you think you did the HIT correctly?
         </label>
         <div class="col-sm-2">
-          <select class="form-control">
+          <select class="form-control" id ='didCorrectly'>
             <option value="didCorrectly::NoResponse"></option>
             <option value="didCorrectly::yes">Yes</option>
             <option value="didCorrectly::no">No</option>
@@ -105,11 +94,15 @@
       </div>
 
       <div class="form-group row">
-        <label for="strategy" class="col-sm-4 col-form-label">
+        <label for="color" class="col-sm-4 col-form-label">
           To your knowledge, do you have normal color vision?
         </label>
-        <div class="col-sm-4">
-          <textarea class="form-control" id='color-vision' rows="4"></textarea>
+        <div class="col-sm-2">
+          <select class="form-control" id ='color'>
+            <option value="color::NoResponse"></option>
+            <option value="color::yes">Yes</option>
+            <option value="color::no">No</option>
+          </select>
         </div>
       </div>
 
@@ -136,6 +129,7 @@
           please contact cogtoolslab.requester@gmail.com for compensation.
         </p>
       </small>
+      <p id="thanks" style="display: none;">Submitted!</p>
     </div> <!-- end: exit_survey> -->
   </div> <!-- end: container-fluid -->
 </body>

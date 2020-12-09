@@ -24,6 +24,8 @@ class Trial {
 
         this.stimGrid = this.setupStimGrid();
         this.nReset = 0;
+        this.timeReset = Date.now();
+        this.trialStart = Date.now();
     }
 
     setupStimGrid(){
@@ -63,8 +65,7 @@ function setupTrials() {
         // trialList.push(new Trial(0,'demo-2','practice'));
         // trialList.push(new Trial(0,'demo-2','practice'));
         trialList.push(new Trial(0,'practice-structure-1','practice',trialText="Clicking a single square will change its color. Clicking and dragging will spread the color from that square to adjacent squares. Have a play, then try coloring this square with a single color, before pressing \'Done\'.", successCondition = (gameGrid) => {
-            if(gameGrid[8][3]==0){console.error('something wrong with grid setup')}
-            console.log(gameGrid);
+            if(gameGrid[8][3]==0){console.error('something wrong with grid setup')};
             return(
                 (gameGrid[8][3] == gameGrid[8][4]) &
                 (gameGrid[8][4] == gameGrid[9][3]) &
@@ -124,6 +125,8 @@ function setupTrials() {
         trialNum += 1;
         trialList.push(new Trial(trialNum,targetName,'normal-trial'));
     });
+
+    trialList = [new Trial(1,'hand_selected_012','normal-trial')];
 
     return trialList
 }
