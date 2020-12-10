@@ -155,7 +155,7 @@ class ChunkCanvas {
           newColorGroup: game.gameGrid[dragSource[0]][dragSource[1]]
         }
 
-        game.saveData('color-change', colorChangeData);
+        game.saveData('colorChange', colorChangeData);
       
       }
 

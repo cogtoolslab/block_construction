@@ -25,7 +25,7 @@ class Trial {
         this.stimGrid = this.setupStimGrid();
         this.nReset = 0;
         this.timeReset = Date.now();
-        this.trialStart = Date.now();
+        this.trialStartTime = Date.now();
     }
 
     setupStimGrid(){
@@ -126,7 +126,7 @@ function setupTrials() {
         trialList.push(new Trial(trialNum,targetName,'normal-trial'));
     });
 
-    trialList = [new Trial(1,'hand_selected_012','normal-trial')];
+    trialList = [new Trial(1,'hand_selected_008','normal-trial')];
 
     return trialList
 }

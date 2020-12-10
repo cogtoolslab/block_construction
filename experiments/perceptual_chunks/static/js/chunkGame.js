@@ -1,4 +1,5 @@
 var config = require("./displayConfig.js");
+var uuid = require("./uuid.js")['UUID'];
 var trials = require("./trials.js");
 var ChunkCanvas = require("./chunkCanvases.js")["ChunkCanvas"];
 var io = require('socket.io-client');
@@ -7,10 +8,13 @@ const socket = io.connect();
 class ChunkGame {
   constructor(gridDisplay) {
     //setup in here
+    this.gameID = uuid();
     this.gridDisplay = gridDisplay;
     this.trialList = trials.setupTrials();
     this.ntrials = _.filter(this.trialList,(trial)=>{return trial.trialType!='practice'}).length;
     this.nColors = config.highlightColors.length - 1; // -1 because first is default color
+
+    this.gameFinished = false;
 
     this.nextTrial();
     this.gridDisplay.setStimGrid(this.currentTrial.stimGrid); // add stim to grid display
@@ -176,12 +180,22 @@ class ChunkGame {
       'comments' : $('#comments').val().trim().replace(/\./g, '~~~'),
       'strategy' : $('#strategy').val().trim().replace(/\./g, '~~~'),
       'didCorrectly' : $('#didCorrectly option:selected').text(),
-      'color' : $('#color option:selected').text(),
-      'totalLength' : Date.now() - this.gameStartTime
+      'colorBlind' : $('#color option:selected').text(),
+      'totalTimeAfterInstructions' : Date.now() - this.gameStartTime
     });
     //console.log("data is...");
     //console.log(game.data);
-    this.saveData('survey-data', surveyData);
+    this.saveData('survey', surveyData);
+
+    this.gameFinished = true;
+
+    if(urlParams.prolificPID != 'undefined'){
+      
+      setTimeout(() => {
+        location.replace("https://app.prolific.co/submissions/complete?cc=751095B3");
+      }, 500);
+    }
+
     // if(_.size(game.urlParams) >= 4) {
     //   turk.submit(game.data, true);
     // } else {
@@ -223,7 +237,14 @@ class ChunkGame {
       devMode: gameConfig.devMode,
       absoluteTime: Date.now(),
       eventType: eventType,
+      prolificPID: urlParams.PROLIFIC_PID,
+      prolificStudyID: urlParams.STUDY_ID,
+      prolificSessionID: urlParams.SESSION_ID,
+      gameID: this.gameID,
       gameGrid : this.gameGrid,
+      gameStartTime: this.gameStartTime,
+      relativeGameDuration: Date.now() - this.gameStartTime,
+      relativeTrialDuration: Date.now() - this.currentTrial.trialStartTime,
       nChunksHighlighted: this.nChunksHighlighted(),
       highlightColors: config.highlightColors
       }

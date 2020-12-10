@@ -73,17 +73,19 @@ class GridDisplay {
         env.rectMode(env.CORNER);
         if(this.stimGrid[i][j]) { // if part of target
           var squareColor = config.highlightColors[this.gameGrid[i][j]];
-          env.stroke([190, 190, 255]);
+          env.stroke(config.gridLineColor);
           env.fill(squareColor);
           // env.noFill();
           // env.translate(this.stimGrid_xs[i], this.stimGrid_ys[j]);
+          env.rect(0, 0, config.stimScale, config.stimScale);
         } else { // outside of target
-          var squareColor = config.gridColor;
-          // env.stroke([190, 190, 255]);
-          env.noStroke();
-          env.fill(squareColor);
+          // var squareColor = config.gridColor;
+          // // env.stroke([190, 190, 255]);
+          // env.noStroke();
+          // //env.fill(squareColor);
+          // env.rect(0, 0, config.stimScale, config.stimScale);
         }
-        env.rect(0, 0, config.stimScale, config.stimScale);
+        
         env.pop();
         j = j + 1;
       }
