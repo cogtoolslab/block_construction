@@ -310,6 +310,39 @@ def draw_reconstruction_subplot(df, gameID, targetName, ax, world_size=900, cmap
                                         xlim=(0,world_size),
                                         ylim=(0,world_size))
 
+
+def draw_reconstructions(df):
+    ''' creates image for each row of dataframe
+    '''
+    n_struct = df.shape[0]
+    
+    if n_struct == 0:
+        print('No structures with this chunk')
+        return
+    
+    fig, axs = plt.subplots(nrows=n_struct, ncols=1, figsize=(2.3,n_struct*3))
+    
+    if n_struct > 1:
+        k=0
+        for i, row in df.iterrows():
+            axs[k].axis('off')
+            draw_reconstruction_subplot(df = df[df.phase_extended == row.phase_extended],
+                                        ax = axs[k], 
+                                        gameID=row.gameID,
+                                        targetName=row.targetName,
+                                        world_size=800)
+            k=k+1
+            
+    elif n_struct == 1:
+        axs.axis('off')
+        draw_reconstruction_subplot(df = df,
+                                    ax = axs, 
+                                    gameID=df.gameID,
+                                    targetName=df.targetName,
+                                    world_size=800)
+    else:
+        print('No structures with this chunk')
+
 # def draw_trials(df, figsize=(40, 80)):
 #     numTrials = df.shape[0]
     

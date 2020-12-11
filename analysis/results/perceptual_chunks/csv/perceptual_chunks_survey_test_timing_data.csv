@@ -1,0 +1,10 @@
+,gameStartTime,comments,strategy,didCorrectly,colorBlind,totalTimeAfterInstructions
+0,1607546185104.0,,,Yes,Yes,198679
+1,1607546486861.0,No~~~,I colored the squares first and then the rest~~~,Yes,Yes,394523
+2,1607622261465.0,No~~~,Colouring in the biggest areas I could with one colour without trying to split them~~~,Yes,Yes,259825
+3,1607622382849.0,No,Splitting the shapes into four sided sections wherever possible~~~,Yes,Yes,299151
+4,1607622581179.0,No problems,I tried to make the largest shapes possible and fill in any smaller areas seperately,Yes,Yes,264475
+5,1607622698200.0,no,I was colouring shapes based off what felt right to me looking at it as a whole,Yes,Yes,215023
+6,1607622800278.0,No,Trying to be as symmetrical as possible,Yes,Yes,211615
+7,1607622811501.0,n/a,I tried to identify square patterns within the shapes,Yes,Yes,232065
+8,1607622886894.0,no,i just tried to find matching shapes,Yes,Yes,425715
