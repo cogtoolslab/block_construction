@@ -5,7 +5,7 @@ import json
 
 target_maps = {}
 
-with open(os.path.abspath('../results/csv/targetMaps.txt')) as json_file:
+with open(os.path.abspath('../results/silhouette/csv/targetMaps.txt')) as json_file:
     target_maps = json.load(json_file)
 
 def get_precision(arr1,arr2):

@@ -43,8 +43,6 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 
-import blockworld_helpers as utils
-
 ###################### RENDER PATCHES IN MATPLOTLIB #######################
 ###########################################################################    
 
@@ -395,3 +393,67 @@ def draw_stim_from_json(stim_name, stim_dir):
     draw_stim(w)
     plt.title(stim_name)
     plt.show()
+
+    
+#### CHUNKS ###
+
+targetMaps = {}
+
+with open('../results/silhouette/csv/targetMaps.txt') as json_file:
+    targetMaps = json.load(json_file)
+
+def get_ngrams(world_states, n):
+    return nltk.ngrams(world_states, n)
+    
+def show_chunk(states, ax, target=None, vmax=None, cmap='Blues', **kwargs):
+    start_state_int = np.reshape(list(states[0]),(18,13)).astype(np.int)
+    end_state_int = np.reshape(list(states[-1]),(18,13)).astype(np.int)
+    chunk = np.bitwise_xor(start_state_int, end_state_int).astype(np.int)
+    chunk_plus = end_state_int + chunk
+    
+    if target:
+        chunk_plus = chunk_plus + (1*np.logical_not(targetMaps[target]))*0.2
+    
+    av_map = np.rot90(chunk_plus)
+    
+    if ~(vmax==None):
+        ax.imshow(av_map, 
+                  vmax= vmax,
+                  cmap=cmap,
+                **kwargs)
+    else:
+        ax.imshow(av_map,
+                  cmap=cmap,
+                **kwargs)
+        
+        
+def show_chunk_steps(states, ax, target=None, vmax=None, cmap='Blues', **kwargs):
+    
+    start_state = np.reshape(list(states[0]),(18,13)).astype(np.int)
+    end_state = np.reshape(list(states[-1]),(18,13)).astype(np.int)
+    chunk = np.bitwise_xor(start_state, end_state).astype(np.float)
+    
+    chunk_plus = end_state.astype(np.float) + chunk*0.5
+    
+#      if target:
+#         chunk_plus = chunk_plus - (1*np.logical_not(targetMaps[target]))*0.4
+    
+    if target:
+        world_map = (1*np.logical_not(targetMaps[target]))*0.2
+        chunk_plus += world_map
+    
+    
+    for s in states[:-1]:
+        chunk_plus -= np.reshape(list(s),(18,13)).astype(np.float)*0.2
+    
+    av_map = np.rot90(chunk_plus)
+    
+    if ~(vmax==None):
+        ax.imshow(av_map, 
+                  vmax= vmax,
+                  cmap=cmap,
+                **kwargs)
+    else:
+        ax.imshow(av_map,
+                  cmap=cmap,
+                **kwargs)
