@@ -47,3 +47,12 @@ def convert_to_str(flat_world):
     s = [str(i) for i in list(flat_world)] 
     res = "".join(s)
     return res
+
+
+def cropped_chunk_to_string(list_chunk):
+    
+    w = np.zeros((18,13)).astype(int)
+    w[5:13,0:8] = list_chunk
+    ws = convert_to_str(w.flatten())
+    
+    return ws
