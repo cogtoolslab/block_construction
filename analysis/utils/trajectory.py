@@ -69,7 +69,7 @@ targets = ['hand_selected_004', 'hand_selected_005', 'hand_selected_006',
 
 target_maps = {}
 
-with open(os.path.abspath('../results/csv/targetMaps.txt')) as json_file:
+with open(os.path.abspath('../results/silhouette/csv/targetMaps.txt')) as json_file:
     target_maps = json.load(json_file)
 
 ### MINOR UTILS
