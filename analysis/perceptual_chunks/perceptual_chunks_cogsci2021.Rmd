@@ -1,0 +1,54 @@
+---
+title: "block_silhouette_perceptual_chunks"
+author: "wmccarthy & jefan"
+date: "5/28/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(broom)
+library(tidyverse)
+library(tidyboot)
+library(knitr)
+library(ggplot2)
+library(ggthemes)
+library(broom)
+library(lme4)
+library(lmerTest)
+library(numform)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Import data and apply preprocessing
+
+```{r import}
+
+```
+
+```{r import}
+df.proc.chunks = read.csv('../results/silhouette/csv/proc_chunk_use_separate_phases.csv')
+
+# same data, grouped by 'gameID','phase','targetName','chunk_window' and summed
+df.proc.chunks.sums = read.csv('../results/silhouette/csv/summed_proc_chunk_use_separate_phases.csv') %>% 
+  mutate(phase=factor(phase, levels=c('pre','post')))
+
+```
+
+```{r}
+df.proc.chunks.sums
+```
+
+```{r}
+## fit model to data
+m1 <- lmer(data = df.proc.chunks.sums, built_by_ppt ~ phase + (1 | gameID) + (1 + phase | targetName))
+m2 <- lmer(data = df.proc.chunks.sums, built_by_ppt ~ chunk_window + (1 | gameID) + (1 + phase | targetName))
+m3 <- lmer(data = df.proc.chunks.sums, built_by_ppt ~ phase + chunk_window + (1 | gameID) + (1 + phase | targetName))
+m4 <- lmer(data = df.proc.chunks.sums, built_by_ppt ~ phase*chunk_window + (1 | gameID) + (1 + phase | targetName))
+anova(m1,m2,m3,m4)
+summary(m4)
+```
+
+```{r}
+m3
+```
