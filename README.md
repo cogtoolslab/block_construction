@@ -37,7 +37,7 @@ In `block_silhouette_action_sequences.ipynb` we analyze sequences of block-place
 In `block_silhouette_state_trajectory_analysis.ipynb` we look at the evolving state of the building environment during a reconstruction. We construct graphs containing multiple people's building trajectories, to quantify how similarly people build to each other at the start and end of the experiment.
 
 <p align="center" style="font-size: smaller">
-  <img width="100%" src="analysis/results/plots/talks/structure_1_staggered-06.png"></img><br/>
+  <img width="100%" src="analysis/results/silhouette/plots/talks/structure_1_staggered-06.png"></img><br/>
   Example state trajectory graphs for one structure
 </p>
 
