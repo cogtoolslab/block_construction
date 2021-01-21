@@ -1,7 +1,7 @@
 # Learning to build physical structures
 
 <p align="center" style="font-size: smaller">
-  <img width="100%" src="analysis/results/plots/talks/trial_demo.gif"></img>
+  <img width="100%" src="analysis/results/silhouette/plots/talks/trial_demo.gif"></img>
 </p>
 
 Project investigating human physical construction behavior.
@@ -15,7 +15,7 @@ Over an experimental session, participants saw the silhouettes of 8 block towers
 They attempted to recreate the silhouette using the blocks provided, and were rewarded for accuracy and speed.
 
 <p align="center" style="font-size: smaller">
-  <img width="80%" src="analysis/results/plots/talks/structures.png"></img><br/>
+  <img width="80%" src="analysis/results/silhouette/plots/talks/structures.png"></img><br/>
   Silhouettes shown to all participants
 </p>
 
@@ -29,7 +29,7 @@ We devide analysis of building procedures between two additional notebooks:
 In `block_silhouette_action_sequences.ipynb` we analyze sequences of block-placements, and how these change throughout the experiment.
 
 <p align="center" style="font-size: smaller">
-  <img width="100%" src="analysis/results/plots/talks/action_similarity.png"></img><br/>
+  <img width="100%" src="analysis/results/silhouette/plots/talks/action_similarity.png"></img><br/>
   Measuring similarity of two sequences of actions taken in first and final build attempts
 </p>
 
