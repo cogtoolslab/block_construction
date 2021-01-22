@@ -405,16 +405,19 @@ with open('../results/silhouette/csv/targetMaps.txt') as json_file:
 def get_ngrams(world_states, n):
     return nltk.ngrams(world_states, n)
     
-def show_chunk(states, ax, target=None, vmax=None, cmap='Blues', **kwargs):
+def show_chunk(states, ax, target=None, vmax=None, cropped=False, cmap='Blues', **kwargs):
     start_state_int = np.reshape(list(states[0]),(18,13)).astype(np.int)
     end_state_int = np.reshape(list(states[-1]),(18,13)).astype(np.int)
     chunk = np.bitwise_xor(start_state_int, end_state_int).astype(np.int)
     chunk_plus = end_state_int + chunk
     
     if target:
-        chunk_plus = chunk_plus + (1*np.logical_not(targetMaps[target]))*0.2
+        chunk_plus = chunk_plus + (1*np.logical_not(targetMaps[target]))*0.25
     
     av_map = np.rot90(chunk_plus)
+    
+    if cropped:
+        av_map = av_map[4:,4:14]
     
     if ~(vmax==None):
         ax.imshow(av_map, 
