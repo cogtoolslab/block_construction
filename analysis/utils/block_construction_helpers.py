@@ -56,3 +56,7 @@ def cropped_chunk_to_string(list_chunk):
     ws = convert_to_str(w.flatten())
     
     return ws
+
+def chunk_str_to_cropped_array(chunk_str):
+    return np.array([int(x) for x in chunk_str]).reshape((18,13))[5:13,0:8]
+    
