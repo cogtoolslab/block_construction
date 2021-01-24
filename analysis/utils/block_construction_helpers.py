@@ -60,3 +60,12 @@ def cropped_chunk_to_string(list_chunk):
 def chunk_str_to_cropped_array(chunk_str):
     return np.array([int(x) for x in chunk_str]).reshape((18,13))[5:13,0:8]
     
+    
+targetMaps = {}
+
+with open('../results/silhouette/csv/targetMaps.txt') as json_file:
+    targetMaps = json.load(json_file)
+    
+
+def get_target_cropped(target):
+    return (np.logical_not(np.array(targetMaps[target]))*1)[5:13,0:8]
