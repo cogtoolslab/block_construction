@@ -46,7 +46,7 @@ anova(m1,m2,m3,m4)
 summary(m4)
 ```
 ```{r}
-m1 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase*height*chunk_window + (1 | gameID) + (1 + phase | targetName))
+m1 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase*height + (1 | gameID) + (1 + phase | targetName))
 summary(m1)
 ```
 
@@ -82,7 +82,8 @@ summary(m4)
 
 
 ```{r import.perf}
-df.proc.chunks.perf = read.csv('../results/silhouette/csv/proc_chunk_use_separate_phases_2to6_perfect_perc_counts.csv')
+df.proc.chunks.perf = read.csv('../results/silhouette/csv/proc_chunk_use_separate_phases_2to6_perfect_only.csv') %>% 
+  mutate(phase=factor(phase, levels=c('pre','post')))
 
 # same data, grouped by 'gameID','phase','targetName','chunk_window' and summed
 df.proc.chunks.sums.perf = read.csv('../results/silhouette/csv/summed_proc_chunk_use_separate_phases_2to6_perfect.csv') %>% 
@@ -110,7 +111,7 @@ m2 <- glmer(data = df.proc.chunks.perf, family=binomial, built_by_ppt ~ chunk_wi
 m3 <- glmer(data = df.proc.chunks.perf, family=binomial, built_by_ppt ~ phase + chunk_window + (1 | gameID) + (1 + phase | targetName))
 m4 <- glmer(data = df.proc.chunks.perf, family=binomial, built_by_ppt ~ phase*chunk_window + (1 | gameID) + (1 + phase | targetName))
 anova(m1,m2,m3,m4)
-summary(m4)
+summary(m3)
 ```
 
 ```{r}
