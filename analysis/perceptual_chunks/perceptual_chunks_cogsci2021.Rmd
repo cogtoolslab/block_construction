@@ -46,6 +46,12 @@ anova(m1,m2,m3,m4)
 summary(m4)
 ```
 ```{r}
+m1 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase*height*chunk_window + (1 | gameID) + (1 + phase | targetName))
+summary(m1)
+```
+
+
+```{r}
 ## Trying a logistic regression on whether or not chunk is built by remaining participant, rather than using the count (across all participants)
 m1 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase + (1 | gameID) + (1 + phase | targetName))
 m2 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ chunk_window + (1 | gameID) + (1 + phase | targetName))
@@ -92,6 +98,10 @@ m4 <- lmer(data = df.proc.chunks.sums.perf, built_by_ppt ~ phase*chunk_window + 
 anova(m1,m2,m3,m4)
 summary(m4)
 ```
+```{r}
+df.proc.chunks.perf
+```
+
 
 ```{r}
 ## Trying a logistic regression on whether or not chunk is built by remaining participant, rather than using the count (across all participants)
