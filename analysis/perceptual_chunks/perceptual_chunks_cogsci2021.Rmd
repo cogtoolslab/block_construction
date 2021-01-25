@@ -114,6 +114,26 @@ anova(m1,m2,m3,m4)
 summary(m3)
 ```
 
-```{r}
+## Perceptual chunks
 
+```{r import.perc}
+df.perceptual = read.csv('../results/perceptual_chunks/csv/df_perceptual_in_procedures.csv') %>% 
+  mutate(phase=factor(phase, levels=c('pre','post')))
 ```
+```{r}
+df.perceptual.top <- df.perceptual %>% 
+  filter(perceptual_rank<20)
+```
+
+```{r}
+## fit model to data
+m1 <- lmer(data = df.proc.chunks.sums.perf, built_by_ppt ~ phase + (1 | gameID) + (1 + phase | targetName))
+m2 <- lmer(data = df.proc.chunks.sums.perf, built_by_ppt ~ chunk_window + (1 | gameID) + (1 + phase | targetName))
+m3 <- lmer(data = df.proc.chunks.sums.perf, built_by_ppt ~ phase + chunk_window + (1 | gameID) + (1 + phase | targetName))
+m4 <- lmer(data = df.proc.chunks.sums.perf, built_by_ppt ~ phase*chunk_window + (1 | gameID) + (1 + phase | targetName))
+anova(m1,m2,m3,m4)
+summary(m4)
+```
+
+
+
