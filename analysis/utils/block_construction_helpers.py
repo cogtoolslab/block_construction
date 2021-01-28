@@ -91,3 +91,38 @@ def chunk_area(chunk, chunk_is_string=True):
         
     area = np.sum(chunk)
     return area
+
+def is_rectangle(chunk):
+    
+    # detect bottom left
+    i = 0
+    j = 0
+    while (i < chunk.shape[0]) & (chunk[i,j]==0):
+        while (j < chunk.shape[1]-1) & (chunk[i,j]==0):
+            j+=1
+        if (chunk[i,j]==0):
+            i+=1
+            j=0
+            
+    left_bottom = (i,j)
+
+    a = chunk.shape[0]-1
+    b = chunk.shape[1]-1
+    while (a > -1) & (chunk[a,b]==0):
+        while (b > -1) & (chunk[a,b]==0):
+            b-=1
+        if(chunk[a,b]==0):
+            a-=1
+            b = chunk.shape[0]-1
+    right_top = (a,b)
+    
+    if j > b:
+        return False
+    elif not chunk[i:a+1,j:b+1].all():
+        return False
+    else:
+        c = chunk.copy()
+        c[i:a+1,j:b+1] = 0
+        return(not(c.any()))
+    
+            
