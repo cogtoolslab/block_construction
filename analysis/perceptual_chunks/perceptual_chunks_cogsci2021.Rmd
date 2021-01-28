@@ -180,7 +180,7 @@ summary(m3)
 
 ```{r import.perc}
 df.perceptual = read.csv('../results/perceptual_chunks/csv/df_perceptual_chunks_by_phase.csv') %>% 
-  mutate(phase=factor(phase, levels=c('pre','post')))
+  mutate(phase=factor(phase, levels=c('pre','post'))) 
 ```
 
 ```{r}
