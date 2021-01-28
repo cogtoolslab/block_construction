@@ -179,19 +179,27 @@ summary(m3)
 ## Perceptual chunks
 
 ```{r import.perc}
-df.perceptual = read.csv('../results/perceptual_chunks/csv/df_perceptual_in_procedures.csv') %>% 
+df.perceptual = read.csv('../results/perceptual_chunks/csv/df_perceptual_chunks_by_phase.csv') %>% 
   mutate(phase=factor(phase, levels=c('pre','post')))
 ```
+
 ```{r}
 df.perceptual.top <- df.perceptual %>% 
   filter(perceptual_rank<20)
 ```
 
+Get subset of data where perceptual chunk built in either phase
 ```{r}
-## fit model to data
-m1 <- lmer(data = df.perceptual.top, proportion_with_chunk ~ phase + (1 + phase | targetName))
-summary(m1)
+df.perceptual.top.built <- df.perceptual.top %>% 
+  filter(both_zero=='False')
 ```
 
-
+```{r}
+## fit model to data
+m1 <- lmer(data = df.perceptual.top.built, proportion_with_chunk ~ perceptual_count + (1 | targetName))
+m2 <- lmer(data = df.perceptual.top.built, proportion_with_chunk ~ perceptual_count + phase + (1 | targetName))
+m3 <- lmer(data = df.perceptual.top.built, proportion_with_chunk ~ perceptual_count*phase + (1 | targetName))
+anova(m1,m2,m3)
+summary(m2)
+```
 
