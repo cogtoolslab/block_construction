@@ -161,6 +161,7 @@ m4 <- lmer(data = df.proc.chunks.sums.perf, built_by_ppt ~ phase*chunk_window + 
 anova(m1,m2,m3,m4)
 summary(m4)
 ```
+
 ```{r}
 df.proc.chunks.perf
 ```

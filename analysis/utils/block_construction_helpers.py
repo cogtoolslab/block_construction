@@ -158,6 +158,9 @@ def could_be_single_block(chunk, dims=[(1,2),(2,1),(2,2),(2,4),(4,2)]):
         c = chunk.copy()
         c[i:a+1,j:b+1] = 0
         if not(c.any()):
-            return (((a+1-i,b+1-j) in dims), (a+1-i,b+1-j))
+            if ((a+1-i,b+1-j) in dims):
+                return (True, (a+1-i,b+1-j))
+            else:
+                return (False, None)
         else:
-            return(False, None)
+            return (False, None)
