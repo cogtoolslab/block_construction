@@ -85,18 +85,18 @@ summary(m3.p)
 ## Import data and apply preprocessing
 
 ```{r import}
-df.proc.chunks = read.csv('../results/silhouette/csv/proc_chunk_use_separate_phases_2to6_perc_counts.csv') %>% 
+
+df.proc.chunks = read.csv('../results/perceptual_chunks/csv/proc_chunks_with_perc_data.csv') %>%
   mutate(phase=factor(phase, levels=c('pre','post')))
 
-# same data, grouped by 'gameID','phase','targetName','chunk_window' and summed
-df.proc.chunks.sums = read.csv('../results/silhouette/csv/summed_proc_chunk_use_separate_phases_2to6.csv') %>% 
-  mutate(phase=factor(phase, levels=c('pre','post')))
+# df.proc.chunks = read.csv('../results/silhouette/csv/proc_chunk_use_separate_phases_2to6_perc_counts.csv') %>% 
+#   mutate(phase=factor(phase, levels=c('pre','post')))
+# 
+# # same data, grouped by 'gameID','phase','targetName','chunk_window' and summed
+# df.proc.chunks.sums = read.csv('../results/silhouette/csv/summed_proc_chunk_use_separate_phases_2to6.csv') %>% 
+#   mutate(phase=factor(phase, levels=c('pre','post')))
 ```
 
-```{r}
-df.proc.chunks <- df.proc.chunks %>% 
-   mutate(perceptual_chunk=factor(df.proc.chunks$perceptual_count > 3))
-```
 
 ```{r}
 ## fit model to data
@@ -110,6 +110,15 @@ summary(m4)
 ```{r}
 m1 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase*height + (1 | gameID) + (1 + phase | targetName))
 summary(m1)
+```
+```{r}
+## Trying a logistic regression on whether or not chunk is built by remaining participant, rather than using the count (across all participants)
+m1 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase + (1 | gameID) + (1 + phase | targetName))
+m2 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ chunk_window + (1 | gameID) + (1 + phase | targetName))
+m3 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase + chunk_window + (1 | gameID) + (1 + phase | targetName))
+m4 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase*chunk_window + (1 | gameID) + (1 + phase | targetName))
+anova(m1,m2,m3,m4)
+summary(m4)
 ```
 
 
