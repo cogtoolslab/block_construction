@@ -17,6 +17,7 @@ library(broom)
 library(lme4)
 library(lmerTest)
 library(numform)
+library(ggPredict)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -111,6 +112,8 @@ summary(m4)
 m1 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase*height + (1 | gameID) + (1 + phase | targetName))
 summary(m1)
 ```
+
+
 ```{r}
 ## Trying a logistic regression on whether or not chunk is built by remaining participant, rather than using the count (across all participants)
 m1 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase + (1 | gameID) + (1 + phase | targetName))
@@ -123,13 +126,8 @@ summary(m4)
 
 
 ```{r}
-## Trying a logistic regression on whether or not chunk is built by remaining participant, rather than using the count (across all participants)
-m1 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase + (1 | gameID) + (1 + phase | targetName))
-m2 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ chunk_window + (1 | gameID) + (1 + phase | targetName))
-m3 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase + chunk_window + (1 | gameID) + (1 + phase | targetName))
-m4 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase*chunk_window + (1 | gameID) + (1 + phase | targetName))
-anova(m1,m2,m3,m4)
-summary(m4)
+df <- ggpredict(m4, terms='chunk_window', condition = c(phase = 'pre'))
+df
 ```
 
 
@@ -151,7 +149,6 @@ m4 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase*chunk_w
 # anova(m1,m2,m3,m4)
 summary(m4)
 ```
-
 
 ```{r import.perf}
 df.proc.chunks.perf = read.csv('../results/silhouette/csv/proc_chunk_use_separate_phases_2to6_perfect_only.csv') %>% 
@@ -195,8 +192,10 @@ df.perceptual = read.csv('../results/perceptual_chunks/csv/df_perceptual_chunks_
 ```
 
 ```{r}
+k = 28
+
 df.perceptual.top <- df.perceptual %>% 
-  filter(perceptual_rank<20)
+  filter(perceptual_rank<k)
 ```
 
 Get subset of data where perceptual chunk built in either phase
@@ -211,6 +210,9 @@ m1 <- lmer(data = df.perceptual.top.built, proportion_with_chunk ~ perceptual_co
 m2 <- lmer(data = df.perceptual.top.built, proportion_with_chunk ~ perceptual_count + phase + (1 | targetName))
 m3 <- lmer(data = df.perceptual.top.built, proportion_with_chunk ~ perceptual_count*phase + (1 | targetName))
 anova(m1,m2,m3)
-summary(m2)
+summary(m3)
 ```
 
+```{r}
+ggpredict()
+```
