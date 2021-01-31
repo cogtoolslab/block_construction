@@ -132,13 +132,14 @@ anova(m1,m2,m3,m4)
 summary(m4)
 ```
 
+
 ```{r}
-## Trying a logistic regression on whether or not chunk is built by remaining participant, rather than using the count (across all participants)
-m1 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase + (1 | gameID) + (1 + phase | targetName))
-m2 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase + perceptual_chunk + (1 | gameID) + (1 + phase | targetName))
-m3 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase*chunk_window + phase*perceptual_chunk + (1 | gameID) + (1 + phase | targetName))
-anova(m1,m2,m3)
-summary(m3)
+## see if being a perceptual chunk is significant
+mp1 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase + (1 | gameID) + (1 + phase | targetName))
+mp2 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase*chunk_window + (1 | gameID) + (1 + phase | targetName))
+mp3 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase*chunk_window + is_top_perceptual_chunk*phase + (1 | gameID) + (1 + phase | targetName))
+anova(mp1,mp2,mp3)
+summary(mp3)
 ```
 
 ```{r}
