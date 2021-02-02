@@ -73,7 +73,7 @@ m2.p <- glmer(data = df.proc.chunks.perf, family=binomial, built_by_ppt ~ chunk_
 m3.p <- glmer(data = df.proc.chunks.perf, family=binomial, built_by_ppt ~ phase + chunk_window + (1 | gameID) + (1 + phase | targetName))
 m4.p <- glmer(data = df.proc.chunks.perf, family=binomial, built_by_ppt ~ phase*chunk_window + (1 | gameID) + (1 + phase | targetName))
 anova(m1.p,m2.p,m3.p,m4.p)
-summary(m3.p)
+summary(m4.p)
 ```
 
 
@@ -130,6 +130,17 @@ df <- ggpredict(m4, terms='chunk_window', condition = c(phase = 'pre'))
 df
 ```
 
+```{r}
+## see if being a perceptual chunk is significant
+mb1 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase + (1 | gameID) + (1 + phase | targetName))
+mb2 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase*chunk_window + (1 | gameID) + (1 + phase | targetName))
+mb3 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase*chunk_window + is_block + (1 | gameID) + (1 + phase | targetName))
+mb4 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase*chunk_window + is_block*phase + (1 | gameID) + (1 + phase | targetName))
+anova(mb1,mb2,mb3,mb4)
+summary(mb3)
+```
+
+
 
 ```{r}
 ## see if being a perceptual chunk is significant
@@ -150,37 +161,22 @@ m4 <- glmer(data = df.proc.chunks, family=binomial, built_by_ppt ~ phase*chunk_w
 summary(m4)
 ```
 
-```{r import.perf}
-df.proc.chunks.perf = read.csv('../results/silhouette/csv/proc_chunk_use_separate_phases_2to6_perfect_only.csv') %>% 
-  mutate(phase=factor(phase, levels=c('pre','post')))
-
-# same data, grouped by 'gameID','phase','targetName','chunk_window' and summed
-df.proc.chunks.sums.perf = read.csv('../results/silhouette/csv/summed_proc_chunk_use_separate_phases_2to6_perfect.csv') %>% 
+```{r import.perf.only}
+df.proc.chunks.perf.only = read.csv('../results/silhouette/csv/proc_chunk_use_separate_phases_2to6_perfect_only.csv') %>% 
   mutate(phase=factor(phase, levels=c('pre','post')))
 ```
 
 ```{r}
-## fit model to data
-m1 <- lmer(data = df.proc.chunks.sums.perf, built_by_ppt ~ phase + (1 | gameID) + (1 + phase | targetName))
-m2 <- lmer(data = df.proc.chunks.sums.perf, built_by_ppt ~ chunk_window + (1 | gameID) + (1 + phase | targetName))
-m3 <- lmer(data = df.proc.chunks.sums.perf, built_by_ppt ~ phase + chunk_window + (1 | gameID) + (1 + phase | targetName))
-m4 <- lmer(data = df.proc.chunks.sums.perf, built_by_ppt ~ phase*chunk_window + (1 | gameID) + (1 + phase | targetName))
-anova(m1,m2,m3,m4)
-summary(m4)
-```
-
-```{r}
-df.proc.chunks.perf
+df.proc.chunks.perf.only
 ```
 
 
 ```{r}
 ## Trying a logistic regression on whether or not chunk is built by remaining participant, rather than using the count (across all participants)
-m1 <- glmer(data = df.proc.chunks.perf, family=binomial, built_by_ppt ~ phase + (1 | gameID) + (1 + phase | targetName))
-m2 <- glmer(data = df.proc.chunks.perf, family=binomial, built_by_ppt ~ chunk_window + (1 | gameID) + (1 + phase | targetName))
-m3 <- glmer(data = df.proc.chunks.perf, family=binomial, built_by_ppt ~ phase + chunk_window + (1 | gameID) + (1 + phase | targetName))
-m4 <- glmer(data = df.proc.chunks.perf, family=binomial, built_by_ppt ~ phase*chunk_window + (1 | gameID) + (1 + phase | targetName))
-anova(m1,m2,m3,m4)
+m1 <- glmer(data = df.proc.chunks.perf.only, family=binomial, built_by_ppt ~ chunk_window + (1 | gameID) + (1 + phase | targetName))
+m2 <- glmer(data = df.proc.chunks.perf.only, family=binomial, built_by_ppt ~ phase + chunk_window + (1 | gameID) + (1 + phase | targetName))
+m3 <- glmer(data = df.proc.chunks.perf.only, family=binomial, built_by_ppt ~ phase*chunk_window + (1 | gameID) + (1 + phase | targetName))
+anova(m1,m2,m3)
 summary(m3)
 ```
 
