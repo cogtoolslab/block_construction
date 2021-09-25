@@ -69,8 +69,10 @@ function setupExperiment() {
 
 
     // Building trials
-    
-    
+    var test_building_trial = {
+        type: 'block-construction',
+    }
+
 
     // Perception test
 
@@ -80,7 +82,7 @@ function setupExperiment() {
 
     // Add all trials to timeline
 
-    trials.push(instruction_1);
+    trials.push(test_building_trial);
 
 
     /* #### Initialize jsPsych with complete experimental timeline #### */
