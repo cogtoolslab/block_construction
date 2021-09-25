@@ -13,12 +13,18 @@ function setupExperiment() {
     //     socket.emit("currentData", data);
     //     console.log("emitting data");
     // };
-
-    /** Global experimental variables **/
-    var config;
-
+    
     var workerID = urlParams.PROLIFIC_PID;
     const gameID = UUID();
+
+    
+
+
+    /* Fetch stimuli */
+
+
+    
+
     
     var trials = [];
 
@@ -60,16 +66,22 @@ function setupExperiment() {
         show_clickable_nav: true
     };
 
+
+
     // Building trials
     
+    
+
     // Perception test
 
     // Exit survey
 
 
+
+    // Add all trials to timeline
+
     trials.push(instruction_1);
 
-    console.log(trials);
 
     /* #### Initialize jsPsych with complete experimental timeline #### */
     jsPsych.init({
@@ -77,26 +89,25 @@ function setupExperiment() {
         show_progress_bar: true,
         on_trial_finish: function (trialData) {
             // Merge data from a single trial with
-            // variables to be uploaded with alsl data
+            // variables to be uploaded with all data
             var packet = _.extend({}, trialData, {
                 // prolificId(s): TODO: Hash and store prolific ID(s) in other file
-                // datatype: 'trial_end',
-                // experimentName: config.config_name,
-                // experimentType: config.experiment_type,
-                // dbname: config.dbname,
-                // colname: config.colname,
-                // iterationName: config.iteration_name ? config.iteration_name : 'none_provided_in_config',
-                // configId: config.configId,
-                // condition: condition,
-                // workerID: workerID,
-                // gameID: gameID
+                datatype: 'trial_end',
+                experimentName: config.experimentName,
+                dbname: config.dbname,
+                colname: config.colname,
+                iterationName: config.iteration_name ? config.iteration_name : 'none_provided_in_config',
+                configId: config.configId,
+                // condition: condition, // get from batch?
+                workerID: workerID,
+                gameID: gameID
             });
 
             // console.log(trialData);
             socket.emit("currentData", packet); //save data to mongo
         },
         on_finish: function () {
-            console.log(jsPsych.data.get().values());
+            //console.log(jsPsych.data.get().values());
         },
 
     });

@@ -1,3 +1,6 @@
 [submodule "stimuli/block_utils"]
 	path = stimuli/block_utils
 	url = https://github.com/cogtoolslab/block_utils.git
+[submodule "experiments/building_widget"]
+	path = experiments/building_widget
+	url = https://github.com/cogtoolslab/building_widget
