@@ -1,4 +1,4 @@
-config = {
+expConfig = {
     "experimentName": "block_construction_zipping",
     "dbname": "block_construction",
     "colname": "zipping_dev",

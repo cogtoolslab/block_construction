@@ -25,7 +25,7 @@ jsPsych.plugins["block-construction"] = (function () {
       },
       stimulus: {
         type: jsPsych.plugins.parameterType.OBJECT,
-        default: {blocks: [{'x': 0, 'y': 0, 'height': 2, 'width': 1},
+        default: {'blocks': [{'x': 0, 'y': 0, 'height': 2, 'width': 1},
         {'x': 2, 'y': 0, 'height': 2, 'width': 1},
         {'x': 0, 'y': 2, 'height': 1, 'width': 2},
         {'x': 2, 'y': 2, 'height': 1, 'width': 2}]},
@@ -73,36 +73,14 @@ jsPsych.plugins["block-construction"] = (function () {
       let targetObject = {
         targetBlocks: trial.stimulus.blocks,
       };
+
+      console.log(targetObject);
+
       var showStimulus = true;
       var showBuilding = true;
       window.blockSetup(targetObject, showStimulus, showBuilding);
     }
     
-
-    var remove_row = function() {
-      n_rows -= 1;
-
-      if (n_rows == 1){
-        display_element.querySelector("#remove_response_row").setAttribute("style", "display: none")
-      }
-
-      //lastRow = rows[rows.length-1]
-      lastRow = rows.pop();
-      lastRow.remove();
-
-    };
-
-    display_element.querySelector("#add_response_row")
-    .addEventListener("click", add_row);
-
-    display_element.querySelector("#remove_response_row")
-    .addEventListener("click", remove_row);
-
-    // backup in case autofocus doesn't work
-    // display_element.querySelector("#input-" + question_order[0]).focus();
-
-    add_row();
-
     // display_element
     //   .querySelector("#jspsych-survey-text-form")
     //   .addEventListener("submit", function (e) {

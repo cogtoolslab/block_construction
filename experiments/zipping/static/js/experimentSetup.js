@@ -66,8 +66,6 @@ function setupExperiment() {
         show_clickable_nav: true
     };
 
-
-
     // Building trials
     var test_building_trial = {
         type: 'block-construction',
@@ -95,11 +93,11 @@ function setupExperiment() {
             var packet = _.extend({}, trialData, {
                 // prolificId(s): TODO: Hash and store prolific ID(s) in other file
                 datatype: 'trial_end',
-                experimentName: config.experimentName,
-                dbname: config.dbname,
-                colname: config.colname,
-                iterationName: config.iteration_name ? config.iteration_name : 'none_provided_in_config',
-                configId: config.configId,
+                experimentName: expConfig.experimentName,
+                dbname: expConfig.dbname,
+                colname: expConfig.colname,
+                iterationName: expConfig.iteration_name ? expConfig.iteration_name : 'none_provided_in_config',
+                configId: expConfig.configId,
                 // condition: condition, // get from batch?
                 workerID: workerID,
                 gameID: gameID
