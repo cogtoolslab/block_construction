@@ -25,10 +25,12 @@ jsPsych.plugins["block-construction"] = (function () {
       },
       stimulus: {
         type: jsPsych.plugins.parameterType.OBJECT,
-        default: {'blocks': [{'x': 0, 'y': 0, 'height': 2, 'width': 1},
-        {'x': 2, 'y': 0, 'height': 2, 'width': 1},
-        {'x': 0, 'y': 2, 'height': 1, 'width': 2},
-        {'x': 2, 'y': 2, 'height': 1, 'width': 2}]},
+        default: {
+          'blocks': [{ 'x': 0, 'y': 0, 'height': 2, 'width': 1 },
+          { 'x': 2, 'y': 0, 'height': 2, 'width': 1 },
+          { 'x': 0, 'y': 2, 'height': 1, 'width': 2 },
+          { 'x': 2, 'y': 2, 'height': 1, 'width': 2 }]
+        },
       },
       stimId: {
         type: jsPsych.plugins.parameterType.STRING,
@@ -41,12 +43,18 @@ jsPsych.plugins["block-construction"] = (function () {
         description:
           "HTML formatted string to display at the top of the page above all the questions.",
       },
-      button_label: {
+      buttonLabel: {
         type: jsPsych.plugins.parameterType.STRING,
         pretty_name: "Button label",
         default: "Continue",
         description: "The text that appears on the button to finish the trial.",
       },
+      nBlocksMax: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: "Number of blocks available",
+        default: 4,
+        description: "Number of blocks that can be placed before the trial ends or resets",
+      }
     },
   };
 
@@ -58,29 +66,67 @@ jsPsych.plugins["block-construction"] = (function () {
 
     // show preamble text
 
-    html_content += '<div class="container">';
+    html_content += '<div class="container pt-1" id="experiment">'
 
     /** Create domain canvas **/
-    html_content += '<div class="any-canvas" id="stimulus-canvas"></div>';
-    html_content += '<div class="any-canvas" id="environment-canvas"></div>';
+    html_content += '<div class="row pt-1">'
+    html_content += '<div class="col-md env-div" id="stimulus-canvas"></div>';
+    html_content += '<div class=" col-md env-div" id="environment-canvas"></div>';
+    html_content += '</div>'
+
+    html_content += '<div class="col pt-3 text-right">'
+    html_content += '<button id="reset-button" type="button" class="btn btn-warning">Reset</button>'
+    html_content += '</div>'
 
     html_content += "</div>";
+
+
 
     display_element.innerHTML = html_content;
 
 
     if (trial.stimulus !== null) {
-      let targetObject = {
-        targetBlocks: trial.stimulus.blocks,
-      };
 
-      console.log(targetObject);
+      trial.nBlocksPlaced = 0;
+
+      let trialObject = {
+        stimulus: trial.stimulus.blocks,
+        endCondition: 'perfect-reconstruction',
+        blocksPlaced: 0,
+        nResets: 0,
+        // nBlocksMax: trial.nBlocksMax,
+        blockSender: blockSender,
+        endBuildingTrial: endTrial
+      };
 
       var showStimulus = true;
       var showBuilding = true;
-      window.blockSetup(targetObject, showStimulus, showBuilding);
-    }
-    
+      
+      blockSetup(trialObject, showStimulus, showBuilding);
+
+      // UI
+      $("#reset-button").click(() => {
+        resetBuilding();
+      });
+
+      resetBuilding = function () {
+        trialObject.nResets += 1; 
+        trial.nBlocksPlaced = 0;
+
+        if (_.has(blockUniverse, 'p5env') ||
+          _.has(blockUniverse, 'p5stim')) {
+          blockUniverse.removeEnv();
+          blockUniverse.removeStimWindow();
+        };
+
+        blockSetup(trialObject, showStimulus, showBuilding);
+        
+      };
+
+
+
+    };
+
     // display_element
     //   .querySelector("#jspsych-survey-text-form")
     //   .addEventListener("submit", function (e) {
@@ -111,26 +157,48 @@ jsPsych.plugins["block-construction"] = (function () {
     //     jsPsych.finishTrial(trialdata);
     //   });
 
-            // save data: TODO- this should be triggered when the structure is complete
+    // save data: TODO- this should be triggered when the structure is complete
 
-            // var trialdata = {
-            //   rt: response_time,
-            //   // label: question_data["Q0"],
-            //   stimId: trial.stimId,
-            //   stimURL: trial.stimURL,
-            //   // target: jsPsych
-            //   //   .timelineVariable("target", true)
-            //   //   .replace("images/", ""),
-            //   // 'foil' :jsPsych.timelineVariable('foil', true).replace('images/', ''),
-            //   responses: JSON.stringify(question_data),
-            // };
+    // var trialdata = {
+    //   rt: response_time,
+    //   // label: question_data["Q0"],
+    //   stimId: trial.stimId,
+    //   stimURL: trial.stimURL,
+    //   // target: jsPsych
+    //   //   .timelineVariable("target", true)
+    //   //   .replace("images/", ""),
+    //   // 'foil' :jsPsych.timelineVariable('foil', true).replace('images/', ''),
+    //   responses: JSON.stringify(question_data),
+    // };
 
-            // display_element.innerHTML = "";
+    // display_element.innerHTML = "";
 
-            // // next trial
-            // jsPsych.finishTrial(trialdata);
+    // // next trial
+    // jsPsych.finishTrial(trialdata);
 
-    var startTime = performance.now();
+    // var startTime = performance.now();
+
+
+    function endTrial(trial_data) { // called by block_widget when trial ends
+      console.log(trial_data)
+      display_element.innerHTML = '';
+      jsPsych.finishTrial(trial_data);
+    };
+
+    function blockSender(block_data) { // called by block_widget when a block is placed
+      console.log(block_data);
+      trial.nBlocksPlaced += 1;
+
+      if (trial.nBlocksPlaced >= trial.nBlocksMax) {
+        // update block counter element
+        
+        // setTimeout(resetBuilding, 300); 
+        // resetBuilding();
+      }
+      // TODO: send block data to mongo
+
+    };
+
   };
 
   return plugin;

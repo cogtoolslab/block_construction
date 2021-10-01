@@ -214,7 +214,7 @@ body{
     margin-right: auto;
     display: block;
     border: solid 6px #1C363E;
-    margin: 10px auto;
+    /* margin: 10px auto; */
 }
 
 .env-div {

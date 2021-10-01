@@ -17,13 +17,8 @@ function setupExperiment() {
     var workerID = urlParams.PROLIFIC_PID;
     const gameID = UUID();
 
-    
-
 
     /* Fetch stimuli */
-
-
-    
 
     
     var trials = [];
@@ -70,9 +65,15 @@ function setupExperiment() {
     var test_building_trial = {
         type: 'block-construction',
     }
+    
 
 
     // Perception test
+
+    // Building trials
+    var test_zipping_trial = {
+        type: 'tower-zipping',
+    }
 
     // Exit survey
 
@@ -80,7 +81,7 @@ function setupExperiment() {
 
     // Add all trials to timeline
 
-    trials.push(test_building_trial);
+    trials.push(test_zipping_trial);
 
 
     /* #### Initialize jsPsych with complete experimental timeline #### */
