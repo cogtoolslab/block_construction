@@ -14,23 +14,36 @@ jsPsych.plugins["tower-zipping"] = (function() {
   var plugin = {};
 
   jsPsych.pluginAPI.registerPreload('tower-zipping', 'stimulus', 'image');
+  jsPsych.pluginAPI.registerPreload('tower-zipping', 'part_a_stimulus', 'image');
+  jsPsych.pluginAPI.registerPreload('tower-zipping', 'part_b_stimulus', 'image');
 
   plugin.info = {
     name: 'tower-zipping',
     description: '',
     parameters: {
-
       composite_id: {
         type: jsPsych.plugins.parameterType.STRING,
-        default: 'wides_003_002',
+        default: 'wides_025_023',
       },
-      part_A_id: {
+      part_a_id: {
         type: jsPsych.plugins.parameterType.STRING,
-        default: '000',
+        default: '025',
       },
-      part_B_id: {
+      part_b_id: {
         type: jsPsych.plugins.parameterType.STRING,
-        default: '000',
+        default: '023',
+      },
+      part_a_stimulus: { // link to image
+        type: jsPsych.plugins.parameterType.IMAGE,
+        pretty_name: 'Part A stimulus',
+        default: 'https://lax-tower-4-block-unique-silhouettes-png.s3.amazonaws.com/tower_4_block_unique_silhouettes_025.png',
+        description: 'Bottom or left part'
+      },
+      part_b_stimulus: { // link to image
+        type: jsPsych.plugins.parameterType.IMAGE,
+        pretty_name: 'Part B stimulus',
+        default: 'https://lax-tower-4-block-unique-silhouettes-png.s3.amazonaws.com/tower_4_block_unique_silhouettes_023.png',
+        description: 'Top or right part'
       },
       part_type: {
         type: jsPsych.plugins.parameterType.STRING,
@@ -40,11 +53,10 @@ jsPsych.plugins["tower-zipping"] = (function() {
         type: jsPsych.plugins.parameterType.STRING,
         default: 'https://tower-4-block-unique-silhouettes-composite-silhouette-png.s3.amazonaws.com/',
       },
-      
       stimulus: { // link to image
         type: jsPsych.plugins.parameterType.IMAGE,
         pretty_name: 'Stimulus',
-        default: 'https://tower-4-block-unique-silhouettes-composite-silhouette-png.s3.amazonaws.com/tower_4_block_unique_silhouette_composites_silhouette_talls_092_111.png',
+        default: 'https://tower-4-block-unique-silhouettes-composite-silhouette-png.s3.amazonaws.com/tower_4_block_unique_silhouette_composites_silhouette_talls_122_127.png',
         description: 'The image to be displayed'
       },
       stimulus_height: {
@@ -99,7 +111,7 @@ jsPsych.plugins["tower-zipping"] = (function() {
       render_on_canvas: {
         type: jsPsych.plugins.parameterType.BOOL,
         pretty_name: 'Render on canvas',
-        default: true,
+        default: false,
         description: 'If true, the image will be drawn onto a canvas element (prevents blank screen between consecutive images in some browsers).'+
           'If false, the image will be shown via an img element.'
       }
@@ -133,6 +145,7 @@ jsPsych.plugins["tower-zipping"] = (function() {
         }
       };
       img.src = trial.stimulus;
+
       // get/set image height and width - this can only be done after image loads because uses image's naturalWidth/naturalHeight properties
       function getHeightWidth() {
         if (trial.stimulus_height !== null) {
@@ -174,6 +187,10 @@ jsPsych.plugins["tower-zipping"] = (function() {
 
       // display stimulus as an image element
       var html = '<img src="'+trial.stimulus+'" id="jspsych-image-keyboard-response-stimulus">';
+      html += '<div class="parts">'
+      html += '<img src="'+trial.part_a_stimulus+'" id="part_a_stimulus">';
+      html += '<img src="'+trial.part_b_stimulus+'" id="part_b_stimulus">';
+      html += '</div>'
       // add prompt
       if (trial.prompt !== null){
         html += trial.prompt;
@@ -226,7 +243,17 @@ jsPsych.plugins["tower-zipping"] = (function() {
       var trial_data = {
         rt: response.rt,
         stimulus: trial.stimulus,
-        response: response.key
+        response: response.key,
+        stimURL: stimURL,
+        chunk_id: trial.composite,
+        rep: trial.rep,
+        validity: trial.validity,
+        talls_name: trial.talls_name,
+        wides_name: trial.wides_name,
+        part_type: trial.part_type,
+        part_a: trial.part_a,
+        part_b: trial.part_b,
+        compatible_condition: trial.compatible_condition
       };
 
       // clear the display

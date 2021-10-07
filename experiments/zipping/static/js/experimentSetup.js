@@ -69,7 +69,7 @@ function setupExperiment() {
          */
 
         stimURLs = _.map(metadata.building_chunks, chunk_name => {
-            return metadata.chunk_url_stem + chunk_name.slice(-3) + '.json'
+            return metadata.chunk_building_url_stem + chunk_name.slice(-3) + '.json'
         });
 
         // load stimulus jsons
@@ -78,7 +78,7 @@ function setupExperiment() {
             // create trial objects
             buildingTrials = _.map(metadata.building_chunks, chunk_name => {
 
-                stimURL = metadata.chunk_url_stem + chunk_name.slice(-3) + '.json'
+                stimURL = metadata.chunk_building_url_stem + chunk_name.slice(-3) + '.json'
 
                 return {
                     type: 'block-construction',
@@ -91,9 +91,9 @@ function setupExperiment() {
 
             console.log('building trials:', buildingTrials);
 
-            _.map(buildingTrials, buildingTrial => {
-                trialList.push(buildingTrial);
-            })
+            // _.map(buildingTrials, buildingTrial => {
+            //     trialList.push(buildingTrial);
+            // })
 
             // send to next trial setup function (setupZippingTrials)
             callback(trialList);
@@ -113,12 +113,6 @@ function setupExperiment() {
          * - shuffle each rep
          */
 
-        console.log('zipping', metadata.zipping_trials);
-
-        // stimURLs = _.map(metadata.all_composites, composite_name => {
-        //     return metadata.composite_url_stem + composite_name + '.png'
-        // });
-
         // create trial objects
         zippingTrials = _.map(metadata.zipping_trials, zipping_trial => {
 
@@ -134,14 +128,28 @@ function setupExperiment() {
                 talls_name: zipping_trial.talls_name,
                 wides_name: zipping_trial.wides_name,
                 part_type: zipping_trial.part_type,
-                part_a: zipping_trial.part_a,
-                part_b: zipping_trial.part_b,
-                compatible_condition: zipping_trial.compatible_condition
+                part_a_id: zipping_trial.part_a,
+                part_a_stimulus: metadata.chunk_zipping_url_stem + zipping_trial.part_a.slice(-3) + '.png',
+                part_a_url: metadata.chunk_zipping_url_stem + zipping_trial.part_a.slice(-3) + '.png',
+                part_b_id: zipping_trial.part_b,
+                part_b_url: metadata.chunk_zipping_url_stem + zipping_trial.part_b.slice(-3) + '.png',
+                part_b_stimulus: metadata.chunk_zipping_url_stem + zipping_trial.part_b.slice(-3) + '.png',
+                compatible_condition: zipping_trial.compatible_condition,
+                // stimulus_duration: 300,
+                // trial_duration: 2000
             }
 
         });
 
         console.log('zipping trials:', zippingTrials);
+
+        var zipping_preload = {
+            type: 'preload',
+            auto_preload: true,
+            trials: [zippingTrials]
+        };
+
+        trialList.push(zipping_preload);
 
         _.map(zippingTrials, zippingTrial => {
             trialList.push(zippingTrial);
@@ -170,6 +178,7 @@ function setupExperiment() {
         // Exit survey
 
 
+        // initialize jspsych with timeline
         constructExperimentTimeline(trialList);
 
     };
