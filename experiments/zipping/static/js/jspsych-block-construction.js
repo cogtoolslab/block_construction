@@ -5,14 +5,14 @@
  *  block Display widget (i.e. import blockConfig.js and blockDisplay.js above this plugin in html)
  */
 
-const { transform } = require("lodash");
+// const { transform } = require("lodash");
 
 var DEFAULT_IMAGE_SIZE = 200;
 
 jsPsych.plugins["block-construction"] = (function () {
   var plugin = {};
 
-  // jsPsych.pluginAPI.registerPreload('tower-display', 'stimulus');
+  // jsPsych.pluginAPI.registerPreload('block-construction', 'stimulus', 'image');
 
   plugin.info = {
     name: "block-construction",
@@ -27,12 +27,12 @@ jsPsych.plugins["block-construction"] = (function () {
       },
       stimulus: {
         type: jsPsych.plugins.parameterType.OBJECT,
-        default: {
-          'blocks': [{ 'x': 0, 'y': 0, 'height': 2, 'width': 1 },
-          { 'x': 2, 'y': 0, 'height': 2, 'width': 1 },
-          { 'x': 0, 'y': 2, 'height': 1, 'width': 2 },
-          { 'x': 2, 'y': 2, 'height': 1, 'width': 2 }]
-        },
+        // default: {
+        //   'blocks': [{ 'x': 0, 'y': 0, 'height': 2, 'width': 1 },
+        //   { 'x': 2, 'y': 0, 'height': 2, 'width': 1 },
+        //   { 'x': 0, 'y': 2, 'height': 1, 'width': 2 },
+        //   { 'x': 2, 'y': 2, 'height': 1, 'width': 2 }]
+        // },
       },
       stimId: {
         type: jsPsych.plugins.parameterType.STRING,
@@ -61,10 +61,6 @@ jsPsych.plugins["block-construction"] = (function () {
   };
 
   plugin.trial = function (display_element, trial) {
-
-    if (trial.stimURL){
-      trial.stimulus = trial.stimURL;
-    }
 
     display_element.innerHTML = "";
 
@@ -99,8 +95,8 @@ jsPsych.plugins["block-construction"] = (function () {
         stimulus: trial.stimulus.blocks,
         endCondition: 'perfect-reconstruction',
         blocksPlaced: 0,
-        nResets: 0,
-        // nBlocksMax: trial.nBlocksMax,
+        nResets: -1, // start minus one as reset env at beginning of new trial
+        //nBlocksMax: trial.nBlocksMax,
         blockSender: blockSender,
         endBuildingTrial: endTrial
       };
@@ -128,6 +124,8 @@ jsPsych.plugins["block-construction"] = (function () {
         blockSetup(trialObject, showStimulus, showBuilding);
         
       };
+
+      resetBuilding(); // call once to clear from previous trial
 
 
 
@@ -192,7 +190,7 @@ jsPsych.plugins["block-construction"] = (function () {
     };
 
     function blockSender(block_data) { // called by block_widget when a block is placed
-      console.log(block_data);
+      //console.log(block_data);
       trial.nBlocksPlaced += 1;
 
       if (trial.nBlocksPlaced >= trial.nBlocksMax) {

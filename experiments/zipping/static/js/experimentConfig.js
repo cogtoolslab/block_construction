@@ -2,7 +2,7 @@ expConfig = {
     "experimentName": "block_construction_zipping",
     "dbname": "block_construction",
     "colname": "zipping_dev",
-    "stimColName": "zipping_stimuli",
+    "stimColName": "zipping_test",
     "iterationName": "dev",
     "completionCode": "38C609EF", //check before running 
     "experimentPparameters": {

@@ -881,25 +881,25 @@ var getStimuliIdsToPreloadedStimuli = function (
   }
 };
 
-var getTowerStimuliJSONsFromUrls = function (stimuliIdsToUrls, callback) {
-  let stimuliIdsToJSONs = {};
+var getTowerStimuliJSONsFromUrls = function (stimURLs, callback) {
+  let stimURLsToJSONs = {};
   var stimJSONPromise = new Promise((resolve, reject) => {
-    Object.keys(stimuliIdsToUrls).forEach((stimuliId, index, array) => {
-      getJSON(stimuliIdsToUrls[stimuliId], function (err, data) {
-        if (err !== null) {
-          logIfDebug("Unable to load: " + stimuliIdsToUrls[stimuliId]);
-        } else {
-          stimuliIdsToJSONs[stimuliId] = data;
-          // if (index === array.length - 1) resolve();
-          if (Object.keys(stimuliIdsToJSONs).length === array.length){ resolve()}
-        }
+      stimURLs.forEach(stimURL => {
+          getJSON(stimURL, function (err, data) {
+          if (err !== null) {
+              logIfDebug("Unable to load: " + stimURL);
+          } else {
+              stimURLsToJSONs[stimURL] = data;
+              // if (index === array.length - 1) resolve();
+              if (Object.keys(stimURLsToJSONs).length === stimURLs.length) { resolve() }
+          };
       });
     });
   });
 
   stimJSONPromise.then(() => {
     // const stims = stimJSONs;
-    callback(stimuliIdsToJSONs);
+    callback(stimURLsToJSONs);
   });
 };
 
@@ -917,6 +917,43 @@ var getJSON = function (url, callback) {
   };
   xhr.send();
 };
+
+// var getTowerStimuliJSONsFromUrls = function (stimuliIdsToUrls, callback) {
+//   let stimuliIdsToJSONs = {};
+//   var stimJSONPromise = new Promise((resolve, reject) => {
+//     Object.keys(stimuliIdsToUrls).forEach((stimuliId, index, array) => {
+//       getJSON(stimuliIdsToUrls[stimuliId], function (err, data) {
+//         if (err !== null) {
+//           logIfDebug("Unable to load: " + stimuliIdsToUrls[stimuliId]);
+//         } else {
+//           stimuliIdsToJSONs[stimuliId] = data;
+//           // if (index === array.length - 1) resolve();
+//           if (Object.keys(stimuliIdsToJSONs).length === array.length){ resolve()}
+//         }
+//       });
+//     });
+//   });
+
+//   stimJSONPromise.then(() => {
+//     // const stims = stimJSONs;
+//     callback(stimuliIdsToJSONs);
+//   });
+// };
+
+// var getJSON = function (url, callback) {
+//   var xhr = new XMLHttpRequest();
+//   xhr.open("GET", url, true);
+//   xhr.responseType = "json";
+//   xhr.onload = function () {
+//     var status = xhr.status;
+//     if (status === 200) {
+//       callback(null, xhr.response);
+//     } else {
+//       callback(status, xhr.response);
+//     }
+//   };
+//   xhr.send();
+// };
 
 // var getLongFormTime = function() {
 //   var d = new Date();

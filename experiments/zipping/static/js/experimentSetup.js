@@ -19,10 +19,6 @@ function setupExperiment() {
 
     var metadata;
 
-
-    /* Fetch stimuli */
-    var trials = [];
-
     getStimListFromMongo();
 
     function getStimListFromMongo(config, callback) { //called in experiments where stimulus subsets are stored in mongo database
@@ -30,14 +26,19 @@ function setupExperiment() {
       socket.emit('getStim', 
         {
           gameID: gameID,
-          stimColName: 'zipping_test', // should check if exists (but could do above when choosing whether or not to call this function)
+          stimColName: expConfig.stimColName, // should check if exists (but could do above when choosing whether or not to call this function)
         }); 
 
       socket.on('stimulus', data => {
         console.log('received', data);
         metadata = data;
-        setupBuildingTrials();
-        setupZippingTrials();
+        var trialList = [];
+        setupBuildingTrials(trialList, trialList => {
+            setupZippingTrials(trialList, trialList => {
+                setupOtherTrials(trialList);
+            });
+        });
+        // trialList = setupZippingTrials(trialList);
       });
 
       // setup building trials
@@ -55,48 +56,98 @@ function setupExperiment() {
         // }
     };
 
-    setupBuildingTrials = function() {
+    setupBuildingTrials = function(trialList, callback) {
+        /**
+         * Set up building trials
+         * Grabs list of ids from metadata
+         * Converts to URLs
+         * Loads jsons
+         * 
+         * TODO: 
+         * - add multiple building repetitions
+         * - shuffle each rep
+         */
 
-        console.log('building', metadata.building_chunks);
+        stimURLs = _.map(metadata.building_chunks, chunk_name => {
+            return metadata.chunk_url_stem + chunk_name.slice(-3) + '.json'
+        });
 
-        // create plugins
+        // load stimulus jsons
+        getTowerStimuliJSONsFromUrls(stimURLs, stimURLsToJSONs => {
 
-        buildingTrials = _.map(metadata.building_chunks, chunk_name => {
+            // create trial objects
+            buildingTrials = _.map(metadata.building_chunks, chunk_name => {
 
-            return {
-                type: 'block-construction',
-                chunk_id: chunk_name,
-                stimURL: metadata.chunk_url_stem + chunk_name.slice(-3) + '.json',
-            }
+                stimURL = metadata.chunk_url_stem + chunk_name.slice(-3) + '.json'
 
-        })
+                return {
+                    type: 'block-construction',
+                    stimulus: stimURLsToJSONs[stimURL],
+                    chunk_id: chunk_name,
+                    stimURL: stimURL
+                }
+    
+            });
 
-        console.log(buildingTrials);
+            console.log('building trials:', buildingTrials);
 
-        _.map(buildingTrials, buildingTrial => {
-            trials.push(buildingTrial);
-        })
+            _.map(buildingTrials, buildingTrial => {
+                trialList.push(buildingTrial);
+            })
 
-        
+            // send to next trial setup function (setupZippingTrials)
+            callback(trialList);
+
+        });
 
     }
 
 
-    setupZippingTrials = function() {
+    setupZippingTrials = function(trialList, callback) {
+        /**
+         * Set up zipping/ perceptual test trials
+         * Grabs list of ids from metadata
+         * Converts to URLs
+         * 
+         * TODO: 
+         * - shuffle each rep
+         */
 
         console.log('zipping', metadata.zipping_trials);
 
-        buildingTrials = _.map(metadata.zipping_trials, trial_info => {
+        // stimURLs = _.map(metadata.all_composites, composite_name => {
+        //     return metadata.composite_url_stem + composite_name + '.png'
+        // });
 
-        })
+        // create trial objects
+        zippingTrials = _.map(metadata.zipping_trials, zipping_trial => {
 
-        // create URLS
-        
-        // preload stimuli
+            stimURL = metadata.composite_url_stem + zipping_trial.talls_name + '.png';
 
-        // create plugins
+            return {
+                type: 'tower-zipping',
+                stimulus: stimURL,
+                stimURL: stimURL,
+                chunk_id: zipping_trial.composite,
+                rep: zipping_trial.rep,
+                validity: zipping_trial.validity,
+                talls_name: zipping_trial.talls_name,
+                wides_name: zipping_trial.wides_name,
+                part_type: zipping_trial.part_type,
+                part_a: zipping_trial.part_a,
+                part_b: zipping_trial.part_b,
+                compatible_condition: zipping_trial.compatible_condition
+            }
 
+        });
 
+        console.log('zipping trials:', zippingTrials);
+
+        _.map(zippingTrials, zippingTrial => {
+            trialList.push(zippingTrial);
+        });
+
+        callback(trialList);
     }
 
 
@@ -104,68 +155,61 @@ function setupExperiment() {
 
     // Instructions
 
-    var instruction_1 = {
-        type: 'instructions',
-        pages: [
-            'Welcome to the experiment. Click next to begin.',
-            'This is the second page of instructions.',
-            'This is the final page.'
-        ],
-        show_clickable_nav: true
+    setupOtherTrials = function(trialList) {
+
+        var instruction_1 = {
+            type: 'instructions',
+            pages: [
+                'Welcome to the experiment. Click next to begin.',
+                'This is the second page of instructions.',
+                'This is the final page.'
+            ],
+            show_clickable_nav: true
+        };
+
+        // Exit survey
+
+
+        constructExperimentTimeline(trialList);
+
     };
-
-    // Building trials
-    var test_building_trial = {
-        type: 'block-construction',
-    }
-
-    
-    
-
-    // Perception test
-
-
-    // Building trials
-    var test_zipping_trial = {
-        type: 'tower-zipping',
-    }
-
-    // Exit survey
 
 
 
     // Add all trials to timeline
 
-    trials.push(test_zipping_trial);
+    //trials.push(test_zipping_trial);
 
+    function constructExperimentTimeline(trialList) {
 
-    /* #### Initialize jsPsych with complete experimental timeline #### */
-    jsPsych.init({
-        timeline: trials,
-        show_progress_bar: true,
-        on_trial_finish: function (trialData) {
-            // Merge data from a single trial with
-            // variables to be uploaded with all data
-            var packet = _.extend({}, trialData, {
-                // prolificId(s): TODO: Hash and store prolific ID(s) in other file
-                datatype: 'trial_end',
-                experimentName: expConfig.experimentName,
-                dbname: expConfig.dbname,
-                colname: expConfig.colname,
-                iterationName: expConfig.iteration_name ? expConfig.iteration_name : 'none_provided_in_config',
-                configId: expConfig.configId,
-                // condition: condition, // get from batch?
-                workerID: workerID,
-                gameID: gameID
-            });
+        /* #### Initialize jsPsych with complete experimental timeline #### */
+        jsPsych.init({
+            timeline: trialList,
+            show_progress_bar: true,
+            on_trial_finish: function (trialData) {
+                // Merge data from a single trial with
+                // variables to be uploaded with all data
+                var packet = _.extend({}, trialData, {
+                    // prolificId(s): TODO: Hash and store prolific ID(s) in other file
+                    datatype: 'trial_end',
+                    experimentName: expConfig.experimentName,
+                    dbname: expConfig.dbname,
+                    colname: expConfig.colname,
+                    iterationName: expConfig.iteration_name ? expConfig.iteration_name : 'none_provided_in_config',
+                    configId: expConfig.configId,
+                    // condition: condition, // get from batch?
+                    workerID: workerID,
+                    gameID: gameID
+                });
 
-            // console.log(trialData);
-            socket.emit("currentData", packet); //save data to mongo
-        },
-        on_finish: function () {
-            //console.log(jsPsych.data.get().values());
-        },
+                // console.log(trialData);
+                socket.emit("currentData", packet); //save data to mongo
+            },
+            on_finish: function () {
+                //console.log(jsPsych.data.get().values());
+            },
 
-    });
+        });
+    };
 
 }
