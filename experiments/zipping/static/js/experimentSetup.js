@@ -17,34 +17,87 @@ function setupExperiment() {
     var workerID = urlParams.PROLIFIC_PID;
     const gameID = UUID();
 
+    var metadata;
+
 
     /* Fetch stimuli */
-
-    
     var trials = [];
 
-    // function getStimListFromMongo(config, callback) { //called in experiments where stimulus subsets are stored in mongo database
+    getStimListFromMongo();
 
-    //   socket.emit('getStim', 
-    //     {
-    //       gameID: gameID,
-    //       colname: config.stimColName, // should check if exists (but could do above when choosing whether or not to call this function)
-    //     }); 
+    function getStimListFromMongo(config, callback) { //called in experiments where stimulus subsets are stored in mongo database
 
-    //   socket.on('stimulus', _trials => {
-    //     console.log('received', _trials)
+      socket.emit('getStim', 
+        {
+          gameID: gameID,
+          stimColName: 'zipping_test', // should check if exists (but could do above when choosing whether or not to call this function)
+        }); 
 
-    //     stimMetadata = _trials;
+      socket.on('stimulus', data => {
+        console.log('received', data);
+        metadata = data;
+        setupBuildingTrials();
+        setupZippingTrials();
+      });
 
-    //     // shuffle trials
-    //     let shuffle = true; // TODO: make more flexible
-    //     var stimList;
+      // setup building trials
 
-    //     if (shuffle){
-    //       stimList = _.shuffle(_trials.stimNumbers);
-    //     } else {
-    //       stimList = _trials
-    //     }
+        // metadata;
+
+        // // shuffle trials
+        // let shuffle = true; // TODO: make more flexible
+        // var stimList;
+
+        // if (shuffle){
+        //   stimList = _.shuffle(_trials.stimNumbers);
+        // } else {
+        //   stimList = _trials
+        // }
+    };
+
+    setupBuildingTrials = function() {
+
+        console.log('building', metadata.building_chunks);
+
+        // create plugins
+
+        buildingTrials = _.map(metadata.building_chunks, chunk_name => {
+
+            return {
+                type: 'block-construction',
+                chunk_id: chunk_name,
+                stimURL: metadata.chunk_url_stem + chunk_name.slice(-3) + '.json',
+            }
+
+        })
+
+        console.log(buildingTrials);
+
+        _.map(buildingTrials, buildingTrial => {
+            trials.push(buildingTrial);
+        })
+
+        
+
+    }
+
+
+    setupZippingTrials = function() {
+
+        console.log('zipping', metadata.zipping_trials);
+
+        buildingTrials = _.map(metadata.zipping_trials, trial_info => {
+
+        })
+
+        // create URLS
+        
+        // preload stimuli
+
+        // create plugins
+
+
+    }
 
 
     /* Set up trials */
@@ -65,10 +118,12 @@ function setupExperiment() {
     var test_building_trial = {
         type: 'block-construction',
     }
+
+    
     
 
-
     // Perception test
+
 
     // Building trials
     var test_zipping_trial = {

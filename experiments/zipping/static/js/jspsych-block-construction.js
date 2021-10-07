@@ -5,6 +5,8 @@
  *  block Display widget (i.e. import blockConfig.js and blockDisplay.js above this plugin in html)
  */
 
+const { transform } = require("lodash");
+
 var DEFAULT_IMAGE_SIZE = 200;
 
 jsPsych.plugins["block-construction"] = (function () {
@@ -59,6 +61,10 @@ jsPsych.plugins["block-construction"] = (function () {
   };
 
   plugin.trial = function (display_element, trial) {
+
+    if (trial.stimURL){
+      trial.stimulus = trial.stimURL;
+    }
 
     display_element.innerHTML = "";
 
