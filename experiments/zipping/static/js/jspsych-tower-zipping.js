@@ -121,7 +121,7 @@ jsPsych.plugins["tower-zipping"] = (function() {
   plugin.trial = function(display_element, trial) {
 
     var height, width;
-    if (trial.render_on_canvas) {
+    if (trial.render_on_canvas) { // not used here
       var image_drawn = false;
       // first clear the display element (because the render_on_canvas method appends to display_element instead of overwriting it with .innerHTML)
       if (display_element.hasChildNodes()) {

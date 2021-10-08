@@ -165,7 +165,7 @@ function setupExperiment() {
 
     setupOtherTrials = function(trialList) {
 
-        var instruction_1 = {
+        var instructions = {
             type: 'instructions',
             pages: [
                 'Welcome to the experiment. Click next to begin.',
@@ -175,8 +175,17 @@ function setupExperiment() {
             show_clickable_nav: true
         };
 
-        // Exit survey
 
+        // trialList.unshift(instructions)
+
+
+
+        // Exit survey
+        // var exitSurvey = ...
+
+        // trialList.push(exitSurvey)
+
+        
 
         // initialize jspsych with timeline
         constructExperimentTimeline(trialList);
