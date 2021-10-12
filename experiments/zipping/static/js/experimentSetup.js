@@ -33,11 +33,11 @@ function setupExperiment() {
         console.log('received', data);
         metadata = data;
         var trialList = [];
-        setupBuildingTrials(trialList, trialList => {
+        // setupBuildingTrials(trialList, trialList => {
             setupZippingTrials(trialList, trialList => {
                 setupOtherTrials(trialList);
             });
-        });
+        // });
         // trialList = setupZippingTrials(trialList);
       });
 
@@ -91,9 +91,9 @@ function setupExperiment() {
 
             console.log('building trials:', buildingTrials);
 
-            // _.map(buildingTrials, buildingTrial => {
-            //     trialList.push(buildingTrial);
-            // })
+            _.map(buildingTrials, buildingTrial => {
+                trialList.push(buildingTrial);
+            })
 
             // send to next trial setup function (setupZippingTrials)
             callback(trialList);
@@ -113,12 +113,17 @@ function setupExperiment() {
          * - shuffle each rep
          */
 
-        // create trial objects
-        zippingTrials = _.map(metadata.zipping_trials, zipping_trial => {
 
+        const reps = {};
+
+        // create trial objects
+        // zippingTrials = _.map(metadata.zipping_trials, zipping_trial => {
+
+            metadata.zipping_trials.forEach(zipping_trial => {
+                
             stimURL = metadata.composite_url_stem + zipping_trial.talls_name + '.png';
 
-            return {
+            let trialObj = {
                 type: 'tower-zipping',
                 stimulus: stimURL,
                 stimURL: stimURL,
@@ -135,11 +140,26 @@ function setupExperiment() {
                 part_b_url: metadata.chunk_zipping_url_stem + zipping_trial.part_b.slice(-3) + '.png',
                 part_b_stimulus: metadata.chunk_zipping_url_stem + zipping_trial.part_b.slice(-3) + '.png',
                 compatible_condition: zipping_trial.compatible_condition,
+                compositeDuration: 500,
+                chunkDuration: 500,
                 // stimulus_duration: 300,
                 // trial_duration: 2000
             }
 
+            if (!reps[zipping_trial.rep]){
+                reps[zipping_trial.rep] = [trialObj];
+            } else {
+                reps[zipping_trial.rep].push(trialObj);
+            };
         });
+
+        var zippingTrials = [];
+
+        for (const repNum in reps) {
+            var repTrialsShuffled = _.shuffle(reps[repNum]);
+            reps[repNum] = repTrialsShuffled;
+            zippingTrials = zippingTrials.concat(repTrialsShuffled);
+        };
 
         console.log('zipping trials:', zippingTrials);
 
@@ -204,6 +224,7 @@ function setupExperiment() {
         jsPsych.init({
             timeline: trialList,
             show_progress_bar: true,
+            default_iti: 600,
             on_trial_finish: function (trialData) {
                 // Merge data from a single trial with
                 // variables to be uploaded with all data

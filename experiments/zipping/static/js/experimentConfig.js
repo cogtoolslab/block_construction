@@ -9,6 +9,7 @@ expConfig = {
       "stimuliShuffleSeed": 0,
       "s3Bucket": "none_specified",
       "s3StimuliPathFormat": "none_specified",
-    }
+    },
+    "durations": [100, 500, 1000]
   }
   
