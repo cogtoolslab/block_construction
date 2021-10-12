@@ -10,6 +10,6 @@ expConfig = {
       "s3Bucket": "none_specified",
       "s3StimuliPathFormat": "none_specified",
     },
-    "durations": [100, 500, 1000]
+    "stimDurations": [100, 500, 1000]
   }
   

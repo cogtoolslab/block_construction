@@ -5,6 +5,8 @@
   - batchIndex: which batch of data to use when shuffling any stimuli.
  */
 
+// const { forEach } = require("lodash");
+
 function setupExperiment() {
     var urlParams = getURLParams();
     var socket = io.connect();
@@ -113,67 +115,91 @@ function setupExperiment() {
          * - shuffle each rep
          */
 
+        var zippingBlocks = [];
 
-        const reps = {};
+        expConfig.stimDurations.forEach((stimDuration, i) => {
 
-        // create trial objects
-        // zippingTrials = _.map(metadata.zipping_trials, zipping_trial => {
+            const reps = {};
 
-            metadata.zipping_trials.forEach(zipping_trial => {
-                
-            stimURL = metadata.composite_url_stem + zipping_trial.talls_name + '.png';
+            // create trial objects
+            // zippingTrials = _.map(metadata.zipping_trials, zipping_trial => {
 
-            let trialObj = {
-                type: 'tower-zipping',
-                stimulus: stimURL,
-                stimURL: stimURL,
-                chunk_id: zipping_trial.composite,
-                rep: zipping_trial.rep,
-                validity: zipping_trial.validity,
-                talls_name: zipping_trial.talls_name,
-                wides_name: zipping_trial.wides_name,
-                part_type: zipping_trial.part_type,
-                part_a_id: zipping_trial.part_a,
-                part_a_stimulus: metadata.chunk_zipping_url_stem + zipping_trial.part_a.slice(-3) + '.png',
-                part_a_url: metadata.chunk_zipping_url_stem + zipping_trial.part_a.slice(-3) + '.png',
-                part_b_id: zipping_trial.part_b,
-                part_b_url: metadata.chunk_zipping_url_stem + zipping_trial.part_b.slice(-3) + '.png',
-                part_b_stimulus: metadata.chunk_zipping_url_stem + zipping_trial.part_b.slice(-3) + '.png',
-                compatible_condition: zipping_trial.compatible_condition,
-                compositeDuration: 500,
-                chunkDuration: 500,
-                // stimulus_duration: 300,
-                // trial_duration: 2000
-            }
+                metadata.zipping_trials.forEach(zipping_trial => {
+                    
+                stimURL = metadata.composite_url_stem + zipping_trial.talls_name + '.png';
 
-            if (!reps[zipping_trial.rep]){
-                reps[zipping_trial.rep] = [trialObj];
-            } else {
-                reps[zipping_trial.rep].push(trialObj);
+                let trialObj = {
+                    type: 'tower-zipping',
+                    stimulus: stimURL,
+                    stimURL: stimURL,
+                    chunk_id: zipping_trial.composite,
+                    rep: zipping_trial.rep,
+                    validity: zipping_trial.validity,
+                    talls_name: zipping_trial.talls_name,
+                    wides_name: zipping_trial.wides_name,
+                    part_type: zipping_trial.part_type,
+                    part_a_id: zipping_trial.part_a,
+                    part_a_stimulus: metadata.chunk_zipping_url_stem + zipping_trial.part_a.slice(-3) + '.png',
+                    part_a_url: metadata.chunk_zipping_url_stem + zipping_trial.part_a.slice(-3) + '.png',
+                    part_b_id: zipping_trial.part_b,
+                    part_b_url: metadata.chunk_zipping_url_stem + zipping_trial.part_b.slice(-3) + '.png',
+                    part_b_stimulus: metadata.chunk_zipping_url_stem + zipping_trial.part_b.slice(-3) + '.png',
+                    compatible_condition: zipping_trial.compatible_condition,
+                    compositeDuration: stimDuration,
+                    chunkDuration: stimDuration, // set composite and chunk duration to be the same
+                }
+
+                if (!reps[zipping_trial.rep]){
+                    reps[zipping_trial.rep] = [trialObj];
+                } else {
+                    reps[zipping_trial.rep].push(trialObj);
+                };
+            });
+
+            var zippingTrials = [];
+
+            // shuffle zipping trials
+            for (const repNum in reps) {
+                var repTrialsShuffled = _.shuffle(reps[repNum]);
+                reps[repNum] = repTrialsShuffled;
+                zippingTrials = zippingTrials.concat(repTrialsShuffled);
             };
+
+            zippingBlocks.push(zippingTrials);
+
         });
 
-        var zippingTrials = [];
+        var zippingBlocksShuffled = _.shuffle(zippingBlocks);
 
-        for (const repNum in reps) {
-            var repTrialsShuffled = _.shuffle(reps[repNum]);
-            reps[repNum] = repTrialsShuffled;
-            zippingTrials = zippingTrials.concat(repTrialsShuffled);
-        };
+        zippingBlocksShuffled.forEach((zippingBlock, i) => {
 
-        console.log('zipping trials:', zippingTrials);
+            // add block intro
+            var blockIntro = {
+                type: 'instructions',
+                pages: [
+                    '<p>Start of block ' + (i+1) + '.</p><p>"M" is valid, "Z" is invalid.</p><p>Press Next to start.</p>'
+                ],
+                show_clickable_nav: true
+            };
 
-        var zipping_preload = {
-            type: 'preload',
-            auto_preload: true,
-            trials: [zippingTrials]
-        };
+            // add preload
+            var zippingPreload = {
+                type: 'preload',
+                auto_preload: true,
+                trials: [zippingBlock]
+            };
 
-        trialList.push(zipping_preload);
+            trialList.push(zippingPreload);
+            trialList.push(blockIntro)
 
-        _.map(zippingTrials, zippingTrial => {
-            trialList.push(zippingTrial);
+            // add to trial list
+            zippingBlock.forEach((trial) => {
+                trialList.push(trial);
+            });
+
         });
+
+        console.log('tl',trialList);
 
         callback(trialList);
     }
