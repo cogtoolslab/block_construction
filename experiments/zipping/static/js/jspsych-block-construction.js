@@ -38,6 +38,16 @@ jsPsych.plugins["block-construction"] = (function () {
         type: jsPsych.plugins.parameterType.STRING,
         default: "None",
       },
+      rep: {
+        type: jsPsych.plugins.parameterType.INT,
+        default: 0
+      },
+      offset: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: "Offset",
+        default: 0,
+        description: "Number of squares to right stim is displaced in stimulus."
+      },
       preamble: {
         type: jsPsych.plugins.parameterType.STRING,
         pretty_name: "Preamble",
@@ -93,10 +103,11 @@ jsPsych.plugins["block-construction"] = (function () {
 
       let trialObject = {
         stimulus: trial.stimulus.blocks,
-        endCondition: 'perfect-reconstruction',
+        endCondition: 'perfect-reconstruction-translation',
         blocksPlaced: 0,
         nResets: -1, // start minus one as reset env at beginning of new trial
         //nBlocksMax: trial.nBlocksMax,
+        offset: trial.offset,
         blockSender: blockSender,
         endBuildingTrial: endTrial
       };

@@ -35,27 +35,12 @@ function setupExperiment() {
         console.log('received', data);
         metadata = data;
         var trialList = [];
-        // setupBuildingTrials(trialList, trialList => {
+        setupBuildingTrials(trialList, trialList => {
             setupZippingTrials(trialList, trialList => {
                 setupOtherTrials(trialList);
             });
-        // });
-        // trialList = setupZippingTrials(trialList);
+        });
       });
-
-      // setup building trials
-
-        // metadata;
-
-        // // shuffle trials
-        // let shuffle = true; // TODO: make more flexible
-        // var stimList;
-
-        // if (shuffle){
-        //   stimList = _.shuffle(_trials.stimNumbers);
-        // } else {
-        //   stimList = _trials
-        // }
     };
 
     setupBuildingTrials = function(trialList, callback) {
@@ -77,25 +62,33 @@ function setupExperiment() {
         // load stimulus jsons
         getTowerStimuliJSONsFromUrls(stimURLs, stimURLsToJSONs => {
 
-            // create trial objects
-            buildingTrials = _.map(metadata.building_chunks, chunk_name => {
+            for (let rep = 0; rep < expConfig.buildingReps; rep++) {
 
-                stimURL = metadata.chunk_building_url_stem + chunk_name.slice(-3) + '.json'
+                // create trial objects
+                var repTrials = _.map(metadata.building_chunks, chunk_name => {
 
-                return {
-                    type: 'block-construction',
-                    stimulus: stimURLsToJSONs[stimURL],
-                    chunk_id: chunk_name,
-                    stimURL: stimURL
-                }
-    
-            });
+                    stimURL = metadata.chunk_building_url_stem + chunk_name.slice(-3) + '.json'
+                    console.log(stimURLsToJSONs[stimURL]);
+                    return {
+                        type: 'block-construction',
+                        stimulus: stimURLsToJSONs[stimURL],
+                        chunk_id: chunk_name,
+                        stimURL: stimURL,
+                        rep: rep,
+                        offset: chunk_name.substring(0,4) == 'tall' ? 5 : 4
+                    }
+                    
+        
+                });
 
-            console.log('building trials:', buildingTrials);
+                _.map(_.shuffle(repTrials), buildingTrial => {
+                    trialList.push(buildingTrial);
+                });
+                
+                
+            };
 
-            _.map(buildingTrials, buildingTrial => {
-                trialList.push(buildingTrial);
-            })
+            console.log('building trials:', trialList);
 
             // send to next trial setup function (setupZippingTrials)
             callback(trialList);
@@ -198,8 +191,6 @@ function setupExperiment() {
             });
 
         });
-
-        console.log('tl',trialList);
 
         callback(trialList);
     }

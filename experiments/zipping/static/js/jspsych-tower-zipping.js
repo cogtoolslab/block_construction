@@ -90,13 +90,13 @@ jsPsych.plugins["tower-zipping"] = (function() {
         default: null,
         description: 'Any content here will be displayed below the stimulus.'
       },
-      composite_duration: {
+      compositeDuration: {
         type: jsPsych.plugins.parameterType.INT,
         pretty_name: 'Composite duration',
         default: null,
         description: 'How long to display composite tower for.'
       },
-      chunk_duration: {
+      chunkDuration: {
         type: jsPsych.plugins.parameterType.INT,
         pretty_name: 'Chunk duration',
         default: null,
@@ -108,6 +108,12 @@ jsPsych.plugins["tower-zipping"] = (function() {
         default: null,
         description: 'How long to hide the stimulus.'
       },
+      // max_response_duration: { // added by me
+      //   type: jsPsych.plugins.parameterType.INT,
+      //   pretty_name: 'Max response duration',
+      //   default: null,
+      //   description: 'How long to respond.'
+      // },
       trial_duration: {
         type: jsPsych.plugins.parameterType.INT,
         pretty_name: 'Trial duration',
@@ -215,6 +221,7 @@ jsPsych.plugins["tower-zipping"] = (function() {
         html += '<img src="'+trial.part_a_stimulus+'" class="part-stimulus ' + part_class + '" id="bottom-stimulus">';
       };
 
+      html += '<p id="please-respond">Respond! Z for Valid, M for invalid</p>'
 
       // // positions shown side by side 
       // part_class = trial.part_type == 'tall' ? 'part_stimulus_tall_aligned' : 'part_stimulus_wide_aligned';
@@ -301,6 +308,7 @@ jsPsych.plugins["tower-zipping"] = (function() {
     var after_response = function(info) {
 
       $('.part-stimulus').hide();
+      $('#please-respond').hide();
 
       // only record the first response
       if (response.key == null) {
@@ -344,6 +352,7 @@ jsPsych.plugins["tower-zipping"] = (function() {
     if (trial.compositeDuration !== null) {
       $('#jspsych-image-keyboard-response-stimulus').show();
       $('.part-stimulus').hide();
+      $('#please-respond').hide();
 
       jsPsych.pluginAPI.setTimeout(function() {
     
@@ -365,6 +374,7 @@ jsPsych.plugins["tower-zipping"] = (function() {
 
         jsPsych.pluginAPI.setTimeout(function() {
           $('.part-stimulus').hide();
+          $('#please-respond').show();
 
         }, trial.chunkDuration);
 
