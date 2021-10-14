@@ -33,6 +33,14 @@ jsPsych.plugins["tower-zipping"] = (function() {
         type: jsPsych.plugins.parameterType.STRING,
         default: '023',
       },
+      compatibleCondition: {
+        type: jsPsych.plugins.parameterType.STRING,
+        default: 'A',
+      },
+      participantCondition: {
+        type: jsPsych.plugins.parameterType.STRING,
+        default: 'A',
+      },
       part_a_stimulus: { // link to image
         type: jsPsych.plugins.parameterType.IMAGE,
         pretty_name: 'Part A stimulus',
@@ -221,7 +229,7 @@ jsPsych.plugins["tower-zipping"] = (function() {
         html += '<img src="'+trial.part_a_stimulus+'" class="part-stimulus ' + part_class + '" id="bottom-stimulus">';
       };
 
-      html += '<p id="please-respond">Respond! Z for Valid, M for invalid</p>'
+      html += '<p id="please-respond">Respond! "M" for Valid, "Z" for invalid.</p>'
 
       // // positions shown side by side 
       // part_class = trial.part_type == 'tall' ? 'part_stimulus_tall_aligned' : 'part_stimulus_wide_aligned';
@@ -286,15 +294,20 @@ jsPsych.plugins["tower-zipping"] = (function() {
         response: response.key,
         response_correct: trial.response_correct,
         stimURL: stimURL,
-        chunk_id: trial.composite,
+        chunk_id: trial.composite_id,
         rep: trial.rep,
+        block_number: trial.blockNumber,
+        composite_duration: trial.compositeDuration,
+        chunk_duration: trial.chunkDuration,
+        participant_condition: trial.participantCondition,
+        compatible_trial: trial.compatibleCondition == trial.participantCondition,
         validity: trial.validity,
         talls_name: trial.talls_name,
         wides_name: trial.wides_name,
         part_type: trial.part_type,
-        part_a: trial.part_a,
-        part_b: trial.part_b,
-        compatible_condition: trial.compatible_condition
+        part_a: trial.part_a_id,
+        part_b: trial.part_b_id,
+        compatible_condition: trial.compatibleCondition
       };
 
       // clear the display

@@ -78,17 +78,19 @@ jsPsych.plugins["block-construction"] = (function () {
 
     // show preamble text
 
-    html_content += '<div class="container pt-1" id="experiment">'
+    html_content += '<div class="container pt-1" id="experiment">';
 
     /** Create domain canvas **/
-    html_content += '<div class="row pt-1">'
+    html_content += '<div class="row pt-1">';
     html_content += '<div class="col-md env-div" id="stimulus-canvas"></div>';
     html_content += '<div class=" col-md env-div" id="environment-canvas"></div>';
-    html_content += '</div>'
+    html_content += '</div>';
 
-    html_content += '<div class="col pt-3 text-right">'
-    html_content += '<button id="reset-button" type="button" class="btn btn-warning">Reset</button>'
-    html_content += '</div>'
+    html_content += '<div class="col pt-3 text-right">';
+    html_content += '<button id="reset-button" type="button" class="btn btn-warning">Reset</button>';
+    html_content += '</div>';
+
+    html_content += '<div id="tooltip" data-toggle="tooltip" data-placement="top" title="Click on a block to pick it up and click again to drop it in the window above."><span><i class="fas fa-question-circle"></i> </span></div>';
 
     html_content += "</div>";
 
@@ -114,7 +116,7 @@ jsPsych.plugins["block-construction"] = (function () {
 
       var showStimulus = true;
       var showBuilding = true;
-      
+
       blockSetup(trialObject, showStimulus, showBuilding);
 
       // UI
@@ -123,7 +125,7 @@ jsPsych.plugins["block-construction"] = (function () {
       });
 
       resetBuilding = function () {
-        trialObject.nResets += 1; 
+        trialObject.nResets += 1;
         trial.nBlocksPlaced = 0;
 
         if (_.has(blockUniverse, 'p5env') ||
@@ -133,7 +135,7 @@ jsPsych.plugins["block-construction"] = (function () {
         };
 
         blockSetup(trialObject, showStimulus, showBuilding);
-        
+
       };
 
       resetBuilding(); // call once to clear from previous trial
@@ -195,6 +197,17 @@ jsPsych.plugins["block-construction"] = (function () {
 
 
     function endTrial(trial_data) { // called by block_widget when trial ends
+
+      trial_data = _.extend(trial_data, {
+        stimURL: trial.stimURL,
+        stimulus: trial.stimulus,
+        stimId: trial.stimId,
+        chunk_id: trial.chunk_id,
+        rep: trial.rep,
+        condition: trial.condition,
+        chunk_type: trial.chunk_type,
+      });
+
       console.log(trial_data)
       display_element.innerHTML = '';
       jsPsych.finishTrial(trial_data);
@@ -206,7 +219,7 @@ jsPsych.plugins["block-construction"] = (function () {
 
       if (trial.nBlocksPlaced >= trial.nBlocksMax) {
         // update block counter element
-        
+
         // setTimeout(resetBuilding, 300); 
         // resetBuilding();
       }

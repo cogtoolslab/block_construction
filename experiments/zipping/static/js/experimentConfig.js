@@ -1,9 +1,9 @@
 expConfig = {
     "experimentName": "block_construction_zipping",
     "dbname": "block_construction",
-    "colname": "zipping_dev",
+    "colname": "zipping",
     "stimColName": "zipping_test",
-    "iterationName": "dev",
+    "iterationName": "zipping_dev",
     "completionCode": "38C609EF", //check before running 
     "experimentPparameters": {
       "stimuliShuffleSeed": 0,
