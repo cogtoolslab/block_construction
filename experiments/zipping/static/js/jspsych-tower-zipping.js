@@ -35,11 +35,11 @@ jsPsych.plugins["tower-zipping"] = (function() {
       },
       compatibleCondition: {
         type: jsPsych.plugins.parameterType.STRING,
-        default: 'A',
+        default: 'None',
       },
       participantCondition: {
         type: jsPsych.plugins.parameterType.STRING,
-        default: 'A',
+        default: 'None',
       },
       part_a_stimulus: { // link to image
         type: jsPsych.plugins.parameterType.IMAGE,
@@ -229,7 +229,7 @@ jsPsych.plugins["tower-zipping"] = (function() {
         html += '<img src="'+trial.part_a_stimulus+'" class="part-stimulus ' + part_class + '" id="bottom-stimulus">';
       };
 
-      html += '<p id="please-respond">Respond! "M" for Valid, "Z" for invalid.</p>'
+      html += '<p id="please-respond">Respond! "Z" for NO, "M" for YES.</p>'
 
       // // positions shown side by side 
       // part_class = trial.part_type == 'tall' ? 'part_stimulus_tall_aligned' : 'part_stimulus_wide_aligned';
@@ -322,6 +322,7 @@ jsPsych.plugins["tower-zipping"] = (function() {
 
       $('.part-stimulus').hide();
       $('#please-respond').hide();
+      $('#please-respond').css('color', 'white');
 
       // only record the first response
       if (response.key == null) {

@@ -49,27 +49,27 @@ var constructDefaultExperimentalTimelineFromTrials = function (
   return timeline;
 };
 
-// var constructDefaultConsent = function (institution) {
-//   var consent_html;
-//   logIfDebug(institution);
-//   switch (institution) {
-//     case INSTITUTION_MIT:
-//       consent_html = "../html/consent-mit.html";
-//       break;
-//     case INSTITUTION_USCD:
-//       consent_html = "../html/consent-ucsd.html";
-//       break;
-//     default:
-//       consent_html = "../html/consent-ucsd.html";
-//       break;
-//   }
-//   var consent = {
-//     type: "external-html",
-//     url: consent_html,
-//     cont_btn: "start",
-//   };
-//   return consent;
-// };
+var constructDefaultConsent = function (institution) {
+  var consent_html;
+  logIfDebug(institution);
+  switch (institution) {
+    case INSTITUTION_MIT:
+      consent_html = "../html/consent-mit.html";
+      break;
+    case INSTITUTION_USCD:
+      consent_html = "../html/consent-ucsd.html";
+      break;
+    default:
+      consent_html = "../html/consent-ucsd.html";
+      break;
+  }
+  var consent = {
+    type: "external-html",
+    url: consent_html,
+    cont_btn: "start",
+  };
+  return consent;
+};
 
 var constructDefaultExitSurvey = function (completionCode) {
   var comments_block = {
@@ -79,13 +79,13 @@ var constructDefaultExitSurvey = function (completionCode) {
     questions: [{ prompt: "Do you have any comments to share with us?" }],
     button_label: "Finish",
     on_finish: function () {
+      window.experimentFinished = true;
       document.body.innerHTML =
         "<p> Please wait. You will be redirected back to Prolific in a few moments.</p>";
       setTimeout(function () {
         location.href =
           "https://app.prolific.co/submissions/complete?cc=" + completionCode; // add correct completion code
       }, 500);
-      sendData();
     },
   };
   return comments_block;
