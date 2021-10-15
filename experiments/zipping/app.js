@@ -22,7 +22,7 @@ if (argv.gameport) {
   var gameport = argv.gameport;
   console.log('using port ' + gameport);
 } else {
-  var gameport = 8886;
+  var gameport = 8850;
   console.log('no gameport specified: using ' + gameport + '\nUse the --gameport flag to change');
 }
 
@@ -61,15 +61,15 @@ io.on('connection', function (socket) {
   
   var isResearcher = _.includes(researchers, id);
 
-  if (!id || isResearcher && !blockResearcher){
-    initializeWithTrials(socket)
-  } else if (!valid_id(id)) {
-    console.log('invalid id, blocked');
-  } else {
-    checkPreviousParticipant(id, (exists) => {
-      return exists ? handleDuplicate(socket) : initializeWithTrials(socket);
-    });
-  }
+  // if (!id || isResearcher && !blockResearcher){
+  //   initializeWithTrials(socket)
+  // } else if (!valid_id(id)) {
+  //   console.log('invalid id, blocked');
+  // } else {
+  //   checkPreviousParticipant(id, (exists) => {
+  //     return exists ? handleDuplicate(socket) : initializeWithTrials(socket);
+  //   });
+  // }
 
   // Send client stims
  // initializeWithTrials(socket);
@@ -77,6 +77,25 @@ io.on('connection', function (socket) {
   socket.on('currentData', function (data) {
     console.log(data.dataType + ' data: ' + JSON.stringify(data));
     writeDataToMongo(data);
+  });
+
+  socket.on('getStim', function(data) {
+
+    sendPostRequest('http://localhost:6023/db/getstims', {
+      json: {
+        dbname: 'stimuli',
+        colname: data.stimColName,
+        gameid: data.gameID // to mark record
+      }
+    }, (error, res, body) => {
+      if (!error && res.statusCode === 200) {
+        socket.emit('stimulus', body);
+      } else {
+        console.log(`error getting stims: ${error} ${body}`);
+        console.log(`falling back to local stimList`);
+        //socket.emit('stimulus', _.sample(require('./data/example.json')));
+      }
+    });
   });
   
 });
@@ -115,7 +134,7 @@ function checkPreviousParticipant(workerId, callback) {
     projection: { '_id': 1 }
   };
   sendPostRequest(
-    'http://localhost:5000/db/exists',
+    'http://localhost:6023/db/exists',  // match port number to store.js
     { json: postData },
     (error, res, body) => {
       try {
@@ -135,31 +154,6 @@ function checkPreviousParticipant(workerId, callback) {
   );
 };
 
-function initializeWithTrials(socket) {
-  var gameid = UUID();
-  var colname = 'block-construction-perceptual-chunks';
-  // sendPostRequest('http://localhost:5000/db/getstims', {
-  //   json: {
-  //     dbname: 'stimuli',
-  //     colname: colname,
-  //     numTrials: 1,
-  //     gameid: gameid
-  //   }
-  // }, (error, res, body) => {
-  //   if (!error && res.statusCode === 200) {
-  //     // send trial list (and id) to client
-  //     var packet = {
-  //       gameid: gameid,
-  //       trials: body.meta,
-  //       version: body.version
-  //     };
-  //     socket.emit('onConnected', packet);
-  //   } else {
-  //     console.log(`error getting stims: ${error} ${body}`);
-  //   }
-  // });
-}
-
 function UUID() {
   var baseName = (Math.floor(Math.random() * 10) + '' +
     Math.floor(Math.random() * 10) + '' +
@@ -174,7 +168,7 @@ function UUID() {
 };
 
 var writeDataToMongo = function (data) {
-  sendPostRequest('http://localhost:5000/db/insert',
+  sendPostRequest('http://localhost:6023/db/insert',
     { json: data },
     (error, res, body) => {
       if (!error && res.statusCode === 200) {

@@ -5,12 +5,14 @@
  *  block Display widget (i.e. import blockConfig.js and blockDisplay.js above this plugin in html)
  */
 
+// const { transform } = require("lodash");
+
 var DEFAULT_IMAGE_SIZE = 200;
 
 jsPsych.plugins["block-construction"] = (function () {
   var plugin = {};
 
-  // jsPsych.pluginAPI.registerPreload('tower-display', 'stimulus');
+  // jsPsych.pluginAPI.registerPreload('block-construction', 'stimulus', 'image');
 
   plugin.info = {
     name: "block-construction",
@@ -25,16 +27,26 @@ jsPsych.plugins["block-construction"] = (function () {
       },
       stimulus: {
         type: jsPsych.plugins.parameterType.OBJECT,
-        default: {
-          'blocks': [{ 'x': 0, 'y': 0, 'height': 2, 'width': 1 },
-          { 'x': 2, 'y': 0, 'height': 2, 'width': 1 },
-          { 'x': 0, 'y': 2, 'height': 1, 'width': 2 },
-          { 'x': 2, 'y': 2, 'height': 1, 'width': 2 }]
-        },
+        // default: {
+        //   'blocks': [{ 'x': 0, 'y': 0, 'height': 2, 'width': 1 },
+        //   { 'x': 2, 'y': 0, 'height': 2, 'width': 1 },
+        //   { 'x': 0, 'y': 2, 'height': 1, 'width': 2 },
+        //   { 'x': 2, 'y': 2, 'height': 1, 'width': 2 }]
+        // },
       },
       stimId: {
         type: jsPsych.plugins.parameterType.STRING,
         default: "None",
+      },
+      rep: {
+        type: jsPsych.plugins.parameterType.INT,
+        default: 0
+      },
+      offset: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: "Offset",
+        default: 0,
+        description: "Number of squares to right stim is displaced in stimulus."
       },
       preamble: {
         type: jsPsych.plugins.parameterType.STRING,
@@ -66,17 +78,19 @@ jsPsych.plugins["block-construction"] = (function () {
 
     // show preamble text
 
-    html_content += '<div class="container pt-1" id="experiment">'
+    html_content += '<div class="container pt-1" id="experiment">';
 
     /** Create domain canvas **/
-    html_content += '<div class="row pt-1">'
+    html_content += '<div class="row pt-1">';
     html_content += '<div class="col-md env-div" id="stimulus-canvas"></div>';
     html_content += '<div class=" col-md env-div" id="environment-canvas"></div>';
-    html_content += '</div>'
+    html_content += '</div>';
 
-    html_content += '<div class="col pt-3 text-right">'
-    html_content += '<button id="reset-button" type="button" class="btn btn-warning">Reset</button>'
-    html_content += '</div>'
+    html_content += '<div class="col pt-3 text-right">';
+    html_content += '<button id="reset-button" type="button" class="btn btn-warning">Reset</button>';
+    html_content += '</div>';
+
+    html_content += '<div id="tooltip" data-toggle="tooltip" data-placement="top" title="Click on a block to pick it up and click again to drop it in the window above."><span><i class="fas fa-question-circle"></i> </span></div>';
 
     html_content += "</div>";
 
@@ -91,17 +105,18 @@ jsPsych.plugins["block-construction"] = (function () {
 
       let trialObject = {
         stimulus: trial.stimulus.blocks,
-        endCondition: 'perfect-reconstruction',
+        endCondition: 'perfect-reconstruction-translation',
         blocksPlaced: 0,
-        nResets: 0,
-        // nBlocksMax: trial.nBlocksMax,
+        nResets: -1, // start minus one as reset env at beginning of new trial
+        //nBlocksMax: trial.nBlocksMax,
+        offset: trial.offset,
         blockSender: blockSender,
         endBuildingTrial: endTrial
       };
 
       var showStimulus = true;
       var showBuilding = true;
-      
+
       blockSetup(trialObject, showStimulus, showBuilding);
 
       // UI
@@ -110,7 +125,7 @@ jsPsych.plugins["block-construction"] = (function () {
       });
 
       resetBuilding = function () {
-        trialObject.nResets += 1; 
+        trialObject.nResets += 1;
         trial.nBlocksPlaced = 0;
 
         if (_.has(blockUniverse, 'p5env') ||
@@ -120,8 +135,10 @@ jsPsych.plugins["block-construction"] = (function () {
         };
 
         blockSetup(trialObject, showStimulus, showBuilding);
-        
+
       };
+
+      resetBuilding(); // call once to clear from previous trial
 
 
 
@@ -180,18 +197,29 @@ jsPsych.plugins["block-construction"] = (function () {
 
 
     function endTrial(trial_data) { // called by block_widget when trial ends
+
+      trial_data = _.extend(trial_data, {
+        stimURL: trial.stimURL,
+        stimulus: trial.stimulus,
+        stimId: trial.stimId,
+        chunk_id: trial.chunk_id,
+        rep: trial.rep,
+        condition: trial.condition,
+        chunk_type: trial.chunk_type,
+      });
+
       console.log(trial_data)
       display_element.innerHTML = '';
       jsPsych.finishTrial(trial_data);
     };
 
     function blockSender(block_data) { // called by block_widget when a block is placed
-      console.log(block_data);
+      //console.log(block_data);
       trial.nBlocksPlaced += 1;
 
       if (trial.nBlocksPlaced >= trial.nBlocksMax) {
         // update block counter element
-        
+
         // setTimeout(resetBuilding, 300); 
         // resetBuilding();
       }

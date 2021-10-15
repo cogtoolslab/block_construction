@@ -248,3 +248,89 @@ body{
     margin-top: 80%;
     color: maroon;
 }
+
+
+/* 
+.part_stimulus_wide_aligned {
+    display: table;
+    width: 100%;
+    height: 100px;
+    object-position: 100% 85%;
+    object-fit: cover;
+}
+
+.part_stimulus_tall_aligned {
+    width: 110px;
+    height: 180px;
+    object-fit: none;
+    object-position: 10px;
+}
+
+#part_a_stimulus {
+    padding-right: 30px;
+}
+
+#part_b_stimulus {
+    padding-left: 30px;
+}
+
+.part_stimulus.tall {
+    width: 130px;
+    height: 216px;
+    object-fit: none;
+    object-position: 4px;
+}
+
+#part_a_stimulus.part_stimulus.tall{
+    margin-right: 20px;
+} 
+
+#part_b_stimulus.part_stimulus.tall{
+    margin-left: 20px;
+}
+*/
+
+.part-stimulus.tall{
+    width: 58px;
+    height: 166px;
+    object-fit: none;
+    object-position: 21%;
+    border: 0px solid crimson;
+}
+
+.part-stimulus.wide{
+    width: 114px;
+    height: 85px;
+    object-fit: none;
+    object-position: 55% 80%;
+    border: 0px solid crimson;
+    display: block;
+}
+
+#right-stimulus{
+    margin-left: 80px;
+}
+
+#left-stimulus{
+    margin-right: 80px;
+}
+
+#top-stimulus{
+    margin-bottom: 160px; 
+    margin-right: auto;
+    /* 2x margin */
+}
+
+
+#jspsych-image-keyboard-response-stimulus{
+    border: 12px solid;
+    border-color: #FFFFFF;
+}
+
+#jspsych-image-keyboard-response-stimulus.responded_correct{
+    border-color: #00b300;
+}
+
+#jspsych-image-keyboard-response-stimulus.responded_incorrect{
+    border-color: #a12714;
+}

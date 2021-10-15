@@ -11,7 +11,7 @@ const colors = require("colors/safe");
 
 const app = express();
 const MongoClient = mongodb.MongoClient;
-const port = 6021;
+const port = 6023;
 const mongoCreds = require("./auth.json");
 
 let USEMONGOCLOUD;
@@ -144,9 +144,9 @@ function serve() {
                 function (res) {
                   log(
                     `got request to find_one in ${collectionName} with` +
-                      ` query ${JSON.stringify(
-                        query
-                      )} and projection ${JSON.stringify(projection)}`
+                    ` query ${JSON.stringify(
+                      query
+                    )} and projection ${JSON.stringify(projection)}`
                   );
                   doneCounter += 1;
                   results += res;
@@ -243,6 +243,7 @@ function serve() {
       const database = connection.db(databaseName);
       const collection = database.collection(collectionName);
 
+      console.log(collection);
       // sort by number of times previously served up and take the first
       collection.aggregate([
         { $addFields: { numGames: { $size: '$games' } } },
@@ -253,11 +254,20 @@ function serve() {
         if (err) {
           console.log(err);
         } else {
-          // Immediately mark as annotated so others won't get it too
-          markAnnotation(collection, request.body.gameid, results[0]['_id']);
-          response.send(results[0]); //TODO work this out
+          if (results[0]){
+            // Immediately mark as annotated so others won't get it too
+            markAnnotation(collection, request.body.gameid, results[0]['_id']);
+            response.send(results[0]); //TODO work this out
+          } else {
+              console.log('No records in"' + collectionName + '"');
+              response.send(null);
+          }
         }
       });
+
+
+
+
     });
 
 

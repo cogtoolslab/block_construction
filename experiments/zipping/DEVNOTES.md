@@ -29,3 +29,9 @@ Use this to keep track of design decisions
   - If we go with sequential presentation of composite and parts this would be good!
 
 
+
+## todo before running final version 
+
+- pull in different batches for each timeDuration block
+- mask?
+- 

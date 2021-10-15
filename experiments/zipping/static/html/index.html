@@ -4,6 +4,7 @@
 <head>
   <title> Zipping Experiment </title>
   <script type="text/javascript" src="../js/experimentUtils.js"></script>
+  <script type="text/javascript" src="../js/consent.js"></script>
 
   <!-- block construction code -->
   <script src="../../building_widget/dist/blockConfig.js"></script>
@@ -13,6 +14,9 @@
   <script src="../js/jspsych-6.3.1/jspsych.js"></script>
   <script src="../js/jspsych-6.3.1/plugins/jspsych-instructions.js"></script>
   <script src="../js/jspsych-6.3.1/plugins/jspsych-html-keyboard-response.js"></script>
+  <script src="../js/jspsych-6.3.1/plugins/jspsych-preload.js"></script>
+  <script src="../js/jspsych-6.3.1/plugins/jspsych-survey-text.js"></script>
+  <script src="../js/jspsych-6.3.1/plugins/jspsych-external-html.js"></script>
   <script src="../js/jspsych-block-construction.js"></script>
   <script src="../js/jspsych-tower-zipping.js"></script>
 
@@ -24,11 +28,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/6.2.2/math.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"
     integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    
+
 
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  
+
   <link rel="stylesheet" href="../js/jspsych-6.3.1/css/jspsych.css" type="text/css">
   <link rel="stylesheet" href="../css/experiment.css" type="text/css">
 
@@ -39,11 +43,26 @@
 
 <body>
 
-<script>
-window.onload = function() {
-        setupExperiment();
-      };
-</script>
+  <script>
+
+    
+
+    window.onload = function () {
+      window.experimentFinished = false;
+      setupExperiment();
+
+      window.addEventListener('beforeunload', function (e) {
+        if (!window.experimentFinished) {
+          // If you prevent default behavior in Mozilla Firefox prompt will always be shown
+          e.preventDefault();
+          // Chrome requires returnValue to be set
+          e.returnValue = '';
+        }
+      });
+
+    };
+
+  </script>
 
 </body>
 

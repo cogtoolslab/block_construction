@@ -7,23 +7,23 @@ Utility functions for running experiments. Contains importable constants.
 DEBUG_MODE = true;
 DEBUG_TRIALS_ONLY = true; // Hide exit survey and config.
 
-CONST_ALL = "all";
-CONST_DOWNLOADED = "downloaded"; // stim set should be obtained from mongo
-DOMAIN_TOWERS = "towers";
-DOMAIN_DRAWING = "drawing";
-DOMAINS = [DOMAIN_TOWERS, DOMAIN_DRAWING];
+// CONST_ALL = "all";
+// CONST_DOWNLOADED = "downloaded"; // stim set should be obtained from mongo
+// DOMAIN_TOWERS = "towers";
+// DOMAIN_DRAWING = "drawing";
+// DOMAINS = [DOMAIN_TOWERS, DOMAIN_DRAWING];
 
-EXPERIMENT_TRIAL_INSTRUCTIONS = "instructions";
-EXPERIMENT_TRIAL_ATTENTION_CHECK_SURVEY_MULTIPLE_CHOICE = "attention-check-survey-multiple-choice";
-EXPERIMENT_STIMULI_LANGUAGE_PRODUCTION = "stimuli-language-production";
-EXPERIMENT_STIMULI_PROCEDURAL_LANGUAGE_PRODUCTION = "stimuli-procedural-language-production";
-EXPERIMENT_STIMULI_CONTEXTUAL_LANGUAGE_PRODUCTION = "stimuli-contextual-language-production";
-STIMULI_PRODUCTION = "stimuli-production";
-STIMULI_CATEGORY_FAMILIARIZATION = "category-familiarization";
+// EXPERIMENT_TRIAL_INSTRUCTIONS = "instructions";
+// EXPERIMENT_TRIAL_ATTENTION_CHECK_SURVEY_MULTIPLE_CHOICE = "attention-check-survey-multiple-choice";
+// EXPERIMENT_STIMULI_LANGUAGE_PRODUCTION = "stimuli-language-production";
+// EXPERIMENT_STIMULI_PROCEDURAL_LANGUAGE_PRODUCTION = "stimuli-procedural-language-production";
+// EXPERIMENT_STIMULI_CONTEXTUAL_LANGUAGE_PRODUCTION = "stimuli-contextual-language-production";
+// STIMULI_PRODUCTION = "stimuli-production";
+// STIMULI_CATEGORY_FAMILIARIZATION = "category-familiarization";
 
-INSTITUTION_MIT = "mit";
-INSTITUTION_USCD = "ucsd";
-NO_CODE = "NOCODE"
+// INSTITUTION_MIT = "mit";
+// INSTITUTION_USCD = "ucsd";
+// NO_CODE = "NOCODE"
 
 var logIfDebug = function (text) {
   if (DEBUG_MODE) {
@@ -79,456 +79,456 @@ var constructDefaultExitSurvey = function (completionCode) {
     questions: [{ prompt: "Do you have any comments to share with us?" }],
     button_label: "Finish",
     on_finish: function () {
+      window.experimentFinished = true;
       document.body.innerHTML =
         "<p> Please wait. You will be redirected back to Prolific in a few moments.</p>";
       setTimeout(function () {
         location.href =
           "https://app.prolific.co/submissions/complete?cc=" + completionCode; // add correct completion code
       }, 500);
-      sendData();
     },
   };
   return comments_block;
 };
 
-var constructExperimentTrialsForParameters = function (
-  config,
-  domain,
-  condition,
-  batchIndex,
-  experimentTrialParameters,
-  stimuliIdsToPreloadedStimuli
-) {
-  /** Constructs experiment-specific trials from the trial parameters block in a config. **/
-  switch (experimentTrialParameters.type) {
-    case EXPERIMENT_TRIAL_INSTRUCTIONS:
-      return constructInstructionTrialsForParameters(
-        config,
-        domain,
-        experimentTrialParameters,
-        stimuliIdsToPreloadedStimuli
-      );
-    case EXPERIMENT_TRIAL_ATTENTION_CHECK_SURVEY_MULTIPLE_CHOICE:
-      return constructAttentionCheckSurveyMultipleChoiceTrialsForParameters(
-        config,
-        domain,
-        experimentTrialParameters
-      );
-    case EXPERIMENT_STIMULI_LANGUAGE_PRODUCTION:
-      return constructStimuliLanguageProductionTrialsForParameters(
-        config,
-        domain,
-        condition,
-        batchIndex,
-        experimentTrialParameters,
-        stimuliIdsToPreloadedStimuli
-      );
-    case EXPERIMENT_STIMULI_PROCEDURAL_LANGUAGE_PRODUCTION:
-      return constructStimuliProceduralLanguageProductionTrialsForParameters(
-        config,
-        domain,
-        condition,
-        batchIndex,
-        experimentTrialParameters,
-        stimuliIdsToPreloadedStimuli
-      );
-    case STIMULI_PRODUCTION:
-      return constructStimuliProductionTrialsForParameters(
-        config,
-        domain,
-        condition,
-        batchIndex,
-        experimentTrialParameters,
-        stimuliIdsToPreloadedStimuli
-      );
-    case EXPERIMENT_STIMULI_CONTEXTUAL_LANGUAGE_PRODUCTION:
-      return constructStimuliContextualLanguageProductionTrials(
-        config,
-        domain,
-        condition,
-        batchIndex,
-        experimentTrialParameters,
-        stimuliIdsToPreloadedStimuli
-      )
-    case STIMULI_CATEGORY_FAMILIARIZATION:
-      return constructCategoryFamiliarizationTrials(
-        config,
-        domain,
-        condition,
-        batchIndex,
-        experimentTrialParameters,
-        stimuliIdsToPreloadedStimuli
-      )
-    default:
-      return [];
-  }
-};
+// var constructExperimentTrialsForParameters = function (
+//   config,
+//   domain,
+//   condition,
+//   batchIndex,
+//   experimentTrialParameters,
+//   stimuliIdsToPreloadedStimuli
+// ) {
+//   /** Constructs experiment-specific trials from the trial parameters block in a config. **/
+//   switch (experimentTrialParameters.type) {
+//     case EXPERIMENT_TRIAL_INSTRUCTIONS:
+//       return constructInstructionTrialsForParameters(
+//         config,
+//         domain,
+//         experimentTrialParameters,
+//         stimuliIdsToPreloadedStimuli
+//       );
+//     case EXPERIMENT_TRIAL_ATTENTION_CHECK_SURVEY_MULTIPLE_CHOICE:
+//       return constructAttentionCheckSurveyMultipleChoiceTrialsForParameters(
+//         config,
+//         domain,
+//         experimentTrialParameters
+//       );
+//     case EXPERIMENT_STIMULI_LANGUAGE_PRODUCTION:
+//       return constructStimuliLanguageProductionTrialsForParameters(
+//         config,
+//         domain,
+//         condition,
+//         batchIndex,
+//         experimentTrialParameters,
+//         stimuliIdsToPreloadedStimuli
+//       );
+//     case EXPERIMENT_STIMULI_PROCEDURAL_LANGUAGE_PRODUCTION:
+//       return constructStimuliProceduralLanguageProductionTrialsForParameters(
+//         config,
+//         domain,
+//         condition,
+//         batchIndex,
+//         experimentTrialParameters,
+//         stimuliIdsToPreloadedStimuli
+//       );
+//     case STIMULI_PRODUCTION:
+//       return constructStimuliProductionTrialsForParameters(
+//         config,
+//         domain,
+//         condition,
+//         batchIndex,
+//         experimentTrialParameters,
+//         stimuliIdsToPreloadedStimuli
+//       );
+//     case EXPERIMENT_STIMULI_CONTEXTUAL_LANGUAGE_PRODUCTION:
+//       return constructStimuliContextualLanguageProductionTrials(
+//         config,
+//         domain,
+//         condition,
+//         batchIndex,
+//         experimentTrialParameters,
+//         stimuliIdsToPreloadedStimuli
+//       )
+//     case STIMULI_CATEGORY_FAMILIARIZATION:
+//       return constructCategoryFamiliarizationTrials(
+//         config,
+//         domain,
+//         condition,
+//         batchIndex,
+//         experimentTrialParameters,
+//         stimuliIdsToPreloadedStimuli
+//       )
+//     default:
+//       return [];
+//   }
+// };
 
-var constructInstructionTrialsForParameters = function (
-  config,
-  domain,
-  experimentTrialParameters,
-  stimuliIdsToPreloadedStimuli
-) {
-  logIfDebug("Constructing instruction trials.");
-  return [
-    {
-      type: EXPERIMENT_TRIAL_INSTRUCTIONS,
-      pages: experimentTrialParameters.pages,
-      show_clickable_nav: true,
-    },
-  ];
-};
+// var constructInstructionTrialsForParameters = function (
+//   config,
+//   domain,
+//   experimentTrialParameters,
+//   stimuliIdsToPreloadedStimuli
+// ) {
+//   logIfDebug("Constructing instruction trials.");
+//   return [
+//     {
+//       type: EXPERIMENT_TRIAL_INSTRUCTIONS,
+//       pages: experimentTrialParameters.pages,
+//       show_clickable_nav: true,
+//     },
+//   ];
+// };
 
-var constructAttentionCheckSurveyMultipleChoiceTrialsForParameters = function(
-  config,
-  domain,
-  experimentTrialParameters
-) {
-  // Runs a multiple choice attention check until you run out of valid tries or get it correct.
+// var constructAttentionCheckSurveyMultipleChoiceTrialsForParameters = function(
+//   config,
+//   domain,
+//   experimentTrialParameters
+// ) {
+//   // Runs a multiple choice attention check until you run out of valid tries or get it correct.
   
-  logIfDebug("Constructing attention check.");
-  // Construct the basic attention check.
-  valid_tries = experimentTrialParameters["valid_tries"]
-  base_attention_check = { 
-            type: "survey-multi-choice",
-            preamble: experimentTrialParameters["preamble"],
-            data : {},
-            questions: experimentTrialParameters['questions'].map(function (question) { return {
-              prompt: question['prompt'],
-              options: question['options'],
-              required: true
-            } }),
-            on_finish: function(data) {
-              // JSPsych stores responses in the form Q0, Q1...
-              data.familiarization_check_correct = true;
-              var responses = JSON.parse(data.responses);
-              for (let q_index = 0; q_index < experimentTrialParameters['questions'].length; q_index++) {
-                  correctAnswer =  experimentTrialParameters['questions'][q_index]['answer'];
-                  userAnswer = responses['Q' + q_index];
-                  logIfDebug(correctAnswer);
-                  logIfDebug(userAnswer);
-                  if (!(userAnswer == correctAnswer)) {
-                    data.familiarization_check_correct = false;
-                  }
-                }
-            }
-        }
-  var loop_node = {
-        timeline: [base_attention_check],
-        loop_function: function(data){
-            data = jsPsych.data.get().last(1).values()[0];
-            num_tries = parseInt(data.internal_node_id.split(".").slice(-1)[0]) + 1;
-            is_tries_left = num_tries < valid_tries;
-            is_incorrect = !data.familiarization_check_correct;
-            should_loop = is_incorrect && is_tries_left;
+//   logIfDebug("Constructing attention check.");
+//   // Construct the basic attention check.
+//   valid_tries = experimentTrialParameters["valid_tries"]
+//   base_attention_check = { 
+//             type: "survey-multi-choice",
+//             preamble: experimentTrialParameters["preamble"],
+//             data : {},
+//             questions: experimentTrialParameters['questions'].map(function (question) { return {
+//               prompt: question['prompt'],
+//               options: question['options'],
+//               required: true
+//             } }),
+//             on_finish: function(data) {
+//               // JSPsych stores responses in the form Q0, Q1...
+//               data.familiarization_check_correct = true;
+//               var responses = JSON.parse(data.responses);
+//               for (let q_index = 0; q_index < experimentTrialParameters['questions'].length; q_index++) {
+//                   correctAnswer =  experimentTrialParameters['questions'][q_index]['answer'];
+//                   userAnswer = responses['Q' + q_index];
+//                   logIfDebug(correctAnswer);
+//                   logIfDebug(userAnswer);
+//                   if (!(userAnswer == correctAnswer)) {
+//                     data.familiarization_check_correct = false;
+//                   }
+//                 }
+//             }
+//         }
+//   var loop_node = {
+//         timeline: [base_attention_check],
+//         loop_function: function(data){
+//             data = jsPsych.data.get().last(1).values()[0];
+//             num_tries = parseInt(data.internal_node_id.split(".").slice(-1)[0]) + 1;
+//             is_tries_left = num_tries < valid_tries;
+//             is_incorrect = !data.familiarization_check_correct;
+//             should_loop = is_incorrect && is_tries_left;
             
-            if (!should_loop && !data.familiarization_check_correct) {
-              document.body.innerHTML =
-                "<p> Sorry, you have not succeeded in passing the qualification check for this study. Please wait. You will be redirected back to Prolific in a few moments. You will receive a NOCODE, but will be compensated for the time you have taken for this qualification check.</p>";
-              setTimeout(function () {
-                location.href =
-                  "https://app.prolific.co/submissions/complete?cc=" + NO_CODE; 
-              }, 500);
-              sendData();
-            }
-            return should_loop;
-        }
-    }
-  return [loop_node];
-}
+//             if (!should_loop && !data.familiarization_check_correct) {
+//               document.body.innerHTML =
+//                 "<p> Sorry, you have not succeeded in passing the qualification check for this study. Please wait. You will be redirected back to Prolific in a few moments. You will receive a NOCODE, but will be compensated for the time you have taken for this qualification check.</p>";
+//               setTimeout(function () {
+//                 location.href =
+//                   "https://app.prolific.co/submissions/complete?cc=" + NO_CODE; 
+//               }, 500);
+//               sendData();
+//             }
+//             return should_loop;
+//         }
+//     }
+//   return [loop_node];
+// }
 
-var constructStimuliProductionTrialsForParameters = function (
-  config,
-  domain,
-  condition,
-  batchIndex,
-  experimentTrialParameters,
-  stimuliIdsToPreloadedStimuli
-) {
-  logIfDebug("Constructing stimuli production trials.");
+// var constructStimuliProductionTrialsForParameters = function (
+//   config,
+//   domain,
+//   condition,
+//   batchIndex,
+//   experimentTrialParameters,
+//   stimuliIdsToPreloadedStimuli
+// ) {
+//   logIfDebug("Constructing stimuli production trials.");
 
-  stimuliBatch = getStimuliBatchForTrialBlockByCondition(
-    config,
-    domain,
-    condition,
-    batchIndex,
-    experimentTrialParameters.stimuli,
-    stimuliIdsToPreloadedStimuli
-  );
+//   stimuliBatch = getStimuliBatchForTrialBlockByCondition(
+//     config,
+//     domain,
+//     condition,
+//     batchIndex,
+//     experimentTrialParameters.stimuli,
+//     stimuliIdsToPreloadedStimuli
+//   );
 
-  var productionTrials = [];
-  if (domain == DOMAIN_DRAWING) {
-    stimuliBatch.forEach(function (stimuliId) {
-      let trial = {
-        type: "jspsych-sketchpad-display",
-        domain: domain,
-        label_prompt: experimentTrialParameters.label_prompt,
-        stimulus: stimuliIdsToPreloadedStimuli[stimuliId],
-        stimURL: stimuliIdsToPreloadedStimuli[stimuliId],
-        stimId: stimuliId,
-        post_trial_gap: 500,
-      };
-      productionTrials.push(trial);
-    });
-  } else if (domain == DOMAIN_TOWERS) {
-      stimuliBatch.forEach(function (stimuliId) {
-      let trial = {
-        type: "jspsych-tower-building",
-        domain: domain,
-        stimulus: stimuliIdsToPreloadedStimuli[stimuliId],
-        stimURL: stimuliIdsToPreloadedStimuli[stimuliId],
-        stimId: stimuliId,
-        preamble: experimentTrialParameters.label_prompt
-      }
-      productionTrials.push(trial);
-    });
-  } else {
-    logIfDebug("ERROR: unknown domain.");
-  }
+//   var productionTrials = [];
+//   if (domain == DOMAIN_DRAWING) {
+//     stimuliBatch.forEach(function (stimuliId) {
+//       let trial = {
+//         type: "jspsych-sketchpad-display",
+//         domain: domain,
+//         label_prompt: experimentTrialParameters.label_prompt,
+//         stimulus: stimuliIdsToPreloadedStimuli[stimuliId],
+//         stimURL: stimuliIdsToPreloadedStimuli[stimuliId],
+//         stimId: stimuliId,
+//         post_trial_gap: 500,
+//       };
+//       productionTrials.push(trial);
+//     });
+//   } else if (domain == DOMAIN_TOWERS) {
+//       stimuliBatch.forEach(function (stimuliId) {
+//       let trial = {
+//         type: "jspsych-tower-building",
+//         domain: domain,
+//         stimulus: stimuliIdsToPreloadedStimuli[stimuliId],
+//         stimURL: stimuliIdsToPreloadedStimuli[stimuliId],
+//         stimId: stimuliId,
+//         preamble: experimentTrialParameters.label_prompt
+//       }
+//       productionTrials.push(trial);
+//     });
+//   } else {
+//     logIfDebug("ERROR: unknown domain.");
+//   }
 
-  return productionTrials;
-};
+//   return productionTrials;
+// };
 
-var constructStimuliLanguageProductionTrialsForParameters = function (
-  config,
-  domain,
-  condition,
-  batchIndex,
-  experimentTrialParameters,
-  stimuliIdsToPreloadedStimuli
-) {
-  logIfDebug("Constructing stimuli language production trials.");
+// var constructStimuliLanguageProductionTrialsForParameters = function (
+//   config,
+//   domain,
+//   condition,
+//   batchIndex,
+//   experimentTrialParameters,
+//   stimuliIdsToPreloadedStimuli
+// ) {
+//   logIfDebug("Constructing stimuli language production trials.");
 
-  stimuliBatch = getStimuliBatchForTrialBlockByCondition(
-    config,
-    domain,
-    condition,
-    batchIndex,
-    experimentTrialParameters.stimuli,
-    stimuliIdsToPreloadedStimuli
-  );
+//   stimuliBatch = getStimuliBatchForTrialBlockByCondition(
+//     config,
+//     domain,
+//     condition,
+//     batchIndex,
+//     experimentTrialParameters.stimuli,
+//     stimuliIdsToPreloadedStimuli
+//   );
 
-  var languageProductionTrials = [];
-  if (domain == DOMAIN_DRAWING || domain == DOMAIN_TOWERS) {
-    stimuliBatch.forEach(function (stimuliId) {
-      let trial = {
-        type: EXPERIMENT_STIMULI_LANGUAGE_PRODUCTION,
-        domain: domain,
-        stimulus: stimuliIdsToPreloadedStimuli[stimuliId],
-        stimURL: stimuliIdsToPreloadedStimuli[stimuliId],
-        stimId: stimuliId,
-        questions: [
-          // can add more questions for each stimulus here if wanted
-          {
-            prompt: experimentTrialParameters.label_prompt,
-            required: true,
-            columns: 50,
-            rows: 5,
-          },
-        ],
-        post_trial_gap: 500,
-      };
-      languageProductionTrials.push(trial);
-    });
-  } else {
-    logIfDebug("ERROR: unknown domain.");
-  }
+//   var languageProductionTrials = [];
+//   if (domain == DOMAIN_DRAWING || domain == DOMAIN_TOWERS) {
+//     stimuliBatch.forEach(function (stimuliId) {
+//       let trial = {
+//         type: EXPERIMENT_STIMULI_LANGUAGE_PRODUCTION,
+//         domain: domain,
+//         stimulus: stimuliIdsToPreloadedStimuli[stimuliId],
+//         stimURL: stimuliIdsToPreloadedStimuli[stimuliId],
+//         stimId: stimuliId,
+//         questions: [
+//           // can add more questions for each stimulus here if wanted
+//           {
+//             prompt: experimentTrialParameters.label_prompt,
+//             required: true,
+//             columns: 50,
+//             rows: 5,
+//           },
+//         ],
+//         post_trial_gap: 500,
+//       };
+//       languageProductionTrials.push(trial);
+//     });
+//   } else {
+//     logIfDebug("ERROR: unknown domain.");
+//   }
 
-  return languageProductionTrials;
-};
+//   return languageProductionTrials;
+// };
 
-// For collection of step by step procedures.
-var constructStimuliProceduralLanguageProductionTrialsForParameters = function (
-  config,
-  domain,
-  condition,
-  batchIndex,
-  experimentTrialParameters,
-  stimuliIdsToPreloadedStimuli
-) {
-  logIfDebug("Constructing stimuli language production trials.");
+// // For collection of step by step procedures.
+// var constructStimuliProceduralLanguageProductionTrialsForParameters = function (
+//   config,
+//   domain,
+//   condition,
+//   batchIndex,
+//   experimentTrialParameters,
+//   stimuliIdsToPreloadedStimuli
+// ) {
+//   logIfDebug("Constructing stimuli language production trials.");
 
-  stimuliBatch = getStimuliBatchForTrialBlockByCondition(
-    config,
-    domain,
-    condition,
-    batchIndex,
-    experimentTrialParameters.stimuli,
-    stimuliIdsToPreloadedStimuli
-  );
+//   stimuliBatch = getStimuliBatchForTrialBlockByCondition(
+//     config,
+//     domain,
+//     condition,
+//     batchIndex,
+//     experimentTrialParameters.stimuli,
+//     stimuliIdsToPreloadedStimuli
+//   );
 
-  var languageProductionTrials = [];
-  if (domain == DOMAIN_DRAWING || domain == DOMAIN_TOWERS) {
-    stimuliBatch.forEach(function (stimuliId) {
-      let trial = {
-        type: EXPERIMENT_STIMULI_PROCEDURAL_LANGUAGE_PRODUCTION,
-        domain: domain,
-        stimulus: stimuliIdsToPreloadedStimuli[stimuliId],
-        stimURL: stimuliIdsToPreloadedStimuli[stimuliId],
-        firstRowPrompt: experimentTrialParameters.firstRowPrompt,
-        additionalRowPrompt: experimentTrialParameters.additionalRowPrompt,
-        stimId: stimuliId,
-        questions: [
-          // can add more questions for each stimulus here if wanted
-          {
-            prompt: experimentTrialParameters.labelPrompts[0],
-            placeholder: experimentTrialParameters.labelPrompts[0],
-            name: experimentTrialParameters.labelPrompts[0],
-            required: true,
-            columns: 40,
-            rows: 1,
-          },
-          {
-            prompt: experimentTrialParameters.labelPrompts[1],
-            placeholder: experimentTrialParameters.labelPrompts[1],
-            name: experimentTrialParameters.labelPrompts[1],
-            required: true,
-            columns: 40,
-            rows: 1,
-          },
-        ],
-        post_trial_gap: 500,
-      };
-      languageProductionTrials.push(trial);
-    });
-  } else {
-    logIfDebug("ERROR: unknown domain.");
-  }
+//   var languageProductionTrials = [];
+//   if (domain == DOMAIN_DRAWING || domain == DOMAIN_TOWERS) {
+//     stimuliBatch.forEach(function (stimuliId) {
+//       let trial = {
+//         type: EXPERIMENT_STIMULI_PROCEDURAL_LANGUAGE_PRODUCTION,
+//         domain: domain,
+//         stimulus: stimuliIdsToPreloadedStimuli[stimuliId],
+//         stimURL: stimuliIdsToPreloadedStimuli[stimuliId],
+//         firstRowPrompt: experimentTrialParameters.firstRowPrompt,
+//         additionalRowPrompt: experimentTrialParameters.additionalRowPrompt,
+//         stimId: stimuliId,
+//         questions: [
+//           // can add more questions for each stimulus here if wanted
+//           {
+//             prompt: experimentTrialParameters.labelPrompts[0],
+//             placeholder: experimentTrialParameters.labelPrompts[0],
+//             name: experimentTrialParameters.labelPrompts[0],
+//             required: true,
+//             columns: 40,
+//             rows: 1,
+//           },
+//           {
+//             prompt: experimentTrialParameters.labelPrompts[1],
+//             placeholder: experimentTrialParameters.labelPrompts[1],
+//             name: experimentTrialParameters.labelPrompts[1],
+//             required: true,
+//             columns: 40,
+//             rows: 1,
+//           },
+//         ],
+//         post_trial_gap: 500,
+//       };
+//       languageProductionTrials.push(trial);
+//     });
+//   } else {
+//     logIfDebug("ERROR: unknown domain.");
+//   }
 
-  return languageProductionTrials;
-};
+//   return languageProductionTrials;
+// };
 
-var constructStimuliContextualLanguageProductionTrials = function(
-  config,
-  domain,
-  condition,
-  batchIndex,
-  experimentTrialParameters,
-  stimuliIdsToPreloadedStimuli
-)  {
-  logIfDebug("Constructing stimuli language production trials.");
+// var constructStimuliContextualLanguageProductionTrials = function(
+//   config,
+//   domain,
+//   condition,
+//   batchIndex,
+//   experimentTrialParameters,
+//   stimuliIdsToPreloadedStimuli
+// )  {
+//   logIfDebug("Constructing stimuli language production trials.");
 
-  stimuliBatch = getStimuliBatchForTrialBlockByCondition(
-    config,
-    domain,
-    condition,
-    batchIndex,
-    experimentTrialParameters.stimuli,
-    stimuliIdsToPreloadedStimuli
-  );
-    var languageProductionTrials = [];
-    if (domain == DOMAIN_DRAWING || domain == DOMAIN_TOWERS) {
-      stimuliBatch.forEach(function (stimuliId) {
-        let trial = {
-          type: "jspsych-category-labels-display",
-          domain: domain,
-          label_prompt: experimentTrialParameters.label_prompt,
-          stimulus: stimuliIdsToPreloadedStimuli[stimuliId],
-          stimURL: stimuliIdsToPreloadedStimuli[stimuliId],
-          stimId: stimuliId,
-          stimBatch: stimuliBatch,
-          stimURLs: stimuliIdsToPreloadedStimuli,
-          post_trial_gap: 500,
-          firstRowPrompt: experimentTrialParameters.firstRowPrompt,
-          additionalRowPrompt: experimentTrialParameters.additionalRowPrompt,
-          questions: [
-            // can add more questions for each stimulus here if wanted
-            {
-              prompt: experimentTrialParameters.labelPrompts[0],
-              placeholder: experimentTrialParameters.labelPrompts[0],
-              name: experimentTrialParameters.labelPrompts[0],
-              required: true,
-              columns: 40,
-              rows: 1,
-            },
-            {
-              prompt: experimentTrialParameters.labelPrompts[1],
-              placeholder: experimentTrialParameters.labelPrompts[1],
-              name: experimentTrialParameters.labelPrompts[1],
-              required: true,
-              columns: 40,
-              rows: 1,
-            },
-          ]
-        };
-        languageProductionTrials.push(trial);
+//   stimuliBatch = getStimuliBatchForTrialBlockByCondition(
+//     config,
+//     domain,
+//     condition,
+//     batchIndex,
+//     experimentTrialParameters.stimuli,
+//     stimuliIdsToPreloadedStimuli
+//   );
+//     var languageProductionTrials = [];
+//     if (domain == DOMAIN_DRAWING || domain == DOMAIN_TOWERS) {
+//       stimuliBatch.forEach(function (stimuliId) {
+//         let trial = {
+//           type: "jspsych-category-labels-display",
+//           domain: domain,
+//           label_prompt: experimentTrialParameters.label_prompt,
+//           stimulus: stimuliIdsToPreloadedStimuli[stimuliId],
+//           stimURL: stimuliIdsToPreloadedStimuli[stimuliId],
+//           stimId: stimuliId,
+//           stimBatch: stimuliBatch,
+//           stimURLs: stimuliIdsToPreloadedStimuli,
+//           post_trial_gap: 500,
+//           firstRowPrompt: experimentTrialParameters.firstRowPrompt,
+//           additionalRowPrompt: experimentTrialParameters.additionalRowPrompt,
+//           questions: [
+//             // can add more questions for each stimulus here if wanted
+//             {
+//               prompt: experimentTrialParameters.labelPrompts[0],
+//               placeholder: experimentTrialParameters.labelPrompts[0],
+//               name: experimentTrialParameters.labelPrompts[0],
+//               required: true,
+//               columns: 40,
+//               rows: 1,
+//             },
+//             {
+//               prompt: experimentTrialParameters.labelPrompts[1],
+//               placeholder: experimentTrialParameters.labelPrompts[1],
+//               name: experimentTrialParameters.labelPrompts[1],
+//               required: true,
+//               columns: 40,
+//               rows: 1,
+//             },
+//           ]
+//         };
+//         languageProductionTrials.push(trial);
 
-      });
+//       });
 
-    } else {
-        logIfDebug("ERROR: unknown domain.");
-    }
+//     } else {
+//         logIfDebug("ERROR: unknown domain.");
+//     }
     
-    return languageProductionTrials;
-  }
+//     return languageProductionTrials;
+//   }
     
-  var constructCategoryFamiliarizationTrials = function(
-    config,
-    domain,
-    condition,
-    batchIndex,
-    experimentTrialParameters,
-    stimuliIdsToPreloadedStimuli
-  ) {
+//   var constructCategoryFamiliarizationTrials = function(
+//     config,
+//     domain,
+//     condition,
+//     batchIndex,
+//     experimentTrialParameters,
+//     stimuliIdsToPreloadedStimuli
+//   ) {
     
-    stimuliBatch = getStimuliBatchForTrialBlockByCondition(
-      config,
-      domain,
-      condition,
-      batchIndex,
-      experimentTrialParameters.stimuli,
-      stimuliIdsToPreloadedStimuli
-    );
+//     stimuliBatch = getStimuliBatchForTrialBlockByCondition(
+//       config,
+//       domain,
+//       condition,
+//       batchIndex,
+//       experimentTrialParameters.stimuli,
+//       stimuliIdsToPreloadedStimuli
+//     );
 
-    let trial = {
-      type: "jspsych-category-familiarization",
-      domain: domain,
-      label_prompt: experimentTrialParameters.label_prompt,
-      stimBatch: stimuliBatch,
-      stimURLs: stimuliIdsToPreloadedStimuli,
-      requireClickThrough: experimentTrialParameters.requireClickThrough,
-    }
+//     let trial = {
+//       type: "jspsych-category-familiarization",
+//       domain: domain,
+//       label_prompt: experimentTrialParameters.label_prompt,
+//       stimBatch: stimuliBatch,
+//       stimURLs: stimuliIdsToPreloadedStimuli,
+//       requireClickThrough: experimentTrialParameters.requireClickThrough,
+//     }
 
-    return [trial];
-  }
+//     return [trial];
+//   }
 
-var getStimuliBatchForTrialBlockByCondition = function (
-  config,
-  domain,
-  condition,
-  batchIndex,
-  trialBlockStimuli,
-  stimuliIdsToPreloadedStimuli
-) {
-  /** Gets a batch of stimuli from a selected possible set. Performs randomized shuffling within the trial block if need be. **/
-  var trialBlockStimuliIdsForCondition = trialBlockStimuli[condition];
-  if (trialBlockStimuli[condition] == CONST_ALL) {
-    trialBlockStimuliIdsForCondition = Object.keys(
-      stimuliIdsToPreloadedStimuli
-    );
-  }
-  stimuliBatchForTrials = shuffleStimuliAndGetBatch(
-    config,
-    batchIndex,
-    trialBlockStimuliIdsForCondition
-  );
+// var getStimuliBatchForTrialBlockByCondition = function (
+//   config,
+//   domain,
+//   condition,
+//   batchIndex,
+//   trialBlockStimuli,
+//   stimuliIdsToPreloadedStimuli
+// ) {
+//   /** Gets a batch of stimuli from a selected possible set. Performs randomized shuffling within the trial block if need be. **/
+//   var trialBlockStimuliIdsForCondition = trialBlockStimuli[condition];
+//   if (trialBlockStimuli[condition] == CONST_ALL) {
+//     trialBlockStimuliIdsForCondition = Object.keys(
+//       stimuliIdsToPreloadedStimuli
+//     );
+//   }
+//   stimuliBatchForTrials = shuffleStimuliAndGetBatch(
+//     config,
+//     batchIndex,
+//     trialBlockStimuliIdsForCondition
+//   );
 
-  return stimuliBatchForTrials;
-};
+//   return stimuliBatchForTrials;
+// };
 
-var shuffleStimuliAndGetBatch = function (config, batchIndex, stimuliArray) {
-  /** Shuffles the stimuli in array according to stimuliShuffleSeed and gets a batch at the index. **/
-  stimuliShuffleSeed = config.experiment_parameters.stimuli_shuffle_seed;
-  shuffledStimuliArray = shuffle(stimuliArray, stimuliShuffleSeed);
-  var batchSize = shuffledStimuliArray.length;
-  if (config.experiment_parameters.stimuli_batch_size !== CONST_ALL) {
-    batchSize = config.experiment_parameters.stimuli_batch_size;
-  }
-  batchedStimuli = _.chunk(shuffledStimuliArray, batchSize);
-  stimuliBatch = batchedStimuli[batchIndex];
-  return stimuliBatch;
-};
+// var shuffleStimuliAndGetBatch = function (config, batchIndex, stimuliArray) {
+//   /** Shuffles the stimuli in array according to stimuliShuffleSeed and gets a batch at the index. **/
+//   stimuliShuffleSeed = config.experiment_parameters.stimuli_shuffle_seed;
+//   shuffledStimuliArray = shuffle(stimuliArray, stimuliShuffleSeed);
+//   var batchSize = shuffledStimuliArray.length;
+//   if (config.experiment_parameters.stimuli_batch_size !== CONST_ALL) {
+//     batchSize = config.experiment_parameters.stimuli_batch_size;
+//   }
+//   batchedStimuli = _.chunk(shuffledStimuliArray, batchSize);
+//   stimuliBatch = batchedStimuli[batchIndex];
+//   return stimuliBatch;
+// };
 
 var shuffle = function (array, seed) {
   /** Seeded random shuffling. 
@@ -881,25 +881,25 @@ var getStimuliIdsToPreloadedStimuli = function (
   }
 };
 
-var getTowerStimuliJSONsFromUrls = function (stimuliIdsToUrls, callback) {
-  let stimuliIdsToJSONs = {};
+var getTowerStimuliJSONsFromUrls = function (stimURLs, callback) {
+  let stimURLsToJSONs = {};
   var stimJSONPromise = new Promise((resolve, reject) => {
-    Object.keys(stimuliIdsToUrls).forEach((stimuliId, index, array) => {
-      getJSON(stimuliIdsToUrls[stimuliId], function (err, data) {
-        if (err !== null) {
-          logIfDebug("Unable to load: " + stimuliIdsToUrls[stimuliId]);
-        } else {
-          stimuliIdsToJSONs[stimuliId] = data;
-          // if (index === array.length - 1) resolve();
-          if (Object.keys(stimuliIdsToJSONs).length === array.length){ resolve()}
-        }
+      stimURLs.forEach(stimURL => {
+          getJSON(stimURL, function (err, data) {
+          if (err !== null) {
+              logIfDebug("Unable to load: " + stimURL);
+          } else {
+              stimURLsToJSONs[stimURL] = data;
+              // if (index === array.length - 1) resolve();
+              if (Object.keys(stimURLsToJSONs).length === stimURLs.length) { resolve() }
+          };
       });
     });
   });
 
   stimJSONPromise.then(() => {
     // const stims = stimJSONs;
-    callback(stimuliIdsToJSONs);
+    callback(stimURLsToJSONs);
   });
 };
 
@@ -917,6 +917,43 @@ var getJSON = function (url, callback) {
   };
   xhr.send();
 };
+
+// var getTowerStimuliJSONsFromUrls = function (stimuliIdsToUrls, callback) {
+//   let stimuliIdsToJSONs = {};
+//   var stimJSONPromise = new Promise((resolve, reject) => {
+//     Object.keys(stimuliIdsToUrls).forEach((stimuliId, index, array) => {
+//       getJSON(stimuliIdsToUrls[stimuliId], function (err, data) {
+//         if (err !== null) {
+//           logIfDebug("Unable to load: " + stimuliIdsToUrls[stimuliId]);
+//         } else {
+//           stimuliIdsToJSONs[stimuliId] = data;
+//           // if (index === array.length - 1) resolve();
+//           if (Object.keys(stimuliIdsToJSONs).length === array.length){ resolve()}
+//         }
+//       });
+//     });
+//   });
+
+//   stimJSONPromise.then(() => {
+//     // const stims = stimJSONs;
+//     callback(stimuliIdsToJSONs);
+//   });
+// };
+
+// var getJSON = function (url, callback) {
+//   var xhr = new XMLHttpRequest();
+//   xhr.open("GET", url, true);
+//   xhr.responseType = "json";
+//   xhr.onload = function () {
+//     var status = xhr.status;
+//     if (status === 200) {
+//       callback(null, xhr.response);
+//     } else {
+//       callback(status, xhr.response);
+//     }
+//   };
+//   xhr.send();
+// };
 
 // var getLongFormTime = function() {
 //   var d = new Date();
