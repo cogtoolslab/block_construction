@@ -36,11 +36,11 @@ function setupExperiment() {
         metadata = data;
         var trialList = [];
         // setupBuildingTrials(trialList, trialList => {
-            // setupZippingTrials(trialList, trialList => {
+            setupZippingTrials(trialList, trialList => {
                 setupOtherTrials(trialList);
-            // });
-        // });
-      });
+            });
+        });
+    //   });
     };
 
     setupBuildingTrials = function(trialList, callback) {
