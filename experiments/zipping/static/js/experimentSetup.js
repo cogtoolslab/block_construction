@@ -80,6 +80,7 @@ function setupExperiment() {
                         stimURL: stimURL,
                         condition: metadata.condition,
                         rep: rep,
+                        prompt:"Please build the shape on the left by clicking to pick up and place blocks on the right.",
                         offset: chunk_name.substring(0, 4) == 'tall' ? 5 : 4
                     }
 
@@ -189,7 +190,7 @@ function setupExperiment() {
             var blockIntro = {
                 type: 'instructions',
                 pages: [
-                    '<p>Starting block ' + (i + 1) + ' of ' + zippingBlocksShuffled.length + '. Feel free to take a short break inbetween blocks.</p><p>Press <strong>"Z" if the small shapes cannot</strong> be combined to make the big one, press <strong>"M" if they can</strong>.</p><p>Press Next to start.</p>'
+                    '<p>Block ' + (i + 1) + ' of ' + zippingBlocksShuffled.length + '.</p><p>Press <strong>"Z" if the small shapes cannot</strong> be combined to make the big one, press <strong>"M" if they can</strong>.</p><p>Press Next when you are ready to start.</p>'
                 ],
                 show_clickable_nav: true
             };
@@ -262,8 +263,6 @@ function setupExperiment() {
 
     // Add all trials to timeline
 
-    //trials.push(test_zipping_trial);
-
     function constructExperimentTimeline(trialList) {
 
         /* #### Initialize jsPsych with complete experimental timeline #### */
@@ -272,7 +271,7 @@ function setupExperiment() {
             show_progress_bar: true,
             default_iti: 600,
             on_trial_finish: function (trialData) {
-                console.log('TRIAL DATA', trialData);
+                console.log('Trial data:', trialData);
                 // Merge data from a single trial with
                 // variables to be uploaded with all data
                 var packet = _.extend({}, trialData, {
