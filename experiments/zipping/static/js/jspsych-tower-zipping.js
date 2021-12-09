@@ -23,7 +23,7 @@ jsPsych.plugins["tower-zipping"] = (function() {
     parameters: {
       composite_id: {
         type: jsPsych.plugins.parameterType.STRING,
-        default: 'wides_025_023',
+        default: 'None',
       },
       part_a_id: {
         type: jsPsych.plugins.parameterType.STRING,
@@ -103,6 +103,12 @@ jsPsych.plugins["tower-zipping"] = (function() {
         pretty_name: 'Composite duration',
         default: null,
         description: 'How long to display composite tower for.'
+      },
+      gapDuration: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Gap duration',
+        default: 0,
+        description: 'How long to display a blank between composite and chunks.'
       },
       chunkDuration: {
         type: jsPsych.plugins.parameterType.INT,
@@ -294,23 +300,25 @@ jsPsych.plugins["tower-zipping"] = (function() {
         response: response.key,
         response_correct: trial.response_correct,
         stimURL: stimURL,
-        chunk_id: trial.composite_id,
+        // chunk_id: trial.composite_id,
+        composite_id: trial.composite_id,
         rep: trial.rep,
         block_number: trial.blockNumber,
         composite_duration: trial.compositeDuration,
+        gap_duration: trial.gapDuration,
         chunk_duration: trial.chunkDuration,
         participant_condition: trial.participantCondition,
         compatible_trial: trial.compatibleCondition == trial.participantCondition,
         validity: trial.validity,
-        talls_name: trial.talls_name,
-        wides_name: trial.wides_name,
+        composite_talls_name: trial.composite_talls_name,
+        composite_wides_name: trial.composite_wides_name,
         part_type: trial.part_type,
         part_a: trial.part_a_id,
         part_b: trial.part_b_id,
-        participantRotationName: trial.rotation_name,
-        participantRotation: trial.rotation,
-        stimVersion: trial.version,
-        stimVersionInd: trial.versionInd,
+        participantRotationName: trial.participantRotationName,
+        participantRotation: trial.participantRotation,
+        stimVersion: trial.stimVersion,
+        stimVersionInd: trial.stimVersionInd,
         compatible_condition: trial.compatibleCondition,
       };
 
@@ -375,26 +383,31 @@ jsPsych.plugins["tower-zipping"] = (function() {
       jsPsych.pluginAPI.setTimeout(function() {
     
         $('#jspsych-image-keyboard-response-stimulus').hide();
-        $('.part-stimulus').show();
-        
-        // start the response listener
-        if (trial.choices != jsPsych.NO_KEYS) {
-          var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
-            callback_function: after_response,
-            valid_responses: trial.choices,
-            rt_method: 'performance',
-            persist: false,
-            allow_held_key: false
-          });
-        };
-
-        // Add mask in here if needed
 
         jsPsych.pluginAPI.setTimeout(function() {
-          $('.part-stimulus').hide();
-          $('#please-respond').show();
 
-        }, trial.chunkDuration);
+          $('.part-stimulus').show();
+          
+          // start the response listener
+          if (trial.choices != jsPsych.NO_KEYS) {
+            var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
+              callback_function: after_response,
+              valid_responses: trial.choices,
+              rt_method: 'performance',
+              persist: false,
+              allow_held_key: false
+            });
+          };
+
+          // Add mask in here if needed
+
+          jsPsych.pluginAPI.setTimeout(function() {
+            $('.part-stimulus').hide();
+            $('#please-respond').show();
+
+          }, trial.chunkDuration);
+
+        }, trial.gapDuration);
 
       }, trial.compositeDuration);
     };

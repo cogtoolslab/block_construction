@@ -122,7 +122,8 @@ function setupExperiment() {
 
         var zippingBlocks = [];
 
-        expConfig.stimDurations.forEach((stimDuration, i) => {
+        // stimDurations is a list of durations provided in metadata (of the same length e.g. [32,32,32])
+        metadata.stimDurations.forEach((stimDuration, i) => {
 
             const reps = {};
 
@@ -131,17 +132,17 @@ function setupExperiment() {
 
                 metadata.zipping_trials.forEach(zipping_trial => {
                     
-                stimURL = metadata.composite_url_stem + zipping_trial.talls_name + '.png';
+                stimURL = metadata.composite_url_stem + zipping_trial.composite_talls_name + '.png';
 
                 let trialObj = {
                     type: 'tower-zipping',
                     stimulus: stimURL,
                     stimURL: stimURL,
-                    chunk_id: zipping_trial.composite,
+                    composite_id: zipping_trial.composite_talls_name,
                     rep: zipping_trial.rep,
                     validity: zipping_trial.validity,
-                    talls_name: zipping_trial.talls_name,
-                    wides_name: zipping_trial.wides_name,
+                    composite_talls_name: zipping_trial.composite_talls_name,
+                    composite_wides_name: zipping_trial.composite_wides_name,
                     part_type: zipping_trial.part_type,
                     part_a_id: zipping_trial.part_a,
                     part_a_stimulus: metadata.chunk_zipping_url_stem + zipping_trial.part_a.slice(-3) + '.png',
@@ -156,7 +157,8 @@ function setupExperiment() {
                     stimVersionInd: metadata.versionInd,
                     compatibleCondition: zipping_trial.compatible_condition,
                     compositeDuration: stimDuration,
-                    chunkDuration: stimDuration, // set composite and chunk duration to be the same
+                    gapDuration: expConfig.chunkOnset-stimDuration,
+                    chunkDuration: expConfig.chunkDuration
                 }
 
                 if (!reps[zipping_trial.rep]){
@@ -219,35 +221,37 @@ function setupExperiment() {
     // Instructions
 
     setupOtherTrials = function(trialList) {
+        
+        if(!expConfig.devMode){
 
-        var consent = {
-            type: "external-html",
-            url: "../html/consent-ucsd.html",
-            cont_btn: "start",
-          };
+            var consent = {
+                type: "external-html",
+                url: "../html/consent-ucsd.html",
+                cont_btn: "start",
+            };
 
-        var instructions = {
-            type: 'instructions',
-            pages: [
-                '<p>Thank you for participating in our experiment. It should take a total of <strong>30 minutes</strong>, including the time it takes to read these instructions. You will receive $7.50 for completing this study (approx. $15/hr).</p><p>When you are finished, the study will be automatically submitted to be reviewed for approval. You can only perform this study one time. We take your compensation and time seriously! Please message us if you run into any problems while completing this study, or if it takes much more time than expected.</p></br><p>Note: we recommend using Chrome, and putting your browser in full screen. This study has not been tested in other browsers.</p>',
-                expConfig.buildingInstructions,
-                expConfig.zippingInstructions,
-                'That\'s all you need to know! Press Next to start Part 1.'
+            var instructions = {
+                type: 'instructions',
+                pages: [
+                    '<p>Thank you for participating in our experiment. It should take a total of <strong>30 minutes</strong>, including the time it takes to read these instructions. You will receive $7.50 for completing this study (approx. $15/hr).</p><p>When you are finished, the study will be automatically submitted to be reviewed for approval. You can only perform this study one time. We take your compensation and time seriously! Please message us if you run into any problems while completing this study, or if it takes much more time than expected.</p></br><p>Note: we recommend using Chrome, and putting your browser in full screen. This study has not been tested in other browsers.</p>',
+                    expConfig.buildingInstructions,
+                    expConfig.zippingInstructions,
+                    'That\'s all you need to know! Press Next to start Part 1.'
 
-            ],
-            show_clickable_nav: true
+                ],
+                show_clickable_nav: true
+            };
+
+            trialList.unshift(instructions);
+            trialList.unshift(consent);
+            
+
+            // Exit survey
+            var exitSurvey = constructDefaultExitSurvey(expConfig.completionCode);
+
+            trialList.push(exitSurvey)
+
         };
-
-        trialList.unshift(instructions);
-        trialList.unshift(consent);
-        
-
-        // Exit survey
-        var exitSurvey = constructDefaultExitSurvey(expConfig.completionCode);
-
-        trialList.push(exitSurvey)
-
-        
 
         // initialize jspsych with timeline
         constructExperimentTimeline(trialList);
