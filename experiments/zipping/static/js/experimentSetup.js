@@ -37,11 +37,11 @@ function setupExperiment() {
         console.log('received', data);
         metadata = data;
         var trialList = [];
-        setupBuildingTrials(trialList, trialList => {
+        // setupBuildingTrials(trialList, trialList => {
             setupZippingTrials(trialList, trialList => {
                 setupOtherTrials(trialList);
             });
-        });
+        // });
        });
     };
 
@@ -150,6 +150,10 @@ function setupExperiment() {
                     part_b_url: metadata.chunk_zipping_url_stem + zipping_trial.part_b.slice(-3) + '.png',
                     part_b_stimulus: metadata.chunk_zipping_url_stem + zipping_trial.part_b.slice(-3) + '.png',
                     participantCondition: metadata.condition,
+                    participantRotationName: metadata.rotation_name,
+                    participantRotation: metadata.rotation,
+                    stimVersion: metadata.version,
+                    stimVersionInd: metadata.versionInd,
                     compatibleCondition: zipping_trial.compatible_condition,
                     compositeDuration: stimDuration,
                     chunkDuration: stimDuration, // set composite and chunk duration to be the same

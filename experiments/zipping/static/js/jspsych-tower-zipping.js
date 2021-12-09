@@ -307,7 +307,11 @@ jsPsych.plugins["tower-zipping"] = (function() {
         part_type: trial.part_type,
         part_a: trial.part_a_id,
         part_b: trial.part_b_id,
-        compatible_condition: trial.compatibleCondition
+        participantRotationName: trial.rotation_name,
+        participantRotation: trial.rotation,
+        stimVersion: trial.version,
+        stimVersionInd: trial.versionInd,
+        compatible_condition: trial.compatibleCondition,
       };
 
       // clear the display
