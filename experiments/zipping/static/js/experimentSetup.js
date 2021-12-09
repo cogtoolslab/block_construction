@@ -15,7 +15,7 @@ function setupExperiment() {
     //     socket.emit("currentData", data);
     //     console.log("emitting data");
     // };
-    
+
     var workerID = urlParams.PROLIFIC_PID;
     const gameID = UUID();
 
@@ -25,27 +25,27 @@ function setupExperiment() {
 
     function getStimListFromMongo(config, callback) { //called in experiments where stimulus subsets are stored in mongo database
 
-      
-      socket.emit('getStim', 
-        {
-          gameID: gameID,
-          stimColName: expConfig.stimColName, // should check if exists (but could do above when choosing whether or not to call this function)
-        }); 
-    
 
-      socket.on('stimulus', data => {
-        console.log('received', data);
-        metadata = data;
-        var trialList = [];
-        // setupBuildingTrials(trialList, trialList => {
-            setupZippingTrials(trialList, trialList => {
-                setupOtherTrials(trialList);
+        socket.emit('getStim',
+            {
+                gameID: gameID,
+                stimColName: expConfig.stimColName, // should check if exists (but could do above when choosing whether or not to call this function)
             });
-        // });
-       });
+
+
+        socket.on('stimulus', data => {
+            console.log('received', data);
+            metadata = data;
+            var trialList = [];
+            setupBuildingTrials(trialList, trialList => {
+                setupZippingTrials(trialList, trialList => {
+                    setupOtherTrials(trialList);
+                });
+            });
+        });
     };
 
-    setupBuildingTrials = function(trialList, callback) {
+    setupBuildingTrials = function (trialList, callback) {
         /**
          * Set up building trials
          * Grabs list of ids from metadata
@@ -76,21 +76,21 @@ function setupExperiment() {
                         stimulus: stimURLsToJSONs[stimURL],
                         stimId: chunk_name.slice(-3), // number stim in S3
                         chunk_id: chunk_name, //experiment specific
-                        chunk_type: chunk_name.substring(0,4),
+                        chunk_type: chunk_name.substring(0, 4),
                         stimURL: stimURL,
                         condition: metadata.condition,
                         rep: rep,
-                        offset: chunk_name.substring(0,4) == 'tall' ? 5 : 4
+                        offset: chunk_name.substring(0, 4) == 'tall' ? 5 : 4
                     }
-                    
-        
+
+
                 });
 
                 _.map(_.shuffle(repTrials), buildingTrial => {
                     trialList.push(buildingTrial);
                 });
-                
-                
+
+
             };
 
             console.log('building trials:', trialList);
@@ -103,7 +103,7 @@ function setupExperiment() {
     }
 
 
-    setupZippingTrials = function(trialList, callback) {
+    setupZippingTrials = function (trialList, callback) {
         /**
          * Set up zipping/ perceptual test trials
          * Grabs list of ids from metadata
@@ -111,10 +111,10 @@ function setupExperiment() {
          * 
          */
 
-         var repeatInstructions = { 
+        var repeatInstructions = {
             type: 'instructions',
             pages: ['Great job! Now on to Part 2. Press Next to remind yourself of the instructions.',
-                    expConfig.zippingInstructions],
+                expConfig.zippingInstructions],
             show_clickable_nav: true
         };
 
@@ -130,8 +130,8 @@ function setupExperiment() {
             // create trial objects
             // zippingTrials = _.map(metadata.zipping_trials, zipping_trial => {
 
-                metadata.zipping_trials.forEach(zipping_trial => {
-                    
+            metadata.zipping_trials.forEach(zipping_trial => {
+
                 stimURL = metadata.composite_url_stem + zipping_trial.composite_talls_name + '.png';
 
                 let trialObj = {
@@ -157,11 +157,11 @@ function setupExperiment() {
                     stimVersionInd: metadata.versionInd,
                     compatibleCondition: zipping_trial.compatible_condition,
                     compositeDuration: stimDuration,
-                    gapDuration: expConfig.chunkOnset-stimDuration,
+                    gapDuration: expConfig.chunkOnset - stimDuration,
                     chunkDuration: expConfig.chunkDuration
                 }
 
-                if (!reps[zipping_trial.rep]){
+                if (!reps[zipping_trial.rep]) {
                     reps[zipping_trial.rep] = [trialObj];
                 } else {
                     reps[zipping_trial.rep].push(trialObj);
@@ -189,7 +189,7 @@ function setupExperiment() {
             var blockIntro = {
                 type: 'instructions',
                 pages: [
-                    '<p>Starting block ' + (i+1) + ' of ' + zippingBlocksShuffled.length + '. Feel free to take a short break inbetween blocks.</p><p>Press <strong>"Z" if the small shapes cannot</strong> be combined to make the big one, press <strong>"M" if they can</strong>.</p><p>Press Next to start.</p>'
+                    '<p>Starting block ' + (i + 1) + ' of ' + zippingBlocksShuffled.length + '. Feel free to take a short break inbetween blocks.</p><p>Press <strong>"Z" if the small shapes cannot</strong> be combined to make the big one, press <strong>"M" if they can</strong>.</p><p>Press Next to start.</p>'
                 ],
                 show_clickable_nav: true
             };
@@ -220,9 +220,9 @@ function setupExperiment() {
 
     // Instructions
 
-    setupOtherTrials = function(trialList) {
-        
-        if(!expConfig.devMode){
+    setupOtherTrials = function (trialList) {
+
+        if (!expConfig.devMode) {
 
             var consent = {
                 type: "external-html",
@@ -244,7 +244,7 @@ function setupExperiment() {
 
             trialList.unshift(instructions);
             trialList.unshift(consent);
-            
+
 
             // Exit survey
             var exitSurvey = constructDefaultExitSurvey(expConfig.completionCode);
@@ -272,7 +272,7 @@ function setupExperiment() {
             show_progress_bar: true,
             default_iti: 600,
             on_trial_finish: function (trialData) {
-                console.log('TRIAL DATA',trialData);
+                console.log('TRIAL DATA', trialData);
                 // Merge data from a single trial with
                 // variables to be uploaded with all data
                 var packet = _.extend({}, trialData, {

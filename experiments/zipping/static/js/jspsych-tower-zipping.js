@@ -9,7 +9,7 @@
  **/
 
 
-jsPsych.plugins["tower-zipping"] = (function() {
+jsPsych.plugins["tower-zipping"] = (function () {
 
   var plugin = {};
 
@@ -89,7 +89,7 @@ jsPsych.plugins["tower-zipping"] = (function() {
         type: jsPsych.plugins.parameterType.KEY,
         array: true,
         pretty_name: 'Choices',
-        default: ['z','m'],
+        default: ['z', 'm'],
         description: 'The keys the subject is allowed to press to respond to the stimulus.'
       },
       prompt: {
@@ -144,13 +144,13 @@ jsPsych.plugins["tower-zipping"] = (function() {
         type: jsPsych.plugins.parameterType.BOOL,
         pretty_name: 'Render on canvas',
         default: false,
-        description: 'If true, the image will be drawn onto a canvas element (prevents blank screen between consecutive images in some browsers).'+
+        description: 'If true, the image will be drawn onto a canvas element (prevents blank screen between consecutive images in some browsers).' +
           'If false, the image will be shown via an img element.'
       }
     }
   }
 
-  plugin.trial = function(display_element, trial) {
+  plugin.trial = function (display_element, trial) {
 
     var height, width;
     if (trial.render_on_canvas) { // not used here
@@ -218,34 +218,34 @@ jsPsych.plugins["tower-zipping"] = (function() {
     } else {
 
       // display stimulus as an image element
-      var html = '<img src="'+trial.stimulus+'" id="jspsych-image-keyboard-response-stimulus">';
+      var html = '<img src="' + trial.stimulus + '" id="jspsych-image-keyboard-response-stimulus">';
 
       html += '<div class="parts">'
 
       // part_class = trial.part_type == 'tall' ? 'part_stimulus_tall' : 'part_stimulus_wide';
 
       part_class = trial.part_type == 'tall' ? 'tall' : 'wide';
-      
+
       // positions contingent on tall/wide 
       if (trial.part_type == 'tall') {
-        html += '<img src="'+trial.part_a_stimulus+'" class="part-stimulus ' + part_class + '" id="left-stimulus">';
-        html += '<img src="'+trial.part_b_stimulus+'" class="part-stimulus ' + part_class + '" id="right-stimulus">';
+        html += '<img src="' + trial.part_a_stimulus + '" class="part-stimulus ' + part_class + '" id="left-stimulus">';
+        html += '<img src="' + trial.part_b_stimulus + '" class="part-stimulus ' + part_class + '" id="right-stimulus">';
       } else {
-        html += '<img src="'+trial.part_b_stimulus+'" class="part-stimulus ' + part_class + '" id="top-stimulus">';
-        html += '<img src="'+trial.part_a_stimulus+'" class="part-stimulus ' + part_class + '" id="bottom-stimulus">';
+        html += '<img src="' + trial.part_b_stimulus + '" class="part-stimulus ' + part_class + '" id="top-stimulus">';
+        html += '<img src="' + trial.part_a_stimulus + '" class="part-stimulus ' + part_class + '" id="bottom-stimulus">';
       };
 
       html += '<p id="please-respond">Respond! "Z" for NO, "M" for YES.</p>'
 
       // // positions shown side by side 
       // part_class = trial.part_type == 'tall' ? 'part_stimulus_tall_aligned' : 'part_stimulus_wide_aligned';
-      
+
       // html += '<img src="'+trial.part_a_stimulus+'" class="part_stimulus ' + trial.part_type + '" id="part_a_stimulus">';
       // html += '<img src="'+trial.part_b_stimulus+'" class="part_stimulus ' + trial.part_type + '" id="part_b_stimulus">';
-      
+
       html += '</div>'
       // add prompt
-      if (trial.prompt !== null){
+      if (trial.prompt !== null) {
         html += trial.prompt;
       }
       // update the page content
@@ -283,7 +283,7 @@ jsPsych.plugins["tower-zipping"] = (function() {
     };
 
     // function to end trial when it is time
-    var end_trial = function() {
+    var end_trial = function () {
 
       // kill any remaining setTimeout handlers
       jsPsych.pluginAPI.clearAllTimeouts();
@@ -330,7 +330,7 @@ jsPsych.plugins["tower-zipping"] = (function() {
     };
 
     // function to handle responses by the subject
-    var after_response = function(info) {
+    var after_response = function (info) {
 
       $('.part-stimulus').hide();
       $('#please-respond').hide();
@@ -341,9 +341,9 @@ jsPsych.plugins["tower-zipping"] = (function() {
         response = info;
       }
 
-      response_correct = (response.key == 'm' & trial.validity=='valid') | (response.key == 'z' & trial.validity=='invalid');
+      response_correct = (response.key == 'm' & trial.validity == 'valid') | (response.key == 'z' & trial.validity == 'invalid');
       response_class = response_correct ? 'responded_correct' : 'responded_incorrect'
-      
+
       // after a valid response, the stimulus will have the CSS class 'responded'
       // which can be used to provide visual feedback that a response was recorded
       display_element.querySelector('#jspsych-image-keyboard-response-stimulus').className += (' ' + response_class);
@@ -370,7 +370,7 @@ jsPsych.plugins["tower-zipping"] = (function() {
 
     // hide stimulus if stimulus_duration is set
     if (trial.stimulus_duration !== null) {
-      jsPsych.pluginAPI.setTimeout(function() {
+      jsPsych.pluginAPI.setTimeout(function () {
         display_element.querySelector('#jspsych-image-keyboard-response-stimulus').hide();
       }, trial.stimulus_duration);
     }
@@ -380,14 +380,14 @@ jsPsych.plugins["tower-zipping"] = (function() {
       $('.part-stimulus').hide();
       $('#please-respond').hide();
 
-      jsPsych.pluginAPI.setTimeout(function() {
-    
+      jsPsych.pluginAPI.setTimeout(function () {
+
         $('#jspsych-image-keyboard-response-stimulus').hide();
 
-        jsPsych.pluginAPI.setTimeout(function() {
+        jsPsych.pluginAPI.setTimeout(function () {
 
           $('.part-stimulus').show();
-          
+
           // start the response listener
           if (trial.choices != jsPsych.NO_KEYS) {
             var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
@@ -401,7 +401,7 @@ jsPsych.plugins["tower-zipping"] = (function() {
 
           // Add mask in here if needed
 
-          jsPsych.pluginAPI.setTimeout(function() {
+          jsPsych.pluginAPI.setTimeout(function () {
             $('.part-stimulus').hide();
             $('#please-respond').show();
 
@@ -414,7 +414,7 @@ jsPsych.plugins["tower-zipping"] = (function() {
 
     // end trial if trial_duration is set
     if (trial.trial_duration !== null) {
-      jsPsych.pluginAPI.setTimeout(function() {
+      jsPsych.pluginAPI.setTimeout(function () {
         end_trial();
       }, trial.trial_duration);
     } else if (trial.response_ends_trial === false) {
