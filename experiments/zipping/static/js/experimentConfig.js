@@ -2,8 +2,8 @@ expConfig = {
     "experimentName": "block_construction_zipping",
     "dbname": "block_construction",
     "colname": "zipping",
-    "stimColName": "zipping_test",
-    "iterationName": "pilot_debug",
+    "stimColName": "zipping_3_counterbalanced",
+    "iterationName": "counterbalance_test",
     "completionCode": "5C772792",
     "experimentPparameters": {
       "stimuliShuffleSeed": 0,

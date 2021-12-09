@@ -25,22 +25,24 @@ function setupExperiment() {
 
     function getStimListFromMongo(config, callback) { //called in experiments where stimulus subsets are stored in mongo database
 
+      
       socket.emit('getStim', 
         {
           gameID: gameID,
           stimColName: expConfig.stimColName, // should check if exists (but could do above when choosing whether or not to call this function)
         }); 
+    
 
       socket.on('stimulus', data => {
         console.log('received', data);
         metadata = data;
         var trialList = [];
-        // setupBuildingTrials(trialList, trialList => {
+        setupBuildingTrials(trialList, trialList => {
             setupZippingTrials(trialList, trialList => {
                 setupOtherTrials(trialList);
             });
         });
-    //   });
+       });
     };
 
     setupBuildingTrials = function(trialList, callback) {
