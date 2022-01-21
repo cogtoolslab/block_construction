@@ -38,6 +38,10 @@ jsPsych.plugins["block-construction"] = (function () {
         type: jsPsych.plugins.parameterType.STRING,
         default: "None",
       },
+      prompt:{
+        type: jsPsych.plugins.parameterType.STRING,
+        default: "",
+      },
       rep: {
         type: jsPsych.plugins.parameterType.INT,
         default: 0
@@ -78,21 +82,22 @@ jsPsych.plugins["block-construction"] = (function () {
 
     // show preamble text
 
-    html_content += '<div class="container pt-1" id="experiment">';
+    html_content += '<h5 id="prompt">'+trial.prompt+'</h5>';
+    
+    html_content += '<div class="container" id="experiment">';
 
     /** Create domain canvas **/
     html_content += '<div class="row pt-1">';
-    html_content += '<div class="col-md env-div" id="stimulus-canvas"></div>';
-    html_content += '<div class=" col-md env-div" id="environment-canvas"></div>';
+    html_content += '<div class="col env-div" id="stimulus-canvas"></div>';
+    html_content += '<div class=" col env-div" id="environment-canvas"></div>';
     html_content += '</div>';
 
     html_content += '<div class="col pt-3 text-right">';
-    html_content += '<button id="reset-button" type="button" class="btn btn-warning">Reset</button>';
+    html_content += '<button id="reset-button" type="button" class="btn btn-primary">Reset</button>';
     html_content += '</div>';
 
-    html_content += '<div id="tooltip" data-toggle="tooltip" data-placement="top" title="Click on a block to pick it up and click again to drop it in the window above."><span><i class="fas fa-question-circle"></i> </span></div>';
-
     html_content += "</div>";
+    html_content += '<p>Use ctrl/cmd + minus-sign (-) if windows do not fit on the screen at the same time.</p>';
 
 
 

@@ -49,7 +49,7 @@ class BlockKind {
     // draw outer rectangle
     env.noFill();
     env.stroke(config.strokeColor);
-    env.strokeWeight(2);
+    env.strokeWeight(3);
     env.rect(0, 0, this.w * config.sF, this.h * config.sF);
 
     env.pop();

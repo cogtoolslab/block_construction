@@ -218,8 +218,8 @@ body{
 }
 
 .env-div {
-    background-color: #dddddd;
-    padding: 10px;
+    background-color: #FFD819;
+    padding: 20px;
 }
 
 /* #stimulus-window {
@@ -231,8 +231,9 @@ body{
     background-color: bisque;
 } */
 
+
 #experiment .col-md{
-    padding: 26px;
+    padding: 40px;
 }
 
 #trial-number{
