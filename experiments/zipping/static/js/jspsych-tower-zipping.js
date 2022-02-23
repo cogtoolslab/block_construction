@@ -146,7 +146,13 @@ jsPsych.plugins["tower-zipping"] = (function () {
         default: false,
         description: 'If true, the image will be drawn onto a canvas element (prevents blank screen between consecutive images in some browsers).' +
           'If false, the image will be shown via an img element.'
-      }
+      },
+      trialNum: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'official number trial',
+        default: null,
+        description: 'number of actual trial.'
+      },
     }
   }
 
@@ -320,6 +326,7 @@ jsPsych.plugins["tower-zipping"] = (function () {
         stimVersion: trial.stimVersion,
         stimVersionInd: trial.stimVersionInd,
         compatible_condition: trial.compatibleCondition,
+        trial_num: trial.trialNum
       };
 
       // clear the display

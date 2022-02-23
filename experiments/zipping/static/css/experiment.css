@@ -329,9 +329,24 @@ body{
 }
 
 #jspsych-image-keyboard-response-stimulus.responded_correct{
+    border: 12px solid;
     border-color: #00b300;
 }
 
 #jspsych-image-keyboard-response-stimulus.responded_incorrect{
+    border: 12px solid;
     border-color: #a12714;
+}
+
+.jspsych-content {
+    max-width: 900px;
+}
+
+
+.consent {
+    text-align: left;
+}
+
+#start.btn{
+    margin-bottom: 10px;
 }
