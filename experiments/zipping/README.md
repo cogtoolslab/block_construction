@@ -29,7 +29,7 @@ Experiment log for zipping experiment
 The problem with this version is that in some trials (3 ambiguous and 4 novel), the participant gets shown chunks they've already built. This isn't the end of the world, but it's not the cleanest design-- ideally we'd want to counterbalance the trials in which they see these pre-built chunks. For now though, I'm going to leave them in.
 
 
-#### zipping_calibration
+## zipping_calibration
 - Only running zipping trials to understand dynamics/ sensitivity of this experiment
 - Uses different config: `experimentConfigZippingCalibration.js`
 - Randomizing within mini-block (of 4 trials)
@@ -39,8 +39,19 @@ The problem with this version is that in some trials (3 ambiguous and 4 novel), 
 - Running experiment todos:
   - 
 
+#### zipping_calibration_sona_pilot
+- Run 5 ppts on sona to check that data saving properly
+- Fixed missing 'practice_trial'
+- 
 
-#### full_2
+#### zipping_calibration_sona_pilot_2
+- increased ITI to 1500ms
+- add fixation cross
+- add graphics as key reminders
+- 
+
+
+#### WAITING ON CALIBRATION full_2
 Not yet run- waiting on zipping_calibration for insights
 To implement:
 - Always display one valid chunk in invalid trials (along with a random foil?) (this makes things simpler actually). Adapt code from calibration study.

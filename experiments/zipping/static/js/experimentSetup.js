@@ -131,11 +131,11 @@ function setupExperiment() {
 
         // trialList.push(zippingInstructions);
 
-        if (expConfig.zippingPracticeTrials) {
+        if (expConfig.zippingPracticeTrials & !expConfig.devMode) {
             var zippingPracticeIntro = {
                 type: 'instructions',
                 pages: [
-                    'Press next to start practice.',
+                    'Get ready! Place one finger over \"Z\" (no!) and one over \"M\" (yes!) so you can respond quickly. Then press Next to continue.',
                 ],
                 show_clickable_nav: true
             };
@@ -151,7 +151,7 @@ function setupExperiment() {
             var zippingPracticeOutro = {
                 type: 'instructions',
                 pages: [
-                    'Great! Now on to the actual experiment.',
+                    'Great job! In the trials you\'ve just completed, you were shown the same large shape in every trial, but in the actual trials these can vary trial to trial, so make sure you pay attention to their shape. They will also be a lot faster!',
                 ],
                 show_clickable_nav: true
             };
@@ -188,6 +188,7 @@ function setupExperiment() {
                     practice: false,
                     miniBlock: zipping_trial.mini_block,
                     validity: zipping_trial.validity,
+                    condition: zipping_trial.condition,
                     composite_talls_name: zipping_trial.composite_talls_name,
                     composite_wides_name: zipping_trial.composite_wides_name,
                     part_type: zipping_trial.part_type,
@@ -333,8 +334,10 @@ function setupExperiment() {
             };
 
             var instructionPages = []
-            
-            instructionPages.push('<p>Thank you for participating in our experiment. It should take a total of <strong>25 minutes</strong>, including the time it takes to read these instructions. You will receive $6.00 for completing this study (approx. $15/hr).</p><p>When you are finished, the study will be automatically submitted to be reviewed for approval. You can only perform this study one time. We take your compensation and time seriously! Please message us if you run into any problems while completing this study, or if it takes much more time than expected.</p></br><p>Note: we recommend using Chrome, and putting your browser in full screen. This study has not been tested in other browsers.</p>')
+
+            if (expConfig.compensationInfo){
+                instructionPages.push(expConfig.compensationInfo);
+            }
 
             if (expConfig.buildingInstructions) {instructionPages.push(expConfig.buildingInstructions)}
             if (expConfig.zippingInstructions) {instructionPages.push(expConfig.zippingInstructions)}
@@ -378,7 +381,7 @@ function setupExperiment() {
         jsPsych.init({
             timeline: trialList,
             show_progress_bar: true,
-            default_iti: 600,
+            default_iti: 1500, //up from 600 in zipping_calibration_sona_pilot
             on_trial_finish: function (trialData) {
                 console.log('Trial data:', trialData);
                 // Merge data from a single trial with

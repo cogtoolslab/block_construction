@@ -153,134 +153,52 @@ jsPsych.plugins["tower-zipping"] = (function () {
         default: null,
         description: 'number of actual trial.'
       },
+      practice: {
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Is this a practice trial?',
+        default: false,
+      },
     }
   }
 
   plugin.trial = function (display_element, trial) {
 
     var height, width;
-    if (trial.render_on_canvas) { // not used here
-      // var image_drawn = false;
-      // // first clear the display element (because the render_on_canvas method appends to display_element instead of overwriting it with .innerHTML)
-      // if (display_element.hasChildNodes()) {
-      //   // can't loop through child list because the list will be modified by .removeChild()
-      //   while (display_element.firstChild) {
-      //     display_element.removeChild(display_element.firstChild);
-      //   }
-      // }
-      // // create canvas element and image
-      // var canvas = document.createElement("canvas");
-      // canvas.id = "jspsych-image-keyboard-response-stimulus";
-      // canvas.style.margin = 0;
-      // canvas.style.padding = 0;
-      // var ctx = canvas.getContext("2d");
-      // var img = new Image();   
-      // img.onload = function() {
-      //   // if image wasn't preloaded, then it will need to be drawn whenever it finishes loading
-      //   if (!image_drawn) {
-      //     getHeightWidth(); // only possible to get width/height after image loads
-      //     ctx.drawImage(img,0,0,width,height);
-      //   }
-      // };
-      // img.src = trial.stimulus;
 
-      // // get/set image height and width - this can only be done after image loads because uses image's naturalWidth/naturalHeight properties
-      // function getHeightWidth() {
-      //   if (trial.stimulus_height !== null) {
-      //     height = trial.stimulus_height;
-      //     if (trial.stimulus_width == null && trial.maintain_aspect_ratio) {
-      //       width = img.naturalWidth * (trial.stimulus_height/img.naturalHeight);
-      //     }
-      //   } else {
-      //     height = img.naturalHeight;
-      //   }
-      //   if (trial.stimulus_width !== null) {
-      //     width = trial.stimulus_width;
-      //     if (trial.stimulus_height == null && trial.maintain_aspect_ratio) {
-      //       height = img.naturalHeight * (trial.stimulus_width/img.naturalWidth);
-      //     }
-      //   } else if (!(trial.stimulus_height !== null & trial.maintain_aspect_ratio)) {
-      //     // if stimulus width is null, only use the image's natural width if the width value wasn't set 
-      //     // in the if statement above, based on a specified height and maintain_aspect_ratio = true
-      //     width = img.naturalWidth;
-      //   }
-      //   canvas.height = height;
-      //   canvas.width = width;
-      // }
-      // getHeightWidth(); // call now, in case image loads immediately (is cached)
-      // // add canvas and draw image
-      // display_element.insertBefore(canvas, null);
-      // if (img.complete && Number.isFinite(width) && Number.isFinite(height)) {
-      //   // if image has loaded and width/height have been set, then draw it now
-      //   // (don't rely on img onload function to draw image when image is in the cache, because that causes a delay in the image presentation)
-      //   ctx.drawImage(img,0,0,width,height);
-      //   image_drawn = true;  
-      // }
-      // // add prompt if there is one
-      // if (trial.prompt !== null) {
-      //   display_element.insertAdjacentHTML('beforeend', trial.prompt);
-      // }
+    // display stimulus as an image element
+    var html = '<img src="' + trial.stimulus + '" id="jspsych-image-keyboard-response-stimulus">';
+    html += '<p id="fixation-cross">+<p>';
 
+    html += '<div class="parts">'
+
+    // part_class = trial.part_type == 'tall' ? 'part_stimulus_tall' : 'part_stimulus_wide';
+
+    part_class = trial.part_type == 'tall' ? 'tall' : 'wide';
+
+    // positions contingent on tall/wide 
+    if (trial.part_type == 'tall') {
+      html += '<img src="' + trial.part_a_stimulus + '" class="part-stimulus ' + part_class + '" id="left-stimulus">';
+      html += '<img src="' + trial.part_b_stimulus + '" class="part-stimulus ' + part_class + '" id="right-stimulus">';
     } else {
+      html += '<img src="' + trial.part_b_stimulus + '" class="part-stimulus ' + part_class + '" id="top-stimulus">';
+      html += '<img src="' + trial.part_a_stimulus + '" class="part-stimulus ' + part_class + '" id="bottom-stimulus">';
+    };
 
-      // display stimulus as an image element
-      var html = '<img src="' + trial.stimulus + '" id="jspsych-image-keyboard-response-stimulus">';
+    html += '<p id="please-respond">Respond! "Z" for NO, "M" for YES.</p>'
 
-      html += '<div class="parts">'
+    // // positions shown side by side 
+    // part_class = trial.part_type == 'tall' ? 'part_stimulus_tall_aligned' : 'part_stimulus_wide_aligned';
 
-      // part_class = trial.part_type == 'tall' ? 'part_stimulus_tall' : 'part_stimulus_wide';
+    // html += '<img src="'+trial.part_a_stimulus+'" class="part_stimulus ' + trial.part_type + '" id="part_a_stimulus">';
+    // html += '<img src="'+trial.part_b_stimulus+'" class="part_stimulus ' + trial.part_type + '" id="part_b_stimulus">';
 
-      part_class = trial.part_type == 'tall' ? 'tall' : 'wide';
-
-      // positions contingent on tall/wide 
-      if (trial.part_type == 'tall') {
-        html += '<img src="' + trial.part_a_stimulus + '" class="part-stimulus ' + part_class + '" id="left-stimulus">';
-        html += '<img src="' + trial.part_b_stimulus + '" class="part-stimulus ' + part_class + '" id="right-stimulus">';
-      } else {
-        html += '<img src="' + trial.part_b_stimulus + '" class="part-stimulus ' + part_class + '" id="top-stimulus">';
-        html += '<img src="' + trial.part_a_stimulus + '" class="part-stimulus ' + part_class + '" id="bottom-stimulus">';
-      };
-
-      html += '<p id="please-respond">Respond! "Z" for NO, "M" for YES.</p>'
-
-      // // positions shown side by side 
-      // part_class = trial.part_type == 'tall' ? 'part_stimulus_tall_aligned' : 'part_stimulus_wide_aligned';
-
-      // html += '<img src="'+trial.part_a_stimulus+'" class="part_stimulus ' + trial.part_type + '" id="part_a_stimulus">';
-      // html += '<img src="'+trial.part_b_stimulus+'" class="part_stimulus ' + trial.part_type + '" id="part_b_stimulus">';
-
-      html += '</div>'
-      // add prompt
-      if (trial.prompt !== null) {
-        html += trial.prompt;
-      }
-      // update the page content
-      display_element.innerHTML = html;
-
-      // // set image dimensions after image has loaded (so that we have access to naturalHeight/naturalWidth)
-      // var img = display_element.querySelector('#jspsych-image-keyboard-response-stimulus');
-      // if (trial.stimulus_height !== null) {
-      //   height = trial.stimulus_height;
-      //   if (trial.stimulus_width == null && trial.maintain_aspect_ratio) {
-      //     width = img.naturalWidth * (trial.stimulus_height/img.naturalHeight);
-      //   }
-      // } else {
-      //   height = img.naturalHeight;
-      // }
-      // if (trial.stimulus_width !== null) {
-      //   width = trial.stimulus_width;
-      //   if (trial.stimulus_height == null && trial.maintain_aspect_ratio) {
-      //     height = img.naturalHeight * (trial.stimulus_width/img.naturalWidth);
-      //   }
-      // } else if (!(trial.stimulus_height !== null & trial.maintain_aspect_ratio)) {
-      //   // if stimulus width is null, only use the image's natural width if the width value wasn't set 
-      //   // in the if statement above, based on a specified height and maintain_aspect_ratio = true
-      //   width = img.naturalWidth;
-      // }
-      // img.style.height = height.toString() + "px";
-      // img.style.width = width.toString() + "px";
-
+    html += '</div>'
+    // add prompt
+    if (trial.prompt !== null) {
+      html += trial.prompt;
     }
+    // update the page content
+    display_element.innerHTML = html;
 
     // store response
     var response = {
@@ -306,6 +224,7 @@ jsPsych.plugins["tower-zipping"] = (function () {
         response: response.key,
         response_correct: trial.response_correct,
         stimURL: stimURL,
+        practice: trial.practice,
         // chunk_id: trial.composite_id,
         composite_id: trial.composite_id,
         rep: trial.rep,
@@ -314,6 +233,7 @@ jsPsych.plugins["tower-zipping"] = (function () {
         gap_duration: trial.gapDuration,
         chunk_duration: trial.chunkDuration,
         participant_condition: trial.participantCondition,
+        condition: trial.condition,
         compatible_trial: trial.compatibleCondition == trial.participantCondition,
         validity: trial.validity,
         composite_talls_name: trial.composite_talls_name,

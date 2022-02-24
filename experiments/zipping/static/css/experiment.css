@@ -350,3 +350,12 @@ body{
 #start.btn{
     margin-bottom: 10px;
 }
+
+#fixation-cross{
+    text-align: center;
+    font-size: 30px;
+    user-select: none;
+    position: absolute;
+    top:50%;
+    left:50%;
+}

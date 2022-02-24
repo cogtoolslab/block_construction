@@ -13,6 +13,7 @@ expConfig = {
       "shuffleBlocksInJS": true,
       "shuffleBlocksInJS": true
     },
+    "compensationInfo":"<p>Thank you for participating in our experiment. It should take a total of <strong>25 minutes</strong>, including the time it takes to read these instructions. You will receive $6.00 for completing this study (approx. $15/hr).</p><p>When you are finished, the study will be automatically submitted to be reviewed for approval. You can only perform this study one time. We take your compensation and time seriously! Please message us if you run into any problems while completing this study, or if it takes much more time than expected.</p></br><p>Note: we recommend using Chrome, and putting your browser in full screen. This study has not been tested in other browsers.</p>",
     // "stimDurations": [64, 64, 64], pulled in from metadata
     "chunkDuration": 1000,
     "chunkOnset": 1000, // changed to 1000 so that 500ms composite duration doesn't go immediately to chunks

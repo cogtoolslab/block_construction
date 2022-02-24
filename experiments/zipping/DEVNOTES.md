@@ -35,4 +35,5 @@ Use this to keep track of design decisions
 - pull in different batches for each timeDuration block
 - mask?
 - rename rep to miniblock
-- 
+- practice trials
+- compensation info
