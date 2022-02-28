@@ -32,8 +32,5 @@ Use this to keep track of design decisions
 
 ## todo before running final version 
 
-- pull in different batches for each timeDuration block
 - mask?
 - rename rep to miniblock
-- practice trials
-- compensation info

@@ -5,16 +5,9 @@
   - batchIndex: which batch of data to use when shuffling any stimuli.
  */
 
-// const { forEach } = require("lodash");
-
 function setupExperiment() {
     var urlParams = getURLParams();
     var socket = io.connect();
-
-    // var main_on_finish = function (data) {
-    //     socket.emit("currentData", data);
-    //     console.log("emitting data");
-    // };
 
     // var workerID = urlParams.PROLIFIC_PID;
     var workerID = urlParams.PROLIFIC_PID ? urlParams.PROLIFIC_PID : (urlParams.SONA_ID ? urlParams.SONA_ID : null)
@@ -36,9 +29,17 @@ function setupExperiment() {
 
 
         socket.on('stimulus', data => {
-            console.log('received', data);
+            // console.log('received', data);
             metadata = data;
             var trialList = [];
+
+            // randomize key assignments
+            metadata.response_key_list = _.shuffle(['m','z']);
+            metadata.response_key_dict = {
+                'valid': metadata.response_key_list[0],
+                'invalid':metadata.response_key_list[1]
+            }
+            // console.log(metadata.response_key_dict);
 
             if (expConfig.buildingReps > 0 ){
                 setupBuildingTrials(trialList, trialList => {
@@ -113,6 +114,9 @@ function setupExperiment() {
 
     }
 
+    mapKeys = function(zipInst) {
+        return zipInst.replace(/yes_key/i,metadata.response_key_dict['valid'].toUpperCase()).replace(/no_key/i,metadata.response_key_dict['invalid'].toUpperCase())
+    }
 
     setupZippingTrials = function (trialList, callback) {
         /**
@@ -122,20 +126,34 @@ function setupExperiment() {
          * 
          */
 
+        // update instructions with randomized keys
+
+
+        // let updatedZippingInstructions = expConfig.zippingInstructions.replace(/yes_key/i,metadata.response_key_dict['valid'])
+
+        // let updatedZippingInstructions2 = updatedZippingInstructions.replace(/no_key/i,metadata.response_key_dict['invalid'])
+
+        // console.log(updatedZippingInstructions2);
+
+        // console.log(expConfig.zippingInstructions.replace(/no_key/i,metadata.response_key_dict['invalid']))
+
+        // updatedZippingInstructions = updatedZippingInstructions.replace(/no_key/i, metadata.response_key_dict['invalid'])
+
+
         var zippingInstructions = {
             type: 'instructions',
             pages: [expConfig.zippingBlockIntro,
-                expConfig.zippingInstructions],
+                mapKeys(expConfig.zippingInstructions)],
             show_clickable_nav: true
         };
 
         // trialList.push(zippingInstructions);
 
-        if (expConfig.zippingPracticeTrials & !expConfig.devMode) {
+        if (expConfig.zippingPracticeTrials ){ //& !expConfig.devMode) {
             var zippingPracticeIntro = {
                 type: 'instructions',
-                pages: [
-                    'Get ready! Place one finger over \"Z\" (no!) and one over \"M\" (yes!) so you can respond quickly. Then press Next to continue.',
+                pages: [ mapKeys(
+                    'Now you will have a chance to practice the task. Place one finger over \"NO_KEY\" (no! ❌)  and one over \"YES_KEY\" (yes! ✅), then press Next to continue.'),
                 ],
                 show_clickable_nav: true
             };
@@ -151,7 +169,7 @@ function setupExperiment() {
             var zippingPracticeOutro = {
                 type: 'instructions',
                 pages: [
-                    'Great job! In the trials you\'ve just completed, you were shown the same large shape in every trial, but in the actual trials these can vary trial to trial, so make sure you pay attention to their shape. They will also be a lot faster!',
+                    'Great job! In the trials you\'ve just completed, you were shown the same large shape in every trial, but in the actual trials these can vary trial to trial, so make sure you pay attention to their shape. They will also be a lot faster! Press Next to move on to the actual experiment.',
                 ],
                 show_clickable_nav: true
             };
@@ -206,7 +224,11 @@ function setupExperiment() {
                     compatibleCondition: zipping_trial.compatible_condition,
                     compositeDuration: stimDuration,
                     gapDuration: expConfig.chunkOnset - stimDuration,
-                    chunkDuration: expConfig.chunkDuration
+                    chunkDuration: expConfig.chunkDuration,
+                    fixationDuration: expConfig.fixationDuration ? expConfig.fixationDuration : 1500, //used in place of ITI
+                    choices: metadata.response_key_list,
+                    valid_key: metadata.response_key_dict['valid'],
+                    invalid_key: metadata.response_key_dict['invalid'],
                 }
 
                 // if shuffling is needed at a sub-block level division, add trials to this division
@@ -254,7 +276,7 @@ function setupExperiment() {
             var blockIntro = {
                 type: 'instructions',
                 pages: [
-                    '<p>Block ' + (i + 1) + ' of ' + zippingBlocks.length + '.</p><p>Press <strong>"Z" if the small shapes cannot</strong> be combined to make the big one, press <strong>"M" if they can</strong>.</p><p>Press Next when you are ready to start.</p>'
+                    '<p>Block ' + (i + 1) + ' of ' + zippingBlocks.length + mapKeys('.</p><p>Press <strong>"NO_KEY" if the small shapes cannot</strong> be combined to make the big one, press <strong>"YES_KEY" if they can</strong>.</p><p>Press Next when you are ready to start.</p>')
                 ],
                 show_clickable_nav: true
             };
@@ -283,7 +305,6 @@ function setupExperiment() {
     };
 
     setupZippingPracticeTrials = function () {
-        console.log(expConfig.zippingPracticeTrials)
         zippingPracticeTrials = _.map(expConfig.zippingPracticeTrials, (practiceTrial) => {
             let trialObj = {
                 type: 'tower-zipping',
@@ -310,7 +331,11 @@ function setupExperiment() {
                 compatibleCondition:  'practice',
                 compositeDuration: practiceTrial.stimDuration,
                 gapDuration: practiceTrial.chunkOnset - practiceTrial.stimDuration,
-                chunkDuration: practiceTrial.chunkDuration
+                chunkDuration: practiceTrial.chunkDuration,
+                fixationDuration: expConfig.fixationDuration ? expConfig.fixationDuration : 1500,
+                choices: metadata.response_key_list,
+                valid_key: metadata.response_key_dict['valid'],
+                invalid_key: metadata.response_key_dict['invalid'],
             };
             return(trialObj)}
             );
@@ -340,7 +365,7 @@ function setupExperiment() {
             }
 
             if (expConfig.buildingInstructions) {instructionPages.push(expConfig.buildingInstructions)}
-            if (expConfig.zippingInstructions) {instructionPages.push(expConfig.zippingInstructions)}
+            if (expConfig.zippingInstructions) {instructionPages.push(mapKeys(expConfig.zippingInstructions))}
 
             // instructionPages.push('That\'s all you need to know! Press Next to start Part 1.')
 
@@ -381,7 +406,7 @@ function setupExperiment() {
         jsPsych.init({
             timeline: trialList,
             show_progress_bar: true,
-            default_iti: 1500, //up from 600 in zipping_calibration_sona_pilot
+            default_iti: 100, //up from 600 in zipping_calibration_sona_pilot
             on_trial_finish: function (trialData) {
                 console.log('Trial data:', trialData);
                 // Merge data from a single trial with
@@ -395,7 +420,8 @@ function setupExperiment() {
                     iterationName: expConfig.iterationName ? expConfig.iterationName : 'none_provided_in_config',
                     configId: expConfig.configId,
                     workerID: workerID,
-                    gameID: gameID
+                    gameID: gameID,
+                    response_key_dict: metadata.response_key_dict
                 });
 
                 // console.log(trialData);

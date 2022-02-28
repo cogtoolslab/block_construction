@@ -64,7 +64,6 @@ jsPsych.plugins["tower-zipping"] = (function () {
       stimulus: { // link to image
         type: jsPsych.plugins.parameterType.IMAGE,
         pretty_name: 'Stimulus',
-        default: 'https://tower-4-block-unique-silhouettes-composite-silhouette-png.s3.amazonaws.com/tower_4_block_unique_silhouette_composites_silhouette_talls_122_127.png',
         description: 'The image to be displayed'
       },
       stimulus_height: {
@@ -91,6 +90,20 @@ jsPsych.plugins["tower-zipping"] = (function () {
         pretty_name: 'Choices',
         default: ['z', 'm'],
         description: 'The keys the subject is allowed to press to respond to the stimulus.'
+      },
+      valid_key: {
+        type: jsPsych.plugins.parameterType.KEY,
+        array: true,
+        pretty_name: 'Valid Key',
+        default: 'm',
+        description: 'The key the subject should press if this is a yes trial.'
+      },
+      invalid_key: {
+        type: jsPsych.plugins.parameterType.KEY,
+        array: true,
+        pretty_name: 'Invalid key',
+        default: 'z',
+        description: 'The key the subject should press if this is a no trial.'
       },
       prompt: {
         type: jsPsych.plugins.parameterType.STRING,
@@ -122,12 +135,6 @@ jsPsych.plugins["tower-zipping"] = (function () {
         default: null,
         description: 'How long to hide the stimulus.'
       },
-      // max_response_duration: { // added by me
-      //   type: jsPsych.plugins.parameterType.INT,
-      //   pretty_name: 'Max response duration',
-      //   default: null,
-      //   description: 'How long to respond.'
-      // },
       trial_duration: {
         type: jsPsych.plugins.parameterType.INT,
         pretty_name: 'Trial duration',
@@ -158,6 +165,12 @@ jsPsych.plugins["tower-zipping"] = (function () {
         pretty_name: 'Is this a practice trial?',
         default: false,
       },
+      fixationDuration: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Length of time black cross displays for',
+        default: null,
+        description: 'How long to show fixation cross.'
+      },
     }
   }
 
@@ -166,10 +179,24 @@ jsPsych.plugins["tower-zipping"] = (function () {
     var height, width;
 
     // display stimulus as an image element
-    var html = '<img src="' + trial.stimulus + '" id="jspsych-image-keyboard-response-stimulus">';
-    html += '<p id="fixation-cross">+<p>';
 
-    html += '<div class="parts">'
+    var html = '<div class="stims">';
+
+    //feedback
+    html += '<div id="feedback-div">'
+    html += '<p class="feedback-text" id="feedback-correct" style="display: none">CORRECT</p>';
+    html += '<p class="feedback-text" id="feedback-incorrect" style="display: none">INCORRECT</p>';
+    html += '</div>'
+
+    html += '<img src="' + trial.stimulus + '" id="jspsych-image-keyboard-response-stimulus" style="display: none">';
+    html += '<img class="fixation" id="fixation-cross-black" src="../img/fixation_black.png" id="jspsych-image-keyboard-response-stimulus" style="display: none">';
+    html += '<img class="fixation" id="fixation-cross-blue" src="../img/fixation_blue.png" id="jspsych-image-keyboard-response-stimulus" style="display: none">';
+    html += '<img class="fixation" id="fixation-cross-red" src="../img/fixation_red.png" id="jspsych-image-keyboard-response-stimulus" style="display: none">';
+    html += '<img class="fixation" id="fixation-cross-green" src="../img/fixation_green.png" id="jspsych-image-keyboard-response-stimulus" style="display: none">';
+
+    // html += '<p id="fixation-cross">+<p>';
+
+    html += '<div id="parts">'
 
     // part_class = trial.part_type == 'tall' ? 'part_stimulus_tall' : 'part_stimulus_wide';
 
@@ -177,22 +204,27 @@ jsPsych.plugins["tower-zipping"] = (function () {
 
     // positions contingent on tall/wide 
     if (trial.part_type == 'tall') {
-      html += '<img src="' + trial.part_a_stimulus + '" class="part-stimulus ' + part_class + '" id="left-stimulus">';
-      html += '<img src="' + trial.part_b_stimulus + '" class="part-stimulus ' + part_class + '" id="right-stimulus">';
+      html += '<img src="' + trial.part_a_stimulus + '" class="part-stimulus ' + part_class + '" id="left-stimulus" style="display: none">';
+      html += '<img src="' + trial.part_b_stimulus + '" class="part-stimulus ' + part_class + '" id="right-stimulus" style="display: none">';
     } else {
-      html += '<img src="' + trial.part_b_stimulus + '" class="part-stimulus ' + part_class + '" id="top-stimulus">';
-      html += '<img src="' + trial.part_a_stimulus + '" class="part-stimulus ' + part_class + '" id="bottom-stimulus">';
+      html += '<img src="' + trial.part_b_stimulus + '" class="part-stimulus ' + part_class + '" id="top-stimulus" style="display: none" >';
+      html += '<img src="' + trial.part_a_stimulus + '" class="part-stimulus ' + part_class + '" id="bottom-stimulus" style="display: none">';
     };
 
-    html += '<p id="please-respond">Respond! "Z" for NO, "M" for YES.</p>'
-
-    // // positions shown side by side 
-    // part_class = trial.part_type == 'tall' ? 'part_stimulus_tall_aligned' : 'part_stimulus_wide_aligned';
-
-    // html += '<img src="'+trial.part_a_stimulus+'" class="part_stimulus ' + trial.part_type + '" id="part_a_stimulus">';
-    // html += '<img src="'+trial.part_b_stimulus+'" class="part_stimulus ' + trial.part_type + '" id="part_b_stimulus">';
+    // html += '<p id="please-respond">Respond! "Z" for NO, "M" for YES.</p>'
 
     html += '</div>'
+    html += '</div>'
+
+    html += '<div id="key-reminders">'
+    
+
+    html += '<img src="../img/z_grey.png" class="key-reminder" id="z-reminder">'
+    html += '<img src="../img/m_grey.png" class="key-reminder" id="m-reminder">'
+    html += '<p class="response_emoji" id="valid-emoji">✅</p>' //✔
+    html += '<p class="response_emoji" id="invalid-emoji">❌</p>' //✖
+    html += '</div>'
+
     // add prompt
     if (trial.prompt !== null) {
       html += trial.prompt;
@@ -260,40 +292,46 @@ jsPsych.plugins["tower-zipping"] = (function () {
     var after_response = function (info) {
 
       $('.part-stimulus').hide();
-      $('#please-respond').hide();
-      $('#please-respond').css('color', 'white');
+      // $('#please-respond').hide();
+      // $('#please-respond').css('color', 'white');
+      $('#fixation-cross-blue').hide();
 
       // only record the first response
       if (response.key == null) {
         response = info;
       }
 
-      response_correct = (response.key == 'm' & trial.validity == 'valid') | (response.key == 'z' & trial.validity == 'invalid');
+      response_correct = (response.key == trial.valid_key & trial.validity == 'valid') | (response.key == trial.invalid_key & trial.validity == 'invalid');
       response_class = response_correct ? 'responded_correct' : 'responded_incorrect'
 
-      // after a valid response, the stimulus will have the CSS class 'responded'
-      // which can be used to provide visual feedback that a response was recorded
-      display_element.querySelector('#jspsych-image-keyboard-response-stimulus').className += (' ' + response_class);
+      // // after a valid response, the stimulus will have the CSS class 'responded'
+      // // which can be used to provide visual feedback that a response was recorded
+      // display_element.querySelector('#jspsych-image-keyboard-response-stimulus').className += (' ' + response_class);
+      if (response_correct) {
+        $('#fixation-cross-green').show();
+        $('#feedback-correct').show();
+      } else {
+        $('#fixation-cross-red').show();
+        $('#feedback-incorrect').show();
+      }
 
-      $('#jspsych-image-keyboard-response-stimulus').show();
+      // $('#jspsych-image-keyboard-response-stimulus').show();
 
       trial.response_correct = response_correct;
 
       if (trial.response_ends_trial) {
-        setTimeout(end_trial, 300);
+        setTimeout(function () {
+          $('.fixation').hide();
+          $('.feedback-text').hide();
+          setTimeout(end_trial, 500);
+        }, 1000)
       }
     };
 
-    // // start the response listener
-    // if (trial.choices != jsPsych.NO_KEYS) {
-    //   var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
-    //     callback_function: after_response,
-    //     valid_responses: trial.choices,
-    //     rt_method: 'performance',
-    //     persist: false,
-    //     allow_held_key: false
-    //   });
-    // }
+    valid_side = trial.valid_key == 'z' ? "left" : "right";
+    invalid_side = trial.invalid_key == 'z' ? "left" : "right";
+    $('#valid-emoji').css("float", valid_side);
+    $('#invalid-emoji').css("float", invalid_side);
 
     // hide stimulus if stimulus_duration is set
     if (trial.stimulus_duration !== null) {
@@ -302,42 +340,52 @@ jsPsych.plugins["tower-zipping"] = (function () {
       }, trial.stimulus_duration);
     }
 
-    if (trial.compositeDuration !== null) {
-      $('#jspsych-image-keyboard-response-stimulus').show();
-      $('.part-stimulus').hide();
-      $('#please-respond').hide();
+    $('#fixation-cross-black').show();
 
-      jsPsych.pluginAPI.setTimeout(function () {
+    jsPsych.pluginAPI.setTimeout(function () {
 
-        $('#jspsych-image-keyboard-response-stimulus').hide();
-
+      if (trial.compositeDuration !== null) {
+        $('#jspsych-image-keyboard-response-stimulus').show();
+        $('.part-stimulus').hide();
+        $('#please-respond').hide();
+        $('#fixation-cross-black').hide();
+      
         jsPsych.pluginAPI.setTimeout(function () {
 
-          $('.part-stimulus').show();
-
-          // start the response listener
-          if (trial.choices != jsPsych.NO_KEYS) {
-            var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
-              callback_function: after_response,
-              valid_responses: trial.choices,
-              rt_method: 'performance',
-              persist: false,
-              allow_held_key: false
-            });
-          };
-
-          // Add mask in here if needed
+          $('#jspsych-image-keyboard-response-stimulus').hide();
+          $('#fixation-cross-black').show();
 
           jsPsych.pluginAPI.setTimeout(function () {
-            $('.part-stimulus').hide();
-            $('#please-respond').show();
 
-          }, trial.chunkDuration);
+            $('.part-stimulus').show();
+            $('#fixation-cross-black').hide();
+            $('#fixation-cross-blue').show();
+            
 
-        }, trial.gapDuration);
+            // start the response listener
+            if (trial.choices != jsPsych.NO_KEYS) {
+              var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
+                callback_function: after_response,
+                valid_responses: trial.choices,
+                rt_method: 'performance',
+                persist: false,
+                allow_held_key: false
+              });
+            };
 
-      }, trial.compositeDuration);
-    };
+            // Add mask in here if needed
+
+            jsPsych.pluginAPI.setTimeout(function () {
+              $('.part-stimulus').hide();
+              // $('#please-respond').show();
+
+            }, trial.chunkDuration);
+
+          }, trial.gapDuration);
+
+        }, trial.compositeDuration);
+      }
+    }, trial.fixationDuration); 
 
     // end trial if trial_duration is set
     if (trial.trial_duration !== null) {

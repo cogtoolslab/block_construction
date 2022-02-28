@@ -48,7 +48,7 @@ The problem with this version is that in some trials (3 ambiguous and 4 novel), 
 - increased ITI to 1500ms
 - add fixation cross
 - add graphics as key reminders
-- 
+- multiple stim durations
 
 
 #### WAITING ON CALIBRATION full_2
