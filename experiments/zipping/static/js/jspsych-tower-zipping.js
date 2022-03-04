@@ -194,10 +194,13 @@ jsPsych.plugins["tower-zipping"] = (function () {
 
     html += '<img src="' + trial.stimulus + '" id="composite-stimulus" style="display: none">';
     html += '<img src="' + trial.mask + '" id="mask" style="display: none">';
+
+    // html += '<div id="fixation-div">'
     html += '<img class="fixation" id="fixation-cross-black" src="../img/fixation_black.png" style="display: none">';
     html += '<img class="fixation" id="fixation-cross-blue" src="../img/fixation_blue.png"  style="display: none">';
     html += '<img class="fixation" id="fixation-cross-red" src="../img/fixation_red.png" style="display: none">';
     html += '<img class="fixation" id="fixation-cross-green" src="../img/fixation_green.png" style="display: none">';
+    // html += '</div>'
 
     // html += '<p id="fixation-cross">+<p>';
 
@@ -209,10 +212,8 @@ jsPsych.plugins["tower-zipping"] = (function () {
 
     // positions contingent on tall/wide 
     if (trial.part_type == 'tall') {
-      html += '<img src="' + trial.part_b_stimulus + '" class="part-stimulus ' + part_class + '" id="right-stimulus" style="display: none">';
       html += '<img src="' + trial.part_a_stimulus + '" class="part-stimulus ' + part_class + '" id="left-stimulus" style="display: none">';
-
-
+      html += '<img src="' + trial.part_b_stimulus + '" class="part-stimulus ' + part_class + '" id="right-stimulus" style="display: none">';
     } else {
       html += '<img src="' + trial.part_b_stimulus + '" class="part-stimulus ' + part_class + '" id="top-stimulus" style="display: none" >';
       html += '<img src="' + trial.part_a_stimulus + '" class="part-stimulus ' + part_class + '" id="bottom-stimulus" style="display: none">';
@@ -361,7 +362,7 @@ jsPsych.plugins["tower-zipping"] = (function () {
 
           $('#composite-stimulus').hide();
           // $('#fixation-cross-black').show();
-          // $('#mask').show();
+          $('#mask').show();
 
           jsPsych.pluginAPI.setTimeout(function () {
 
@@ -369,7 +370,6 @@ jsPsych.plugins["tower-zipping"] = (function () {
             // $('#fixation-cross-black').hide();
             $('#mask').hide();
             $('#fixation-cross-blue').show();
-            awegvawev
 
             // start the response listener
             if (trial.choices != jsPsych.NO_KEYS) {

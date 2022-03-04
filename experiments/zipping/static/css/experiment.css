@@ -241,25 +241,34 @@ body{
     color: maroon;
 }
 
+#parts{
+    position: relative;
+    top: 50%;
+    /* margin-left: auto;  removed to center align wides*/
+    margin-right: auto;
+    text-align: center;
+    left: 0;
+    right: 0;
+}
+
 .part-stimulus{
     width: 100px;
     /* object-fit: none; */
 }
 
-
 #right-stimulus{
-    object-position: 50px 0px;
     position: absolute;
     bottom: 0;
     left: 0;
-    transform: translate(100px,0)
+    transform: translate(150px,0)
 }
 
 #left-stimulus{
     position: absolute;
     bottom: 0;
     left: 0;
-    transform: translate(-100px,0)
+    transform: translate(-150px,0);
+    object-position: 50px 0px;
     /* transform: translate(-50%,0%); */
 }
 
@@ -317,19 +326,25 @@ body{
 }
 
 img.fixation{
-    width: 100px !important;
+    width: 100px; /* MUST BE THE SAME AS WIDTH OF composite_stimulus. Change image, not css */
+    /* width: 150px !important;
+    display: block;
+    position: absolute;
+    bottom: 0;
+    transform: translate(-25%, 25%); */
     /* height: 216px !important; */
 }
 
-#parts{
-    position: relative;
+/* #fixation-div{
+    width: 0;
+    margin: auto;
     top: 50%;
-    /* margin-left: auto;  removed to center align wides*/
     margin-right: auto;
     text-align: center;
     left: 0;
-    right: 0;
-}
+    right: 0; 
+}  */
+
 
 #key-reminders{
     position: absolute !important;
@@ -389,13 +404,10 @@ img.fixation{
 }
 
 .feedback-text{
-    position: absolute;
     text-align: center;
-    width: 100%;
-    left: 0px;
-    /* top: 40%; */
-    /* left: 50%; */
-    font-size: 20pt;
+    width: 200px;
+    margin: auto;
+    font-size: 20pt;    
 }
 
 #feedback-correct{
@@ -406,6 +418,6 @@ img.fixation{
     color: #c22714;
 }
 
-/* #mask{
-
-} */
+#mask{
+    width: 400px;
+}
