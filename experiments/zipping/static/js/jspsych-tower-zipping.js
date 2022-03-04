@@ -44,23 +44,21 @@ jsPsych.plugins["tower-zipping"] = (function () {
       part_a_stimulus: { // link to image
         type: jsPsych.plugins.parameterType.IMAGE,
         pretty_name: 'Part A stimulus',
-        default: 'https://lax-tower-4-block-unique-silhouettes-png.s3.amazonaws.com/tower_4_block_unique_silhouettes_025.png',
         description: 'Bottom or left part'
       },
       part_b_stimulus: { // link to image
         type: jsPsych.plugins.parameterType.IMAGE,
         pretty_name: 'Part B stimulus',
-        default: 'https://lax-tower-4-block-unique-silhouettes-png.s3.amazonaws.com/tower_4_block_unique_silhouettes_023.png',
         description: 'Top or right part'
       },
       part_type: {
         type: jsPsych.plugins.parameterType.STRING,
         default: "wide",
       },
-      stim_URL_stem: {
-        type: jsPsych.plugins.parameterType.STRING,
-        default: 'https://tower-4-block-unique-silhouettes-composite-silhouette-png.s3.amazonaws.com/',
-      },
+      // stim_URL_stem: {
+      //   type: jsPsych.plugins.parameterType.STRING,
+      //   default: 'https://tower-4-block-unique-silhouettes-composite-silhouette-png.s3.amazonaws.com/',
+      // },
       stimulus: { // link to image
         type: jsPsych.plugins.parameterType.IMAGE,
         pretty_name: 'Stimulus',
@@ -77,6 +75,12 @@ jsPsych.plugins["tower-zipping"] = (function () {
         pretty_name: 'Image width',
         default: null,
         description: 'Set the image width in pixels'
+      },
+      mask: { // link to image
+        type: jsPsych.plugins.parameterType.IMAGE,
+        pretty_name: 'Mask image',
+        default: '../img/mask_placeholder.png',
+        description: 'The image to be between composite and parts'
       },
       maintain_aspect_ratio: {
         type: jsPsych.plugins.parameterType.BOOL,
@@ -188,11 +192,12 @@ jsPsych.plugins["tower-zipping"] = (function () {
     html += '<p class="feedback-text" id="feedback-incorrect" style="display: none">INCORRECT</p>';
     html += '</div>'
 
-    html += '<img src="' + trial.stimulus + '" id="jspsych-image-keyboard-response-stimulus" style="display: none">';
-    html += '<img class="fixation" id="fixation-cross-black" src="../img/fixation_black.png" id="jspsych-image-keyboard-response-stimulus" style="display: none">';
-    html += '<img class="fixation" id="fixation-cross-blue" src="../img/fixation_blue.png" id="jspsych-image-keyboard-response-stimulus" style="display: none">';
-    html += '<img class="fixation" id="fixation-cross-red" src="../img/fixation_red.png" id="jspsych-image-keyboard-response-stimulus" style="display: none">';
-    html += '<img class="fixation" id="fixation-cross-green" src="../img/fixation_green.png" id="jspsych-image-keyboard-response-stimulus" style="display: none">';
+    html += '<img src="' + trial.stimulus + '" id="composite-stimulus" style="display: none">';
+    html += '<img src="' + trial.mask + '" id="mask" style="display: none">';
+    html += '<img class="fixation" id="fixation-cross-black" src="../img/fixation_black.png" style="display: none">';
+    html += '<img class="fixation" id="fixation-cross-blue" src="../img/fixation_blue.png"  style="display: none">';
+    html += '<img class="fixation" id="fixation-cross-red" src="../img/fixation_red.png" style="display: none">';
+    html += '<img class="fixation" id="fixation-cross-green" src="../img/fixation_green.png" style="display: none">';
 
     // html += '<p id="fixation-cross">+<p>';
 
@@ -204,8 +209,10 @@ jsPsych.plugins["tower-zipping"] = (function () {
 
     // positions contingent on tall/wide 
     if (trial.part_type == 'tall') {
-      html += '<img src="' + trial.part_a_stimulus + '" class="part-stimulus ' + part_class + '" id="left-stimulus" style="display: none">';
       html += '<img src="' + trial.part_b_stimulus + '" class="part-stimulus ' + part_class + '" id="right-stimulus" style="display: none">';
+      html += '<img src="' + trial.part_a_stimulus + '" class="part-stimulus ' + part_class + '" id="left-stimulus" style="display: none">';
+
+
     } else {
       html += '<img src="' + trial.part_b_stimulus + '" class="part-stimulus ' + part_class + '" id="top-stimulus" style="display: none" >';
       html += '<img src="' + trial.part_a_stimulus + '" class="part-stimulus ' + part_class + '" id="bottom-stimulus" style="display: none">';
@@ -306,7 +313,7 @@ jsPsych.plugins["tower-zipping"] = (function () {
 
       // // after a valid response, the stimulus will have the CSS class 'responded'
       // // which can be used to provide visual feedback that a response was recorded
-      // display_element.querySelector('#jspsych-image-keyboard-response-stimulus').className += (' ' + response_class);
+      // display_element.querySelector('#composite-stimulus').className += (' ' + response_class);
       if (response_correct) {
         $('#fixation-cross-green').show();
         $('#feedback-correct').show();
@@ -315,7 +322,7 @@ jsPsych.plugins["tower-zipping"] = (function () {
         $('#feedback-incorrect').show();
       }
 
-      // $('#jspsych-image-keyboard-response-stimulus').show();
+      // $('#composite-stimulus').show();
 
       trial.response_correct = response_correct;
 
@@ -336,7 +343,7 @@ jsPsych.plugins["tower-zipping"] = (function () {
     // hide stimulus if stimulus_duration is set
     if (trial.stimulus_duration !== null) {
       jsPsych.pluginAPI.setTimeout(function () {
-        display_element.querySelector('#jspsych-image-keyboard-response-stimulus').hide();
+        display_element.querySelector('#composite-stimulus').hide();
       }, trial.stimulus_duration);
     }
 
@@ -345,22 +352,24 @@ jsPsych.plugins["tower-zipping"] = (function () {
     jsPsych.pluginAPI.setTimeout(function () {
 
       if (trial.compositeDuration !== null) {
-        $('#jspsych-image-keyboard-response-stimulus').show();
+        $('#composite-stimulus').show();
         $('.part-stimulus').hide();
         $('#please-respond').hide();
         $('#fixation-cross-black').hide();
       
         jsPsych.pluginAPI.setTimeout(function () {
 
-          $('#jspsych-image-keyboard-response-stimulus').hide();
-          $('#fixation-cross-black').show();
+          $('#composite-stimulus').hide();
+          // $('#fixation-cross-black').show();
+          // $('#mask').show();
 
           jsPsych.pluginAPI.setTimeout(function () {
 
             $('.part-stimulus').show();
-            $('#fixation-cross-black').hide();
+            // $('#fixation-cross-black').hide();
+            $('#mask').hide();
             $('#fixation-cross-blue').show();
-            
+            awegvawev
 
             // start the response listener
             if (trial.choices != jsPsych.NO_KEYS) {

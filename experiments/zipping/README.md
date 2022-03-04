@@ -49,6 +49,9 @@ The problem with this version is that in some trials (3 ambiguous and 4 novel), 
 - add fixation cross
 - add graphics as key reminders
 - multiple stim durations
+- ran ~10 ppts but under this name*zipping_calibration_sona_dev*
+- then increased size of fixation cross and added text feedback
+
 
 
 #### WAITING ON CALIBRATION full_2

@@ -241,66 +241,68 @@ body{
     color: maroon;
 }
 
-.part-stimulus.tall{
-    width: 58px;
-    height: 166px;
-    object-fit: none;
-    object-position: 21%;
-    border: 0px solid crimson;
-    transform: translate(0%, -33%);
+.part-stimulus{
+    width: 100px;
+    /* object-fit: none; */
 }
 
-.part-stimulus.wide{
-    width: 114px;
-    height: 85px;
-    object-fit: none;
-    object-position: 55% 80%;
-    border: 0px solid crimson;
-    position: absolute;
-    margin-left: auto;
-    margin-right: auto;
-    top: 50%;
-    transform: translate(-50%, 100%);
-}
 
 #right-stimulus{
-    margin-left: 80px;
+    object-position: 50px 0px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transform: translate(100px,0)
 }
 
 #left-stimulus{
-    margin-right: 80px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transform: translate(-100px,0)
+    /* transform: translate(-50%,0%); */
 }
 
 #top-stimulus{
-    margin-bottom: 160px; 
+        /* margin-bottom: 0; */
+    /* object-position: 0px -75px; */
+    display: block;
+    position: absolute; 
+    bottom: 0px;
+    /* left: 0;  */
+    /* right: 0;  */
+    margin-left: auto; 
+    margin-right: auto; 
+    object-position: 0px -75px;
+    transform: translate(0px, -75px);
+    /* transform: translate(0%, -50%); */
+    /* transform: translate(0%, 50%); */
     /* margin-right: auto; */
     /* 2x margin */
-    transform: translate(-50%, -160%);
 }
 
-#bottom-stimulus{
-    margin-bottom: 0; 
-    transform: translate(-50%, 120%);
+
+#bottom-stimulus{   
+     /* margin-bottom: 160px;  */
     /* margin-right: auto; */
     /* 2x margin */
+    display: block;
+    position: absolute; 
+    bottom: 0px;
+    /* left: 0;  */
+    /* right: 0; */
+    margin-left: auto; 
+    margin-right: auto; 
+    transform: translate(0px, 75px);
+    /* transform: translate(0%, -100%); */
 }
 
 
 
-#jspsych-image-keyboard-response-stimulus{
-    border: 12px solid;
-    border-color: #FFFFFF;
+#composite-stimulus{
+    width: 100px;
 }
 
-#jspsych-image-keyboard-response-stimulus.responded_correct{
-    border: 12px solid;
-    border-color: #00b300;
-}
-
-#jspsych-image-keyboard-response-stimulus.responded_incorrect{
-    border: 12px solid;
-    border-color: #a12714;
-}
 
 .jspsych-content {
     max-width: 900px;
@@ -315,19 +317,18 @@ body{
 }
 
 img.fixation{
-    width: 144px !important;
-    height: 216px !important;
+    width: 100px !important;
+    /* height: 216px !important; */
 }
 
 #parts{
-    position: absolute !important;
+    position: relative;
     top: 50%;
-    /* left: 50%; */
-    margin-left: auto;
+    /* margin-left: auto;  removed to center align wides*/
     margin-right: auto;
+    text-align: center;
     left: 0;
     right: 0;
-    text-align: center;
 }
 
 #key-reminders{
@@ -404,3 +405,7 @@ img.fixation{
 #feedback-incorrect{
     color: #c22714;
 }
+
+/* #mask{
+
+} */
