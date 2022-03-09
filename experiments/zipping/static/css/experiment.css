@@ -222,15 +222,6 @@ body{
     padding: 20px;
 }
 
-/* #stimulus-window {
-    background-color: aquamarine;
-
-} */
-
-/* #environment-window {
-    background-color: bisque;
-} */
-
 
 #experiment .col-md{
     padding: 40px;
@@ -250,88 +241,197 @@ body{
     color: maroon;
 }
 
-
-/* 
-.part_stimulus_wide_aligned {
-    display: table;
-    width: 100%;
-    height: 100px;
-    object-position: 100% 85%;
-    object-fit: cover;
+#parts{
+    position: relative;
+    top: 50%;
+    /* margin-left: auto;  removed to center align wides*/
+    margin-right: auto;
+    text-align: center;
+    left: 0;
+    right: 0;
 }
 
-.part_stimulus_tall_aligned {
-    width: 110px;
-    height: 180px;
-    object-fit: none;
-    object-position: 10px;
-}
-
-#part_a_stimulus {
-    padding-right: 30px;
-}
-
-#part_b_stimulus {
-    padding-left: 30px;
-}
-
-.part_stimulus.tall {
-    width: 130px;
-    height: 216px;
-    object-fit: none;
-    object-position: 4px;
-}
-
-#part_a_stimulus.part_stimulus.tall{
-    margin-right: 20px;
-} 
-
-#part_b_stimulus.part_stimulus.tall{
-    margin-left: 20px;
-}
-*/
-
-.part-stimulus.tall{
-    width: 58px;
-    height: 166px;
-    object-fit: none;
-    object-position: 21%;
-    border: 0px solid crimson;
-}
-
-.part-stimulus.wide{
-    width: 114px;
-    height: 85px;
-    object-fit: none;
-    object-position: 55% 80%;
-    border: 0px solid crimson;
-    display: block;
+.part-stimulus{
+    width: 100px;
+    /* object-fit: none; */
 }
 
 #right-stimulus{
-    margin-left: 80px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transform: translate(150px,0)
 }
 
 #left-stimulus{
-    margin-right: 80px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transform: translate(-150px,0);
+    object-position: 50px 0px;
+    /* transform: translate(-50%,0%); */
 }
 
 #top-stimulus{
-    margin-bottom: 160px; 
-    margin-right: auto;
+        /* margin-bottom: 0; */
+    /* object-position: 0px -75px; */
+    display: block;
+    position: absolute; 
+    bottom: 0px;
+    /* left: 0;  */
+    /* right: 0;  */
+    margin-left: auto; 
+    margin-right: auto; 
+    object-position: 0px -75px;
+    transform: translate(0px, -75px);
+    /* transform: translate(0%, -50%); */
+    /* transform: translate(0%, 50%); */
+    /* margin-right: auto; */
     /* 2x margin */
 }
 
 
-#jspsych-image-keyboard-response-stimulus{
-    border: 12px solid;
-    border-color: #FFFFFF;
+#bottom-stimulus{   
+     /* margin-bottom: 160px;  */
+    /* margin-right: auto; */
+    /* 2x margin */
+    display: block;
+    position: absolute; 
+    bottom: 0px;
+    /* left: 0;  */
+    /* right: 0; */
+    margin-left: auto; 
+    margin-right: auto; 
+    transform: translate(0px, 75px);
+    /* transform: translate(0%, -100%); */
 }
 
-#jspsych-image-keyboard-response-stimulus.responded_correct{
-    border-color: #00b300;
+
+
+#composite-stimulus{
+    width: 100px;
 }
 
-#jspsych-image-keyboard-response-stimulus.responded_incorrect{
-    border-color: #a12714;
+
+.jspsych-content {
+    max-width: 900px;
+}
+
+.consent {
+    text-align: left;
+}
+
+#start.btn{
+    margin-bottom: 10px;
+}
+
+img.fixation{
+    width: 100px; /* MUST BE THE SAME AS WIDTH OF composite_stimulus. Change image, not css */
+    /* width: 150px !important;
+    display: block;
+    position: absolute;
+    bottom: 0;
+    transform: translate(-25%, 25%); */
+    /* height: 216px !important; */
+}
+
+/* #fixation-div{
+    width: 0;
+    margin: auto;
+    top: 50%;
+    margin-right: auto;
+    text-align: center;
+    left: 0;
+    right: 0; 
+}  */
+
+
+#key-reminders{
+    position: absolute !important;
+    top: 90%;
+    /* left: 100%; */
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+
+.key-reminder{
+    width: 70px;
+    display: inline-block;
+} 
+
+#z-reminder{
+    float: left;
+}
+
+#m-reminder{
+    float: right;
+}
+
+.green-text{
+    color: #00b300;
+}
+
+.red-text{
+    color: #c22714;
+}
+
+.blue-text{
+    color: #3FA9F5;
+}
+ 
+.response_emoji{
+    font-size: 20pt;
+    margin-bottom: 0;
+} 
+
+ 
+.left-emoji{
+    float: left;
+    transform: translate(-20px, 45px);
+} 
+
+.right-emoji{
+    float: right;
+    transform: translate(20px, 45px);
+} 
+
+
+/* 
+#valid-emoji{
+    color: #00b300;
+}
+
+#invalid-emoji{
+    color: #a12714;
+}  */
+
+#feedback-div {
+    position: relative;
+    margin: auto;
+    /* width: 0;  */
+    height: 0;
+    text-align: center;
+}
+
+.feedback-text{
+    text-align: center;
+    width: 200px;
+    margin: auto;
+    font-size: 20pt;    
+}
+
+#feedback-correct{
+    /* color: #00b300; */
+}
+
+#feedback-incorrect{
+    /* color: #c22714; */
+}
+
+#mask{
+    width: 400px;
 }

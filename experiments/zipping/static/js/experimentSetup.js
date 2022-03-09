@@ -5,18 +5,13 @@
   - batchIndex: which batch of data to use when shuffling any stimuli.
  */
 
-// const { forEach } = require("lodash");
-
 function setupExperiment() {
     var urlParams = getURLParams();
     var socket = io.connect();
 
-    // var main_on_finish = function (data) {
-    //     socket.emit("currentData", data);
-    //     console.log("emitting data");
-    // };
-
-    var workerID = urlParams.PROLIFIC_PID;
+    // var workerID = urlParams.PROLIFIC_PID;
+    var workerID = urlParams.PROLIFIC_PID ? urlParams.PROLIFIC_PID : (urlParams.SONA_ID ? urlParams.SONA_ID : null)
+    var studyLocation = urlParams.PROLIFIC_PID ? 'Prolific' : (urlParams.SONA_ID ? 'SONA' : null)
     const gameID = UUID();
 
     var metadata;
@@ -34,14 +29,30 @@ function setupExperiment() {
 
 
         socket.on('stimulus', data => {
-            console.log('received', data);
+            // console.log('received', data);
             metadata = data;
             var trialList = [];
-            setupBuildingTrials(trialList, trialList => {
+
+            // randomize key assignments
+            metadata.response_key_list = _.shuffle(['m','z']);
+            metadata.response_key_dict = {
+                'valid': metadata.response_key_list[0],
+                'invalid':metadata.response_key_list[1]
+            }
+            // console.log(metadata.response_key_dict);
+
+            if (expConfig.buildingReps > 0 ){
+                setupBuildingTrials(trialList, trialList => {
+                    setupZippingTrials(trialList, trialList => {
+                        setupOtherTrials(trialList);
+                    });
+                });
+            } else {
                 setupZippingTrials(trialList, trialList => {
                     setupOtherTrials(trialList);
                 });
-            });
+            };
+            
         });
     };
 
@@ -57,6 +68,7 @@ function setupExperiment() {
          * - shuffle each rep
          */
 
+
         stimURLs = _.map(metadata.building_chunks, chunk_name => {
             return metadata.chunk_building_url_stem + chunk_name.slice(-3) + '.json'
         });
@@ -70,7 +82,6 @@ function setupExperiment() {
                 var repTrials = _.map(metadata.building_chunks, chunk_name => {
 
                     stimURL = metadata.chunk_building_url_stem + chunk_name.slice(-3) + '.json'
-                    console.log(stimURLsToJSONs[stimURL]);
                     return {
                         type: 'block-construction',
                         stimulus: stimURLsToJSONs[stimURL],
@@ -80,7 +91,7 @@ function setupExperiment() {
                         stimURL: stimURL,
                         condition: metadata.condition,
                         rep: rep,
-                        prompt:"Please build the shape on the left by clicking to pick up and place blocks on the right.",
+                        prompt: "Please build the shape on the left by clicking to pick up and place blocks on the right.",
                         offset: chunk_name.substring(0, 4) == 'tall' ? 5 : 4
                     }
 
@@ -94,7 +105,7 @@ function setupExperiment() {
 
             };
 
-            console.log('building trials:', trialList);
+            // console.log('building trials:', trialList);
 
             // send to next trial setup function (setupZippingTrials)
             callback(trialList);
@@ -103,6 +114,9 @@ function setupExperiment() {
 
     }
 
+    mapKeys = function(zipInst) {
+        return zipInst.replace(/yes_key/i,metadata.response_key_dict['valid'].toUpperCase()).replace(/no_key/i,metadata.response_key_dict['invalid'].toUpperCase())
+    }
 
     setupZippingTrials = function (trialList, callback) {
         /**
@@ -112,36 +126,87 @@ function setupExperiment() {
          * 
          */
 
-        var repeatInstructions = {
+        // update instructions with randomized keys
+
+
+        // let updatedZippingInstructions = expConfig.zippingInstructions.replace(/yes_key/i,metadata.response_key_dict['valid'])
+
+        // let updatedZippingInstructions2 = updatedZippingInstructions.replace(/no_key/i,metadata.response_key_dict['invalid'])
+
+        // console.log(updatedZippingInstructions2);
+
+        // console.log(expConfig.zippingInstructions.replace(/no_key/i,metadata.response_key_dict['invalid']))
+
+        // updatedZippingInstructions = updatedZippingInstructions.replace(/no_key/i, metadata.response_key_dict['invalid'])
+
+
+        var zippingInstructions = {
             type: 'instructions',
-            pages: ['Great job! Now on to Part 2. Press Next to remind yourself of the instructions.',
-                expConfig.zippingInstructions],
+            pages: [expConfig.zippingBlockIntro,
+                mapKeys(expConfig.zippingInstructions)],
             show_clickable_nav: true
         };
 
-        trialList.push(repeatInstructions);
+        // trialList.push(zippingInstructions);
+
+        if (expConfig.zippingPracticeTrials ){ //& !expConfig.devMode) {
+            
+
+            let zippingPracticeBlock = setupZippingPracticeTrials(trialList);
+            
+            // trialList.push(zippingPracticeIntro);
+
+            zippingPracticeBlock.forEach((trial) => {
+                trialList.push(trial);
+            })   
+
+            var zippingPracticeOutro = {
+                type: 'instructions',
+                pages: [
+                    'Great job! In the trials you\'ve just completed, you were shown the same large shape in every trial, but in the actual trials these can vary trial to trial, so make sure you pay attention to their shape. They will also be a lot faster! Press Next to move on to the actual experiment.',
+                ],
+                show_clickable_nav: true
+            };
+
+            trialList.push(zippingPracticeOutro);
+
+        }
 
         var zippingBlocks = [];
 
+        var trialNum = 0;
+
         // stimDurations is a list of durations provided in metadata (of the same length e.g. [32,32,32])
+        // each of these is a BLOCK (set of ~48 trials, that may contain mini-blocks within it)
         metadata.stimDurations.forEach((stimDuration, i) => {
 
-            const reps = {};
 
-            // create trial objects
-            // zippingTrials = _.map(metadata.zipping_trials, zipping_trial => {
+            var zippingTrialsInBlock = [];
 
+            const miniBlocks = {};
+
+            // create trial objects for this block
             metadata.zipping_trials.forEach(zipping_trial => {
 
                 stimURL = metadata.composite_url_stem + zipping_trial.composite_talls_name + '.png';
+
+                var maskURL;
+                // random mask
+                if (expConfig.useMasks){
+                    maskID = String(_.random(99)).padStart(3, '0'); //random mask between one and 100
+                    maskURL = expConfig.maskURLStem + maskID + '.png'
+                }
+
 
                 let trialObj = {
                     type: 'tower-zipping',
                     stimulus: stimURL,
                     stimURL: stimURL,
                     composite_id: zipping_trial.composite_talls_name,
-                    rep: zipping_trial.rep,
+                    practice: false,
+                    miniBlock: zipping_trial.mini_block,
                     validity: zipping_trial.validity,
+                    condition: zipping_trial.condition,
                     composite_talls_name: zipping_trial.composite_talls_name,
                     composite_wides_name: zipping_trial.composite_wides_name,
                     part_type: zipping_trial.part_type,
@@ -151,6 +216,7 @@ function setupExperiment() {
                     part_b_id: zipping_trial.part_b,
                     part_b_url: metadata.chunk_zipping_url_stem + zipping_trial.part_b.slice(-3) + '.png',
                     part_b_stimulus: metadata.chunk_zipping_url_stem + zipping_trial.part_b.slice(-3) + '.png',
+                    mask: expConfig.useMasks ? maskURL : null,
                     participantCondition: metadata.condition,
                     participantRotationName: metadata.rotation_name,
                     participantRotation: metadata.rotation,
@@ -159,38 +225,59 @@ function setupExperiment() {
                     compatibleCondition: zipping_trial.compatible_condition,
                     compositeDuration: stimDuration,
                     gapDuration: expConfig.chunkOnset - stimDuration,
-                    chunkDuration: expConfig.chunkDuration
+                    chunkDuration: expConfig.chunkDuration,
+                    fixationDuration: expConfig.fixationDuration ? expConfig.fixationDuration : 1500, //used in place of ITI
+                    choices: metadata.response_key_list,
+                    valid_key: metadata.response_key_dict['valid'],
+                    invalid_key: metadata.response_key_dict['invalid'],
                 }
 
-                if (!reps[zipping_trial.rep]) {
-                    reps[zipping_trial.rep] = [trialObj];
-                } else {
-                    reps[zipping_trial.rep].push(trialObj);
-                };
+                // if shuffling is needed at a sub-block level division, add trials to this division
+                if(expConfig.experimentParameters.miniBlocksWithinBlock){
+                    if (!miniBlocks[trialObj.miniBlock]) {
+                        miniBlocks[trialObj.miniBlock] = [trialObj];
+                    } else {
+                        miniBlocks[trialObj.miniBlock].push(trialObj);
+                    };
+                } else { // otherwise just add the trial to the block
+                    zippingTrialsInBlock.push(trialObj)
+                }
+                
             });
 
-            var zippingTrials = [];
-
-            // shuffle zipping trials
-            for (const repNum in reps) {
-                var repTrialsShuffled = _.shuffle(reps[repNum]);
-                reps[repNum] = repTrialsShuffled;
-                zippingTrials = zippingTrials.concat(repTrialsShuffled);
+            // shuffle zipping trials within mini-block
+            if(expConfig.experimentParameters.miniBlocksWithinBlock){
+                for (const [miniBlockNum, miniBlock] of Object.entries(miniBlocks)){
+                // for (const miniBlockNum in miniBlocks) {
+                    if (expConfig.experimentParameters.shuffleWithinMiniBlock){
+                        var miniBlockTrialsShuffled = _.shuffle(miniBlock);
+                        miniBlocks[miniBlockNum] = miniBlockTrialsShuffled;
+                        zippingTrialsInBlock = zippingTrialsInBlock.concat(miniBlockTrialsShuffled);
+                    } else {
+                        zippingTrialsInBlock = zippingTrialsInBlock.concat(miniBlocks[miniBlockNum]);
+                    }
+                };
+            } else {
+                // do nothing
             };
 
-            zippingBlocks.push(zippingTrials);
-
+            // todo?: shuffle order of miniblocks
+            
+            zippingBlocks.push(zippingTrialsInBlock);
         });
+        
+        // shuffle order of blocks
+        if (expConfig.experimentParameters.shuffleBlocksInJS){ 
+            zippingBlocks = _.shuffle(zippingBlocks);
+        } 
 
-        var zippingBlocksShuffled = _.shuffle(zippingBlocks);
-
-        zippingBlocksShuffled.forEach((zippingBlock, i) => {
+        zippingBlocks.forEach((zippingBlock, i) => {
 
             // add block intro
             var blockIntro = {
                 type: 'instructions',
                 pages: [
-                    '<p>Block ' + (i + 1) + ' of ' + zippingBlocksShuffled.length + '.</p><p>Press <strong>"Z" if the small shapes cannot</strong> be combined to make the big one, press <strong>"M" if they can</strong>.</p><p>Press Next when you are ready to start.</p>'
+                    '<p>Block ' + (i + 1) + ' of ' + zippingBlocks.length + mapKeys('.</p><p>Press <strong>"NO_KEY" if the small shapes cannot</strong> be combined to make the big one, press <strong>"YES_KEY" if they can</strong>.</p><p>Press Next when you are ready to start.</p>')
                 ],
                 show_clickable_nav: true
             };
@@ -207,13 +294,82 @@ function setupExperiment() {
 
             // add to trial list
             zippingBlock.forEach((trial) => {
+                trialNum += 1;
                 trial.blockNumber = i;
-                trialList.push(trial);
+                trialList.push(_.extend(trial, { 'trialNum': trialNum }));
             });
 
         });
+        console.log(trialList);
 
         callback(trialList);
+    };
+
+    setupZippingPracticeTrials = function () {
+        zippingPracticeTrials = _.map(expConfig.zippingPracticeTrials, (practiceTrial) => {
+
+            var maskURL;
+            // random mask
+            if (expConfig.useMasks){
+                maskID = String(_.random(99)).padStart(3, '0'); //random mask between one and 100
+                maskURL = expConfig.maskURLStem + maskID + '.png'
+            }
+
+            let trialObj = {
+                type: 'tower-zipping',
+                stimulus: practiceTrial.stimURL,
+                stimURL: practiceTrial.stimURL,
+                practice: true,
+                composite_id: practiceTrial.composite_talls_name,
+                miniBlock: practiceTrial.mini_block,
+                validity: practiceTrial.validity,
+                composite_talls_name: practiceTrial.composite_talls_name,
+                composite_wides_name: practiceTrial.composite_wides_name,
+                part_type: practiceTrial.part_type,
+                part_a_stimulus: practiceTrial.part_a_stimulus,
+                part_a_url: practiceTrial.part_a_stimulus,
+                mask: expConfig.useMasks ? maskURL : null,
+                part_b_url: practiceTrial.part_b_stimulus,
+                part_b_stimulus: practiceTrial.part_b_stimulus,
+                participantCondition: 'practice',
+                participantRotationName: metadata.rotation_name,
+                participantRotation: metadata.rotation,
+                stimVersion: metadata.version,
+                stimVersionInd: metadata.versionInd,
+                compatibleCondition:  'practice',
+                compositeDuration: practiceTrial.stimDuration,
+                gapDuration: practiceTrial.chunkOnset - practiceTrial.stimDuration,
+                chunkDuration: practiceTrial.chunkDuration,
+                fixationDuration: expConfig.fixationDuration ? expConfig.fixationDuration : 1500,
+                choices: metadata.response_key_list,
+                valid_key: metadata.response_key_dict['valid'],
+                invalid_key: metadata.response_key_dict['invalid'],
+            };
+            return(trialObj)}
+            );
+        
+        var zippingPracticePreload = {
+            type: 'preload',
+            auto_preload: true,
+            trials: [zippingPracticeTrials]
+        };
+
+        var zippingPracticeIntro = {
+            type: 'instructions',
+            pages: [ mapKeys(
+                'Now you will have a chance to practice the task. </br> Place one finger over \"NO_KEY\" (no! ❌)  and one over \"YES_KEY\" (yes! ✅), then press Next to continue.'),
+            ],
+            show_clickable_nav: true
+        };
+
+        let zippingPracticeBlock = []
+        zippingPracticeBlock.push(zippingPracticePreload);
+        zippingPracticeBlock.push(zippingPracticeIntro);
+        zippingPracticeTrials.forEach((trial) =>{
+            zippingPracticeBlock.push(trial)
+        });
+
+        return (zippingPracticeBlock)
     }
 
 
@@ -231,26 +387,36 @@ function setupExperiment() {
                 cont_btn: "start",
             };
 
+            var instructionPages = []
+
+            if (expConfig.compensationInfo){
+                instructionPages.push(expConfig.compensationInfo);
+            }
+
+            if (expConfig.buildingInstructions) {instructionPages.push(expConfig.buildingInstructions)}
+            if (expConfig.zippingInstructions) {instructionPages.push(mapKeys(expConfig.zippingInstructions))}
+
+            // instructionPages.push('That\'s all you need to know! Press Next to start Part 1.')
+
             var instructions = {
                 type: 'instructions',
-                pages: [
-                    '<p>Thank you for participating in our experiment. It should take a total of <strong>30 minutes</strong>, including the time it takes to read these instructions. You will receive $7.50 for completing this study (approx. $15/hr).</p><p>When you are finished, the study will be automatically submitted to be reviewed for approval. You can only perform this study one time. We take your compensation and time seriously! Please message us if you run into any problems while completing this study, or if it takes much more time than expected.</p></br><p>Note: we recommend using Chrome, and putting your browser in full screen. This study has not been tested in other browsers.</p>',
-                    expConfig.buildingInstructions,
-                    expConfig.zippingInstructions,
-                    'That\'s all you need to know! Press Next to start Part 1.'
-
-                ],
+                pages: instructionPages,
                 show_clickable_nav: true
             };
 
             trialList.unshift(instructions);
-            trialList.unshift(consent);
+            trialList.unshift(consent); // add consent before instructions
+
+            
 
 
             // Exit survey
-            var exitSurvey = constructDefaultExitSurvey(expConfig.completionCode);
+            var cc = studyLocation == 'Prolific' ? expConfig.completionCode :
+                (studyLocation == 'SONA' ? workerID : null)
 
-            trialList.push(exitSurvey)
+            var exitSurvey = constructDefaultExitSurvey(studyLocation, cc);
+
+            trialList.push(exitSurvey) //push
 
         };
 
@@ -269,7 +435,7 @@ function setupExperiment() {
         jsPsych.init({
             timeline: trialList,
             show_progress_bar: true,
-            default_iti: 600,
+            default_iti: 600, //up from 600 in zipping_calibration_sona_pilot
             on_trial_finish: function (trialData) {
                 console.log('Trial data:', trialData);
                 // Merge data from a single trial with
@@ -283,7 +449,8 @@ function setupExperiment() {
                     iterationName: expConfig.iterationName ? expConfig.iterationName : 'none_provided_in_config',
                     configId: expConfig.configId,
                     workerID: workerID,
-                    gameID: gameID
+                    gameID: gameID,
+                    response_key_dict: metadata.response_key_dict
                 });
 
                 // console.log(trialData);
