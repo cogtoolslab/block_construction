@@ -16,6 +16,7 @@ jsPsych.plugins["tower-zipping"] = (function () {
   jsPsych.pluginAPI.registerPreload('tower-zipping', 'stimulus', 'image');
   jsPsych.pluginAPI.registerPreload('tower-zipping', 'part_a_stimulus', 'image');
   jsPsych.pluginAPI.registerPreload('tower-zipping', 'part_b_stimulus', 'image');
+  jsPsych.pluginAPI.registerPreload('tower-zipping', 'mask', 'image');
 
   plugin.info = {
     name: 'tower-zipping',
@@ -79,8 +80,8 @@ jsPsych.plugins["tower-zipping"] = (function () {
       mask: { // link to image
         type: jsPsych.plugins.parameterType.IMAGE,
         pretty_name: 'Mask image',
-        default: '../img/mask_placeholder.png',
-        description: 'The image to be between composite and parts'
+        default: null, // '../img/mask_placeholder.png',
+        description: 'The image to be displayed between composite and parts'
       },
       maintain_aspect_ratio: {
         type: jsPsych.plugins.parameterType.BOOL,
@@ -188,12 +189,15 @@ jsPsych.plugins["tower-zipping"] = (function () {
 
     //feedback
     html += '<div id="feedback-div">'
-    html += '<p class="feedback-text" id="feedback-correct" style="display: none">CORRECT</p>';
-    html += '<p class="feedback-text" id="feedback-incorrect" style="display: none">INCORRECT</p>';
+    html += '<p class="feedback-text" id="feedback-correct" style="display: none">CORRECT ⭐️</p>';
+    html += '<p class="feedback-text" id="feedback-incorrect" style="display: none">INCORRECT 😣</p>';
     html += '</div>'
 
     html += '<img src="' + trial.stimulus + '" id="composite-stimulus" style="display: none">';
-    html += '<img src="' + trial.mask + '" id="mask" style="display: none">';
+    
+    if (trial.mask) {
+      html += '<img src="' + trial.mask + '" id="mask" style="display: none">';
+    }
 
     // html += '<div id="fixation-div">'
     html += '<img class="fixation" id="fixation-cross-black" src="../img/fixation_black.png" style="display: none">';
@@ -286,7 +290,8 @@ jsPsych.plugins["tower-zipping"] = (function () {
         stimVersion: trial.stimVersion,
         stimVersionInd: trial.stimVersionInd,
         compatible_condition: trial.compatibleCondition,
-        trial_num: trial.trialNum
+        trial_num: trial.trialNum,
+        // mask: mask,
       };
 
       // clear the display
@@ -316,10 +321,10 @@ jsPsych.plugins["tower-zipping"] = (function () {
       // // which can be used to provide visual feedback that a response was recorded
       // display_element.querySelector('#composite-stimulus').className += (' ' + response_class);
       if (response_correct) {
-        $('#fixation-cross-green').show();
+        $('#fixation-cross-black').show();
         $('#feedback-correct').show();
       } else {
-        $('#fixation-cross-red').show();
+        $('#fixation-cross-black').show();
         $('#feedback-incorrect').show();
       }
 
@@ -331,15 +336,18 @@ jsPsych.plugins["tower-zipping"] = (function () {
         setTimeout(function () {
           $('.fixation').hide();
           $('.feedback-text').hide();
-          setTimeout(end_trial, 500);
+          setTimeout(end_trial, 0);
         }, 1000)
       }
     };
 
     valid_side = trial.valid_key == 'z' ? "left" : "right";
     invalid_side = trial.invalid_key == 'z' ? "left" : "right";
-    $('#valid-emoji').css("float", valid_side);
-    $('#invalid-emoji').css("float", invalid_side);
+    // $('#valid-emoji').css("float", valid_side);
+    // $('#invalid-emoji').css("float", invalid_side);
+
+    $('#valid-emoji').addClass(valid_side+"-emoji")
+    $('#invalid-emoji').addClass(invalid_side+"-emoji")
 
     // hide stimulus if stimulus_duration is set
     if (trial.stimulus_duration !== null) {
@@ -361,13 +369,17 @@ jsPsych.plugins["tower-zipping"] = (function () {
         jsPsych.pluginAPI.setTimeout(function () {
 
           $('#composite-stimulus').hide();
-          // $('#fixation-cross-black').show();
-          $('#mask').show();
+
+          if (trial.mask) {
+            $('#mask').show();
+          } else {
+            $('#fixation-cross-black').show();
+          }
 
           jsPsych.pluginAPI.setTimeout(function () {
 
             $('.part-stimulus').show();
-            // $('#fixation-cross-black').hide();
+            $('#fixation-cross-black').hide();
             $('#mask').hide();
             $('#fixation-cross-blue').show();
 
@@ -381,8 +393,6 @@ jsPsych.plugins["tower-zipping"] = (function () {
                 allow_held_key: false
               });
             };
-
-            // Add mask in here if needed
 
             jsPsych.pluginAPI.setTimeout(function () {
               $('.part-stimulus').hide();

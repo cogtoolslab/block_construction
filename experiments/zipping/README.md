@@ -52,6 +52,10 @@ The problem with this version is that in some trials (3 ambiguous and 4 novel), 
 - ran ~10 ppts but under this name*zipping_calibration_sona_dev*
 - then increased size of fixation cross and added text feedback
 
+#### zipping_calibration_sona_masks_0
+- ran ~20 ppts for each of [50,100,200,300] ms composite duration (with 500ms chunkOnset)
+  - ABOUT TO RUN 20 ppts for each of [500,800], (with 1000ms chunkOnset)
+- changed rendering of stimuli
 
 
 #### WAITING ON CALIBRATION full_2

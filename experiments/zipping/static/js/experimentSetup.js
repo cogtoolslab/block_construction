@@ -150,19 +150,13 @@ function setupExperiment() {
         // trialList.push(zippingInstructions);
 
         if (expConfig.zippingPracticeTrials ){ //& !expConfig.devMode) {
-            var zippingPracticeIntro = {
-                type: 'instructions',
-                pages: [ mapKeys(
-                    'Now you will have a chance to practice the task. Place one finger over \"NO_KEY\" (no! ❌)  and one over \"YES_KEY\" (yes! ✅), then press Next to continue.'),
-                ],
-                show_clickable_nav: true
-            };
+            
 
-            zippingPracticeTrials = setupZippingPracticeTrials(trialList);
+            let zippingPracticeBlock = setupZippingPracticeTrials(trialList);
+            
+            // trialList.push(zippingPracticeIntro);
 
-            trialList.push(zippingPracticeIntro);
-
-            zippingPracticeTrials.forEach((trial) => {
+            zippingPracticeBlock.forEach((trial) => {
                 trialList.push(trial);
             })   
 
@@ -196,7 +190,13 @@ function setupExperiment() {
 
                 stimURL = metadata.composite_url_stem + zipping_trial.composite_talls_name + '.png';
 
-                // console.log('STIM URL',stimURL )
+                var maskURL;
+                // random mask
+                if (expConfig.useMasks){
+                    maskID = String(_.random(99)).padStart(3, '0'); //random mask between one and 100
+                    maskURL = expConfig.maskURLStem + maskID + '.png'
+                }
+
 
                 let trialObj = {
                     type: 'tower-zipping',
@@ -216,6 +216,7 @@ function setupExperiment() {
                     part_b_id: zipping_trial.part_b,
                     part_b_url: metadata.chunk_zipping_url_stem + zipping_trial.part_b.slice(-3) + '.png',
                     part_b_stimulus: metadata.chunk_zipping_url_stem + zipping_trial.part_b.slice(-3) + '.png',
+                    mask: expConfig.useMasks ? maskURL : null,
                     participantCondition: metadata.condition,
                     participantRotationName: metadata.rotation_name,
                     participantRotation: metadata.rotation,
@@ -306,6 +307,14 @@ function setupExperiment() {
 
     setupZippingPracticeTrials = function () {
         zippingPracticeTrials = _.map(expConfig.zippingPracticeTrials, (practiceTrial) => {
+
+            var maskURL;
+            // random mask
+            if (expConfig.useMasks){
+                maskID = String(_.random(99)).padStart(3, '0'); //random mask between one and 100
+                maskURL = expConfig.maskURLStem + maskID + '.png'
+            }
+
             let trialObj = {
                 type: 'tower-zipping',
                 stimulus: practiceTrial.stimURL,
@@ -317,10 +326,9 @@ function setupExperiment() {
                 composite_talls_name: practiceTrial.composite_talls_name,
                 composite_wides_name: practiceTrial.composite_wides_name,
                 part_type: practiceTrial.part_type,
-                // part_a_id: practiceTrial.part_a,
                 part_a_stimulus: practiceTrial.part_a_stimulus,
                 part_a_url: practiceTrial.part_a_stimulus,
-                // part_b_id: practiceTrial.part_b,
+                mask: expConfig.useMasks ? maskURL : null,
                 part_b_url: practiceTrial.part_b_stimulus,
                 part_b_stimulus: practiceTrial.part_b_stimulus,
                 participantCondition: 'practice',
@@ -339,8 +347,29 @@ function setupExperiment() {
             };
             return(trialObj)}
             );
+        
+        var zippingPracticePreload = {
+            type: 'preload',
+            auto_preload: true,
+            trials: [zippingPracticeTrials]
+        };
 
-        return (zippingPracticeTrials)
+        var zippingPracticeIntro = {
+            type: 'instructions',
+            pages: [ mapKeys(
+                'Now you will have a chance to practice the task. </br> Place one finger over \"NO_KEY\" (no! ❌)  and one over \"YES_KEY\" (yes! ✅), then press Next to continue.'),
+            ],
+            show_clickable_nav: true
+        };
+
+        let zippingPracticeBlock = []
+        zippingPracticeBlock.push(zippingPracticePreload);
+        zippingPracticeBlock.push(zippingPracticeIntro);
+        zippingPracticeTrials.forEach((trial) =>{
+            zippingPracticeBlock.push(trial)
+        });
+
+        return (zippingPracticeBlock)
     }
 
 
@@ -406,7 +435,7 @@ function setupExperiment() {
         jsPsych.init({
             timeline: trialList,
             show_progress_bar: true,
-            default_iti: 100, //up from 600 in zipping_calibration_sona_pilot
+            default_iti: 600, //up from 600 in zipping_calibration_sona_pilot
             on_trial_finish: function (trialData) {
                 console.log('Trial data:', trialData);
                 // Merge data from a single trial with

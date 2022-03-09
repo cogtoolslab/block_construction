@@ -385,7 +385,21 @@ img.fixation{
  
 .response_emoji{
     font-size: 20pt;
+    margin-bottom: 0;
 } 
+
+ 
+.left-emoji{
+    float: left;
+    transform: translate(-20px, 45px);
+} 
+
+.right-emoji{
+    float: right;
+    transform: translate(20px, 45px);
+} 
+
+
 /* 
 #valid-emoji{
     color: #00b300;
@@ -411,11 +425,11 @@ img.fixation{
 }
 
 #feedback-correct{
-    color: #00b300;
+    /* color: #00b300; */
 }
 
 #feedback-incorrect{
-    color: #c22714;
+    /* color: #c22714; */
 }
 
 #mask{
