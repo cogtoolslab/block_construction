@@ -41,7 +41,13 @@ function setupExperiment() {
             }
             // console.log(metadata.response_key_dict);
 
-            if (expConfig.buildingReps > 0 ){
+            if (expConfig.experimentParameters.prePostZipping) {
+                setupBuildingTrials(trialList, trialList => {
+                    setupPrePostZippingTrials(trialList, trialList => {
+                        setupOtherTrials(trialList);
+                    });
+                });
+            } else if (expConfig.buildingReps > 0 ){
                 setupBuildingTrials(trialList, trialList => {
                     setupZippingTrials(trialList, trialList => {
                         setupOtherTrials(trialList);
@@ -117,6 +123,151 @@ function setupExperiment() {
     mapKeys = function(zipInst) {
         return zipInst.replace(/yes_key/i,metadata.response_key_dict['valid'].toUpperCase()).replace(/no_key/i,metadata.response_key_dict['invalid'].toUpperCase())
     }
+
+    setupPrePostZippingTrials = function (trialList, callback) {
+        /**
+         * Sets up zipping blocks either end of current trial list
+         */
+
+        var zippingInstructions = {
+            type: 'instructions',
+            pages: [expConfig.zippingBlockIntro,
+                mapKeys(expConfig.zippingInstructions)],
+            show_clickable_nav: true
+        };
+
+        // trialList.push(zippingInstructions);
+
+        if (expConfig.zippingPracticeTrials){ //& !expConfig.devMode) {
+
+            let zippingPracticeBlock = setupZippingPracticeTrials(trialList);
+        
+            zippingPracticeBlock.forEach((trial) => {
+                trialList.push(trial);
+            });
+
+            var zippingPracticeOutro = {
+                type: 'instructions',
+                pages: [
+                    'Great job! In the trials you\'ve just completed, you were shown the same large shape in every trial, but in the actual trials these can vary trial to trial, so make sure you pay attention to their shape. They will also be a lot faster! Press Next to move on to the actual experiment.',
+                ],
+                show_clickable_nav: true
+            };
+
+            trialList.push(zippingPracticeOutro);
+        }
+
+        var zippingBlocks = {};
+
+        var trialNum = 0;
+
+        // unlike previous versions, we don't iterate over stim durations.
+        // blocks are defined in metadata.
+
+        ['pre_zipping_trials','post_zipping_trials'].forEach(phase => {
+
+            metadata[phase].forEach((zipping_trial) => {
+
+                stimURL = metadata.composite_url_stem + zipping_trial.composite + '.png';
+
+                var maskURL;
+                // add random mask
+                if (expConfig.useMasks){
+                    maskID = String(_.random(99)).padStart(3, '0'); //random mask between one and 100
+                    maskURL = expConfig.maskURLStem + maskID + '.png'
+                }
+
+                let trialObj = {
+                    type: 'tower-zipping',
+                    stimulus: stimURL,
+                    stimURL: stimURL,
+                    composite_id: zipping_trial.composite,
+                    practice: false,
+                    miniBlock: zipping_trial.mini_block,
+                    validity: zipping_trial.validity,
+                    condition: zipping_trial.condition,
+                    composite_talls_name: zipping_trial.composite,
+                    // composite_wides_name: zipping_trial.composite_wides_name,
+                    part_type: zipping_trial.part_type,
+                    part_a_id: zipping_trial.part_a,
+                    part_a_stimulus: metadata.chunk_zipping_url_stem + zipping_trial.part_a.slice(-3) + '.png',
+                    part_a_url: metadata.chunk_zipping_url_stem + zipping_trial.part_a.slice(-3) + '.png',
+                    part_b_id: zipping_trial.part_b,
+                    part_b_url: metadata.chunk_zipping_url_stem + zipping_trial.part_b.slice(-3) + '.png',
+                    part_b_stimulus: metadata.chunk_zipping_url_stem + zipping_trial.part_b.slice(-3) + '.png',
+                    mask: expConfig.useMasks ? maskURL : null,
+                    participantCondition: metadata.condition,
+                    participantRotationName: metadata.rotation_name,
+                    participantRotation: metadata.rotation,
+                    stimVersion: metadata.version,
+                    stimVersionInd: metadata.versionInd,
+                    compatibleCondition: zipping_trial.compatible_condition,
+                    compositeDuration: metadata.stimDuration,
+                    gapDuration: expConfig.chunkOnset - metadata.stimDuration,
+                    chunkDuration: expConfig.chunkDuration,
+                    fixationDuration: expConfig.fixationDuration ? expConfig.fixationDuration : 1500, //used in place of ITI
+                    choices: metadata.response_key_list,
+                    valid_key: metadata.response_key_dict['valid'],
+                    invalid_key: metadata.response_key_dict['invalid'],
+                    phase: phase,
+                    zippingTrialNum: trialNum
+                };
+
+                if (zippingBlocks[zipping_trial.block]) {
+                    zippingBlocks[zipping_trial.block].push(trialObj);
+                } else {
+                    zippingBlocks[zipping_trial.block]  = [trialObj];
+                };
+
+                trialNum += 1;
+                
+            });
+        });
+
+        console.log(zippingBlocks);
+
+        let zippingPre = [];
+        let zippingPost = [];
+
+        for (const [zippingBlockName, zippingBlock] of Object.entries(zippingBlocks)) {
+
+            // select pre or post depending on block name
+            zippingPhaseName = zippingBlockName.includes("pre") ? "pre" : "post";
+            zippingPhase = zippingBlockName.includes("pre") ? zippingPre : zippingPost;
+            
+            // add things common to all zipping blocks
+            var blockIntro = {
+                type: 'instructions',
+                pages: [
+                    '<p></p>'+ mapKeys('<p>Press <strong>"NO_KEY" if the small shapes cannot</strong> be combined to make the big one, press <strong>"YES_KEY" if they can</strong>.</p><p>Press Next when you are ready to start.</p>')
+                ],
+                show_clickable_nav: true
+            };
+           
+            zippingBlock.unshift(blockIntro);
+
+            zippingPhase.push(zippingBlock);
+
+        }
+
+        // place pre and post zipping trials either side of previously constructed building trials
+        zippingPre.forEach((preBlock) => {
+            preBlock.forEach((trial) => {
+                trialList.unshift(trial);
+            });
+        });
+
+        zippingPost.forEach((postBlock) => {
+            postBlock.forEach((trial) => {
+                trialList.push(trial);
+            });
+        });
+
+        console.log(trialList);
+
+        callback(trialList);
+    };
+
 
     setupZippingTrials = function (trialList, callback) {
         /**
@@ -247,8 +398,13 @@ function setupExperiment() {
 
             // shuffle zipping trials within mini-block
             if(expConfig.experimentParameters.miniBlocksWithinBlock){
-                for (const [miniBlockNum, miniBlock] of Object.entries(miniBlocks)){
-                // for (const miniBlockNum in miniBlocks) {
+                // miniblocks remains constant (minus replacing the miniblock with a shuffled version)
+
+                // shuffle order of miniblocks (miniblocknum is an id rather than an order)
+                let miniblockOrder = expConfig.experimentParameters.shuffleMiniBlockOrder ? _.shuffle(Object.entries(miniBlocks)) : Object.entries(miniBlocks);
+
+                for (const [miniBlockNum, miniBlock] of miniblockOrder){
+
                     if (expConfig.experimentParameters.shuffleWithinMiniBlock){
                         var miniBlockTrialsShuffled = _.shuffle(miniBlock);
                         miniBlocks[miniBlockNum] = miniBlockTrialsShuffled;
@@ -260,8 +416,6 @@ function setupExperiment() {
             } else {
                 // do nothing
             };
-
-            // todo?: shuffle order of miniblocks
             
             zippingBlocks.push(zippingTrialsInBlock);
         });
@@ -450,7 +604,8 @@ function setupExperiment() {
                     configId: expConfig.configId,
                     workerID: workerID,
                     gameID: gameID,
-                    response_key_dict: metadata.response_key_dict
+                    response_key_dict: metadata.response_key_dict,
+                    studyLocation: studyLocation
                 });
 
                 // console.log(trialData);

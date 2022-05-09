@@ -54,11 +54,23 @@ The problem with this version is that in some trials (3 ambiguous and 4 novel), 
 
 #### zipping_calibration_sona_masks_0
 - ran ~20 ppts for each of [50,100,200,300] ms composite duration (with 500ms chunkOnset)
-  - ABOUT TO RUN 20 ppts for each of [500,800], (with 1000ms chunkOnset)
+  - ran ~20 ppts for each of [500,800], (with 1000ms chunkOnset)
 - changed rendering of stimuli
 
+#### zipping_calibration_pilot_3 
+- changed stimulus set to use a single set of 26 randomly sampled composites to be used for *all participants*.
+- masks still being used
+- use a smaller set of composite durations [100,300,600,800], where [100,300] use 500ms chunk onset, and [600,800] use a 1000ms chunk onset. (chose these values as both pairs give the same gap between composite offset and part onset)
+- shuffling miniblock order and shuffling trials within miniblock (miniblocknum is an id rather than the index of the miniblock in the trial sequence)
+- stims: `26_random_composites_0`
+- Ran 3 ppts on prolific, reset metadata but w/o changing set of 26 stims
+- Ran XX ppts on sona w/ [600,800] chunk duration, 1000 ms chunk onset `zipping_calibration_pilot_3_sona`
+- Ran XX ppts on sona w/ [100,300] chunk duration, 500 ms chunk onset `zipping_calibration_pilot_3_sona`
+- Ran ~4 ppts with `zipping_calibration_pilot_3_prolific`
+- Updated stim set: `zipping_calibration_pilot_3_sona_stims_1`
+  - `26_random_composites_1`
 
-#### WAITING ON CALIBRATION full_2
+#### WAITING ON CALIBRATION: full_2
 Not yet run- waiting on zipping_calibration for insights
 To implement:
 - Always display one valid chunk in invalid trials (along with a random foil?) (this makes things simpler actually). Adapt code from calibration study.

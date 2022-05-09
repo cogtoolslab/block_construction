@@ -250,6 +250,16 @@ jsPsych.plugins["tower-zipping"] = (function () {
       key: null
     };
 
+    var keyPresses = 0;
+
+    let incrementKeyPresses = function(event) {
+      if(event.key == 'm' || event.key == 'z'){
+        keyPresses += 1;
+      };
+    }
+
+    document.addEventListener('keydown', incrementKeyPresses);
+
     // function to end trial when it is time
     var end_trial = function () {
 
@@ -291,6 +301,7 @@ jsPsych.plugins["tower-zipping"] = (function () {
         stimVersionInd: trial.stimVersionInd,
         compatible_condition: trial.compatibleCondition,
         trial_num: trial.trialNum,
+        key_presses: keyPresses,
         // mask: mask,
       };
 
@@ -331,6 +342,8 @@ jsPsych.plugins["tower-zipping"] = (function () {
       // $('#composite-stimulus').show();
 
       trial.response_correct = response_correct;
+
+      document.removeEventListener('keydown', incrementKeyPresses);
 
       if (trial.response_ends_trial) {
         setTimeout(function () {
@@ -390,7 +403,7 @@ jsPsych.plugins["tower-zipping"] = (function () {
                 valid_responses: trial.choices,
                 rt_method: 'performance',
                 persist: false,
-                allow_held_key: false
+                allow_held_key: false,
               });
             };
 

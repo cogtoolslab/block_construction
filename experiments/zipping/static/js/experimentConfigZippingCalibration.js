@@ -3,7 +3,7 @@ expConfig = {
     "dbname": "block_construction",
     "colname": "zipping_calibration",
     "stimColName": "zipping_calibration_trials",
-    "iterationName": "zipping_calibration_sona_masks_0", 
+    "iterationName": "zipping_calibration_pilot_3_sona_stims_1", 
     "completionCode": "5C772792",
     "devMode": false,
     "experimentParameters": {
@@ -13,7 +13,8 @@ expConfig = {
       "shuffleTrialsInJS": false,
       "shuffleBlocksInJS": false,
       "miniBlocksWithinBlock": true,
-      "shuffleWithinMiniBlock": false,
+      "shuffleMiniBlockOrder" : true,
+      "shuffleWithinMiniBlock": true,
     },
     "zippingPracticeTrials": [
       {
@@ -58,7 +59,7 @@ expConfig = {
       },
     ],
     "chunkDuration": 1000,
-    "chunkOnset": 1000, // default is 500. Increase with high stim durations (i.e. above a couple hundred ms)
+    "chunkOnset": 500, // default is 500. Increase with high stim durations (i.e. above a couple hundred ms)
     "useMasks": true,
     "maskURLStem": 'https://zipping-masks-16x16.s3.amazonaws.com/zipping-masks-16x16-',
     "buildingReps": 0,
