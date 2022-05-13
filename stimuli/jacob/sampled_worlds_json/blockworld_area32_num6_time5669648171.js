@@ -1,1 +1,0 @@
-{"blocks": [{"x": 0, "y": 0, "height": 2, "width": 4}, {"x": 4, "y": 0, "height": 2, "width": 4}, {"x": 4, "y": 2, "height": 2, "width": 4}, {"x": 6, "y": 4, "height": 1, "width": 2}, {"x": 6, "y": 5, "height": 2, "width": 2}, {"x": 6, "y": 7, "height": 1, "width": 2}]}
