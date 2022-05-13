@@ -1,5 +1,5 @@
 ---
-title: "block_silhouette_"
+title: "block_silhouette_ms22"
 author: "wmccarthy & jefan"
 date: "5/28/2020"
 output: html_document
@@ -408,7 +408,8 @@ summary(m4)
 # Actions
 
 ```{r import.actions}
-df.action.metrics.full = read.csv("../../results/silhouette/csv/block_silhouette_Exp2Pilot3_all_rep_distances.csv")
+# df.action.metrics.full = read.csv("../../results/silhouette/csv/block_silhouette_Exp2Pilot3_all_rep_distances.csv") #cogsci
+df.action.metrics.full = read.csv("../../results/silhouette/csv/df_action_distances_actual_repeated_only.csv") #ms
 
 df.action.metrics.full
 ```
@@ -433,11 +434,14 @@ d.Eu <- df.Euclidean.long %>%
   mutate(phase_pair = ordered(phase_pair,levels=c('pre to repetition 1','repetition 1 to repetition 2','repetition 2 to post'))) %>% within(df.Euclidean.long, phase_pair <- relevel(phase_pair, ref = 'pre to repetition 1'))
 
 d.Eu.boot<-d.Eu %>%
-  group_by(phase_pair,distance_type) %>%
+  group_by(phase_pair, distance_type) %>%
   tidyboot_mean(column=euclidean_distance, nboot=1000)
 
 d.Eu.boot
 
+```
+```{r}
+d.Eu
 ```
 
 ```{r}
@@ -469,90 +473,171 @@ m2 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + distance_type + (1 | g
 m3 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * distance_type + (1 | gameID) + (1 | targetName))
 m4 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * distance_type + (1 | gameID) + (1 | targetName))
 anova(m1,m2,m3,m4)
-summary(m4)
+summary(m2)
 ```
 
 # Actions with baseline (new for ms)
 
-```{r import.actions}
-df.action.metrics.full.bl = read.csv("../../results/silhouette/csv/block_silhouette_Exp2Pilot3_all_rep_distances_w_baseline.csv")
+Distribution of baseline values
+```{r import.baselines}
+df.action.baselines.raw = read.csv("../../results/silhouette/csv/df_action_distances_baseline_distributions_permuted_ppts_1000.csv")
 
-df.action.metrics.full.bl
-```
-
-```{r}
-df.Euclidean.long.bl <- df.action.metrics.full.bl %>% 
-  # mutate(phase.pair.numeric = as.numeric(phase_pair)) %>% 
-  select(gameID,targetName, phase_a_rawF1DiscreteScore, phase_pair,actual_euclidean_distance,optimal_euclidean_distance, baseline) %>%
-  pivot_longer(c(optimal_euclidean_distance, actual_euclidean_distance), names_to='distance_type') %>% 
-  rename("euclidean_distance" = "value")
-
-df.Euclidean.long.bl$distance_type = gsub("\\_.*","",df.Euclidean.long.bl$distance_type)
-```
-
-
-```{r}
-
-d.Eu.bl <- df.Euclidean.long.bl %>% 
+df.action.baselines.means <- df.action.baselines.raw %>% 
   filter(phase_pair %in% c('pre to repetition 1', 'repetition 1 to repetition 2','repetition 2 to post')) %>% 
-  mutate(phase_pair = ordered(phase_pair,levels=c('pre to repetition 1','repetition 1 to repetition 2','repetition 2 to post'))) %>% within(df.Euclidean.long.bl, phase_pair <- relevel(phase_pair, ref = 'pre to repetition 1'))
+  mutate(phase_pair = ordered(phase_pair,levels=c('pre to repetition 1','repetition 1 to repetition 2','repetition 2 to post'))) %>% within(df.action.baselines.raw, phase_pair <- relevel(phase_pair, ref = 'pre to repetition 1')) %>% 
+  group_by(iteration, phase_pair) %>% 
+  summarise_at(vars('optimal_euclidean_distance','actual_euclidean_distance'), c(mean = mean))
+  
+df.action.baselines.means
 
-d.Eu.boot.bl<-d.Eu.bl %>%
-  group_by(baseline, phase_pair, distance_type) %>%
-  tidyboot_mean(column=euclidean_distance, nboot=1000)
 
-d.Eu.boot.bl
+```
+Pivot table 
+```{r}
+df.action.baselines.means.pivot <- df.action.baselines.means %>% 
+  pivot_longer(cols = c(actual_euclidean_distance_mean, optimal_euclidean_distance_mean), names_to='distance_type', values_to='euclidean_distance')
 
+df.action.baselines.means.pivot
+```
+
+Normal approximation CIs 
+```{r}
+# qt(0.975, df=n-1)
+# 
+# df.action.baselines.means.pivot %>% 
+#   group_by(phase_pair, distance_type) %>%
+#   
+```
+
+
+Bootstrap CIs 
+```{r}
+# d.baseline.boot <- df.action.baselines.means.pivot %>% 
+#   group_by(phase_pair, distance_type) %>%
+#   tidyboot_mean(column=euclidean_distance, nboot=1000)
+# 
+# d.baseline.boot
+d.Eu.boot
 ```
 
 ```{r}
-d.Eu.boot.bl %>%
-  ggplot(aes(x=phase_pair,y=empirical_stat, color=distance_type, fill=distance_type, group = distance_type)) +
-    geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
-                 data = d.Eu.boot.bl %>% filter(distance_type == 'actual', baseline == 'no')) +  
-    geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
-                 data = d.Eu.boot.bl %>% filter(distance_type == 'optimal', baseline == 'no')) +
-    geom_line(size=1.5, aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
-                 data = d.Eu.boot.bl %>% filter(baseline == 'no')) +
-    geom_point(size = 4, aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5,
-                 data = d.Eu.boot.bl %>% filter(baseline == 'no')) +
-    geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5, alpha=0.8,
-                 data = d.Eu.boot.bl %>% filter(distance_type == 'actual', baseline == 'random_ppt')) +  
-    geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.5, alpha=0.8,
-                 data = d.Eu.boot.bl %>% filter(distance_type == 'optimal', baseline == 'random_ppt')) +
-    geom_line(size=1, aes(ymin=ci_lower, ymax = ci_upper), width = 0, linetype = "dashed", alpha=0.8,
-                 data = d.Eu.boot.bl %>% filter(baseline == 'random_ppt')) +
-    geom_point(size = 4, aes(ymin=ci_lower, ymax = ci_upper), width = 0, linetype = "dashed", alpha=0.8,
-                 data = d.Eu.boot.bl %>% filter(baseline == 'random_ppt')) +
+
+df.action.baselines.means.pivot %>% 
+  ggplot(aes(x=phase_pair, y=euclidean_distance)) + 
+  geom_line(aes(group=iteration,
+              color=distance_type),
+            data = df.action.baselines.means.pivot %>% 
+            filter(distance_type == 'actual_euclidean_distance_mean'),
+            size=0.1, 
+            alpha=0.1) +
+  geom_line(aes(group=iteration,
+              color=distance_type),
+            data = df.action.baselines.means.pivot %>% 
+            filter(distance_type == 'optimal_euclidean_distance_mean'),
+            size=0.1, 
+            alpha=0.1) +
+  geom_errorbar(aes(y=mean, color=distance_type, ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.2,
+               data = d.Eu.boot %>% filter(distance_type == 'actual')) +
+  geom_errorbar(aes(y=mean, color=distance_type, ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.2,
+               data = d.Eu.boot %>% filter(distance_type == 'optimal')) +
+  geom_line(aes(y=mean, color=distance_type, group=distance_type), size=1.2, data = d.Eu.boot) +
+  geom_point(aes(y=mean, color=distance_type), size = 3, data = d.Eu.boot) +
+  ylab("Euclidean distance") +
+  xlab("pair of attempts") +
+  theme_few() +
+  ylim(c(0,4.5)) +
+  # scale_y_continuous(breaks = seq(-0.5,2.5,0.5)) +
+  scale_color_manual(values=c( "actual_euclidean_distance_mean"= "#77798c",
+                               "actual"= "#77798c",
+                               "optimal_euclidean_distance_mean"= "#1c373e",
+                               "optimal"= "#1c373e")) +
+  scale_fill_manual(values=c( "actual_euclidean_distance_mean"= "#77798c",
+                               "actual"= "#77798c",
+                               "optimal_euclidean_distance_mean"= "#1c373e",
+                               "optimal"= "#1c373e")) +
+  scale_x_discrete(labels= c("(1st, 2nd)","(2nd, 3rd)","(3rd, 4th)")) +
+  theme(legend.position ='FALSE', legend.title=element_blank(), text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000"))
+
+ggsave('../../../analysis/results/silhouette/plots/block_silhouette_Euclidean_distances_baselines_linecloud.pdf', width=7, height = 10, units='cm', useDingbats = F)
+
+```
+
+
+Plot individual baselines as a cluster of lines to give sense of distribution
+```{r plot.baselines}
+df.action.baselines.means.pivot %>% 
+  ggplot(aes(x=phase_pair, y=euclidean_distance, color=distance_type)) +
+    # geom_line(aes(y = mean_euclidean_distance)) + 
+    # geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.2,
+                 # data = d.baseline.boot %>% filter(distance_type == 'actual_euclidean_distance_mean')) +
+    # geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.2,
+                 # data = d.baseline.boot %>% filter(distance_type == 'optimal_euclidean_distance_mean')) +
+    geom_line(size=1.2) +
+    geom_point(size = 3.2, fill="white", shape=21, stroke=1.2) +
+    geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.2,
+                 data = d.Eu.boot %>% filter(distance_type == 'actual')) +  
+    geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.2,
+                 data = d.Eu.boot %>% filter(distance_type == 'optimal')) +
+    geom_line(size=1.2, data = d.Eu.boot) +
+    geom_point(size = 3.6, data = d.Eu.boot) +
     ylab("Euclidean distance") +
-    xlab("attempt pair") +
+    xlab("pair of attempts") +
     theme_few() +
     #xlim(c(0.5,3.5)) +  
-    ylim(c(1,5)) +
-    # scale_y_continuous(breaks = seq(-0.5,2.5,0.5)) +
-    scale_color_manual(values=c("#77798c","#1c373e")) +
-    scale_fill_manual(values=c("#77798c","#1c373e")) +
-    scale_x_discrete(labels= c(1,2,3)) + 
+    ylim(c(0,4.5)) +
+    scale_y_continuous(breaks = seq(-0.5,2.5,0.5)) +
+    scale_color_manual(values=c( "actual_euclidean_distance_mean"= "#77798c",
+                                 "actual"= "#77798c",
+                                 "optimal_euclidean_distance_mean"= "#1c373e",
+                                 "optimal"= "#1c373e")) +
+    scale_fill_manual(values=c( "actual_euclidean_distance_mean"= "#77798c",
+                                 "actual"= "#77798c",
+                                 "optimal_euclidean_distance_mean"= "#1c373e",
+                                 "optimal"= "#1c373e")) +
+    scale_x_discrete(labels= c("(1st, 2nd)","(2nd, 3rd)","(3rd, 4th)")) +
     theme(legend.position ='FALSE', legend.title=element_blank(), text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000"))
-#ggsave('../results/plots/block_silhouette_Euclidean_distances.pdf', width=7, height = 10, units='cm', useDingbats = F)
-```
-```{r}
-m1 <- lmer(data = d.Eu.bl, euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
-m2 <- lmer(data = d.Eu.bl, euclidean_distance ~ phase_pair + distance_type + (1 | gameID) + (1 | targetName))
-m3 <- lmer(data = d.Eu.bl, euclidean_distance ~ phase_pair + distance_type + baseline + (1 | gameID) + (1 | targetName))
-m4 <- lmer(data = d.Eu.bl, euclidean_distance ~ phase_pair + distance_type * baseline  + (1 | gameID) + (1 | targetName))
-m5 <- lmer(data = d.Eu.bl, euclidean_distance ~ phase_pair * distance_type * baseline  + (1 | gameID) + (1 | targetName))
-anova(m1,m2,m3,m4,m5)
-summary(m5)
+  # 
+
+# ggsave('../../../analysis/results/silhouette/plots/block_silhouette_Euclidean_distances_baselines.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
 
-```{r}
-m1 <- lmer(data = d.Eu.bl, euclidean_distance ~ phase_pair + (1 | gameID) + (1 | targetName))
-m2 <- lmer(data = d.Eu.bl, euclidean_distance ~ phase_pair + distance_type + (1 | gameID) + (1 | targetName))
-m3 <- lmer(data = d.Eu.bl, euclidean_distance ~ phase_pair * distance_type + (1 | gameID) + (1 | targetName))
-m4 <- lmer(data = d.Eu.bl, euclidean_distance ~ phase_pair * distance_type + (1 | gameID) + (1 | targetName))
-anova(m1,m2,m3,m4)
-summary(m4)
+
+Plot basline distributions
+```{r plot.baselines}
+d.baseline.boot %>% 
+  ggplot(aes(x=phase_pair, y=mean, group=distance_type, color=distance_type)) +
+    # geom_line(aes(y = mean_euclidean_distance)) + 
+    geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.2,
+                 data = d.baseline.boot %>% filter(distance_type == 'actual_euclidean_distance_mean')) +
+    geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.2,
+                 data = d.baseline.boot %>% filter(distance_type == 'optimal_euclidean_distance_mean')) +
+    geom_line(size=1.2, linetype = "dotted") +
+    geom_point(size = 3.2, fill="white", shape=21, stroke=1.2) +
+    geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.2,
+                 data = d.Eu.boot %>% filter(distance_type == 'actual')) +  
+    geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper), width = 0, size = 1.2,
+                 data = d.Eu.boot %>% filter(distance_type == 'optimal')) +
+    geom_line(size=1.2, data = d.Eu.boot) +
+    geom_point(size = 3.6, data = d.Eu.boot) +
+    ylab("Euclidean distance") +
+    xlab("pair of attempts") +
+    theme_few() +
+    #xlim(c(0.5,3.5)) +  
+    ylim(c(0,4.5)) +
+    # scale_y_continuous(breaks = seq(-0.5,2.5,0.5)) +
+    scale_color_manual(values=c( "actual_euclidean_distance_mean"= "#77798c",
+                                 "actual"= "#77798c",
+                                 "optimal_euclidean_distance_mean"= "#1c373e",
+                                 "optimal"= "#1c373e")) +
+    scale_fill_manual(values=c( "actual_euclidean_distance_mean"= "#77798c",
+                                 "actual"= "#77798c",
+                                 "optimal_euclidean_distance_mean"= "#1c373e",
+                                 "optimal"= "#1c373e")) +
+    scale_x_discrete(labels= c("(1st, 2nd)","(2nd, 3rd)","(3rd, 4th)")) +
+    theme(legend.position ='FALSE', legend.title=element_blank(), text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000"))
+  # 
+
+# ggsave('../../../analysis/results/silhouette/plots/block_silhouette_Euclidean_distances_baselines.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
 
 
@@ -571,7 +656,7 @@ m3 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair + distance_type + phase_
 m4 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * distance_type + phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
 m5 <- lmer(data = d.Eu, euclidean_distance ~ phase_pair * distance_type * phase_a_rawF1DiscreteScore + (1 | gameID) + (1 | targetName))
 anova(m1,m2,m3,m4,m5)
-summary(m4)
+summary(m3)
 ```
 
 ```{r}
@@ -757,7 +842,7 @@ d.conseq.boot.OEu %>%
 
 ```{r}
 d.conseq %>% 
-  ggplot(aes(x=phase_a_rawF1DiscreteScore, y = optimal_euclidean_distance,color=phase_pair)) +
+  ggplot(aes(x=phase_a_rawF1DiscreteScore, y = optimal_euclidean_distance, color=phase_pair)) +
   geom_point(size = 0.2) +
   ylab("Euclidean distance") +
   xlab("F1 in previous attempt") +
@@ -766,7 +851,7 @@ d.conseq %>%
   theme_few() +
   scale_color_manual(values=c("#EF553B","#B8422E","#70281C")) +
   theme(legend.position = 'FALSE',text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000"))
-ggsave('../results/plots/block_silhouette_accuracy_seq_diff.pdf', width=7, height = 10, units='cm', useDingbats = F)
+ggsave('../../results/silhouette/plots/ms22/block_silhouette_accuracy_seq_diff.pdf', width=7, height = 10, units='cm', useDingbats = F)
 
 ```
 
@@ -785,7 +870,7 @@ summary(m2)
 # Between-subject variance in action sequences
 ```{r import.btw.ppt}
 # here variance is calculated with both conditions lumped together
-ppt.var <- read.csv('../results/csv/block_silhouette_Exp2Pilot3_all_ppt_variance.csv')
+ppt.var <- read.csv('../../results/silhouette/csv/block_silhouette_Exp2Pilot3_all_ppt_variance.csv')
 ppt.var
 
 # here variance is calculated separately for conditions
@@ -798,8 +883,8 @@ ppt.var %>%
   filter(phase_extended %in% c('pre','post')) %>% 
   mutate(phase_extended = ordered(phase_extended,levels=c('pre','post'))) %>%
   ggplot(aes(x=phase_extended, y=variance, fill=targetName, group = targetName)) +
-  geom_line(size=1.5, color="#1c373e") +
-  geom_point(size = 4, color="#1c373e") +
+  geom_line(size=1.2, color="#1c373e") +
+  geom_point(size = 3.6, color="#1c373e") +
   ylab("action variability") +
   xlab("attempt") +
   ylim(c(0,4)) + 
@@ -809,7 +894,7 @@ ppt.var %>%
   scale_x_discrete(labels = c("first","final")) + 
   theme(legend.position = 'FALSE', text = element_text(size=16), element_line(size=1), element_rect(size=2, color="#00000")) +
   guides(size = FALSE, fill=FALSE)
-ggsave('../results/plots/block_silhouette_ppt_variance.pdf', width=7, height = 10, units='cm', useDingbats = F)
+ggsave('../../results/silhouette/plots/ms22/block_silhouette_ppt_variance.pdf', width=7, height = 10, units='cm', useDingbats = F)
 ```
 
 
@@ -884,12 +969,26 @@ grand_mean_agent_ginis <- mean_agent_ginis %>%
 grand_mean_agent_ginis
 ```
 ```{r}
+mean_agent_ginis
+```
+
+
+```{r}
+# agent_gini_boot <- mean_agent_ginis %>% group_by(nlevel) %>% tidyboot_mean(column=mean.gini, nboot=1000)
+# 
+# agent_gini_boot
+
+```
+
+
+
+```{r}
 
 agent_gini_CIs <- mean_agent_ginis %>% 
   group_by(nlevel) %>% 
-   do(tidy(t(quantile(.$mean.gini,probs = c(0.025,0.975)))))
+   do(tidy(t(quantile(.$mean.gini, probs = c(0.025,0.975)))))
 
-grand_mean_agent_ginis <- left_join(grand_mean_agent_ginis,agent_gini_CIs, cols = c('nlevel'))
+grand_mean_agent_ginis <- left_join(grand_mean_agent_ginis, agent_gini_CIs, cols = c('nlevel'))
 
 grand_mean_agent_ginis
 
