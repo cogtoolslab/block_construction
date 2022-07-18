@@ -1,0 +1,108 @@
+---
+title: "zipping_statistics"
+output: html_document
+---
+
+# Imports
+
+```{r}
+library(tidyverse)
+library(lme4)
+# library(lmerTest)
+library(ggthemes)
+library(performance) 
+library(see)
+```
+
+
+# Read data
+```{r}
+df.zip <- read_csv('../results/zipping/csv/df_zip_pre_post_run_0.csv') %>% 
+  mutate(across(compatibility, factor, levels=c("novel","compatible","incompatible")))
+# df.zip <- read_csv('../../results/zipping/csv/df_zip_full_1_tmp.csv') %>% 
+  # mutate(across(compatibility, factor, levels=c("novel","compatible","incompatible")))
+# %>%
+#   select(gameID, stimId, domain, subdomain, what_word_sum, where_word_sum, base_program_length) %>%
+#   mutate(combined_word_sum = what_word_sum + where_word_sum)
+df.zip
+```
+```{r}
+df.zip %>% group_by(composite_id, compatibility, part_type) %>% count()
+```
+
+```{r}
+lmer(data = df.zip, rt ~ phase + (1 | composite_id) + (1 + phase | gameID)) %>% check_model()
+```
+```{r}
+df.zip$rt.log <-log(df.zip$rt, base = 10)
+```
+
+# Pre-post
+```{r}
+m1 <- lmer(data = df.zip, rt.log ~ phase +  (1 | composite_id) + (1 + phase | gameID))
+m2 <- lmer(data = df.zip, rt.log ~ phase + compatibility + (1 | composite_id) + (1 + phase | gameID))
+m3 <- lmer(data = df.zip, rt.log ~ phase*compatibility + (1 | composite_id) + (1 + phase | gameID))
+anova(m1, m2, m3, refit=FALSE)
+summary(m2)
+```
+Singular fits, so try without stimulus
+# Pre-post
+```{r}
+m1 <- lmer(data = df.zip, rt.log ~ phase +  + (1 + phase | gameID))
+m2 <- lmer(data = df.zip, rt.log ~ phase + compatibility + (1 + phase | gameID))
+m3 <- lmer(data = df.zip, rt.log ~ phase*compatibility + (1 + phase | gameID))
+anova(m1, m2, m3, refit=FALSE)
+summary(m2)
+```
+
+```{r}
+m1 <- lmer(data = filter(df.zip, rt < 5000), rt ~ phase +  (1 | composite_id) + (1 + phase | gameID))
+m2 <- lmer(data = filter(df.zip, rt < 5000), rt ~ phase + compatibility + (1 | composite_id) + (1 + phase | gameID))
+m3 <- lmer(data = filter(df.zip, rt < 5000), rt ~ phase*compatibility + (1 | composite_id) + (1 + phase | gameID))
+anova(m1, m2, m3)
+summary(m2)
+```
+
+# Pre-post with wide/tall
+```{r}
+m1 <- lmer(data = filter(df.zip, rt < 5000), rt ~ phase + (1 + phase | gameID))
+m2 <- lmer(data = filter(df.zip, rt < 5000), rt ~ phase + part_type + (1 + phase | gameID))
+m3 <- lmer(data = filter(df.zip, rt < 5000), rt ~ phase*part_type + (1 + phase | gameID))
+anova(m1, m2, m3)
+summary(m2)
+```
+# Pre-post
+```{r}
+m1 <- glmer(data = df.zip, family = binomial, response_correct ~ phase + (1 |composite_id) + (1 + phase | gameID))
+m2 <- glmer(data = df.zip, family = binomial, response_correct ~ phase + compatibility + (1 |composite_id) + (1 + phase | gameID))
+m3 <- glmer(data = df.zip, family = binomial, response_correct ~ phase*compatibility + (1 |composite_id) + (1 + phase | gameID))
+anova(m1, m2, m3)
+summary(m1)
+```
+
+
+# OLD/ Calibration
+```{r}
+m1 <- lmer(data = df.zip, rt ~ composite_duration + (1 | composite_id) + (1 | participantRotationName) + (1 | gameID))
+summary(m1)
+```
+```{r}
+m1 <- glmer(data = df.zip, family = binomial, response_correct ~ composite_duration + (1 | composite_id) + (1 | participantRotationName) + (1 | gameID))
+# anova(m1,m2,m3)
+summary(m1)
+```
+
+```{r}
+m1 <- lmer(data = df.zip, rt ~ compatibility + (1 | composite_id) + (1 | participantRotationName) + (1 | gameID))
+m2 <- lmer(data = df.zip, rt ~ compatibility + part_type + (1 | composite_id) + (1 | participantRotationName) + (1 | gameID) )
+m3 <- lmer(data = df.zip, rt ~ compatibility*part_type + (1 | composite_id) + (1 | participantRotationName) + (1 | gameID) )
+anova(m1,m2,m3)
+summary(m2)
+```
+```{r}
+m1 <- glmer(data = df.zip, family = binomial, response_correct ~ compatibility + (1 | composite_id) + (1 | participantRotationName) + (1 | gameID))
+m2 <- glmer(data = df.zip, family = binomial, response_correct ~ compatibility + part_type + (1 | composite_id) + (1 | participantRotationName) + (1 | gameID))
+m3 <- glmer(data = df.zip, family = binomial, response_correct ~ compatibility*part_type + (1 | composite_id) + (1 | participantRotationName) + (1 | gameID) )
+anova(m1,m2,m3)
+summary(m2)
+```
