@@ -402,7 +402,6 @@ jsPsych.plugins["tower-zipping-wm"] = (function () {
             $('#fixation-cross-black').hide();
             $('#mask').hide();
             $('#fixation-cross-blue').show();
-            wrgw3rgq
 
             // start the response listener
             if (trial.choices != jsPsych.NO_KEYS) {
