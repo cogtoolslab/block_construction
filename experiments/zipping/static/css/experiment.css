@@ -308,6 +308,9 @@ body{
     transform: translate(147px, 0px);
 }
 
+.monochrome#mask{
+    width: 380px;
+}
 
 #bottom-stimulus{   
      /* margin-bottom: 160px;  */

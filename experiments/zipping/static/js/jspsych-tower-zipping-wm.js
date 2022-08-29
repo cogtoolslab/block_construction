@@ -198,7 +198,7 @@ jsPsych.plugins["tower-zipping-wm"] = (function () {
     html += '<img src="' + trial.stimulus + '" id="composite-stimulus" style="display: none">';
     
     if (trial.mask) {
-      html += '<img src="' + trial.mask + '" id="mask" style="display: none">';
+      html += '<img src="' + trial.mask + '" class="monochrome"  id="mask" style="display: none">';
     }
 
     // html += '<div id="fixation-div">'
