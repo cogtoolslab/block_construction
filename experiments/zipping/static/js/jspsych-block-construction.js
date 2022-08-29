@@ -70,6 +70,11 @@ jsPsych.plugins["block-construction"] = (function () {
         pretty_name: "Number of blocks available",
         default: 4,
         description: "Number of blocks that can be placed before the trial ends or resets",
+      },
+      dataForwarder: {
+        type: jsPsych.plugins.parameterType.OBJECT,
+        pretty_name: "Function to call that forwards data to database (or otherwise)",
+        default: (data) => console.log(data),
       }
     },
   };
@@ -87,7 +92,7 @@ jsPsych.plugins["block-construction"] = (function () {
     html_content += '<div class="container" id="experiment">';
 
     /** Create domain canvas **/
-    html_content += '<div class="row pt-1">';
+    html_content += '<div class="row pt-1 env-row">';
     html_content += '<div class="col env-div" id="stimulus-canvas"></div>';
     html_content += '<div class=" col env-div" id="environment-canvas"></div>';
     html_content += '</div>';
@@ -103,12 +108,20 @@ jsPsych.plugins["block-construction"] = (function () {
 
     display_element.innerHTML = html_content;
 
+    trial.finished = false;
 
     if (trial.stimulus !== null) {
 
+      trial.trialStartTime = Date.now();
+
       trial.nBlocksPlaced = 0;
 
-      let trialObject = {
+      // trial.stimulus = {'blocks': [{ 'x': 0, 'y': 0, 'height': 1, 'width': 2 },
+      //     { 'x': 2, 'y': 0, 'height': 2, 'width': 1 },
+      //     { 'x': 0, 'y': 1, 'height': 2, 'width': 1 },
+      //     { 'x': 1, 'y': 2, 'height': 1, 'width': 2 }]};
+
+      let constructionTrial = {
         stimulus: trial.stimulus.blocks,
         endCondition: 'perfect-reconstruction-translation',
         blocksPlaced: 0,
@@ -119,10 +132,12 @@ jsPsych.plugins["block-construction"] = (function () {
         endBuildingTrial: endTrial
       };
 
+      trial.constructionTrial = constructionTrial;
+
       var showStimulus = true;
       var showBuilding = true;
 
-      blockSetup(trialObject, showStimulus, showBuilding);
+      blockSetup(constructionTrial, showStimulus, showBuilding);
 
       // UI
       $("#reset-button").click(() => {
@@ -130,8 +145,12 @@ jsPsych.plugins["block-construction"] = (function () {
       });
 
       resetBuilding = function () {
-        trialObject.nResets += 1;
+        let nBlocksWhenReset = trial.nBlocksPlaced;
+        constructionTrial.nResets += 1;
         trial.nBlocksPlaced = 0;
+        resetSender({
+          n_blocks_when_reset: nBlocksWhenReset,
+        });
 
         if (_.has(blockUniverse, 'p5env') ||
           _.has(blockUniverse, 'p5stim')) {
@@ -139,7 +158,7 @@ jsPsych.plugins["block-construction"] = (function () {
           blockUniverse.removeStimWindow();
         };
 
-        blockSetup(trialObject, showStimulus, showBuilding);
+        blockSetup(constructionTrial, showStimulus, showBuilding);
 
       };
 
@@ -149,61 +168,12 @@ jsPsych.plugins["block-construction"] = (function () {
 
     };
 
-    // display_element
-    //   .querySelector("#jspsych-survey-text-form")
-    //   .addEventListener("submit", function (e) {
-    //     e.preventDefault();
-    //     // measure response time
-    //     var endTime = performance.now();
-    //     var response_time = endTime - startTime;
-
-    //     // create object to hold responses
-    //     var question_data = {};
-
-    //     // save data
-    //     var trialdata = {
-    //       rt: response_time,
-    //       // label: question_data["Q0"],
-    //       stimId: trial.stimId,
-    //       stimURL: trial.stimURL,
-    //       // target: jsPsych
-    //       //   .timelineVariable("target", true)
-    //       //   .replace("images/", ""),
-    //       // 'foil' :jsPsych.timelineVariable('foil', true).replace('images/', ''),
-    //       responses: JSON.stringify(question_data),
-    //     };
-
-    //     display_element.innerHTML = "";
-
-    //     // next trial
-    //     jsPsych.finishTrial(trialdata);
-    //   });
-
-    // save data: TODO- this should be triggered when the structure is complete
-
-    // var trialdata = {
-    //   rt: response_time,
-    //   // label: question_data["Q0"],
-    //   stimId: trial.stimId,
-    //   stimURL: trial.stimURL,
-    //   // target: jsPsych
-    //   //   .timelineVariable("target", true)
-    //   //   .replace("images/", ""),
-    //   // 'foil' :jsPsych.timelineVariable('foil', true).replace('images/', ''),
-    //   responses: JSON.stringify(question_data),
-    // };
-
-    // display_element.innerHTML = "";
-
-    // // next trial
-    // jsPsych.finishTrial(trialdata);
-
-    // var startTime = performance.now();
-
 
     function endTrial(trial_data) { // called by block_widget when trial ends
 
       trial_data = _.extend(trial_data, {
+        trial_start_time: trial.trialStartTime,
+        relative_time: Date.now() - trial.trialStartTime,
         stimURL: trial.stimURL,
         stimulus: trial.stimulus,
         stimId: trial.stimId,
@@ -211,25 +181,82 @@ jsPsych.plugins["block-construction"] = (function () {
         rep: trial.rep,
         condition: trial.condition,
         chunk_type: trial.chunk_type,
+        phase: trial.phase,
+        zipping_trial_num: trial.zippingTrialNum,
+        fixation_duration: trial.fixationDuration,
+        gap_duration: trial.gapDuration,
+        n_resets: trial.constructionTrial.nResets
       });
 
-      console.log(trial_data)
-      display_element.innerHTML = '';
-      jsPsych.finishTrial(trial_data);
+      var env_divs = document.getElementsByClassName("env-div");
+      Array.prototype.forEach.call(env_divs, env_div => {
+        env_div.style.backgroundColor = "#58CF76";
+      });
+      trial.finished = true;
+
+      // window.blockUniverse.blockMenu.blockKinds = [];
+
+      setTimeout(() => {
+        display_element.innerHTML = '';
+        jsPsych.finishTrial(trial_data);
+      }, 1500);
+      
     };
 
     function blockSender(block_data) { // called by block_widget when a block is placed
-      //console.log(block_data);
-      trial.nBlocksPlaced += 1;
 
-      if (trial.nBlocksPlaced >= trial.nBlocksMax) {
-        // update block counter element
+      if (!trial.finished){
+        //console.log(block_data);
+        trial.nBlocksPlaced += 1;
 
-        // setTimeout(resetBuilding, 300); 
-        // resetBuilding();
-      }
-      // TODO: send block data to mongo
+        if (trial.nBlocksPlaced >= trial.nBlocksMax) {
+          // update block counter element
 
+          // setTimeout(resetBuilding, 300); 
+          // resetBuilding();
+        }
+
+        curr_data = _.extend(block_data, {
+          trial_start_time: trial.trialStartTime,
+          relative_time: Date.now() - trial.trialStartTime,
+          datatype: 'block_placement',
+          stimURL: trial.stimURL,
+          stimulus: trial.stimulus,
+          stimId: trial.stimId,
+          chunk_id: trial.chunk_id,
+          rep: trial.rep,
+          condition: trial.condition,
+          chunk_type: trial.chunk_type,
+          n_block: trial.nBlocksPlaced,
+          n_resets: trial.constructionTrial.nResets
+        });
+
+        trial.dataForwarder(curr_data);
+      };
+
+    };
+
+    function resetSender(reset_data) { // called by block_widget when a block is placed
+
+      if (!trial.finished){
+        curr_data = _.extend(reset_data, {
+          trial_start_time: trial.trialStartTime,
+          relative_time: Date.now() - trial.trialStartTime,
+          datatype: 'reset',
+          stimURL: trial.stimURL,
+          stimulus: trial.stimulus,
+          stimId: trial.stimId,
+          chunk_id: trial.chunk_id,
+          rep: trial.rep,
+          condition: trial.condition,
+          chunk_type: trial.chunk_type,
+          n_block: trial.nBlocksPlaced,
+          n_resets: trial.constructionTrial.nResets
+        });
+
+        trial.dataForwarder(curr_data);
+
+      };
     };
 
   };

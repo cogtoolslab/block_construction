@@ -1,0 +1,76 @@
+expConfig = {
+    "experimentName": "block_construction_zipping",
+    "dbname": "block_construction",
+    "colname": "zipping",
+    "stimColName": "zipping_post_wm_dev", // CHANGE TO ALIGN ZIPPING AND BUILDING STIMS (both silhouettes or both blocks)
+    "iterationName": "post_wm_dev",
+    "completionCode": "5C772792",
+    "devMode": true,
+    "experimentParameters": {
+      "stimuliShuffleSeed": 0,
+      "s3Bucket": "none_specified",
+      "s3StimuliPathFormat": "none_specified",
+      // "shuffleBlocksInJS": true,
+      // "shuffleBlocksInJS": true, // now done in python
+      "prePostZipping": true,
+      "postOnly": true,
+      "workingMemoryVersion": true, // if so, use different plug in
+    },
+    "useMasks": true,
+    "maskURLStem": 'https://zipping-masks-monochrome-16x16.s3.amazonaws.com/zipping-masks-monochrome-16x16-small-',
+    "compensationInfo":"<p>Thank you for participating in our experiment. It should take around <strong>20 minutes</strong> total to complete, including the time it takes to read these instructions. You will receive $5.00 for completing this study (approx. $15/hr).</p><p>When you are finished, the study will be automatically submitted to be reviewed for approval. You can only perform this study one time. We take your compensation and time seriously! Please message us if you run into any problems while completing this study, or if it takes much more time than expected.</p></br><p>Note: We recommend maximizing your browser window to ensure everything is displayed correctly. Please do not refresh the page or press the back button.</p>",
+    "sonaInfo":"<p>Thank you for participating in our experiment. It should take around <strong>30 minutes</strong> total to complete, including the time it takes to read these instructions. You can only perform this study one time.</p><p>Note: We recommend maximizing your browser window to ensure everything is displayed correctly. Please do not refresh the page or press the back button.</p>",
+    "chunkDuration": 1000,
+    "chunkOnset": 1000, // changed from 500 to 1000 so that 500ms composite duration doesn't go immediately to chunks
+    "buildingReps": 4,
+    // change instructions
+    "mainInstructions": "<p>This experiment consists of <strong>Two</strong> parts. We will give you instructions for each part as they come up.<p>",
+    // "preIntro": '<p>Part <strong>One</strong>. Press Next to Continue.</p>',
+    "postIntro": '<p>Great job! Now on to Part <strong>Two</strong>. In this part you\'ll be doing a different task from the one you just did. Press Next to see the instructions for this task.</p>',
+    "zippingInstructions": '<p>In this part of the study you will be shown various shapes and asked to make judgements about their parts.</p><p>In each trial, you will first be shown a <strong>large shape</strong>, like this one:</p><img src="../img/instruction_images/1_whole.png" style="max-width: 200px"><p>This shape will quickly <strong>disappear behind a black and white grid</strong>, and you then will be shown <strong>two smaller shapes</strong>, that might look something like this:</p><img src="../img/instruction_images/1_valid_tall.png" style="max-width: 200px"><p><strong>Your task is to say whether or not the large shape could be made by placing the two smaller shapes next to each other.</strong> For example, this <i>is</i> the case for the shapes you\'ve just seen- if the small shapes were "pushed" together so that they were touching, they would make the large shape above. You would respond <strong>yes ✅</strong> in this case, by pressing "YES_KEY". On the other hand, the two shapes below would <i>not</i> make up the larger shape when moved together:</p><img src="../img/instruction_images/1_invalid_tall.png" style="max-width: 200px"></br><p>You would respond <strong>no ❌</strong> in this case, by pressing "NO_KEY".</p><p>Sometimes the two smaller shapes will appear side by side, as they do in the examples above. In other trials, you\'ll see two shapes on top of one another, like this:</p><img src="../img/instruction_images/1_valid_wide.png" style="max-width: 200px"></br><p>The task is the same- you have to decide whether the small shapes can make up the larger one- but in these trials you would have to imagine whether they could be pushed together vertically to make the big shape. The small shapes will always appear the right way up, which means you won\'t need to rotate them in your head to answer yes or no. But make sure you look at <strong>both</strong> shapes carefully, as both need to be right for you to answer yes. Here are some more examples:</p><img src="../img/instruction_images/example_responses.png" style="max-width: 500px"></br><p>Between trials, you will see be a center cross (+) on the screen so that you know where to look. When the small shapes appear the cross will turn blue (<span class="blue-text">+</span>), letting you know that you can respond. <i>Please try to press the correct key as quickly as possible</i>. Once you\'ve pressed a key, you\'ll be told whether your response was right or wrong. There will be 2 blocks of 36 trials, and you will have a chance to take a quick break between each of these blocks. Press next to load the task and continue.</p>', 
+    "buildingIntro": 'Part <strong>One</strong>. This is the shorter of the two parts. Press Next to continue.',
+    "buildingInstructions":'<p>In this part, you will see a series of shapes, and will asked build block towers that match those shapes.</p><p>The shapes will appear in the left window. In the right window, you can click on blocks to pick them up. When you hover over the right window, a transparent block will appear to show you where your block will be placed, and you can click again to drop it in that location. Blocks will always appear on the floor, or on top of another block.</p><img src="../img/instruction_images/build_demo_cropped.gif" style="max-width: 800px"><p>Blocks cannot be moved once placed, but you can remove all of the blocks and start again by pressing the reset button. You have as long as you need to build the tower, but you will only move on to the next trial when you have perfectly copied the shape somewhere in the right window. You will build 16 towers, then move on to Part Two. Click Next to start.</p>',
+    "zippingPracticeTrials": [
+      // {
+      //   'stimURL': '../img/practice_trials/practice_square_composite.png',
+      //   'part_type':'tall',
+      //   'part_a_stimulus': '../img/practice_trials/practice_square_valid_tall_A.png',
+      //   'part_b_stimulus': '../img/practice_trials/practice_square_valid_tall_B.png',
+      //   'stimDuration': 1000,
+      //   "chunkDuration": 10000,
+      //   "chunkOnset": 2000,
+      //   "validity": "valid",
+      // },
+      // {
+      //   'stimURL': '../img/practice_trials/practice_square_composite.png',
+      //   'part_type':'wide',
+      //   'part_a_stimulus': '../img/practice_trials/practice_square_valid_wide_A.png',
+      //   'part_b_stimulus': '../img/practice_trials/practice_square_valid_wide_B.png',
+      //   'stimDuration': 1000,
+      //   "chunkDuration": 10000,
+      //   "chunkOnset": 2000,
+      //   "validity": "valid",
+      // },
+      // {
+      //   'stimURL': '../img/practice_trials/practice_square_composite.png',
+      //   'part_type':'tall',
+      //   'part_a_stimulus': '../img/practice_trials/practice_square_invalid_tall_A.png',
+      //   'part_b_stimulus': '../img/practice_trials/practice_square_invalid_tall_B.png',
+      //   'stimDuration': 1000,
+      //   "chunkDuration": 10000,
+      //   "chunkOnset": 2000,
+      //   "validity": "invalid",
+      // },
+      // {
+      //   'stimURL': '../img/practice_trials/practice_square_composite.png',
+      //   'part_type':'wide',
+      //   'part_a_stimulus': '../img/practice_trials/practice_square_invalid_wide_A.png',
+      //   'part_b_stimulus': '../img/practice_trials/practice_square_invalid_wide_B.png',
+      //   'stimDuration': 1000,
+      //   "chunkDuration": 10000,
+      //   "chunkOnset": 2000,
+      //   "validity": "invalid",
+      // },
+    ], 
+  }
+  

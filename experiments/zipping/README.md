@@ -29,6 +29,9 @@ Experiment log for zipping experiment
 The problem with this version is that in some trials (3 ambiguous and 4 novel), the participant gets shown chunks they've already built. This isn't the end of the world, but it's not the cleanest design-- ideally we'd want to counterbalance the trials in which they see these pre-built chunks. For now though, I'm going to leave them in.
 
 
+## Calibration Experiments
+We ran these to test parameters, check whether people were at a reasonable level of accuracy (off floor/ ceiling), and measure learning effects within zipping trials.
+
 ## zipping_calibration
 - Only running zipping trials to understand dynamics/ sensitivity of this experiment
 - Uses different config: `experimentConfigZippingCalibration.js`
@@ -37,7 +40,6 @@ The problem with this version is that in some trials (3 ambiguous and 4 novel), 
   - valid chunk is selected at random (i.e. from A or B)
   - foil is selected at random from remaining chunks of that direction (minus A and B)
 - Running experiment todos:
-  - 
 
 #### zipping_calibration_sona_pilot
 - Run 5 ppts on sona to check that data saving properly
@@ -70,9 +72,37 @@ The problem with this version is that in some trials (3 ambiguous and 4 novel), 
 - Updated stim set: `zipping_calibration_pilot_3_sona_stims_1`
   - `26_random_composites_1`
 
-#### WAITING ON CALIBRATION: full_2
-Not yet run- waiting on zipping_calibration for insights
-To implement:
-- Always display one valid chunk in invalid trials (along with a random foil?) (this makes things simpler actually). Adapt code from calibration study.
-- Run a color version where everything is bricks of the same color
-- Compatibility condition should be removed/ updated in trial generation
+
+## Actual Building Experiments
+After calibrating the zipping trials, we returned to the pre-post study we had originally designed.
+
+### zipping_pre_post_run_0
+- Zipping trials occur in pretest and posttest, with building in between.
+  - Zipping (72 trials, silhouettes)
+  - Building (16 trials, towers)
+  - Zipping (72 trials, silhouettes)
+- Ran 72(+) ppts
+- 12 ppts per rotation
+
+
+### zipping_post_run_0
+- Zipping trials occur only after building, in a posttest.
+  - Building (16 trials, silhouettes)
+  - Zipping (72 trials, towers)
+- Goal: Run 36 ppts
+- Collected 27 full datasets
+
+
+### zipping_post_wm
+- Changes:
+  - Align stims in both phases (both towers or both silhouettes)
+  - Try to enforce chunking in building phase by making this a working memory task.
+    - i.e. display tower for a few seconds.
+    - people place four blocks
+    - correct => move on
+    - incorrect => show tower again immediately
+  - Increased brightness of blocks
+- Post-only
+  - Building (16 trials, towers)
+  - Zipping (72 trials, towers)
+- 

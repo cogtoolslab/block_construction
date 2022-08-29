@@ -217,6 +217,10 @@ body{
     /* margin: 10px auto; */
 }
 
+/* .env-row{
+    min-width: 1000px;
+} */
+
 .env-div {
     background-color: #FFD819;
     padding: 20px;
@@ -243,6 +247,7 @@ body{
 
 #parts{
     position: relative;
+    z-index:-1;
     top: 50%;
     /* margin-left: auto;  removed to center align wides*/
     margin-right: auto;
@@ -290,6 +295,19 @@ body{
     /* 2x margin */
 }
 
+.monochrome#top-stimulus{
+    object-position: 0px 0px;
+    transform: translate(0px, -150px);
+}
+
+.monochrome#left-stimulus{
+    object-position: 49px 0px;
+}
+
+.monochrome#right-stimulus{
+    transform: translate(147px, 0px);
+}
+
 
 #bottom-stimulus{   
      /* margin-bottom: 160px;  */
@@ -313,9 +331,14 @@ body{
 }
 
 
-.jspsych-content {
+/* .jspsych-content {
+    max-width: 900px;
+} */
+
+.jspsych-content p {
     max-width: 900px;
 }
+
 
 .consent {
     text-align: left;
@@ -327,6 +350,7 @@ body{
 
 img.fixation{
     width: 100px; /* MUST BE THE SAME AS WIDTH OF composite_stimulus. Change image, not css */
+    z-index:1;
     /* width: 150px !important;
     display: block;
     position: absolute;
@@ -350,7 +374,7 @@ img.fixation{
     position: absolute !important;
     top: 90%;
     /* left: 100%; */
-    width: 80%;
+    width: 70%;
     margin-left: auto;
     margin-right: auto;
     left: 0;
