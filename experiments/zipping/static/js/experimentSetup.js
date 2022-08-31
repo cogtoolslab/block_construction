@@ -46,17 +46,17 @@ function setupExperiment() {
             }, 500);
 
             if (expConfig.experimentParameters.prePostZipping) {
-                // setupBuildingTrials(trialList, trialList => {
+                setupBuildingTrials(trialList, trialList => {
                     setupPrePostZippingTrials(trialList, trialList => {
                         setupOtherTrials(trialList);
                     });
-                // });
+                });
             } else if (expConfig.buildingReps > 0 ){
-                // setupBuildingTrials(trialList, trialList => {
+                setupBuildingTrials(trialList, trialList => {
                     setupZippingTrials(trialList, trialList => {
                         setupOtherTrials(trialList);
                     });
-                // });
+                });
             } else {
                 setupZippingTrials(trialList, trialList => {
                     setupOtherTrials(trialList);
@@ -93,7 +93,8 @@ function setupExperiment() {
 
                     stimURL = metadata.chunk_building_url_stem + chunk_name.slice(-3) + '.json'
                     return {
-                        type: 'block-construction',
+                        type: expConfig.experimentParameters.workingMemoryVersion ? 'block-construction-wm' : 'block-construction',
+                        wmBuildingParams : expConfig.experimentParameters.wmBuildingParams,
                         stimulus: stimURLsToJSONs[stimURL],
                         condition: metadata.condition,
                         stimId: chunk_name.slice(-3), // number stim in S3
@@ -102,7 +103,7 @@ function setupExperiment() {
                         stimURL: stimURL,
                         condition: metadata.condition,
                         rep: rep,
-                        prompt: "Please build the shape on the left by clicking to pick up and place blocks on the right.",
+                        prompt: "Please build the tower on the left by clicking to pick up and place blocks on the right.",
                         offset: chunk_name.substring(0, 4) == 'tall' ? 5 : 4,
                         dataForwarder: () => dataForwarder
                     }
@@ -245,7 +246,7 @@ function setupExperiment() {
             var blockIntro = {
                 type: 'instructions',
                 pages: [
-                    '<p></p>'+ mapKeys('<p>Reminder: press <strong>"NO_KEY" if the small shapes cannot</strong> be combined to make the big one, press <strong>"YES_KEY" if they can</strong>.</p><p>Press Next when you are ready to start the next set of trials.</p>')
+                    '<p></p>'+ mapKeys('<p>Reminder: press <strong>"NO_KEY" if the small towers cannot</strong> be combined to make the large one, press <strong>"YES_KEY" if they can</strong>.</p><p>Press Next when you are ready to start the next set of trials.</p>')
                 ],
                 show_clickable_nav: true
             };
@@ -264,7 +265,7 @@ function setupExperiment() {
             var zippingPracticeOutro = {
                 type: 'instructions',
                 pages: [
-                    '<p>Great job! In the trials you\'ve just completed, you were shown the same large shape in every trial, but in the actual trials these will vary from trial to trial, so make sure you pay attention to their shape. They will also be a lot faster! Press Next to move on to the actual experiment.</p>',
+                    '<p>Great job! In the trials you\'ve just completed, you were shown the same large tower in every trial, but in the actual trials these will vary from trial to trial, so make sure you pay attention to their shape. They will also be a lot faster! Press Next to move on to the actual experiment.</p>',
                 ],
                 show_clickable_nav: true
             };
@@ -332,7 +333,7 @@ function setupExperiment() {
             var zippingPracticeOutro = {
                 type: 'instructions',
                 pages: [
-                    '<p>Great job! In the trials you\'ve just completed, you were shown the same large shape in every trial, but in the actual trials these can vary from trial to trial, so make sure you pay attention to their shape. They will also be a lot faster! Press Next to move on to the actual experiment.<p>',
+                    '<p>Great job! In the trials you\'ve just completed, you were shown the same large tower in every trial, but in the actual trials these will vary from trial to trial, so make sure you pay attention to their shape. They will also be a lot faster! Press Next to move on to the actual experiment.</p>',
                 ],
                 show_clickable_nav: true
             };
@@ -448,7 +449,7 @@ function setupExperiment() {
             var blockIntro = {
                 type: 'instructions',
                 pages: [
-                    '<p>Block ' + (i + 1) + ' of ' + zippingBlocks.length + mapKeys('.</p><p>Press <strong>"NO_KEY" if the small shapes cannot</strong> be combined to make the big one, press <strong>"YES_KEY" if they can</strong>.</p><p>Press Next when you are ready to start.</p>')
+                    '<p>Block ' + (i + 1) + ' of ' + zippingBlocks.length + mapKeys('.</p><p>Press <strong>"NO_KEY" if the small towers cannot</strong> be combined to make the big one, press <strong>"YES_KEY" if they can</strong>.</p><p>Press Next when you are ready to start.</p>')
                 ],
                 show_clickable_nav: true
             };
@@ -487,7 +488,7 @@ function setupExperiment() {
             }
 
             let trialObj = {
-                type: 'tower-zipping',
+                type: expConfig.experimentParameters.workingMemoryVersion ? 'tower-zipping-wm' : 'tower-zipping',
                 stimulus: practiceTrial.stimURL,
                 stimURL: practiceTrial.stimURL,
                 practice: true,

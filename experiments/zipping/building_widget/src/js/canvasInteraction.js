@@ -97,4 +97,3 @@ function checkConnected(startBlocks, targetBlocks){
     return false;
     
 }
-
