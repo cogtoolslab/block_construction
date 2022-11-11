@@ -9,7 +9,7 @@
  **/
 
 
-jsPsych.plugins["tower-zipping"] = (function () {
+jsPsych.plugins["tower-zipping-wm"] = (function () {
 
   var plugin = {};
 
@@ -19,7 +19,7 @@ jsPsych.plugins["tower-zipping"] = (function () {
   jsPsych.pluginAPI.registerPreload('tower-zipping', 'mask', 'image');
 
   plugin.info = {
-    name: 'tower-zipping',
+    name: 'tower-zipping-wm',
     description: '',
     parameters: {
       composite_id: {
@@ -126,13 +126,13 @@ jsPsych.plugins["tower-zipping"] = (function () {
         type: jsPsych.plugins.parameterType.INT,
         pretty_name: 'Gap duration',
         default: 0,
-        description: 'How long to display a blank between composite and chunks.'
+        description: 'How long to display a blank between composite and parts.'
       },
       chunkDuration: {
         type: jsPsych.plugins.parameterType.INT,
-        pretty_name: 'Chunk duration',
+        pretty_name: 'parts duration',
         default: null,
-        description: 'How long to display chunks for.'
+        description: 'How long to display parts for.'
       },
       stimulus_duration: {
         type: jsPsych.plugins.parameterType.INT,
@@ -198,7 +198,7 @@ jsPsych.plugins["tower-zipping"] = (function () {
     html += '<img src="' + trial.stimulus + '" id="composite-stimulus" style="display: none">';
     
     if (trial.mask) {
-      html += '<img src="' + trial.mask + '" id="mask" style="display: none">';
+      html += '<img src="' + trial.mask + '" class="monochrome"  id="mask" style="display: none">';
     }
 
     // html += '<div id="fixation-div">'
@@ -218,11 +218,11 @@ jsPsych.plugins["tower-zipping"] = (function () {
 
     // positions contingent on tall/wide 
     if (trial.part_type == 'tall') {
-      html += '<img src="' + trial.part_a_stimulus + '" class="part-stimulus ' + part_class + '" id="left-stimulus" style="display: none">';
-      html += '<img src="' + trial.part_b_stimulus + '" class="part-stimulus ' + part_class + '" id="right-stimulus" style="display: none">';
+      html += '<img src="' + trial.part_a_stimulus + '" class="part-stimulus ' + part_class + ' monochrome" id="left-stimulus" style="display: none">';
+      html += '<img src="' + trial.part_b_stimulus + '" class="part-stimulus ' + part_class + ' monochrome" id="right-stimulus" style="display: none">';
     } else {
-      html += '<img src="' + trial.part_b_stimulus + '" class="part-stimulus ' + part_class + '" id="top-stimulus" style="display: none" >';
-      html += '<img src="' + trial.part_a_stimulus + '" class="part-stimulus ' + part_class + '" id="bottom-stimulus" style="display: none">';
+      html += '<img src="' + trial.part_b_stimulus + '" class="part-stimulus ' + part_class + ' monochrome" id="top-stimulus" style="display: none" >';
+      html += '<img src="' + trial.part_a_stimulus + '" class="part-stimulus ' + part_class + ' monochrome" id="bottom-stimulus" style="display: none">';
     };
 
     // html += '<p id="please-respond">Respond! "Z" for NO, "M" for YES.</p>'

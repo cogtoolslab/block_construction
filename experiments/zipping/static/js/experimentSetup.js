@@ -29,7 +29,7 @@ function setupExperiment() {
 
 
         socket.on('stimulus', data => {
-            // console.log('received', data);
+            console.log('received metadata', data);
             metadata = data;
             var trialList = [];
 
@@ -40,6 +40,10 @@ function setupExperiment() {
                 'invalid':metadata.response_key_list[1]
             }
             // console.log(metadata.response_key_dict);
+
+            setTimeout(() =>{
+                sendMetadata(metadata);
+            }, 500);
 
             if (expConfig.experimentParameters.prePostZipping) {
                 setupBuildingTrials(trialList, trialList => {
@@ -89,18 +93,20 @@ function setupExperiment() {
 
                     stimURL = metadata.chunk_building_url_stem + chunk_name.slice(-3) + '.json'
                     return {
-                        type: 'block-construction',
+                        type: expConfig.experimentParameters.workingMemoryVersion ? 'block-construction-wm' : 'block-construction',
+                        wmBuildingParams : expConfig.experimentParameters.wmBuildingParams,
                         stimulus: stimURLsToJSONs[stimURL],
+                        condition: metadata.condition,
                         stimId: chunk_name.slice(-3), // number stim in S3
                         chunk_id: chunk_name, //experiment specific
                         chunk_type: chunk_name.substring(0, 4),
                         stimURL: stimURL,
                         condition: metadata.condition,
                         rep: rep,
-                        prompt: "Please build the shape on the left by clicking to pick up and place blocks on the right.",
-                        offset: chunk_name.substring(0, 4) == 'tall' ? 5 : 4
+                        prompt: "Please build the tower on the left by clicking to pick up and place blocks on the right.",
+                        offset: chunk_name.substring(0, 4) == 'tall' ? 5 : 4,
+                        dataForwarder: () => dataForwarder
                     }
-
 
                 });
 
@@ -108,8 +114,20 @@ function setupExperiment() {
                     trialList.push(buildingTrial);
                 });
 
-
             };
+
+            let buildingInstructionPages = [];
+
+            if (expConfig.buildingIntro) {buildingInstructionPages.push(expConfig.buildingIntro)};
+            if (expConfig.buildingInstructions) {buildingInstructionPages.push(expConfig.buildingInstructions)};
+
+            let buildingInstructionsTrials = {
+                type: 'instructions',
+                pages: buildingInstructionPages,
+                show_clickable_nav: true
+            };
+
+            trialList.unshift(buildingInstructionsTrials);
 
             // console.log('building trials:', trialList);
 
@@ -129,42 +147,16 @@ function setupExperiment() {
          * Sets up zipping blocks either end of current trial list
          */
 
-        var zippingInstructions = {
-            type: 'instructions',
-            pages: [expConfig.zippingBlockIntro,
-                mapKeys(expConfig.zippingInstructions)],
-            show_clickable_nav: true
-        };
-
-        // trialList.push(zippingInstructions);
-
-        if (expConfig.zippingPracticeTrials){ //& !expConfig.devMode) {
-
-            let zippingPracticeBlock = setupZippingPracticeTrials(trialList);
-        
-            zippingPracticeBlock.forEach((trial) => {
-                trialList.push(trial);
-            });
-
-            var zippingPracticeOutro = {
-                type: 'instructions',
-                pages: [
-                    'Great job! In the trials you\'ve just completed, you were shown the same large shape in every trial, but in the actual trials these can vary trial to trial, so make sure you pay attention to their shape. They will also be a lot faster! Press Next to move on to the actual experiment.',
-                ],
-                show_clickable_nav: true
-            };
-
-            trialList.push(zippingPracticeOutro);
-        }
-
         var zippingBlocks = {};
 
         var trialNum = 0;
 
+        let phases = expConfig.experimentParameters.postOnly ? ['post_zipping_trials'] : ['pre_zipping_trials','post_zipping_trials'];
+
         // unlike previous versions, we don't iterate over stim durations.
         // blocks are defined in metadata.
 
-        ['pre_zipping_trials','post_zipping_trials'].forEach(phase => {
+        phases.forEach(phase => {
 
             metadata[phase].forEach((zipping_trial) => {
 
@@ -178,7 +170,7 @@ function setupExperiment() {
                 }
 
                 let trialObj = {
-                    type: 'tower-zipping',
+                    type: expConfig.experimentParameters.workingMemoryVersion ? 'tower-zipping-wm' : 'tower-zipping',
                     stimulus: stimURL,
                     stimURL: stimURL,
                     composite_id: zipping_trial.composite,
@@ -188,6 +180,8 @@ function setupExperiment() {
                     condition: zipping_trial.condition,
                     composite_talls_name: zipping_trial.composite,
                     // composite_wides_name: zipping_trial.composite_wides_name,
+                    actual_tall_parts: zipping_trial.actual_tall_parts,
+                    actual_wide_parts: zipping_trial.actual_wide_parts,
                     part_type: zipping_trial.part_type,
                     part_a_id: zipping_trial.part_a,
                     part_a_stimulus: metadata.chunk_zipping_url_stem + zipping_trial.part_a.slice(-3) + '.png',
@@ -210,6 +204,7 @@ function setupExperiment() {
                     valid_key: metadata.response_key_dict['valid'],
                     invalid_key: metadata.response_key_dict['invalid'],
                     phase: phase,
+                    block: zipping_trial.block,
                     zippingTrialNum: trialNum
                 };
 
@@ -224,7 +219,19 @@ function setupExperiment() {
             });
         });
 
-        console.log(zippingBlocks);
+        let preInstructions = {
+            type: 'instructions',
+            pages: [expConfig.preIntro,
+                mapKeys(expConfig.zippingInstructions)],
+            show_clickable_nav: true
+        };
+
+        let postInstructions = {
+            type: 'instructions',
+            pages: [expConfig.postIntro,
+                mapKeys(expConfig.zippingInstructions)],
+            show_clickable_nav: true
+        };
 
         let zippingPre = [];
         let zippingPost = [];
@@ -239,7 +246,7 @@ function setupExperiment() {
             var blockIntro = {
                 type: 'instructions',
                 pages: [
-                    '<p></p>'+ mapKeys('<p>Press <strong>"NO_KEY" if the small shapes cannot</strong> be combined to make the big one, press <strong>"YES_KEY" if they can</strong>.</p><p>Press Next when you are ready to start.</p>')
+                    '<p></p>'+ mapKeys('<p>Reminder: press <strong>"NO_KEY" if the small towers cannot</strong> be combined to make the large one, press <strong>"YES_KEY" if they can</strong>.</p><p>Press Next when you are ready to start the next set of trials.</p>')
                 ],
                 show_clickable_nav: true
             };
@@ -250,20 +257,46 @@ function setupExperiment() {
 
         }
 
-        // place pre and post zipping trials either side of previously constructed building trials
-        zippingPre.forEach((preBlock) => {
-            preBlock.forEach((trial) => {
-                trialList.unshift(trial);
-            });
-        });
+        // PRACTICE TRIALS
+        if (expConfig.zippingPracticeTrials){ //& !expConfig.devMode) {
 
+            let zippingPracticeBlock = setupZippingPracticeTrials(); //setupZippingPracticeTrials(trialList);
+
+            var zippingPracticeOutro = {
+                type: 'instructions',
+                pages: [
+                    '<p>Great job! In the trials you\'ve just completed, you were shown the same large tower in every trial, but in the actual trials these will vary from trial to trial, so make sure you pay attention to their shape. They will also be a lot faster! Press Next to move on to the actual experiment.</p>',
+                ],
+                show_clickable_nav: true
+            };
+
+            zippingPracticeBlock.push(zippingPracticeOutro);
+
+            console.log('expConfig.postOnly', expConfig.experimentParameters.postOnly);
+
+            if(! expConfig.experimentParameters.postOnly) {
+                zippingPre.unshift(zippingPracticeBlock);
+            } else {
+                zippingPost.unshift(zippingPracticeBlock);
+            };
+        }
+
+
+        // CONSTRUCT PRE AND POST BLOCKS
+        if (!expConfig.experimentParameters.postOnly) {
+            let flatPre = _.flatten(zippingPre);
+            flatPre.unshift(preInstructions);
+            trialList = _.concat(flatPre, trialList)
+        };
+
+
+        trialList.push(postInstructions);
         zippingPost.forEach((postBlock) => {
             postBlock.forEach((trial) => {
                 trialList.push(trial);
             });
         });
 
-        console.log(trialList);
 
         callback(trialList);
     };
@@ -276,20 +309,6 @@ function setupExperiment() {
          * Converts to URLs
          * 
          */
-
-        // update instructions with randomized keys
-
-
-        // let updatedZippingInstructions = expConfig.zippingInstructions.replace(/yes_key/i,metadata.response_key_dict['valid'])
-
-        // let updatedZippingInstructions2 = updatedZippingInstructions.replace(/no_key/i,metadata.response_key_dict['invalid'])
-
-        // console.log(updatedZippingInstructions2);
-
-        // console.log(expConfig.zippingInstructions.replace(/no_key/i,metadata.response_key_dict['invalid']))
-
-        // updatedZippingInstructions = updatedZippingInstructions.replace(/no_key/i, metadata.response_key_dict['invalid'])
-
 
         var zippingInstructions = {
             type: 'instructions',
@@ -314,7 +333,7 @@ function setupExperiment() {
             var zippingPracticeOutro = {
                 type: 'instructions',
                 pages: [
-                    'Great job! In the trials you\'ve just completed, you were shown the same large shape in every trial, but in the actual trials these can vary trial to trial, so make sure you pay attention to their shape. They will also be a lot faster! Press Next to move on to the actual experiment.',
+                    '<p>Great job! In the trials you\'ve just completed, you were shown the same large tower in every trial, but in the actual trials these will vary from trial to trial, so make sure you pay attention to their shape. They will also be a lot faster! Press Next to move on to the actual experiment.</p>',
                 ],
                 show_clickable_nav: true
             };
@@ -348,9 +367,8 @@ function setupExperiment() {
                     maskURL = expConfig.maskURLStem + maskID + '.png'
                 }
 
-
                 let trialObj = {
-                    type: 'tower-zipping',
+                    type: expConfig.experimentParameters.workingMemoryVersion ? 'tower-zipping-wm' : 'tower-zipping',
                     stimulus: stimURL,
                     stimURL: stimURL,
                     composite_id: zipping_trial.composite_talls_name,
@@ -431,7 +449,7 @@ function setupExperiment() {
             var blockIntro = {
                 type: 'instructions',
                 pages: [
-                    '<p>Block ' + (i + 1) + ' of ' + zippingBlocks.length + mapKeys('.</p><p>Press <strong>"NO_KEY" if the small shapes cannot</strong> be combined to make the big one, press <strong>"YES_KEY" if they can</strong>.</p><p>Press Next when you are ready to start.</p>')
+                    '<p>Block ' + (i + 1) + ' of ' + zippingBlocks.length + mapKeys('.</p><p>Press <strong>"NO_KEY" if the small towers cannot</strong> be combined to make the big one, press <strong>"YES_KEY" if they can</strong>.</p><p>Press Next when you are ready to start.</p>')
                 ],
                 show_clickable_nav: true
             };
@@ -470,7 +488,7 @@ function setupExperiment() {
             }
 
             let trialObj = {
-                type: 'tower-zipping',
+                type: expConfig.experimentParameters.workingMemoryVersion ? 'tower-zipping-wm' : 'tower-zipping',
                 stimulus: practiceTrial.stimURL,
                 stimURL: practiceTrial.stimURL,
                 practice: true,
@@ -511,7 +529,7 @@ function setupExperiment() {
         var zippingPracticeIntro = {
             type: 'instructions',
             pages: [ mapKeys(
-                'Now you will have a chance to practice the task. </br> Place one finger over \"NO_KEY\" (no! ❌)  and one over \"YES_KEY\" (yes! ✅), then press Next to continue.'),
+                '<p>Now you will have a chance to practice this task. </br> Place one finger over \"NO_KEY\" (no! ❌)  and one over \"YES_KEY\" (yes! ✅), then press Next to continue.</p>'),
             ],
             show_clickable_nav: true
         };
@@ -543,12 +561,20 @@ function setupExperiment() {
 
             var instructionPages = []
 
-            if (expConfig.compensationInfo){
+            if (expConfig.compensationInfo && studyLocation != 'SONA'){
                 instructionPages.push(expConfig.compensationInfo);
+            };
+
+            if (studyLocation == 'SONA'){
+                instructionPages.push(expConfig.sonaInfo);
             }
 
-            if (expConfig.buildingInstructions) {instructionPages.push(expConfig.buildingInstructions)}
-            if (expConfig.zippingInstructions) {instructionPages.push(mapKeys(expConfig.zippingInstructions))}
+            if (expConfig.mainInstructions){
+                instructionPages.push(expConfig.mainInstructions);
+            }
+
+            // if (expConfig.buildingInstructions) {instructionPages.push(expConfig.buildingInstructions)}
+            // if (expConfig.zippingInstructions) {instructionPages.push(mapKeys(expConfig.zippingInstructions))}
 
             // instructionPages.push('That\'s all you need to know! Press Next to start Part 1.')
 
@@ -560,8 +586,6 @@ function setupExperiment() {
 
             trialList.unshift(instructions);
             trialList.unshift(consent); // add consent before instructions
-
-            
 
 
             // Exit survey
@@ -579,7 +603,35 @@ function setupExperiment() {
 
     };
 
+    let commonData = {
+        experimentName: expConfig.experimentName,
+        dbname: expConfig.dbname,
+        colname: expConfig.colname,
+        iterationName: expConfig.iterationName ? expConfig.iterationName : 'none_provided_in_config',
+        configId: expConfig.configId,
+        workerID: workerID,
+        gameID: gameID,
+        studyLocation: studyLocation
+    };
 
+    let sendMetadata = function (meta) {
+        var postData = _.extend(
+          {datatype: 'metadata'},
+          commonData,
+          meta
+        );
+        console.log('meta', postData);
+        socket.emit("currentData", postData);
+    };
+
+    let dataForwarder = function (withinTrialData) {
+        var postData = _.extend(
+          {},
+          commonData,
+          withinTrialData
+        );
+        socket.emit("currentData", postData);
+    };
 
     // Add all trials to timeline
 
@@ -594,18 +646,10 @@ function setupExperiment() {
                 console.log('Trial data:', trialData);
                 // Merge data from a single trial with
                 // variables to be uploaded with all data
-                var packet = _.extend({}, trialData, {
+                var packet = _.extend({}, trialData, commonData, {
                     // prolificId(s): TODO: Hash and store prolific ID(s) in other file
                     datatype: 'trial_end',
-                    experimentName: expConfig.experimentName,
-                    dbname: expConfig.dbname,
-                    colname: expConfig.colname,
-                    iterationName: expConfig.iterationName ? expConfig.iterationName : 'none_provided_in_config',
-                    configId: expConfig.configId,
-                    workerID: workerID,
-                    gameID: gameID,
-                    response_key_dict: metadata.response_key_dict,
-                    studyLocation: studyLocation
+                    response_key_dict: metadata.response_key_dict
                 });
 
                 // console.log(trialData);

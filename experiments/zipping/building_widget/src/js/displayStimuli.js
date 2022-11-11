@@ -76,11 +76,11 @@ function showBlock(env, block, individual_blocks = false) {
 }
 
 class Grid {
-  constructor() {
-    this.grid_left = -9;
-    this.grid_right = 11;
-    this.grid_bottom = 0;
-    this.grid_top = 20;
+  constructor(grid_left = -9, grid_right = 11, grid_bottom = 0, grid_top = 20) {
+    this.grid_left = grid_left;
+    this.grid_right = grid_right;
+    this.grid_bottom = grid_bottom;
+    this.grid_top = grid_top;
   }
 
   setup() {
@@ -96,7 +96,7 @@ class Grid {
 
     let j = this.grid_bottom;
     while (j < this.grid_top) {
-      this.grid_y[j] = (config.canvasHeight - config.floorHeight) - (config.stim_scale/2) - (config.stim_scale * j);
+      this.grid_y[j] = (config.canvasHeight - config.floorHeight) - (config.stim_scale / 2) - (config.stim_scale * j);
       j = j + 1;
     }
   }
@@ -105,15 +105,15 @@ class Grid {
     var squareWidth = config.stim_scale;
     var squareHeight = config.stim_scale;
 
-    const grid_left = -9;
-    const grid_right = 11;
-    const grid_bottom = 0;
-    const grid_top = 20;
+    // const grid_left = -9;
+    // const grid_right = 11;
+    // const grid_bottom = 0;
+    // const grid_top = 20;
 
-    let i = grid_left;
-    while (i < grid_right) {
-      let j = grid_bottom;
-      while (j < grid_top) {
+    let i = this.grid_left;
+    while (i < this.grid_right) {
+      let j = this.grid_bottom;
+      while (j < this.grid_top) {
         env.push();
         env.rectMode(env.CENTER);
         env.stroke([190, 190, 255]);
@@ -130,23 +130,23 @@ class Grid {
 
 function showStimFloor(p5stim, floorType, showTickMark) {
   const floorX = config.stimCanvasWidth / 2,
-        floorY = config.floorY;
+    floorY = config.floorY;
   p5stim.push();
-  if (floorType == 'line'){ // line floor
+  if (floorType == 'line') { // line floor
     p5stim.stroke(config.stimFloorColor);
     p5stim.strokeWeight(3);
-    p5stim.line(floorX - (config.floorWidth/2), 
-                floorY - (config.floorHeight/2) + 3, //+3 for linewidth
-                floorX + (config.floorWidth/2),
-                floorY - (config.floorHeight/2) + 3); //+3 for linewidth
+    p5stim.line(floorX - (config.floorWidth / 2),
+      floorY - (config.floorHeight / 2) + 3, //+3 for linewidth
+      floorX + (config.floorWidth / 2),
+      floorY - (config.floorHeight / 2) + 3); //+3 for linewidth
 
     // center tick
-    if(showTickMark){
+    if (showTickMark) {
       p5stim.line(
         floorX,
-        floorY - (config.floorHeight/2) + 3, //+3 for linewidth
+        floorY - (config.floorHeight / 2) + 3, //+3 for linewidth
         floorX,
-        floorY - (config.floorHeight/2) + 23, //+3 for linewidth + 20 for tick 
+        floorY - (config.floorHeight / 2) + 23, //+3 for linewidth + 20 for tick
       );
     };
 
@@ -154,7 +154,7 @@ function showStimFloor(p5stim, floorType, showTickMark) {
     p5stim.stroke(220);
     p5stim.strokeWeight(2);
     const floorHeight = config.floorHeight,
-          floorWidth = config.stimCanvasWidth * 1.5;
+      floorWidth = config.stimCanvasWidth * 1.5;
     p5stim.translate(floorX, floorY);
     p5stim.rectMode(p5stim.CENTER);
     p5stim.fill([28, 54, 62]);
@@ -162,7 +162,7 @@ function showStimFloor(p5stim, floorType, showTickMark) {
     //showMarkers(p5stim);
   }
   p5stim.pop();
-  
+
 }
 
 // function showStimFloor(p5stim) {
@@ -186,9 +186,9 @@ function showMarkers(p5stim) {
   p5stim.stroke([255, 0, 0]);
   p5stim.strokeWeight(1);
   p5stim.line(
-    config.canvasWidth / (4/3),
+    config.canvasWidth / (4 / 3),
     config.canvasHeight - config.floorHeight,
-    config.canvasWidth / (4/3),
+    config.canvasWidth / (4 / 3),
     config.canvasHeight - config.floorHeight + 15
   );
   p5stim.line(
@@ -201,14 +201,14 @@ function showMarkers(p5stim) {
 }
 
 
-function translateTower(targetBlocks, xOffset, yOffset){
+function translateTower(targetBlocks, xOffset, yOffset) {
   if (xOffset == null) {
     xOffset = config.xSquareOffset;
   }
   if (yOffset == null) {
     yOffset = config.ySquareOffset;
   }
-  translated = targetBlocks.map((block) => ({
+  let translated = targetBlocks.map((block) => ({
     x: block.x + xOffset,
     y: block.y + yOffset,
     height: block.height,
@@ -223,5 +223,5 @@ module.exports = {
   showMarkers,
   showStimFloor,
   translateTower,
-  grid: new Grid()
+  grid: new Grid(-19, 21, 0, 30)
 };

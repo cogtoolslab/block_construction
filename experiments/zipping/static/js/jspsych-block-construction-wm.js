@@ -1,4 +1,5 @@
 /*
+ * Working Memory version of block construction pluging. This task displays the composite on the left for a brief period, then requires the participant to build and check their reconstruction. They only pass to the next trial when their reconstruction is correct. 
  * Displays a domain stimuli and prompts subject for language production.
  *
  * Requirements for towers domain.
@@ -9,13 +10,13 @@
 
 var DEFAULT_IMAGE_SIZE = 200;
 
-jsPsych.plugins["block-construction"] = (function () {
+jsPsych.plugins["block-construction-wm"] = (function () {
   var plugin = {};
 
   // jsPsych.pluginAPI.registerPreload('block-construction', 'stimulus', 'image');
 
   plugin.info = {
-    name: "block-construction",
+    name: "block-construction-wm",
     parameters: {
       domain: {
         type: jsPsych.plugins.parameterType.STRING, // Domain to display.
@@ -75,11 +76,22 @@ jsPsych.plugins["block-construction"] = (function () {
         type: jsPsych.plugins.parameterType.OBJECT,
         pretty_name: "Function to call that forwards data to database (or otherwise)",
         default: (data) => console.log(data),
+      },
+      wmBuildingParams: {
+        type: jsPsych.plugins.parameterType.OBJECT,
+        pretty_name: "Parameters for working memory version",
+        default: {
+          "compositeExposure" : 2000
+        },
       }
     },
   };
 
   plugin.trial = function (display_element, trial) {
+
+    var n_complete_attempts = 0;
+
+    console.log("compositeExposure", trial.wmBuildingParams.compositeExposure);
 
     display_element.innerHTML = "";
 
@@ -98,7 +110,7 @@ jsPsych.plugins["block-construction"] = (function () {
     html_content += '</div>';
 
     html_content += '<div class="col pt-3 text-right">';
-    html_content += '<button id="reset-button" type="button" class="btn btn-primary">Reset</button>';
+    html_content += '<button id="reset-button" type="button" class="btn btn-primary">Restart</button>';
     html_content += '</div>';
 
     html_content += "</div>";
@@ -137,6 +149,8 @@ jsPsych.plugins["block-construction"] = (function () {
       var showStimulus = true;
       var showBuilding = true;
 
+      var env_divs = document.getElementsByClassName("env-div");
+
       blockSetup(constructionTrial, showStimulus, showBuilding);
 
       // UI
@@ -145,6 +159,11 @@ jsPsych.plugins["block-construction"] = (function () {
       });
 
       resetBuilding = function () {
+
+        Array.prototype.forEach.call(env_divs, env_div => {
+          env_div.style.backgroundColor = "#FFD819";
+        });
+
         let nBlocksWhenReset = trial.nBlocksPlaced;
         constructionTrial.nResets += 1;
         trial.nBlocksPlaced = 0;
@@ -158,7 +177,17 @@ jsPsych.plugins["block-construction"] = (function () {
           blockUniverse.removeStimWindow();
         };
 
+        blockUniverse.disabledBlockPlacement = true;
         blockSetup(constructionTrial, showStimulus, showBuilding);
+
+        setTimeout(() => {
+          // console.log('hello');
+          console.log(blockUniverse.p5stim.targetBlocksDrawable);
+          blockUniverse.p5stim.targetBlocksDrawable = [];
+          blockUniverse.disabledBlockPlacement = false;
+          
+          
+        }, trial.wmBuildingParams.compositeExposure)
 
       };
 
@@ -170,6 +199,9 @@ jsPsych.plugins["block-construction"] = (function () {
 
 
     function endTrial(trial_data) { // called by block_widget when trial ends
+
+      document.getElementById("reset-button").disabled = true;
+      document.getElementById("reset-button").style.visibility = 'hidden';
 
       trial_data = _.extend(trial_data, {
         trial_start_time: trial.trialStartTime,
@@ -188,7 +220,6 @@ jsPsych.plugins["block-construction"] = (function () {
         n_resets: trial.constructionTrial.nResets
       });
 
-      var env_divs = document.getElementsByClassName("env-div");
       Array.prototype.forEach.call(env_divs, env_div => {
         env_div.style.backgroundColor = "#58CF76";
       });
@@ -199,7 +230,7 @@ jsPsych.plugins["block-construction"] = (function () {
       setTimeout(() => {
         display_element.innerHTML = '';
         jsPsych.finishTrial(trial_data);
-      }, 1500);
+      }, 4000);
       
     };
 
@@ -210,10 +241,14 @@ jsPsych.plugins["block-construction"] = (function () {
         trial.nBlocksPlaced += 1;
 
         if (trial.nBlocksPlaced >= trial.nBlocksMax) {
-          // update block counter element
+          // block new blocks from being placed
+          n_complete_attempts += 1;
+          blockUniverse.disabledBlockPlacement = true;
 
-          // setTimeout(resetBuilding, 300); 
-          // resetBuilding();
+          Array.prototype.forEach.call(env_divs, env_div => {
+            env_div.style.backgroundColor = "#c22714";
+          });
+
         }
 
         curr_data = _.extend(block_data, {
@@ -228,7 +263,9 @@ jsPsych.plugins["block-construction"] = (function () {
           condition: trial.condition,
           chunk_type: trial.chunk_type,
           n_block: trial.nBlocksPlaced,
-          n_resets: trial.constructionTrial.nResets
+          n_resets: trial.constructionTrial.nResets,
+          compositeExposure: trial.wmBuildingParams.compositeExposure,
+          n_complete_attempts: n_complete_attempts
         });
 
         trial.dataForwarder(curr_data);
@@ -251,7 +288,8 @@ jsPsych.plugins["block-construction"] = (function () {
           condition: trial.condition,
           chunk_type: trial.chunk_type,
           n_block: trial.nBlocksPlaced,
-          n_resets: trial.constructionTrial.nResets
+          n_resets: trial.constructionTrial.nResets,
+          compositeExposure: trial.wmBuildingParams.compositeExposure
         });
 
         trial.dataForwarder(curr_data);

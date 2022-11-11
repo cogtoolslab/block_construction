@@ -61,13 +61,16 @@ io.on('connection', function (socket) {
   
   var isResearcher = _.includes(researchers, id);
 
-  // if (!id || isResearcher && !blockResearcher){
-  //   initializeWithTrials(socket)
+  // if (!id || (isResearcher && !blockResearcher)){
+  //   // initializeWithTrials(socket);
+  //   console.log('doing nothing');
+  //   {}
   // } else if (!valid_id(id)) {
   //   console.log('invalid id, blocked');
   // } else {
+  //   console.log(id);
   //   checkPreviousParticipant(id, (exists) => {
-  //     return exists ? handleDuplicate(socket) : initializeWithTrials(socket);
+  //     return exists ? handleDuplicate(socket) : {};
   //   });
   // }
 

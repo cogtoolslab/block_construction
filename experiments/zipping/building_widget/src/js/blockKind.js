@@ -2,7 +2,7 @@
 var Block = require('./block.js');
 class BlockKind {
 
-  constructor(engine, w, h, blockColor, blockName = '', internalStrokeColor) {
+  constructor(w, h, blockColor, blockName = '', internalStrokeColor) {
     // BlockKinds are a type of block- of which several might be placed
     // in the environment. To be concretely instantiated, a Block must
     // be created that inherets its properties from a BlockKind
@@ -10,7 +10,6 @@ class BlockKind {
     // associated with that blockKind.  BlockKind width and height
     // should be given in small integers. They are scaled in the block
     // class.
-    this.engine = engine;
     this.x = undefined;
     this.y = undefined;
     this.w = w;
@@ -95,11 +94,8 @@ class BlockKind {
       env.stroke(config.ghostStroke);
       //env.stroke([28,54,62,100]);
       env.strokeWeight(3);
-      //fillColor = disabledBlockPlacement ? [100, 100, 100, 100] : [...this.blockColor];
-      //fillColor[3] = 130;
-      var fillColor = env.color([28, 54, 220]);
-      fillColor.setAlpha(50);
-      env.fill(fillColor);
+      var ghostColor = [this.blockColor[0], this.blockColor[1], this.blockColor[2], 50]
+      env.fill(ghostColor);
       if (rotated) {
         env.rect(0, 0, this.h * config.sF, this.w * config.sF);
       } else {
@@ -116,8 +112,7 @@ class BlockKind {
 
     var [snappedX, snappedY, x_index, y_index] = this.snapToGrid(preciseMouseX, preciseMouseY, discreteWorld)
     // index is the location in discrete world (i.e. the whole grid)
-
-    return new Block(this.engine, this, snappedX, snappedY, false,
+    return new Block(this, snappedX, snappedY, false,
       testing_placement = testing_placement, x_index = x_index, y_index = y_index);
   }
 
@@ -130,6 +125,8 @@ class BlockKind {
     var y_index;
     var stim_scale = config.stim_scale;
 
+    x_index = x_index
+
     if (this.w % 2 == 1) {
       snappedX = (mouseX + stim_scale / 2) % (stim_scale) < (stim_scale / 2) ? 
                               mouseX - (mouseX % (stim_scale / 2)) : 
@@ -140,7 +137,7 @@ class BlockKind {
       snappedX = mouseX % (stim_scale) < (stim_scale / 2) ?
                               mouseX - mouseX % (stim_scale) : 
                               mouseX - mouseX % (stim_scale) + stim_scale;
-      x_index = (snappedX / stim_scale) - (snappedX % stim_scale) - this.w / 2;
+      x_index = ((snappedX / stim_scale) - (snappedX % stim_scale) - this.w / 2);
     };
 
     if (!snapY) {
@@ -149,22 +146,27 @@ class BlockKind {
     } else {
       // check rows from mouse y, down
       var y = Math.round(config.top - (this.h / 2) -
-                         ((mouseY + (config.stim_scale / 2)) / config.stim_scale)) + 2;
+                         ((mouseY + (config.stim_scale / 2)) / config.stim_scale)) + 1;
       let rowFree = true;
 
-      for (let x = x_index; x < blockEnd; x++) { // check if row directly beneath block are all free at height y
+      for (let x = x_index; x < (x_index + this.w); x++) { // check if row directly beneath block are all free at height y
         rowFree = rowFree && discreteWorld[x][y];
       }
 
       if (!rowFree){ // if can't place directly here, try from top
         y = config.discreteEnvHeight;
+        rowFree = true;
       }
       
-      while (rowFree && y>=0 ) { // move down until row free
+      while (rowFree && y>=0) { // move down until row free
         y -= 1;
         var blockEnd = x_index + this.w;
         for (let x = x_index; x < blockEnd; x++) { // check if row directly beneath block are all free at height y
-          rowFree = rowFree && discreteWorld[x][y];
+          // console.log('dw_w:',discreteWorld.length,
+          //              'dw_h:',discreteWorld[0].length,
+          //              'x:', x,
+          //              'y:', y);
+          rowFree = y==-1 ? false : rowFree && discreteWorld[x][y];
         }
 
       }
