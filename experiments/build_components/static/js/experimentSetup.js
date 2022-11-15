@@ -43,11 +43,11 @@ function setupExperiment() {
                 sendMetadata(metadata);
             }, 500);
 
-            setupLearnPhase(trialList, trialList => {
+            // setupLearnPhase(trialList, trialList => {
                 setupRecallPhase(trialList, trialList => {
                     setupOtherTrials(trialList);
                 });
-            });
+            // });
         });
     };
 
@@ -64,7 +64,7 @@ function setupExperiment() {
 
         // map metadatumToTrial
         recallTrials = _.map(learnTrialMetadata, trialMetadatum => {
-            metadatumToTrial(trialMetadatum, "learn")
+            metadatumToLearningTrial(trialMetadatum)
         });
 
         // TODO: randomize order learning trials
@@ -73,15 +73,15 @@ function setupExperiment() {
 
         // forward trial list to next setup function
         callback(trialList);
-    }
+    };
 
-    metadatumToTrial = function(metadatum, phase) {
+    metadatumToLearningTrial = function(metadatum) {
         /**
          * Augments trial information from metadatum with parameters in config
          */
 
         // trial type determined by condition when learning, otherwise it is an oldNew trial
-        trialType = phase == "learn" ? condition : "oldNew";
+        trialType = metadatum.condition;
 
         // select plugin based on trialType
         let trialPlugin = expConfig["trialTypes"][trialType];
@@ -91,10 +91,35 @@ function setupExperiment() {
             type: trialPlugin,
             trialType: trialType,
             condition: metadatum.condition,
+            stimulus: {'blocks': metadatum.stim_tall},
+            offset: 8,
         }, expConfig["taskParameters"][trialType]);
 
         return(trial);
-    }
+    };
+
+    metadatumToRecallTrial = function(metadatum) {
+        /**
+         * Augments trial information from metadatum with parameters in config
+         */
+
+        // trial type determined by condition when learning, otherwise it is an oldNew trial
+        trialType = 'oldNew';
+
+        // select plugin based on trialType
+        let trialPlugin = expConfig["trialTypes"][trialType];
+
+        // create trial and add parameters for trial type from config
+        let trial = _.extend({
+            type: trialPlugin,
+            trialType: trialType,
+            condition: metadatum.condition,
+            stimulus: {'blocks': metadatum.stim_tall},
+            offset: 8,
+        }, expConfig["taskParameters"][trialType]);
+
+        return(trial);
+    };
 
     setupRecallPhase = function (trialList, callback){
         /**
@@ -104,97 +129,131 @@ function setupExperiment() {
 
         // map over all trials
         recallTrials = _.map(metadata.trials, trialMetadatum => {
-            metadatumToTrial(trialMetadatum, "recall")
+            return metadatumToRecallTrial(trialMetadatum)
         });
 
         // TODO: randomize recall trials
 
         // TODO: append recall trials to END of current trial list
+        trialList = _.concat(trialList, recallTrials);
 
         // forward trial list to next setup function
         callback(trialList);
-    }
-
-
-
-    setupBuildingTrials = function (trialList, callback) {
-        /**
-         * Set up building trials
-         * Grabs list of ids from metadata
-         * Converts to URLs
-         * Loads jsons
-         * 
-         * TODO: 
-         * - add multiple building repetitions
-         * - shuffle each rep
-         */
-
-
-        stimURLs = _.map(metadata.building_chunks, chunk_name => {
-            return metadata.chunk_building_url_stem + chunk_name.slice(-3) + '.json'
-        });
-
-        window.buildTrialNum = 0;
-        window.totalBuildTrials = metadata.building_chunks.length * expConfig.buildingReps;
-
-        // load stimulus jsons
-        getTowerStimuliJSONsFromUrls(stimURLs, stimURLsToJSONs => {
-
-            for (let rep = 0; rep < expConfig.buildingReps; rep++) {
-
-                // create trial objects
-                var repTrials = _.map(metadata.building_chunks, chunk_name => {
-
-                    stimURL = metadata.chunk_building_url_stem + chunk_name.slice(-3) + '.json'
-                    return {
-                        type: expConfig.experimentParameters.workingMemoryVersion ? 'block-construction-wm' : 'block-construction',
-                        wmBuildingParams : expConfig.experimentParameters.wmBuildingParams,
-                        stimulus: stimURLsToJSONs[stimURL],
-                        condition: metadata.condition,
-                        stimId: chunk_name.slice(-3), // number stim in S3
-                        chunk_id: chunk_name, //experiment specific
-                        chunk_type: chunk_name.substring(0, 4),
-                        stimURL: stimURL,
-                        condition: metadata.condition,
-                        rep: rep,
-                        prompt: "Please build the tower on the left by clicking to pick up and place blocks on the right.",
-                        offset: chunk_name.substring(0, 4) == 'tall' ? 5 : 4,
-                        dataForwarder: () => dataForwarder
-                    }
-
-                });
-
-                _.map(_.shuffle(repTrials), buildingTrial => {
-                    trialList.push(buildingTrial);
-                });
-
-            };
-
-            let buildingInstructionPages = [];
-
-            if (expConfig.buildingIntro) {buildingInstructionPages.push(expConfig.buildingIntro)};
-            if (expConfig.buildingInstructions) {buildingInstructionPages.push(expConfig.buildingInstructions)};
-
-            let buildingInstructionsTrials = {
-                type: 'instructions',
-                pages: buildingInstructionPages,
-                show_clickable_nav: true
-            };
-
-            trialList.unshift(buildingInstructionsTrials);
-
-            // console.log('building trials:', trialList);
-
-            // send to next trial setup function (setupZippingTrials)
-            callback(trialList);
-
-        });
-
-    }
+    };
 
     mapKeys = function(zipInst) {
         return zipInst.replace(/yes_key/i,metadata.response_key_dict['valid'].toUpperCase()).replace(/no_key/i,metadata.response_key_dict['invalid'].toUpperCase())
-    }
+    };
+
+    // Set up additional trials (consent, instructions)
+    setupOtherTrials = function (trialList) {
+
+        console.log(trialList);
+
+        if (!expConfig.devMode) {
+
+            var consent = {
+                type: "external-html",
+                url: "../html/consent-ucsd.html",
+                cont_btn: "start",
+            };
+
+            var instructionPages = []
+
+            // if (expConfig.compensationInfo && studyLocation != 'SONA'){
+            //     instructionPages.push(expConfig.compensationInfo);
+            // };
+
+            // if (studyLocation == 'SONA'){
+            //     instructionPages.push(expConfig.sonaInfo);
+            // }
+
+            // if (expConfig.mainInstructions){
+            //     instructionPages.push(expConfig.mainInstructions);
+            // }
+            var instructions = {
+                type: 'instructions',
+                pages: instructionPages,
+                show_clickable_nav: true
+            };
+
+            trialList.unshift(instructions);
+            trialList.unshift(consent); // add consent before instructions
+
+
+            // Exit survey
+            var cc = studyLocation == 'Prolific' ? expConfig.completionCode :
+                (studyLocation == 'SONA' ? workerID : null)
+
+            var exitSurvey = constructDefaultExitSurvey(studyLocation, cc);
+
+            trialList.push(exitSurvey) //push
+
+        };
+
+        // initialize jspsych with timeline
+        constructExperimentTimeline(trialList);
+
+    };
+
+    let commonData = {
+        experimentName: expConfig.experimentName,
+        dbname: expConfig.dbname,
+        colname: expConfig.colname,
+        iterationName: expConfig.iterationName ? expConfig.iterationName : 'none_provided_in_config',
+        configId: expConfig.configId,
+        workerID: workerID,
+        gameID: gameID,
+        studyLocation: studyLocation
+    };
+
+    let sendMetadata = function (meta) {
+        var postData = _.extend(
+          {datatype: 'metadata'},
+          commonData,
+          meta
+        );
+        socket.emit("currentData", postData);
+    };
+
+    let dataForwarder = function (withinTrialData) {
+        var postData = _.extend(
+          {},
+          commonData,
+          withinTrialData
+        );
+        socket.emit("currentData", postData);
+    };
+
+    // Add all trials to timeline
+
+    function constructExperimentTimeline(trialList) {
+
+        /* #### Initialize jsPsych with complete experimental timeline #### */
+        jsPsych.init({
+            timeline: trialList,
+            show_progress_bar: true,
+            default_iti: 600, //up from 600 in zipping_calibration_sona_pilot
+            on_trial_finish: function (trialData) {
+                console.log('Trial data:', trialData);
+                // Merge data from a single trial with
+                // variables to be uploaded with all data
+                var packet = _.extend({}, trialData, commonData, {
+                    // prolificId(s): TODO: Hash and store prolific ID(s) in other file
+                    datatype: 'trial_end',
+                    response_key_dict: metadata.response_key_dict
+                });
+
+                // console.log(trialData);
+                socket.emit("currentData", packet); //save data to mongo
+            },
+            on_finish: function () {
+                window.experimentFinished = true;
+                //console.log(jsPsych.data.get().values());
+            },
+
+        });
+    };
 
     // setupPrePostZippingTrials = function (trialList, callback) {
     //     /**
@@ -598,117 +657,5 @@ function setupExperiment() {
     //     return (zippingPracticeBlock)
     // }
 
-
-    // /* Set up trials */
-
-    // // Instructions
-
-    setupOtherTrials = function (trialList) {
-
-        if (!expConfig.devMode) {
-
-            var consent = {
-                type: "external-html",
-                url: "../html/consent-ucsd.html",
-                cont_btn: "start",
-            };
-
-            var instructionPages = []
-
-            // if (expConfig.compensationInfo && studyLocation != 'SONA'){
-            //     instructionPages.push(expConfig.compensationInfo);
-            // };
-
-            // if (studyLocation == 'SONA'){
-            //     instructionPages.push(expConfig.sonaInfo);
-            // }
-
-            // if (expConfig.mainInstructions){
-            //     instructionPages.push(expConfig.mainInstructions);
-            // }
-            var instructions = {
-                type: 'instructions',
-                pages: instructionPages,
-                show_clickable_nav: true
-            };
-
-            trialList.unshift(instructions);
-            trialList.unshift(consent); // add consent before instructions
-
-
-            // Exit survey
-            var cc = studyLocation == 'Prolific' ? expConfig.completionCode :
-                (studyLocation == 'SONA' ? workerID : null)
-
-            var exitSurvey = constructDefaultExitSurvey(studyLocation, cc);
-
-            trialList.push(exitSurvey) //push
-
-        };
-
-        // initialize jspsych with timeline
-        constructExperimentTimeline(trialList);
-
-    };
-
-    let commonData = {
-        experimentName: expConfig.experimentName,
-        dbname: expConfig.dbname,
-        colname: expConfig.colname,
-        iterationName: expConfig.iterationName ? expConfig.iterationName : 'none_provided_in_config',
-        configId: expConfig.configId,
-        workerID: workerID,
-        gameID: gameID,
-        studyLocation: studyLocation
-    };
-
-    let sendMetadata = function (meta) {
-        var postData = _.extend(
-          {datatype: 'metadata'},
-          commonData,
-          meta
-        );
-        console.log('meta', postData);
-        socket.emit("currentData", postData);
-    };
-
-    let dataForwarder = function (withinTrialData) {
-        var postData = _.extend(
-          {},
-          commonData,
-          withinTrialData
-        );
-        socket.emit("currentData", postData);
-    };
-
-    // Add all trials to timeline
-
-    function constructExperimentTimeline(trialList) {
-
-        /* #### Initialize jsPsych with complete experimental timeline #### */
-        jsPsych.init({
-            timeline: trialList,
-            show_progress_bar: true,
-            default_iti: 600, //up from 600 in zipping_calibration_sona_pilot
-            on_trial_finish: function (trialData) {
-                console.log('Trial data:', trialData);
-                // Merge data from a single trial with
-                // variables to be uploaded with all data
-                var packet = _.extend({}, trialData, commonData, {
-                    // prolificId(s): TODO: Hash and store prolific ID(s) in other file
-                    datatype: 'trial_end',
-                    response_key_dict: metadata.response_key_dict
-                });
-
-                // console.log(trialData);
-                socket.emit("currentData", packet); //save data to mongo
-            },
-            on_finish: function () {
-                window.experimentFinished = true;
-                //console.log(jsPsych.data.get().values());
-            },
-
-        });
-    };
 
 }

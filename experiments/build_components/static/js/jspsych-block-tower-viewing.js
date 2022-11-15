@@ -9,13 +9,13 @@
 
 var DEFAULT_IMAGE_SIZE = 200;
 
-jsPsych.plugins["block-construction"] = (function () {
+jsPsych.plugins["tower-viewing"] = (function () {
   var plugin = {};
 
   // jsPsych.pluginAPI.registerPreload('block-construction', 'stimulus', 'image');
 
   plugin.info = {
-    name: "block-construction",
+    name: "tower-viewing",
     parameters: {
       domain: {
         type: jsPsych.plugins.parameterType.STRING, // Domain to display.
