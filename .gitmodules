@@ -4,3 +4,6 @@
 [submodule "experiments/building_widget"]
 	path = experiments/zipping/building_widget
 	url = https://github.com/cogtoolslab/building_widget
+[submodule "experiments/build_components/building_widget"]
+	path = experiments/build_components/building_widget
+	url = https://github.com/cogtoolslab/building_widget
