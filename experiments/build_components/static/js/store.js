@@ -225,6 +225,8 @@ function serve() {
 
     app.post('/db/getstims', (request, response) => {
 
+      console.log(response);
+
       if (!request.body) {
         return failure(response, '/db/getstims needs post request body');
       }

@@ -2,7 +2,7 @@ expConfig = {
     "experimentName": "block_construction_build_components",
     "dbname": "block_construction",
     "colname": "build_components",
-    "stimColName": "build_components_pilot_dev", //_color
+    "stimColName": "build_components_pilot_dev",
     "iterationName": "build_components_dev",
     "completionCode": "5C772792",
     "devMode": true,
