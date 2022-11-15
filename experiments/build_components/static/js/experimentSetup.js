@@ -34,8 +34,8 @@ function setupExperiment() {
             // randomize key assignments
             metadata.response_key_list = _.shuffle(['m','z']);
             metadata.response_key_dict = {
-                'valid': metadata.response_key_list[0],
-                'invalid':metadata.response_key_list[1]
+                'new': metadata.response_key_list[0],
+                'old': metadata.response_key_list[1]
             }
             // console.log(metadata.response_key_dict);
 
@@ -92,7 +92,7 @@ function setupExperiment() {
             trialType: trialType,
             condition: metadatum.condition,
             stimulus: {'blocks': metadatum.stim_tall},
-            offset: 8,
+            offset: 4   ,
         }, expConfig["taskParameters"][trialType]);
 
         return(trial);
@@ -115,7 +115,19 @@ function setupExperiment() {
             trialType: trialType,
             condition: metadatum.condition,
             stimulus: {'blocks': metadatum.stim_tall},
-            offset: 8,
+            tower_details: {
+                block_str: metadatum.block_str,
+                tower_A_tall_id: metadatum.tower_A_tall_id,
+                tower_A_wide_id: metadatum.tower_A_wide_id,
+                tower_B_tall_id: metadatum.tower_B_tall_id,
+                tower_B_wide_id: metadatum.tower_B_wide_id,
+                tower_id_tall: metadatum.tower_id_tall,
+                composite_id: metadatum.tower_id_tall
+            },
+            assignment_number : metadatum.assignment_number,
+            offset: 4,
+            new_key: metadata.response_key_dict['new'],
+            old_key: metadata.response_key_dict['old'],
         }, expConfig["taskParameters"][trialType]);
 
         return(trial);
@@ -142,7 +154,7 @@ function setupExperiment() {
     };
 
     mapKeys = function(zipInst) {
-        return zipInst.replace(/yes_key/i,metadata.response_key_dict['valid'].toUpperCase()).replace(/no_key/i,metadata.response_key_dict['invalid'].toUpperCase())
+        return zipInst.replace(/yes_key/i,metadata.response_key_dict['new'].toUpperCase()).replace(/no_key/i,metadata.response_key_dict['old'].toUpperCase())
     };
 
     // Set up additional trials (consent, instructions)

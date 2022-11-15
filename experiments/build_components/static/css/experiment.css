@@ -421,16 +421,25 @@ img.fixation{
 } 
 
  
-.left-emoji{
+.left-emoji {
     float: left;
     transform: translate(-20px, 45px);
 } 
 
-.right-emoji{
+.right-emoji {
     float: right;
     transform: translate(20px, 45px);
 } 
 
+.left-emoji-text{
+    float: left;
+    transform: translate(10px, 45px);
+} 
+
+.right-emoji-text{
+    float: right;
+    transform: translate(-10px, 45px);
+} 
 
 /* 
 #valid-emoji{

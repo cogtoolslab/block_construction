@@ -14,7 +14,7 @@ expConfig = {
     "taskParameters": { // parameter for indivudal trial types. Majority of task parameters are set in metadata.
       "build" : {buildParam1 : 'test'},
       "view" : {viewParam1 : 'test'},
-      "oldNew" : {oldNewParam1 : 'test'},
+      "oldNew" : {iti : 1200},
     },
     "trialTypes":{
       "build": "block-construction",

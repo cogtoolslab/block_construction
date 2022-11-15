@@ -21,10 +21,6 @@ jsPsych.plugins["tower-old-new"] = (function () {
         type: jsPsych.plugins.parameterType.STRING, // Domain to display.
         default: "",
       },
-      stimURL: {
-        type: jsPsych.plugins.parameterType.STRING, // BOOL, STRING, INT, FLOAT, FUNCTION, KEYCODE, SELECT, HTML_STRING, IMAGE, AUDIO, VIDEO, OBJECT, COMPLEX
-        default: "",
-      },
       stimulus: {
         type: jsPsych.plugins.parameterType.OBJECT,
         // default: {
@@ -75,6 +71,38 @@ jsPsych.plugins["tower-old-new"] = (function () {
         type: jsPsych.plugins.parameterType.OBJECT,
         pretty_name: "Function to call that forwards data to database (or otherwise)",
         default: (data) => console.log(data),
+      },
+      new_key: {
+        type: jsPsych.plugins.parameterType.KEY,
+        array: true,
+        pretty_name: 'New Key',
+        default: 'm',
+        description: 'The key the subject should press if this is a new trial.'
+      },
+      old_key: {
+        type: jsPsych.plugins.parameterType.KEY,
+        array: true,
+        pretty_name: 'Old key',
+        default: 'z',
+        description: 'The key the subject should press if this is an old trial.'
+      },
+      response_ends_trial: {
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Response ends trial',
+        default: true,
+        description: 'If true, trial will end when subject makes a response.'
+      },
+      tower_details : {
+        type: jsPsych.plugins.parameterType.OBJECT,
+        pretty_name: 'Additional stimulus information',
+        default: {},
+        description: 'Manually forwarded from metadata.'
+      },
+      iti: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'ITI',
+        default: 0,
+        description: 'Time (ms) in between trials after clearing screen.'
       }
     },
   };
@@ -94,19 +122,30 @@ jsPsych.plugins["tower-old-new"] = (function () {
     /** Create domain canvas **/
     html_content += '<div class="row pt-1 env-row">';
     html_content += '<div class="col env-div" id="stimulus-canvas"></div>';
-    html_content += '<div class=" col env-div" id="environment-canvas"></div>';
+    // html_content += '<div class=" col env-div" id="environment-canvas"></div>';
     html_content += '</div>';
 
     html_content += '<div class="col pt-3 text-right">';
-    html_content += '<button id="reset-button" type="button" class="btn btn-primary">Reset</button>';
+    // html_content += '<button id="reset-button" type="button" class="btn btn-primary">Reset</button>';
     html_content += '</div>';
 
+    html_content += '<div id="key-reminders">'
+    html_content += '<img src="../img/z_grey.png" class="key-reminder" id="z-reminder">'
+    html_content += '<img src="../img/m_grey.png" class="key-reminder" id="m-reminder">'
+    html_content += '<p class="response_side" id="new-text">new</p>' //✔
+    html_content += '<p class="response_side" id="old-text">old</p>' //✖
+    html_content += '</div>'
+
     html_content += "</div>";
-    html_content += '<p>Use ctrl/cmd + minus-sign (-) if windows do not fit on the screen at the same time.</p>';
-
-
+    // html_content += '<p>Use ctrl/cmd + minus-sign (-) if windows do not fit on the screen at the same time.</p>';
 
     display_element.innerHTML = html_content;
+
+    // store response
+    var response = {
+      rt: null,
+      key: null
+    };
 
     trial.finished = false;
 
@@ -123,46 +162,115 @@ jsPsych.plugins["tower-old-new"] = (function () {
 
       let constructionTrial = {
         stimulus: trial.stimulus.blocks,
-        endCondition: 'perfect-reconstruction-translation',
+        // endCondition: 'perfect-reconstruction-translation',
         blocksPlaced: 0,
         nResets: -1, // start minus one as reset env at beginning of new trial
         //nBlocksMax: trial.nBlocksMax,
         offset: trial.offset,
-        blockSender: blockSender,
+        // blockSender: blockSender,
         endBuildingTrial: endTrial
       };
 
       trial.constructionTrial = constructionTrial;
 
       var showStimulus = true;
-      var showBuilding = true;
+      var showBuilding = false;
 
       blockSetup(constructionTrial, showStimulus, showBuilding);
+    
+      new_side = trial.new_key == 'z' ? "left" : "right";
+      old_side = trial.old_key == 'z' ? "left" : "right";
+      $('#new-text').addClass(new_side+"-emoji-text");
+      $('#old-text').addClass(old_side+"-emoji-text");
 
-      // UI
-      $("#reset-button").click(() => {
-        resetBuilding();
-      });
 
-      resetBuilding = function () {
-        let nBlocksWhenReset = trial.nBlocksPlaced;
-        constructionTrial.nResets += 1;
-        trial.nBlocksPlaced = 0;
-        resetSender({
-          n_blocks_when_reset: nBlocksWhenReset,
-        });
+      var end_trial = function () {
 
-        if (_.has(blockUniverse, 'p5env') ||
-          _.has(blockUniverse, 'p5stim')) {
-          blockUniverse.removeEnv();
-          blockUniverse.removeStimWindow();
-        };
-
-        blockSetup(constructionTrial, showStimulus, showBuilding);
-
+        // kill any remaining setTimeout handlers
+        jsPsych.pluginAPI.clearAllTimeouts();
+  
+        // kill keyboard listeners
+        if (typeof keyboardListener !== 'undefined') {
+          jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
+        }
+  
+        // gather the data to store for the trial
+        var trial_data = _.extend({
+          trial_start_time: trial.trialStartTime,
+          trial_finish_time: Date.now(),
+          rt: response.rt,
+          condition: trial.condition,
+          stimulus: trial.stimulus,
+          response: response.key,
+          response_correct: trial.response_correct,
+          // practice: trial.practice,
+          // stimVersionInd: trial.stimVersionInd,
+          trial_num: 'TODO'
+        }, trial.tower_details);
+  
+        // clear the display
+        display_element.innerHTML = '';
+ 
+        setTimeout(function () {
+          // move on to the next trial
+          jsPsych.finishTrial(trial_data);
+        }, trial.iti);
       };
 
-      resetBuilding(); // call once to clear from previous trial
+      var after_response = function (info) {
+  
+        // only record the first response
+        if (response.key == null) {
+          response = info;
+        }
+  
+        response_correct = (response.key == trial.new_key & trial.condition == 'foil') | (response.key == trial.old_key & trial.validity != 'foil');
+        response_class = response_correct ? 'responded_correct' : 'responded_incorrect';
+  
+        trial.response_correct = response_correct;
+  
+        // document.removeEventListener('keydown', incrementKeyPresses);
+  
+        if (trial.response_ends_trial) {
+          setTimeout(function () {
+            setTimeout(end_trial, 0);
+          }, 500)
+        }
+      };
+
+
+      var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
+        callback_function: after_response,
+        valid_responses: trial.choices,
+        rt_method: 'performance',
+        persist: false,
+        allow_held_key: false,
+      });
+
+      // UI
+      // $("#reset-button").click(() => {
+      //   resetBuilding();
+      // });
+
+      // resetBuilding = function () {
+      //   let nBlocksWhenReset = trial.nBlocksPlaced;
+      //   constructionTrial.nResets += 1;
+      //   trial.nBlocksPlaced = 0;
+      //   resetSender({
+      //     n_blocks_when_reset: nBlocksWhenReset,
+      //   });
+
+      //   if (_.has(blockUniverse, 'p5env') ||
+      //     _.has(blockUniverse, 'p5stim')) {
+      //     blockUniverse.removeEnv();
+      //     blockUniverse.removeStimWindow();
+      //   };
+
+      //   blockSetup(constructionTrial, showStimulus, showBuilding);
+
+      // };
+
+      // resetBuilding(); // call once to clear from previous trial
 
 
 
@@ -174,7 +282,7 @@ jsPsych.plugins["tower-old-new"] = (function () {
       trial_data = _.extend(trial_data, {
         trial_start_time: trial.trialStartTime,
         relative_time: Date.now() - trial.trialStartTime,
-        stimURL: trial.stimURL,
+        // stimURL: trial.stimURL,
         stimulus: trial.stimulus,
         stimId: trial.stimId,
         chunk_id: trial.chunk_id,
@@ -201,62 +309,6 @@ jsPsych.plugins["tower-old-new"] = (function () {
         jsPsych.finishTrial(trial_data);
       }, 1500);
       
-    };
-
-    function blockSender(block_data) { // called by block_widget when a block is placed
-
-      if (!trial.finished){
-        //console.log(block_data);
-        trial.nBlocksPlaced += 1;
-
-        if (trial.nBlocksPlaced >= trial.nBlocksMax) {
-          // update block counter element
-
-          // setTimeout(resetBuilding, 300); 
-          // resetBuilding();
-        }
-
-        curr_data = _.extend(block_data, {
-          trial_start_time: trial.trialStartTime,
-          relative_time: Date.now() - trial.trialStartTime,
-          datatype: 'block_placement',
-          stimURL: trial.stimURL,
-          stimulus: trial.stimulus,
-          stimId: trial.stimId,
-          chunk_id: trial.chunk_id,
-          rep: trial.rep,
-          condition: trial.condition,
-          chunk_type: trial.chunk_type,
-          n_block: trial.nBlocksPlaced,
-          n_resets: trial.constructionTrial.nResets
-        });
-
-        trial.dataForwarder(curr_data);
-      };
-
-    };
-
-    function resetSender(reset_data) { // called by block_widget when a block is placed
-
-      if (!trial.finished){
-        curr_data = _.extend(reset_data, {
-          trial_start_time: trial.trialStartTime,
-          relative_time: Date.now() - trial.trialStartTime,
-          datatype: 'reset',
-          stimURL: trial.stimURL,
-          stimulus: trial.stimulus,
-          stimId: trial.stimId,
-          chunk_id: trial.chunk_id,
-          rep: trial.rep,
-          condition: trial.condition,
-          chunk_type: trial.chunk_type,
-          n_block: trial.nBlocksPlaced,
-          n_resets: trial.constructionTrial.nResets
-        });
-
-        trial.dataForwarder(curr_data);
-
-      };
     };
 
   };
