@@ -14,7 +14,7 @@
     "delta-e": "~0.0.7",
     "engine.io": "^4.0.4",
     "engine.io-client": "^4.0.4",
-    "express": "^4.16.3",
+    "express": "^4.17.3",
     "fs": "0.0.1-security",
     "jsonfile": "~2.4.0",
     "lodash": "^4.17.10",
