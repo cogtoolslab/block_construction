@@ -78,7 +78,7 @@ var constructDefaultExitSurvey = function (studyLocation, completionCode) {
       '<p>Thank you for participating in our study!</p><p><strong>Click "Finish" to complete the experiment and receive compensation.</strong> If you have any comments, please let us know in the form below.</p>',
     questions: [{ prompt: "Did you run into any technical difficulties?", name: "technical"},
                 { prompt: "Were you confused at all about what you had to do? What did you find confusing?", name: "confused" },
-                { prompt: "Do you have any other comments to share with us?", name: "comments"  }],
+                { prompt: "Do you have any other comments to share with us?", name: "comments" }],
     button_label: "Finish",
     on_finish: function () {
       window.experimentFinished = true;
@@ -98,6 +98,37 @@ var constructDefaultExitSurvey = function (studyLocation, completionCode) {
   };
   return comments_block;
 };
+
+longestSubsequence = function(list) {
+  longest = 0
+  current_elem = list[0]
+  currentlength = 1
+  i = 0
+  while (i < list.length){
+      i += 1
+      if(list[i] == current_elem) {
+          currentlength += 1;
+          if(currentlength >= longest) {
+              longest = currentlength;
+          }
+      } else {
+          current_elem = list[i];
+          currentlength = 1;
+      }
+  }
+  return longest
+}
+
+psuedoRandomizeTrials = function(unshuffledTrials, condition = (ts) => { return true } ) {
+
+  shuffledTrials = _.shuffle(unshuffledTrials);
+
+  while(!condition(shuffledTrials)) {
+      shuffledTrials = _.shuffle(unshuffledTrials);
+  };
+  return shuffledTrials;
+}
+
 
 // var constructExperimentTrialsForParameters = function (
 //   config,

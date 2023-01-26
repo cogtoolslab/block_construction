@@ -4,8 +4,8 @@ experimentUtils.js | Credit : WPM, YF. CW.
 Utility functions for running experiments. Contains importable constants.
 */
 
-DEBUG_MODE = true;
-DEBUG_TRIALS_ONLY = true; // Hide exit survey and config.
+DEBUG_MODE = false;
+DEBUG_TRIALS_ONLY = false; // Hide exit survey and config.
 
 // CONST_ALL = "all";
 // CONST_DOWNLOADED = "downloaded"; // stim set should be obtained from mongo

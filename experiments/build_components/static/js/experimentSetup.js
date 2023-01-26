@@ -15,6 +15,7 @@ function setupExperiment() {
     const gameID = UUID();
 
     var metadata;
+    var trialNumCounter = 0; //
 
     getStimListFromMongo();
 
@@ -37,17 +38,22 @@ function setupExperiment() {
                 'new': metadata.response_key_list[0],
                 'old': metadata.response_key_list[1]
             }
+            metadata.response_key_invert = _.invert(metadata.response_key_dict)
             // console.log(metadata.response_key_dict);
+
+            window.currTrialNum = 0; // keep track of current trial across experiment
+            window.recallTrialNum = 0;
+            window.totalTrials = metadata.trials.length;
 
             setTimeout(() =>{
                 sendMetadata(metadata);
             }, 500);
 
-            // setupLearnPhase(trialList, trialList => {
+            setupLearnPhase(trialList, trialList => {
                 setupRecallPhase(trialList, trialList => {
                     setupOtherTrials(trialList);
                 });
-            // });
+            });
         });
     };
 
@@ -57,19 +63,38 @@ function setupExperiment() {
          * Towers from all conditions except foil should be converted into trials
          */
 
-        // TODO: create trials
         // find non-foil trials
+        learnTrialMetadata = _.filter(metadata.trials, (trial) => trial['condition'] != 'foil');
+        
+        window.totalLearnTrials = learnTrialMetadata.length;
 
-        let learnTrialMetadata; // TODO FILL IN
-
+        // console.log(learnTrialMetadata);
+        
         // map metadatumToTrial
-        recallTrials = _.map(learnTrialMetadata, trialMetadatum => {
-            metadatumToLearningTrial(trialMetadatum)
+        learnTrials = _.map(learnTrialMetadata, trialMetadatum => {
+            return metadatumToLearningTrial(trialMetadatum)
         });
 
-        // TODO: randomize order learning trials
+        // randomize order learning trials
+        // TODO: checks on randomization
+        // learnTrials = _.shuffle(learnTrials).slice(0, 6); // display first 6 learn trials
+        learnTrials = _.shuffle(learnTrials);
 
-        // TODO: append learning trials to (empty) trialList
+        learnTrials = psuedoRandomizeTrials(learnTrials,
+            (ts) => { return (longestSubsequence(_.map(ts, ( t ) => {return t['condition']})) <= 3)});
+
+        learnTrials.forEach(trial => {
+            trialNumCounter += 1;
+            trial['trialNum'] = trialNumCounter;
+        });
+
+        // add phase instructions
+        learnPhaseInstructions = makeInstructions(expConfig['learnPhaseInstructions']);
+
+        // append learning trials to (empty) trialList
+        trialList = _.concat(trialList,
+                             learnPhaseInstructions,
+                             learnTrials);
 
         // forward trial list to next setup function
         callback(trialList);
@@ -91,11 +116,27 @@ function setupExperiment() {
             type: trialPlugin,
             trialType: trialType,
             condition: metadatum.condition,
+            towerDetails: getTowerDetails(metadatum),
+            dataForwarder: () => forwardDataToMongo,
             stimulus: {'blocks': metadatum.stim_tall},
-            offset: 4   ,
+            offset: 4,
+            iti: expConfig.experimentParameters.learningITI
         }, expConfig["taskParameters"][trialType]);
 
         return(trial);
+    };
+
+    getTowerDetails = function(metadatum){
+        return {
+            block_str: metadatum.block_str,
+            tower_id: metadatum.tower_id_tall,
+            tower_A_tall_id: metadatum.tower_A_tall_id,
+            tower_A_wide_id: metadatum.tower_A_wide_id,
+            tower_B_tall_id: metadatum.tower_B_tall_id,
+            tower_B_wide_id: metadatum.tower_B_wide_id,
+            tower_id_tall: metadatum.tower_id_tall,
+            composite_id: metadatum.tower_id_tall
+        }
     };
 
     metadatumToRecallTrial = function(metadatum) {
@@ -114,20 +155,14 @@ function setupExperiment() {
             type: trialPlugin,
             trialType: trialType,
             condition: metadatum.condition,
+            novelty: metadatum.condition == 'foil' ? 'new' : 'old',
             stimulus: {'blocks': metadatum.stim_tall},
-            tower_details: {
-                block_str: metadatum.block_str,
-                tower_A_tall_id: metadatum.tower_A_tall_id,
-                tower_A_wide_id: metadatum.tower_A_wide_id,
-                tower_B_tall_id: metadatum.tower_B_tall_id,
-                tower_B_wide_id: metadatum.tower_B_wide_id,
-                tower_id_tall: metadatum.tower_id_tall,
-                composite_id: metadatum.tower_id_tall
-            },
+            towerDetails: getTowerDetails(metadatum),
             assignment_number : metadatum.assignment_number,
             offset: 4,
             new_key: metadata.response_key_dict['new'],
             old_key: metadata.response_key_dict['old'],
+            choices: [metadata.response_key_dict['new'], metadata.response_key_dict['old']]
         }, expConfig["taskParameters"][trialType]);
 
         return(trial);
@@ -144,17 +179,30 @@ function setupExperiment() {
             return metadatumToRecallTrial(trialMetadatum)
         });
 
-        // TODO: randomize recall trials
+        // psuedorandomize recall trials
+        // recallTrials = psuedoRandomizeTrials(recallTrials,
+        //     (ts) => { return (longestSubsequence(_.map(ts, ( t ) => {return t['condition']})) <= 3) && (longestSubsequence(_.map(ts, ( t ) => {return t['novelty']})) <= 3)});
 
-        // TODO: append recall trials to END of current trial list
-        trialList = _.concat(trialList, recallTrials);
+        recallTrials = _.shuffle(recallTrials);
+
+        recallTrials.forEach(trial => {
+            trialNumCounter += 1;
+            trial.trialNum = trialNumCounter;
+        });
+
+        // add phase instructions
+        recallPhaseInstructions = makeInstructions(_.map(expConfig['recallPhaseInstructions'], mapKeys));
+
+        trialList = _.concat(trialList, 
+                            recallPhaseInstructions,
+                            recallTrials);
 
         // forward trial list to next setup function
         callback(trialList);
     };
 
-    mapKeys = function(zipInst) {
-        return zipInst.replace(/yes_key/i,metadata.response_key_dict['new'].toUpperCase()).replace(/no_key/i,metadata.response_key_dict['old'].toUpperCase())
+    mapKeys = function(instText) {
+        return instText.replace(/new_key/i,metadata.response_key_dict['new'].toUpperCase()).replace(/old_key/i,metadata.response_key_dict['old'].toUpperCase())
     };
 
     // Set up additional trials (consent, instructions)
@@ -172,17 +220,18 @@ function setupExperiment() {
 
             var instructionPages = []
 
-            // if (expConfig.compensationInfo && studyLocation != 'SONA'){
-            //     instructionPages.push(expConfig.compensationInfo);
-            // };
+            if (expConfig.sonaCompInfo && studyLocation == 'SONA'){
+                instructionPages = _.concat(instructionPages, expConfig.sonaCompensation);
+            };
 
             // if (studyLocation == 'SONA'){
             //     instructionPages.push(expConfig.sonaInfo);
             // }
 
-            // if (expConfig.mainInstructions){
-            //     instructionPages.push(expConfig.mainInstructions);
-            // }
+            if (expConfig.mainInstructions){
+                instructionPages = _.concat(instructionPages, expConfig.mainInstructions);
+            }
+
             var instructions = {
                 type: 'instructions',
                 pages: instructionPages,
@@ -208,6 +257,19 @@ function setupExperiment() {
 
     };
 
+    makeInstructions = function(instructionPages) {
+        // converts list of instruction strings into jspsych instruction trials. Returns empty list if instructionPages is empty
+
+        instructionTrials = instructionPages ? {
+            type: 'instructions',
+            pages: instructionPages,
+            show_clickable_nav: true
+        } : [];
+
+        return instructionTrials;
+    }
+
+
     let commonData = {
         experimentName: expConfig.experimentName,
         dbname: expConfig.dbname,
@@ -228,7 +290,7 @@ function setupExperiment() {
         socket.emit("currentData", postData);
     };
 
-    let dataForwarder = function (withinTrialData) {
+    let forwardDataToMongo = function (withinTrialData) {
         var postData = _.extend(
           {},
           commonData,
@@ -247,11 +309,10 @@ function setupExperiment() {
             show_progress_bar: true,
             default_iti: 600, //up from 600 in zipping_calibration_sona_pilot
             on_trial_finish: function (trialData) {
-                console.log('Trial data:', trialData);
+                // console.log('Trial data:', trialData);
                 // Merge data from a single trial with
                 // variables to be uploaded with all data
                 var packet = _.extend({}, trialData, commonData, {
-                    // prolificId(s): TODO: Hash and store prolific ID(s) in other file
                     datatype: 'trial_end',
                     response_key_dict: metadata.response_key_dict
                 });

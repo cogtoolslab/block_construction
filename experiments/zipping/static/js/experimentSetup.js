@@ -83,6 +83,9 @@ function setupExperiment() {
             return metadata.chunk_building_url_stem + chunk_name.slice(-3) + '.json'
         });
 
+        window.buildTrialNum = 0;
+        window.totalBuildTrials = metadata.building_chunks.length * expConfig.buildingReps;
+
         // load stimulus jsons
         getTowerStimuliJSONsFromUrls(stimURLs, stimURLsToJSONs => {
 

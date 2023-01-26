@@ -89,6 +89,8 @@ jsPsych.plugins["block-construction-wm"] = (function () {
 
   plugin.trial = function (display_element, trial) {
 
+    window.buildTrialNum += 1;
+
     var n_complete_attempts = 0;
 
     console.log("compositeExposure", trial.wmBuildingParams.compositeExposure);
@@ -99,6 +101,7 @@ jsPsych.plugins["block-construction-wm"] = (function () {
 
     // show preamble text
 
+    html_content += '<h3 id="instruction-cue">Remember the tower!</h5>';
     html_content += '<h5 id="prompt">'+trial.prompt+'</h5>';
     
     html_content += '<div class="container" id="experiment">';
@@ -110,6 +113,7 @@ jsPsych.plugins["block-construction-wm"] = (function () {
     html_content += '</div>';
 
     html_content += '<div class="col pt-3 text-right">';
+    html_content += '<h5 id="trial-counter">Trial ' + window.buildTrialNum + ' of ' + window.totalBuildTrials +'</h5>';
     html_content += '<button id="reset-button" type="button" class="btn btn-primary">Restart</button>';
     html_content += '</div>';
 
@@ -160,6 +164,8 @@ jsPsych.plugins["block-construction-wm"] = (function () {
 
       resetBuilding = function () {
 
+        document.getElementById("instruction-cue").innerHTML = "Remember the tower!";
+
         Array.prototype.forEach.call(env_divs, env_div => {
           env_div.style.backgroundColor = "#FFD819";
         });
@@ -182,6 +188,7 @@ jsPsych.plugins["block-construction-wm"] = (function () {
 
         setTimeout(() => {
           // console.log('hello');
+          document.getElementById("instruction-cue").innerHTML = "Build the tower!";
           console.log(blockUniverse.p5stim.targetBlocksDrawable);
           blockUniverse.p5stim.targetBlocksDrawable = [];
           blockUniverse.disabledBlockPlacement = false;

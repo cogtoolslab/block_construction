@@ -212,6 +212,12 @@ h5#trial-counter {
     float: left;
 }
 
+
+h5#trial-counter-center {
+    /* display: inline-block; */
+    text-align: center;
+    margin-bottom: 0;
+}
 #defaultCanvas0, #defaultCanvas1 {
     padding-left: 0;
     padding-right: 0;
@@ -367,22 +373,11 @@ img.fixation{
     /* height: 216px !important; */
 }
 
-/* #fixation-div{
-    width: 0;
-    margin: auto;
-    top: 50%;
-    margin-right: auto;
-    text-align: center;
-    left: 0;
-    right: 0; 
-}  */
-
-
 #key-reminders{
     position: absolute !important;
     top: 90%;
     /* left: 100%; */
-    width: 70%;
+    width: 60%;
     margin-left: auto;
     margin-right: auto;
     left: 0;

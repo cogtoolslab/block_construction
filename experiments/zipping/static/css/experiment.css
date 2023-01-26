@@ -207,6 +207,11 @@ body{
     border: 8px solid #FFFFFF;
 }
 
+h5#trial-counter {
+    /* display: inline-block; */
+    float: left;
+}
+
 #defaultCanvas0, #defaultCanvas1 {
     padding-left: 0;
     padding-right: 0;
