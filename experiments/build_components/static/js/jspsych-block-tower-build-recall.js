@@ -161,6 +161,7 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
       trial.trialStartTime = Date.now();
 
       undoredoManager.addEventListener("undo", (blockData) => {
+        trial.nUndoForSubmit += 1;
         trial.nBlocksPlaced -= 1;
         // nBlocksPlacedInStep -= 1;
         trial.dataForwarder(
@@ -191,6 +192,9 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
       });
 
       trial.nBlocksPlaced = 0;
+      trial.timeSinceLastSubmit = Date.now();
+      trial.nResetsForSubmit = -1;
+      trial.nUndoForSubmit = 0;
 
       // trial.stimulus = {'blocks': [{ 'x': 0, 'y': 0, 'height': 1, 'width': 2 },
       //     { 'x': 2, 'y': 0, 'height': 2, 'width': 1 },
@@ -218,13 +222,14 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
       blockUniverse.disabledBlockPlacement = false;
 
       // UI
-
       $("#finish-button").click(() => {
         endTrial();
       });
 
       $("#reset-button").click(() => {
-        resetBuilding();
+        if(trial.nBlocksPlaced > 0) {
+          resetBuilding();
+        };
       });
 
       $("#submit-button").click(() => {
@@ -232,6 +237,8 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
       });
 
       resetBuilding = function () {
+
+        trial.nResetsForSubmit +=1;
         undoredoManager.redostack = [];
 
         let nBlocksWhenReset = trial.nBlocksPlaced;
@@ -248,6 +255,7 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         };
 
         blockSetup(trial.constructionTrial, showStimulus, showBuilding);
+        trial.timeSinceLastReset = Date.now();
 
       };
 
@@ -298,24 +306,60 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
     
     };
 
+    function getTowerDetails() {
+
+      let towerDetails = {
+        blocks: blockUniverse.getBlockJSON(),
+        discreteWorld: blockUniverse.discreteWorld,
+        n_block: trial.nBlocksPlaced,
+      };
+      return towerDetails;
+    }
+
 
     function submitTower() {
 
       if(trial.nBlocksPlaced > 0){
         
         // locally save tower
-        trial.submittedTowers += {
-          towerDetails : trial.towerDetails,
+        let newTower = {
+          towerDetails : getTowerDetails(),
           nTower : trial.submittedTowers.length + 1
         };
-
-        console.log('tower submitted:', trial.towerDetails);
+        
+        trial.submittedTowers.push(newTower);
+        // console.log('tower submitted:', newTower);
+        // console.log('submittedTowers:', trial.submittedTowers);
         // TODO: display submitted tower (not here)
 
         undoredoManager.redostack = [];
+        // details about tower construction process
 
-        // TODO: reset building environment
-        trial.nBlocksPlaced = 0;
+        let towerConstructionData = {
+          n_resets_for_tower: trial.nResetsForSubmit, 
+          n_undo_for_tower: trial.nUndoForSubmit,
+        }
+
+        let timeNow = Date.now();
+
+        currentData = _.extend(
+          towerConstructionData,
+          newTower, // details about final state of tower
+          {
+            trial_start_time: trial.trialStartTime,
+            absolute_time: timeNow,
+            relative_time_trial: timeNow - trial.trialStartTime,
+            time_since_last_submit: timeNow - trial.timeSinceLastSubmit,
+            time_since_last_reset: timeNow - trial.timeSinceLastReset,
+            datatype: 'recalled_tower',
+            condition: trial.condition,
+            n_block: trial.nBlocksPlaced,
+            cumulative_resets_across_submissions: trial.constructionTrial.nResets
+        });
+
+        console.log(currentData);
+        
+        trial.dataForwarder(currentData);
 
         if (_.has(blockUniverse, 'p5env') ||
           _.has(blockUniverse, 'p5stim')) {
@@ -324,31 +368,11 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         };
 
         blockSetup(trial.constructionTrial, showStimulus, showBuilding);
-
-
-
-        // TODO: send data about submitted tower
-
-
-        // details about tower construction process
-        let towerConstructionData = {
-          nUndo:  null, //TODO
-        }
-
-        currentData = _.extend(
-          towerConstructionData,
-          trial.towerDetails, // details about final state of tower
-          {
-            trial_start_time: trial.trialStartTime,
-            relative_time: Date.now() - trial.trialStartTime,
-            datatype: 'block_placement',
-            stimulus: trial.stimulus,
-            condition: trial.condition,
-            n_block: trial.nBlocksPlaced,
-            n_resets: trial.constructionTrial.nResets
-        });
-        
-        trial.dataForwarder(currentData);
+        trial.timeSinceLastSubmit = Date.now();
+        trial.timeSinceLastReset = Date.now();
+        trial.nBlocksPlaced = 0;
+        trial.nResetsForSubmit = 0;
+        trial.nUndoForSubmit = 0;
       };
 
     };
@@ -378,7 +402,7 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
             stimulus: trial.stimulus,
             condition: trial.condition,
             n_block: trial.nBlocksPlaced,
-            n_resets: trial.constructionTrial.nResets
+            cumulative_resets_across_submissions: trial.constructionTrial.nResets
         });
 
         trial.dataForwarder(curr_data);
@@ -399,7 +423,8 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
             stimulus: trial.stimulus,
             condition: trial.condition,
             n_block: trial.nBlocksPlaced,
-            n_resets: trial.constructionTrial.nResets
+            n_resets_for_tower: trial.nResetsForSubmit,
+            cumulative_resets_across_submissions: trial.constructionTrial.nResets
         });
 
         trial.dataForwarder(curr_data);
