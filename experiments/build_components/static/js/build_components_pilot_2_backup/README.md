@@ -1,3 +1,22 @@
+
+
+I'm trying to make updates to this as backwards compatible as possible.
+
+In this folder I'm storing versions of files that might be overwritten in later versions. To reconstruct this version I may need to recreate the original file structure (or just update the imports in the html page).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # build_components
 
 This experiment explores the components of building activity that affect memory.
@@ -17,15 +36,3 @@ This experiment explores the components of building activity that affect memory.
 # pilot_2
 - true random assignment to conditions (6 build, 6 view, 12 foil)
 - Ran x ppts
-
-
-
-
-# Building Retrieval version
-
-- New config experimentConfigBuildRetrieval
-- New iteration names: build_components_build_retrieval_*
-- New plugin (for free recall building)
-- Do not change other plug ins!
-- 
-

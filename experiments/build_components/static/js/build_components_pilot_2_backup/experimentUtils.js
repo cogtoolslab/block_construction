@@ -957,8 +957,6 @@ var getJSON = function (url, callback) {
   xhr.send();
 };
 
-
-
 // var getTowerStimuliJSONsFromUrls = function (stimuliIdsToUrls, callback) {
 //   let stimuliIdsToJSONs = {};
 //   var stimJSONPromise = new Promise((resolve, reject) => {

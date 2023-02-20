@@ -3,9 +3,9 @@ expConfig = {
     "dbname": "block_construction",
     "colname": "build_components",
     "stimColName": "build_components_pilot",
-    "iterationName": "build_components_build_recall_dev",
+    "iterationName": "build_components_pilot_2",
     "completionCode": "CWRO95FQ",
-    "devMode": true,
+    "devMode": false,
     "experimentParameters": { // parameters for the experiment.
       "learningITI": 1000
     },
@@ -16,7 +16,7 @@ expConfig = {
     '<p>In the "<strong>LOOK</strong>" task, you should <strong>carefully study the shape of the tower</strong>.</p><p><em>Please focus on the tower for the entire time it is on screen</em>. The tower will stay on screen for around 15 seconds, then you will automatically move on to the next tower.</p><img src="../img/instruction_images/look_demo.png" style="max-width: 300px">',
     '<p>In the "<strong>BUILD</strong>" task, your goal is to <strong>perfectly reconstruct the tower</strong> in the window on the right.</p><p>Click to pick up blocks and click again to place them. Blocks can be placed on on the ground or on top of other blocks, and will stay where they are when placed. Be careful though, because you cannot undo blocks or move them once they are placed. If you make a mistake, press the "Reset" button to start building again from scratch. You will move on to the next tower once you have perfectly copied the tower anywhere in the building window.</p><img src="../img/instruction_images/tower_build_demo.gif" style="max-width: 600px">',
     '<p>Remember to pay close attention to all of the towers, as you will be asked about them later!</p><p>That\'s all you need to know. Press Next to start.</p>'],
-    "decodePhaseInstructions":['<p>Great job! Now we want to see how well you remember the towers you have just seen.</p><p>On the next sreen you\'ll be shown another building window, like the one you were using to BUILD towers before. Here though, instead of copying towers, we would like you to build as many of the towers as you can remember from the previous part of the experiment. Include towers that you built and saw. When you have built a tower, press "submit" to save it. You saw 8 towers before- try to get them all. If you are unsure, please try your best to create a tower that was as close as possible to what you remember. </p>'],
+    "recallPhaseInstructions":['<p>Great job! Now we want to see how well you remember the towers you have just seen. You will be shown towers, one by one, and asked whether they are "<strong>old</strong>" or "<strong>new</strong>".</p><p>If you <strong>have seen the tower before</strong>, either when looking or building, press "<strong>OLD_KEY</strong>" to respond "<strong>old</strong>".</br>If you <strong>have not seen the tower before</strong>, press "<strong>NEW_KEY</strong>" to respond "<strong>new</strong>".</p><p>The towers you see in this part of the study will be <em>very similar</em> to each other. However, you won\'t see the same tower more than once in this part, so you should only answer "old" if you think you saw the tower in the previous part of the study. If you are unsure, please make your best guess.</p>'],
     "taskParameters": { // parameter for indivudal trial types. Majority of task parameters are set in metadata.
       "build" : {
         afterBuildPauseDuration : 3000,
@@ -26,14 +26,14 @@ expConfig = {
         towerDuration : 15000, // 15s to match Wammes 2019
         prompt : "LOOK",
         },
-      "buildRecall" : {
+      "oldNew" : {
         iti : 1000,
-        prompt : "BUILD",},
+        prompt : "old or new?",},
     },
     "trialTypes":{
-      "build": "block-tower-building-undo",
+      "build": "block-tower-building",
       "view": "block-tower-viewing",
-      "buildRecall": "block-tower-build-recall",
+      "oldNew": "block-tower-old-new",
     }
   }
   

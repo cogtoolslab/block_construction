@@ -165,6 +165,10 @@ body{
     padding: 6px 12px;
 }
 
+.button-row {
+    justify-content: space-around;
+}
+
 #zoom-message p{
     font-size: 18px;
     margin: 0;
