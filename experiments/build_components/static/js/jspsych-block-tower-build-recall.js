@@ -125,17 +125,20 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
 
     // show preamble text
 
-    html_content += '<h1 id="prompt">'+trial.prompt+'</h1>';
+    html_content += '<h4 id="prompt">'+trial.prompt+'</h4>';
     
     html_content += '<div class="container" id="experiment">';
 
-    /** Create domain canvas **/
-    html_content += '<div class="row pt-1 env-row">';
-    html_content += '<div class=" col env-div" id="environment-canvas" style="flex-grow: 0; margin: auto"></div>';
+    /** Create building canvases **/
+
+    // submitted towers
+    html_content += '<div class="row env-row">';
+    html_content += '<div class="col env-div submitted-towers" id="stimulus-canvas"></div>';
     html_content += '</div>';
 
-    html_content += '<div class="row pt-1 env-row">';
-    html_content += '<div class="col env-div" id="stimulus-canvas" style="zoom: 30%;"></div>';
+    // building window
+    html_content += '<div class="row env-row">';
+    html_content += '<div class=" col env-div" id="environment-canvas" style="flex-basis: 0; margin: auto"></div>';
     html_content += '</div>';
 
     html_content += '<div class="row pt-3 button-row">';
@@ -320,7 +323,6 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
     function appendTower(oldTowers, newTower) {
       // add blocks from newTower into list of blocks in oldTowers
 
-
       newTower.forEach(block => {
         oldTowers.push({
           height : block.height,
@@ -330,7 +332,7 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         });
       });
 
-      trial.currXOffset += 6; // TODO towerWidth+1 would be better
+      trial.currXOffset += towerWidth(newTower) + 1;
     };
 
     function translateTower(tower, xoffset=0, yoffset=0) {
@@ -354,6 +356,18 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
       let minx = _.min(xs);
       return minx;
     };
+
+    function maxX(tower) {
+      let rights = _.map(tower, (block) => {return(block.x + block.width - 1)});
+      let maxx = _.max(rights);
+      return maxx;
+    };
+
+    function towerWidth(tower){
+      let width = maxX(tower) - minX(tower) + 1;
+      return width;
+      
+    }
 
 
     function submitTower() {

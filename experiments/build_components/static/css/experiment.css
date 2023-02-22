@@ -127,6 +127,13 @@ body{
     resize: none;
 }
 
+.submitted-towers canvas {
+    zoom: 30%;
+}
+div.submitted-towers{
+    padding-bottom: 0px;
+}
+
 #evnironment-canvas{
     resize: none;
 }
