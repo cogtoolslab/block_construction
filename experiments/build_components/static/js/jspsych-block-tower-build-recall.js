@@ -25,12 +25,6 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         type: jsPsych.plugins.parameterType.STRING,
         default: "",
       },
-      offset: {
-        type: jsPsych.plugins.parameterType.INT,
-        pretty_name: "Offset",
-        default: 0,
-        description: "Number of squares to right stim is displaced in stimulus."
-      },
       preamble: {
         type: jsPsych.plugins.parameterType.STRING,
         pretty_name: "Preamble",
@@ -73,6 +67,7 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
   plugin.trial = function (display_element, trial) {
 
     trial.submittedTowers = [];
+    trial.concatenatedTowers = [];
 
     trial.startTime = performance.now();
 
@@ -82,16 +77,16 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
     function controlHandler(event) {
 
       switch (event.keyCode) {
-        case 68: // d: switch selected block
-          switchSelectedBlock();
-          break;
-        case 32: // space: switch selected block
-          event.preventDefault(); //stop spacebar scrolling 
-          switchSelectedBlock();
-          break;
-        case 27: // escape: stop placing block
-          stopPlacingBlock();
-          break;
+        // case 68: // d: switch selected block
+        //   switchSelectedBlock();
+        //   break;
+        // case 32: // space: switch selected block
+        //   event.preventDefault(); //stop spacebar scrolling 
+        //   switchSelectedBlock();
+        //   break;
+        // case 27: // escape: stop placing block
+        //   stopPlacingBlock();
+        //   break;
         case 90: // z: undo
           if (event.ctrlKey) {
             if (event.shiftKey){
@@ -136,8 +131,11 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
 
     /** Create domain canvas **/
     html_content += '<div class="row pt-1 env-row">';
-    // html_content += '<div class="col env-div" id="stimulus-canvas"></div>';
     html_content += '<div class=" col env-div" id="environment-canvas" style="flex-grow: 0; margin: auto"></div>';
+    html_content += '</div>';
+
+    html_content += '<div class="row pt-1 env-row">';
+    html_content += '<div class="col env-div" id="stimulus-canvas" style="zoom: 30%;"></div>';
     html_content += '</div>';
 
     html_content += '<div class="row pt-3 button-row">';
@@ -195,6 +193,7 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
       trial.timeSinceLastSubmit = Date.now();
       trial.nResetsForSubmit = -1;
       trial.nUndoForSubmit = 0;
+      trial.currXOffset = 0;
 
       // trial.stimulus = {'blocks': [{ 'x': 0, 'y': 0, 'height': 1, 'width': 2 },
       //     { 'x': 2, 'y': 0, 'height': 2, 'width': 1 },
@@ -202,12 +201,12 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
       //     { 'x': 1, 'y': 2, 'height': 1, 'width': 2 }]};
 
       let constructionTrial = {
-        // stimulus: trial.stimulus.blocks,
+        stimulus: trial.concatenatedTowers, // 'stimulus' repurposed as display of submitted towers
         endCondition: '',
         blocksPlaced: 0,
         nResets: -1, // start minus one as reset env at beginning of new trial
         //nBlocksMax: trial.nBlocksMax,
-        offset: trial.offset,
+        offset: 0,
         blockSender: blockSender,
         resetSender: resetSender,
         endBuildingTrial: endTrial
@@ -215,7 +214,7 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
 
       trial.constructionTrial = constructionTrial;
 
-      var showStimulus = false;
+      var showStimulus = true;
       var showBuilding = true;
 
       blockSetup(constructionTrial, showStimulus, showBuilding);
@@ -251,7 +250,7 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         if (_.has(blockUniverse, 'p5env') ||
           _.has(blockUniverse, 'p5stim')) {
           blockUniverse.removeEnv();
-          // blockUniverse.removeStimWindow();
+          blockUniverse.removeStimWindow();
         };
 
         blockSetup(trial.constructionTrial, showStimulus, showBuilding);
@@ -272,19 +271,21 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         window.alert("You haven't submitted any towers. If you can't remember any, please try your best to construct towers as similar as possible to those you saw.");
       } else {
 
-        console.log('submitted towers:', trial.submittedTowers.length, trial.submittedTowers);
-
         blockUniverse.disabledBlockPlacement = true;
 
-        trial_data = _.extend(trial_data, trial.towerDetails, {
-          trial_start_time: trial.trialStartTime,
-          relative_time: Date.now() - trial.trialStartTime,
-          condition: trial.condition,
-          fixation_duration: trial.fixationDuration,
-          gap_duration: trial.gapDuration,
-          n_resets: trial.constructionTrial.nResets,
-          trial_num: trial.trialNum
-        });
+        trial_data = _.extend(
+          trial_data, 
+          {
+            trial_start_time: trial.trialStartTime,
+            relative_time: Date.now() - trial.trialStartTime,
+            submitted_towers: trial.submittedTowers,
+            n_towers: trial.submittedTowers.length,
+            condition: trial.condition,
+            fixation_duration: trial.fixationDuration,
+            gap_duration: trial.gapDuration,
+            n_resets: trial.constructionTrial.nResets,
+            trial_num: trial.trialNum
+          });
 
         var env_divs = document.getElementsByClassName("env-div");
         Array.prototype.forEach.call(env_divs, env_div => {
@@ -316,6 +317,44 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
       return towerDetails;
     }
 
+    function appendTower(oldTowers, newTower) {
+      // add blocks from newTower into list of blocks in oldTowers
+
+
+      newTower.forEach(block => {
+        oldTowers.push({
+          height : block.height,
+          width : block.width,
+          x : block.x + trial.currXOffset,
+          y : block.y
+        });
+      });
+
+      trial.currXOffset += 6; // TODO towerWidth+1 would be better
+    };
+
+    function translateTower(tower, xoffset=0, yoffset=0) {
+      
+      newTower = [];
+
+      tower.forEach(block => {
+        newTower.push({
+          height : block.height,
+          width : block.width,
+          x : block.x + xoffset,
+          y : block.y + yoffset,
+        });
+      });
+
+      return newTower;
+    };
+
+    function minX(tower) {
+      let xs = _.map(tower, (block) => {return(block.x)});
+      let minx = _.min(xs);
+      return minx;
+    };
+
 
     function submitTower() {
 
@@ -326,11 +365,24 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
           towerDetails : getTowerDetails(),
           nTower : trial.submittedTowers.length + 1
         };
+
+        newTower.alignedTowerBlocks = translateTower(
+                                  newTower.towerDetails.blocks, 
+                                  xoffset=-minX(newTower.towerDetails.blocks));
+
+        console.log('newTower.towerDetails.blocks', newTower.towerDetails.blocks);
+        console.log('minX', minX(newTower.towerDetails.blocks));
+        console.log('newTower.alignedTowerBlocks', newTower.alignedTowerBlocks);
         
         trial.submittedTowers.push(newTower);
         // console.log('tower submitted:', newTower);
         // console.log('submittedTowers:', trial.submittedTowers);
         // TODO: display submitted tower (not here)
+        // blockUniverse.trialObj.stimulus = newTower.towerDetails.blocks;
+        appendTower(trial.concatenatedTowers, newTower.alignedTowerBlocks);
+        console.log('concatenatedTowers', trial.concatenatedTowers);
+        // blockUniverse.trialObj.stimulus = trial.concatenatedTowers;
+
 
         undoredoManager.redostack = [];
         // details about tower construction process
@@ -360,11 +412,13 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         console.log(currentData);
         
         trial.dataForwarder(currentData);
+        
+        console.log('submitted towers:', trial.submittedTowers.length, trial.submittedTowers);
 
         if (_.has(blockUniverse, 'p5env') ||
           _.has(blockUniverse, 'p5stim')) {
           blockUniverse.removeEnv();
-          // blockUniverse.removeStimWindow();
+          blockUniverse.removeStimWindow();
         };
 
         blockSetup(trial.constructionTrial, showStimulus, showBuilding);

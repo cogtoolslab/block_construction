@@ -6,7 +6,7 @@ var config = {
   worldWidth: 12,
   discreteEnvHeight: 10,   // discrete world representation for y-snapping
   discreteEnvWidth: 12,
-  worldScale: 2.2, //scaling factor within matterjs
+  worldScale: 2.2,
   menuOffset: 70,
   xSquareOffset: 0,
   ySquareOffset: 0,
@@ -56,7 +56,7 @@ config.stimIndividualBlocks = true;
 config.stimSilhouette = false;
 config.silhouetteColor = [0, 0, 0]; //[28, 54, 62];
 config.internalStrokeColor = [40,20,40,80];
-config.showStimFloor = true;
+config.showStimFloor = false;
 config.stimFloorType = 'line';
 config.stimTickMark = false;
 config.stimFloorColor = 180;
@@ -64,9 +64,11 @@ config.floorWidth = config.canvasWidth*0.8;
 config.showStimGrid = false;
 config.showStimMenu = false;
 config.displayBuiltInStim = false;
-config.stimCanvasWidth = config.canvasWidth; // in case we want canvases to be different sizes
-config.stimCanvasHeight = config.canvasHeight;
+// config.stimCanvasWidth = config.canvasWidth; 
+// config.stimCanvasHeight = config.canvasHeight;
+config.stimCanvasWidth = 2000;
+config.stimCanvasHeight = 400;
 config.envCanvasWidth = config.canvasWidth;
 config.envCanvasHeight = config.canvasHeight;
-config.stimX = config.stimCanvasWidth / 2;
-config.stimY = config.stimCanvasHeight / 2;
+config.stimX = 300;
+config.stimY = config.stimCanvasHeight / 3;
