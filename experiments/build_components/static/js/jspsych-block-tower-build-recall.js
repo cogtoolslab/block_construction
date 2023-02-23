@@ -125,33 +125,41 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
 
     // show preamble text
 
-    html_content += '<h4 id="prompt">'+trial.prompt+'</h4>';
+    // html_content += '<h4 id="prompt">'+trial.prompt+'</h4>';
     
     html_content += '<div class="container" id="experiment">';
 
     /** Create building canvases **/
 
     // submitted towers
-    html_content += '<div class="row env-row">';
+    html_content += '<div class="row env-row" id="tower-gallery">';
+    html_content += '<p id="gallery-title">saved towers</p>';
     html_content += '<div class="col env-div submitted-towers" id="stimulus-canvas"></div>';
     html_content += '</div>';
 
     // building window
     html_content += '<div class="row env-row">';
     html_content += '<div class=" col env-div" id="environment-canvas" style="flex-basis: 0; margin: auto"></div>';
+
+    html_content += '<div class="col button-col">';
+    html_content += '<button id="submit-button" type="button" class="btn btn-primary">Submit</button>';
+    html_content += '<button id="reset-button" type="button" class="btn btn-warning">Reset</button>';
+    html_content += '<p id="build-recall-prompt">Build all the towers you remember from the previous part of the experiment. Press Submit when you are happy with a tower; press Exit when you can\'t remember any more.</p>';
     html_content += '</div>';
 
-    html_content += '<div class="row pt-3 button-row">';
-    html_content += '<button id="reset-button" type="button" class="btn btn-warning">Reset</button>';
-    html_content += '<button id="submit-button" type="button" class="btn btn-primary">Submit</button>';
     html_content += '</div>';
+
+    // html_content += '<div class="row pt-3 button-row">';
+    // html_content += '<button id="reset-button" type="button" class="btn btn-warning">Reset</button>';
+    // html_content += '<button id="submit-button" type="button" class="btn btn-primary">Submit</button>';
+    // html_content += '</div>';
 
     html_content += '<div class="row pt-1 button-row">';
-    html_content += '<button id="finish-button" type="button" class="btn btn-danger">Finish Building</button>';
+    html_content += '<button id="finish-button" type="button" class="btn btn-danger">Exit</button>';
     html_content += '</div>';
 
     html_content += "</div>";
-    html_content += '<p>Use ctrl/cmd + minus-sign (-) if windows do not fit on the screen at the same time.</p>';
+    // html_content += '<p>Use ctrl/cmd + minus-sign (-) if windows do not fit on the screen at the same time.</p>';
 
     display_element.innerHTML = html_content;
 

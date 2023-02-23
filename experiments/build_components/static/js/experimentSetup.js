@@ -343,7 +343,7 @@ function setupExperiment() {
         /* #### Initialize jsPsych with complete experimental timeline #### */
         jsPsych.init({
             timeline: trialList,
-            show_progress_bar: true,
+            show_progress_bar: false,
             default_iti: 600, //up from 600 in zipping_calibration_sona_pilot
             on_trial_finish: function (trialData) {
                 // console.log('Trial data:', trialData);
