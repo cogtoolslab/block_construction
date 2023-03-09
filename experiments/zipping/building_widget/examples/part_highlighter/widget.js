@@ -1,0 +1,257 @@
+window.onload = function() {
+
+let groups = [];
+let groupDivs = [];
+let divs = [];
+let colors = [];
+let groupIdx = null;
+function addgroup() {
+    const group = [];
+    groups.push(group);
+    const thisGrp = groups.length - 1;
+    groupIdx = thisGrp;
+
+    const groupDiv = document.createElement("div");
+    groupDiv.setAttribute("id", `group-${groupIdx}`);
+    groupDiv.setAttribute("class", "group selected");
+    groupDiv.innerText = group.length;
+    groupDiv.addEventListener("click", () => {
+        groupDivs.forEach((div, i) => {
+            if (i == thisGrp)
+                div.setAttribute("class", "group selected");
+            else
+                div.setAttribute("class", "group");
+        });
+        groupIdx = thisGrp;
+    });
+    groupDivs.forEach((div, i) => {
+        if (i == thisGrp)
+            div.setAttribute("class", "group selected");
+        else
+            div.setAttribute("class", "group");
+    });
+    groupDivs.push(groupDiv);
+    document.getElementById("groups").appendChild(groupDiv);
+
+    let trial = {
+        stimulus : [{'x': 0, 'y': 0, 'height': 2, 'width': 1}, {'x': 5, 'y': 0, 'height': 2, 'width': 1}, {'x': 0, 'y': 2, 'height': 1, 'width': 2}, {'x': 1, 'y': 3, 'height': 1, 'width': 2}, {'x': 4, 'y': 2, 'height': 1, 'width': 2}, {'x': 3, 'y': 3, 'height': 1, 'width': 2}, {'x': 0, 'y': 4, 'height': 1, 'width': 2}, {'x': 2, 'y': 4, 'height': 1, 'width': 2}, {'x': 4, 'y': 4, 'height': 1, 'width': 2}, {'x': 6, 'y': 0, 'height': 2, 'width': 1}, {'x': 13, 'y': 0, 'height': 2, 'width': 1}, {'x': 6, 'y': 2, 'height': 1, 'width': 2}, {'x': 12, 'y': 2, 'height': 1, 'width': 2}, {'x': 7, 'y': 3, 'height': 1, 'width': 2}, {'x': 11, 'y': 3, 'height': 1, 'width': 2}, {'x': 8, 'y': 4, 'height': 1, 'width': 2}, {'x': 10, 'y': 4, 'height': 1, 'width': 2}, {'x': 6, 'y': 4, 'height': 1, 'width': 2}, {'x': 12, 'y': 4, 'height': 1, 'width': 2}, {'x': 14, 'y': 0, 'height': 2, 'width': 1}, {'x': 19, 'y': 0, 'height': 2, 'width': 1}, {'x': 14, 'y': 2, 'height': 1, 'width': 2}, {'x': 15, 'y': 3, 'height': 1, 'width': 2}, {'x': 18, 'y': 2, 'height': 1, 'width': 2}, {'x': 17, 'y': 3, 'height': 1, 'width': 2}, {'x': 14, 'y': 4, 'height': 1, 'width': 2}, {'x': 16, 'y': 4, 'height': 1, 'width': 2}, {'x': 18, 'y': 4, 'height': 1, 'width': 2}, {'x': 1, 'y': 5, 'height': 1, 'width': 2}, {'x': 3, 'y': 5, 'height': 1, 'width': 2}, {'x': 5, 'y': 5, 'height': 1, 'width': 2}, {'x': 7, 'y': 5, 'height': 1, 'width': 2}, {'x': 9, 'y': 5, 'height': 1, 'width': 2}, {'x': 11, 'y': 5, 'height': 1, 'width': 2}, {'x': 13, 'y': 5, 'height': 1, 'width': 2}, {'x': 15, 'y': 5, 'height': 1, 'width': 2}, {'x': 17, 'y': 5, 'height': 1, 'width': 2}, {'x': 0, 'y': 6, 'height': 1, 'width': 2}, {'x': 2, 'y': 6, 'height': 1, 'width': 2}, {'x': 4, 'y': 6, 'height': 1, 'width': 2}, {'x': 6, 'y': 6, 'height': 1, 'width': 2}, {'x': 8, 'y': 6, 'height': 1, 'width': 2}, {'x': 10, 'y': 6, 'height': 1, 'width': 2}, {'x': 12, 'y': 6, 'height': 1, 'width': 2}, {'x': 14, 'y': 6, 'height': 1, 'width': 2}, {'x': 16, 'y': 6, 'height': 1, 'width': 2}, {'x': 18, 'y': 6, 'height': 1, 'width': 2}],
+        endCondition: 'perfect-reconstruction-translation',
+        offset: 5,
+    };
+
+    var showStimulus = false;
+    var showBuilding = true;
+
+    function addBlocks() {
+        trial.stimulus.forEach(block => {
+            block.x += 5;
+            window.blockUniverse.addBlock(block);
+        });
+    }
+
+    window.blockSetup(
+        trial,
+        showStimulus,
+        showBuilding,
+        true,
+        addBlocks
+    );
+
+    const instructions = new Instructions(document.querySelector("#instructions"));
+    instructions.addInstruction();
+
+
+    window.blockUniverse.addEventListener("blockActivated", (block) => {
+        if (instructions.selectedGroup == null) return;
+        instructions.selectedGroup.activateBlock(block);
+    });
+};
+
+class Instructions {
+    constructor(element) {
+        this.element = element;
+
+        const addInstruction = document.createElement("button");
+        addInstruction.innerText = "add instruction";
+        addInstruction.setAttribute("class", "add-instruction");
+        this.element.appendChild(addInstruction);
+
+        this.instructions = [];
+        this.groups = [];
+        this.selectedGroup = null;
+
+        addInstruction.addEventListener("click", event => this.addInstruction());
+    }
+
+    addInstruction() {
+        this.instructions.push(new Instruction(this));
+    }
+
+    removeInstruction(instruction) {
+        const idx = this.instructions.findIndex(elem => elem.id == instruction.id);
+        this.instructions.splice(idx, 1);
+    }
+
+    selectGroup(group) {
+        this.groups.forEach(g => {
+            if (g.id == group.id) {
+                g.select();
+                this.selectedGroup = g;
+            } else {
+                g.deselect();
+            }
+        });
+    }
+}
+let instructionCounter = 0;
+class Instruction {
+    constructor(instructions) {
+        this.id = ++instructionCounter;
+        this.instructions = instructions;
+        [this.element, this.deleteButton, this.addGroupButton, this.deleteGroupButton, this.groupBar, this.whereInput] = this.build(instructions.element);
+        this.groups = [];
+        this.subscribeEvents();
+    }
+
+    build(parent) {
+        const element = document.createElement("div");
+        element.setAttribute("class", "instruction");
+        parent.appendChild(element);
+
+        const topBar = document.createElement("div");
+        topBar.setAttribute("class", "top-bar");
+        const deleteButton = document.createElement("button");
+        deleteButton.setAttribute("class", "delete");
+        deleteButton.innerText = "x";
+        topBar.appendChild(deleteButton);
+        element.appendChild(topBar);
+
+        const input = document.createElement("div");
+        input.setAttribute("class", "input");
+        const whatlabel = document.createElement("label");
+        whatlabel.innerText = "what";
+        input.appendChild(whatlabel);
+        input.appendChild(document.createElement("br"));
+        const what = document.createElement("textarea");
+        input.appendChild(what);
+        input.appendChild(document.createElement("br"));
+        input.appendChild(document.createElement("br"));
+
+        const wherelabel = document.createElement("label");
+        wherelabel.innerText = "where";
+        input.appendChild(wherelabel);
+        input.appendChild(document.createElement("br"));
+        const where = document.createElement("textarea");
+        input.appendChild(where);
+        input.appendChild(document.createElement("br"));
+        input.appendChild(document.createElement("br"));
+        element.appendChild(input);
+
+        const groupBar = document.createElement("div");
+        groupBar.setAttribute("class", "group-bar");
+        const addGroup = document.createElement("button");
+        addGroup.innerText = "+";
+        addGroup.disabled = true;
+        const deleteGroup = document.createElement("button");
+        deleteGroup.innerText = "x";
+        deleteGroup.disabled = true;
+        groupBar.appendChild(addGroup);
+        groupBar.appendChild(deleteGroup);
+        element.appendChild(groupBar);
+        return [element, deleteButton, addGroup, deleteGroup, groupBar, where];
+    }
+
+    subscribeEvents() {
+        this.deleteButton.addEventListener("click", event => this.removeSelf());
+        this.addGroupButton.addEventListener("click", event => this.addGroup());
+        this.deleteGroupButton.addEventListener("click", event => this.removeGroup(this.instructions.selectedGroup));
+        this.whereInput.addEventListener("input", event => {
+            if (event.target.value.length>0) {
+                this.addGroupButton.disabled = false;
+            } else {
+                this.addGroupButton.disabled = true;
+            }
+        });
+    }
+
+    removeSelf() {
+        this.element.remove();
+        this.instructions.removeInstruction(this);
+    }
+
+    addGroup() {
+        const group = new Group(this);
+        this.instructions.groups.push(group);
+        this.groups.push(group);
+    }
+
+    removeGroup(group) {
+        if (group == null) return;
+        const pidx = this.instructions.groups.findIndex(g => g.id == group.id);
+        this.instructions.groups.splice(pidx, 1);
+        const tidx = this.groups.findIndex(g => g.id == group.id);
+        this.groups.splice(tidx, 1);
+        console.log(group);
+        group.removeSelf();
+    }
+}
+let groupcounter = 0;
+class Group {
+    constructor(instruction) {
+        this.id = ++ groupcounter;
+        this.color = [Math.floor(Math.random()*255), Math.floor(Math.random()*255), Math.floor(Math.random()*255), 255];
+        this.instruction = instruction;
+        this.element = this.build(instruction.groupBar);
+        this.blocks = [];
+
+
+        this.element.addEventListener("click", event => {
+            this.instruction.instructions.selectGroup(this);
+            this.instruction.deleteGroupButton.disabled = false;
+        });
+    }
+
+    build(parent) {
+        const element = document.createElement("div");
+        element.setAttribute("class", "group");
+        element.innerText = this.instruction.groups.length;
+        parent.appendChild(element);
+        element.style.setProperty("background", `rgb(${this.color[0]}, ${this.color[1]}, ${this.color[2]})`)
+        return element;
+    }
+
+    removeSelf() {
+        this.element.remove();
+        this.blocks.forEach(b => {
+            b.color = [200, 200, 200, 255];
+        });
+    }
+
+    select() {
+        this.element.classList.add("selected");
+        this.blocks.forEach(b => {
+            b.color[3] = 255;
+        });
+    }
+
+    deselect() {
+        this.element.classList.remove("selected");
+        this.instruction.deleteGroupButton.disabled = true;
+        this.blocks.forEach(b => {
+            b.color[3] = 50;
+        });
+    }
+
+    activateBlock(block) {
+        const idx = this.blocks.findIndex(b => b.x == block.x && b.y == block.y);
+        if (idx == -1) {
+            block.color = this.color;
+            this.blocks.push(block);
+        }
+        else {
+            block.color = [200, 200, 200, 255];
+            this.blocks.splice(idx, 1);
+        }
+    }
+}
+}

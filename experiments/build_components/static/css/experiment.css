@@ -127,6 +127,15 @@ body{
     resize: none;
 }
 
+.submitted-towers canvas {
+    zoom: 33.4%;
+    border: solid 18px #1C363E !important;
+}
+div.submitted-towers{
+    padding-bottom: 0px;
+    padding-top: 0px;
+}
+
 #evnironment-canvas{
     resize: none;
 }
@@ -163,6 +172,34 @@ body{
     font-family: 'Francois One', sans-serif;
     font-size: 24px;
     padding: 6px 12px;
+}
+
+.button-row {
+    justify-content: space-around;
+}
+
+.col.button-col {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-start;
+    padding-left: 0px;
+    background-color: #FFD819;
+    max-width: 220px;;
+}
+
+div#tower-gallery{
+    background-color: #FFD819;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+p#gallery-title{
+    margin-top: 5px;
+}
+
+.button-col .btn {
+    margin-bottom: 20px;
+    max-width: 130px;
 }
 
 #zoom-message p{
@@ -351,7 +388,14 @@ h5#trial-counter-center {
 
 .jspsych-content p {
     max-width: 900px;
+    margin-top: 20px;
+    margin-bottom: auto;
 }
+
+#build-recall-prompt{
+    text-align: left;
+    font-size: medium;
+};
 
 
 .consent {
