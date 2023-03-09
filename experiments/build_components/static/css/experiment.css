@@ -184,7 +184,7 @@ div.submitted-towers{
     justify-content: flex-start;
     padding-left: 0px;
     background-color: #FFD819;
-    max-width: 220px;;
+    /* max-width: 220px; */
 }
 
 div#tower-gallery{
@@ -387,14 +387,15 @@ h5#trial-counter-center {
 } */
 
 .jspsych-content p {
-    max-width: 900px;
     margin-top: 20px;
     margin-bottom: auto;
+    max-width: 900px;
 }
 
-#build-recall-prompt{
+.build-recall-prompt{
     text-align: left;
     font-size: medium;
+    width: 450px;
 };
 
 
