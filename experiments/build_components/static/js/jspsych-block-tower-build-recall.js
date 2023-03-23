@@ -75,6 +75,7 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
 
     trial.submittedTowers = [];
     trial.concatenatedTowers = [];
+    trial.nBlocksPlaced = 0;
 
     const undoredoManager = new UndoRedoManager();
 
@@ -147,14 +148,22 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
 
     // building window
     html_content += '<div class="row env-row">';
-    html_content += '<div class=" col env-div" id="environment-canvas" style="flex-basis: 0; margin: auto"></div>';
+    html_content += '<div class=" col env-div env-flex" id="environment-canvas" style="flex-basis: 0; margin: auto"><p id="block-counter" style="margin-top: 10px">' + trial.nBlocksPlaced + ' of ' + trial.nBlocksMax + ' blocks placed</p></div>';
+    // html_content += '</div>';
+
 
     html_content += '<div class="col button-col">';
-    html_content += '<button id="submit-button" type="button" class="btn btn-primary">Submit</button>';
+    html_content += '<div class="button-div">';
+    html_content += '<button id="undo-button" type="button" title="undo" class="btn btn-light">↩</button>';
+    html_content += '<button id="redo-button" type="button" title="redo" class="btn btn-light">↪</button>';
+    html_content += '<button id="submit-button" type="button"  class="btn btn-primary" style="float:right;" disabled=true>Submit</button>';
+    html_content += '</div>'
     html_content += '<button id="reset-button" type="button" class="btn btn-warning">Reset</button>';
 
+
     // html_content += '<p class="build-recall-prompt"></p>';
-    html_content += '<p class="build-recall-prompt">Build all the towers you remember from the previous part of the experiment.</br></br>Press Submit to save a tower that you are happy with.</br>Press Reset to clear the blocks in the building window.</br>Press Exit when you can\'t remember any more towers.</br></br> You can undo blocks with (cmd/ctl + z), and redo with (cmd/ctl + shift + z).</p>';
+    // html_content += '<p id="block-counter">' + trial.nBlocksPlaced + ' of ' + trial.nBlocksMax + ' blocks placed</p>';
+    html_content += '<p class="build-recall-prompt">Build all the towers you remember from the previous part of the experiment.</br></br>Press Submit to save a tower that you are happy with.</br>Press Reset to clear the blocks in the building window.</br>Press Exit when you can\'t remember any more towers.</br></br> You can undo and redo blocks with white buttons.</p>';
 
     html_content += '</div>';
 
@@ -185,6 +194,12 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         let timeNow = Date.now();
         trial.nUndoForSubmit += 1;
         trial.nBlocksPlaced -= 1;
+        blockUniverse.disabledBlockPlacement = false;
+        document.getElementById('block-counter').innerText = '' + trial.nBlocksPlaced + ' of ' + trial.nBlocksMax + ' blocks placed';
+        if (trial.nBlocksPlaced!=trial.nBlocksMax){
+          document.getElementById("submit-button").disabled = true;
+        }
+
         // nBlocksPlacedInStep -= 1;
         trial.dataForwarder(
           _.extend(
@@ -204,6 +219,11 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
 
         let timeNow = Date.now();
         trial.nBlocksPlaced += 1;
+        document.getElementById('block-counter').innerText = '' + trial.nBlocksPlaced + ' of ' + trial.nBlocksMax + ' blocks placed';
+        
+        if (trial.nBlocksPlaced==trial.nBlocksMax){
+          document.getElementById("submit-button").disabled = false;
+        }
 
         trial.dataForwarder(
           _.extend(
@@ -218,7 +238,6 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         );
       });
 
-      trial.nBlocksPlaced = 0;
       trial.timeSinceLastSubmit = Date.now();
       trial.nResetsForSubmit = -1;
       trial.nUndoForSubmit = 0;
@@ -234,7 +253,7 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         endCondition: '',
         blocksPlaced: 0,
         nResets: -1, // start minus one as reset env at beginning of new trial
-        //nBlocksMax: trial.nBlocksMax,
+        nBlocksMax: trial.nBlocksMax,
         offset: 0,
         blockSender: blockSender,
         resetSender: resetSender,
@@ -264,6 +283,14 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         submitTower();
       });
 
+      $("#undo-button").click(() => {
+        undoredoManager.undo();
+      });
+
+      $("#redo-button").click(() => {
+        undoredoManager.redo();
+      });
+
       resetBuilding = function () {
 
         trial.nResetsForSubmit +=1;
@@ -272,6 +299,10 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         let nBlocksWhenReset = trial.nBlocksPlaced;
         constructionTrial.nResets += 1;
         trial.nBlocksPlaced = 0;
+        document.getElementById('block-counter').innerText = '' + trial.nBlocksPlaced + ' of ' + trial.nBlocksMax + ' blocks placed';
+        document.getElementById("submit-button").disabled = true;
+        blockUniverse.disabledBlockPlacement = false;
+        
         resetSender({
           n_blocks_when_reset: nBlocksWhenReset,
         });
@@ -475,6 +506,11 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         trial.nBlocksPlaced = 0;
         trial.nResetsForSubmit = 0;
         trial.nUndoForSubmit = 0;
+
+        document.getElementById('block-counter').innerText = '' + trial.nBlocksPlaced + ' of ' + trial.nBlocksMax + ' blocks placed';
+        document.getElementById("submit-button").disabled = true;
+        blockUniverse.disabledBlockPlacement = false;
+
       };
 
     };
@@ -486,12 +522,13 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         //console.log(block_data);
         
         trial.nBlocksPlaced += 1;
+        document.getElementById('block-counter').innerText = '' + trial.nBlocksPlaced + ' of ' + trial.nBlocksMax + ' blocks placed';
 
         if (trial.nBlocksPlaced >= trial.nBlocksMax) {
-          // update block counter element
+          blockUniverse.disabledBlockPlacement = true;
 
-          // setTimeout(resetBuilding, 300); 
-          // resetBuilding();
+          document.getElementById("submit-button").disabled = false;
+
         };
 
         let timeNow = Date.now();

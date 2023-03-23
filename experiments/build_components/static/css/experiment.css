@@ -178,6 +178,21 @@ div.submitted-towers{
     justify-content: space-around;
 }
 
+.button-div {
+    /* display: grid; */
+    margin-bottom: 40px;
+}
+
+button#undo-button, button#redo-button {
+    padding-top: 12px;
+}
+
+.btn-primary.disabled, .btn-primary:disabled {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #000000;
+}
+
 .col.button-col {
     display: flex;
     flex-direction: column-reverse;
@@ -198,8 +213,10 @@ p#gallery-title{
 }
 
 .button-col .btn {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+    margin-right: 10px;
     max-width: 130px;
+    float: left;
 }
 
 #zoom-message p{
@@ -341,6 +358,12 @@ h5#trial-counter-center {
     /* transform: translate(0%, 50%); */
     /* margin-right: auto; */
     /* 2x margin */
+}
+
+.env-flex{
+    display: flex;
+    flex-direction: column-reverse;
+    padding-bottom: 10px;
 }
 
 .monochrome#top-stimulus{

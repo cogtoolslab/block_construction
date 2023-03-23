@@ -50,11 +50,11 @@ function setupExperiment() {
                 sendMetadata(metadata);
             }, 500);
 
-            setupLearnPhase(trialList, trialList => {
+            // setupLearnPhase(trialList, trialList => {
                 setupDecodePhase(trialList, trialList => {
                     setupOtherTrials(trialList);
                 });
-            });
+            // });
         });
     };
 
