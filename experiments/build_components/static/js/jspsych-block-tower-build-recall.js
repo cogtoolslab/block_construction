@@ -66,10 +66,16 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
 
   plugin.trial = function (display_element, trial) {
 
+    config.stimCanvasWidth = 2800;
+    config.stimCanvasHeight = 400;
+    config.envCanvasWidth = config.canvasWidth;
+    config.envCanvasHeight = config.canvasHeight;
+    config.stimX = 300;
+    config.stimY = config.stimCanvasHeight / 3;
+
     trial.submittedTowers = [];
     trial.concatenatedTowers = [];
-
-    trial.startTime = performance.now();
+    trial.nBlocksPlaced = 0;
 
     const undoredoManager = new UndoRedoManager();
 
@@ -115,6 +121,9 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
       }
     };
 
+    // if (trial.trialNum == 1) { // hack to avoid handlers being added more than once
+    //   $(document).on("keydown", controlHandler);
+    // };
     $(document).on("keydown", controlHandler);
 
     window.currTrialNum += 1;
@@ -139,12 +148,23 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
 
     // building window
     html_content += '<div class="row env-row">';
-    html_content += '<div class=" col env-div" id="environment-canvas" style="flex-basis: 0; margin: auto"></div>';
+    html_content += '<div class=" col env-div env-flex" id="environment-canvas" style="flex-basis: 0; margin: auto"><p id="block-counter" style="margin-top: 10px">' + trial.nBlocksPlaced + ' of ' + trial.nBlocksMax + ' blocks placed</p></div>';
+    // html_content += '</div>';
+
 
     html_content += '<div class="col button-col">';
-    html_content += '<button id="submit-button" type="button" class="btn btn-primary">Submit</button>';
+    html_content += '<div class="button-div">';
+    html_content += '<button id="undo-button" type="button" title="undo" class="btn btn-light">↩</button>';
+    html_content += '<button id="redo-button" type="button" title="redo" class="btn btn-light">↪</button>';
+    html_content += '<button id="submit-button" type="button"  class="btn btn-primary" style="float:right;" disabled=true>Submit</button>';
+    html_content += '</div>'
     html_content += '<button id="reset-button" type="button" class="btn btn-warning">Reset</button>';
-    html_content += '<p id="build-recall-prompt">Build all the towers you remember from the previous part of the experiment. Press Submit when you are happy with a tower; press Exit when you can\'t remember any more.</p>';
+
+
+    // html_content += '<p class="build-recall-prompt"></p>';
+    // html_content += '<p id="block-counter">' + trial.nBlocksPlaced + ' of ' + trial.nBlocksMax + ' blocks placed</p>';
+    html_content += '<p class="build-recall-prompt">Build all the towers you remember from the previous part of the experiment.</br></br>Press Submit to save a tower that you are happy with.</br>Press Reset to clear the blocks in the building window.</br>Press Exit when you can\'t remember any more towers.</br></br> You can undo and redo blocks with white buttons.</p>';
+
     html_content += '</div>';
 
     html_content += '</div>';
@@ -168,10 +188,18 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
     if (true) { // TODO: remove?
 
       trial.trialStartTime = Date.now();
-
+      undoredoManager.removeEventListener("undo");
       undoredoManager.addEventListener("undo", (blockData) => {
+
+        let timeNow = Date.now();
         trial.nUndoForSubmit += 1;
         trial.nBlocksPlaced -= 1;
+        blockUniverse.disabledBlockPlacement = false;
+        document.getElementById('block-counter').innerText = '' + trial.nBlocksPlaced + ' of ' + trial.nBlocksMax + ' blocks placed';
+        if (trial.nBlocksPlaced!=trial.nBlocksMax){
+          document.getElementById("submit-button").disabled = true;
+        }
+
         // nBlocksPlacedInStep -= 1;
         trial.dataForwarder(
           _.extend(
@@ -180,14 +208,23 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
             {
               n_block: trial.nBlocksPlaced,
               datatype: 'block_undo_placement',
-              rt: Date.now() - trial.trialStartTime
+              absolute_time: timeNow,
+              relative_time: timeNow - trial.trialStartTime
             })
         );
       });
   
+      undoredoManager.removeEventListener("redo");
       undoredoManager.addEventListener("redo", (blockData) => {
+
+        let timeNow = Date.now();
         trial.nBlocksPlaced += 1;
-        // nBlocksPlacedInStep += 1;
+        document.getElementById('block-counter').innerText = '' + trial.nBlocksPlaced + ' of ' + trial.nBlocksMax + ' blocks placed';
+        
+        if (trial.nBlocksPlaced==trial.nBlocksMax){
+          document.getElementById("submit-button").disabled = false;
+        }
+
         trial.dataForwarder(
           _.extend(
             {},
@@ -195,12 +232,12 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
             {
               n_block: trial.nBlocksPlaced,
               datatype: 'block_redo_placement',
-              rt: Date.now() - trial.trialStartTime
+              absolute_time: timeNow,
+              relative_time: timeNow - trial.trialStartTime
             })
         );
       });
 
-      trial.nBlocksPlaced = 0;
       trial.timeSinceLastSubmit = Date.now();
       trial.nResetsForSubmit = -1;
       trial.nUndoForSubmit = 0;
@@ -216,7 +253,7 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         endCondition: '',
         blocksPlaced: 0,
         nResets: -1, // start minus one as reset env at beginning of new trial
-        //nBlocksMax: trial.nBlocksMax,
+        nBlocksMax: trial.nBlocksMax,
         offset: 0,
         blockSender: blockSender,
         resetSender: resetSender,
@@ -246,6 +283,14 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         submitTower();
       });
 
+      $("#undo-button").click(() => {
+        undoredoManager.undo();
+      });
+
+      $("#redo-button").click(() => {
+        undoredoManager.redo();
+      });
+
       resetBuilding = function () {
 
         trial.nResetsForSubmit +=1;
@@ -254,6 +299,10 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         let nBlocksWhenReset = trial.nBlocksPlaced;
         constructionTrial.nResets += 1;
         trial.nBlocksPlaced = 0;
+        document.getElementById('block-counter').innerText = '' + trial.nBlocksPlaced + ' of ' + trial.nBlocksMax + ' blocks placed';
+        document.getElementById("submit-button").disabled = true;
+        blockUniverse.disabledBlockPlacement = false;
+        
         resetSender({
           n_blocks_when_reset: nBlocksWhenReset,
         });
@@ -276,26 +325,34 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
 
     function endTrial(trial_data) { // called by block_widget when trial ends
 
+      $(document).off("keydown", controlHandler);
+
       if (trial.nBlocksPlaced > 0) {
         window.alert("You have built something that hasn't been submitted. Please submit your tower or Reset before pressing finish.");
       } else if (trial.submittedTowers.length == 0){ // if no towers have been submitted
-        window.alert("You haven't submitted any towers. If you can't remember any, please try your best to construct towers as similar as possible to those you saw.");
+        window.alert("You haven't submitted any towers. If you can't remember any, please try your best to construct towers as similar as possible to the ones you saw.");
       } else {
+
+        let timeNow = Date.now();
 
         blockUniverse.disabledBlockPlacement = true;
 
         trial_data = _.extend(
           trial_data, 
           {
+            absolute_time: timeNow,
             trial_start_time: trial.trialStartTime,
-            relative_time: Date.now() - trial.trialStartTime,
+            total_recall_time: timeNow - trial.trialStartTime,
             submitted_towers: trial.submittedTowers,
+            concatenated_towers: trial.concatenatedTowers,
             n_towers: trial.submittedTowers.length,
             condition: trial.condition,
             fixation_duration: trial.fixationDuration,
             gap_duration: trial.gapDuration,
             n_resets: trial.constructionTrial.nResets,
-            trial_num: trial.trialNum
+            trial_num: trial.trialNum,
+            trial_type: trial.trialType
+            
           });
 
         var env_divs = document.getElementsByClassName("env-div");
@@ -392,9 +449,9 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
                                   newTower.towerDetails.blocks, 
                                   xoffset=-minX(newTower.towerDetails.blocks));
 
-        console.log('newTower.towerDetails.blocks', newTower.towerDetails.blocks);
-        console.log('minX', minX(newTower.towerDetails.blocks));
-        console.log('newTower.alignedTowerBlocks', newTower.alignedTowerBlocks);
+        // console.log('newTower.towerDetails.blocks', newTower.towerDetails.blocks);
+        // console.log('minX', minX(newTower.towerDetails.blocks));
+        // console.log('newTower.alignedTowerBlocks', newTower.alignedTowerBlocks);
         
         trial.submittedTowers.push(newTower);
         // console.log('tower submitted:', newTower);
@@ -420,8 +477,8 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
           towerConstructionData,
           newTower, // details about final state of tower
           {
-            trial_start_time: trial.trialStartTime,
             absolute_time: timeNow,
+            trial_start_time: trial.trialStartTime,
             relative_time_trial: timeNow - trial.trialStartTime,
             time_since_last_submit: timeNow - trial.timeSinceLastSubmit,
             time_since_last_reset: timeNow - trial.timeSinceLastReset,
@@ -449,6 +506,11 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         trial.nBlocksPlaced = 0;
         trial.nResetsForSubmit = 0;
         trial.nUndoForSubmit = 0;
+
+        document.getElementById('block-counter').innerText = '' + trial.nBlocksPlaced + ' of ' + trial.nBlocksMax + ' blocks placed';
+        document.getElementById("submit-button").disabled = true;
+        blockUniverse.disabledBlockPlacement = false;
+
       };
 
     };
@@ -460,20 +522,24 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         //console.log(block_data);
         
         trial.nBlocksPlaced += 1;
+        document.getElementById('block-counter').innerText = '' + trial.nBlocksPlaced + ' of ' + trial.nBlocksMax + ' blocks placed';
 
         if (trial.nBlocksPlaced >= trial.nBlocksMax) {
-          // update block counter element
+          blockUniverse.disabledBlockPlacement = true;
 
-          // setTimeout(resetBuilding, 300); 
-          // resetBuilding();
-        }
+          document.getElementById("submit-button").disabled = false;
+
+        };
+
+        let timeNow = Date.now();
 
         curr_data = _.extend(
           block_data, 
           trial.towerDetails, 
           {
+            absolute_time: timeNow,
             trial_start_time: trial.trialStartTime,
-            relative_time: Date.now() - trial.trialStartTime,
+            relative_time: timeNow - trial.trialStartTime,
             datatype: 'block_placement',
             stimulus: trial.stimulus,
             condition: trial.condition,
@@ -489,12 +555,16 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
     function resetSender(reset_data) { // called by block_widget when a block is placed
 
       if (!trial.finished){
+        
+        let timeNow = Date.now();
+
         curr_data = _.extend(
           reset_data, 
           trial.towerDetails, 
           {
+            absolute_time: timeNow,
             trial_start_time: trial.trialStartTime,
-            relative_time: Date.now() - trial.trialStartTime,
+            relative_time: timeNow - trial.trialStartTime,
             datatype: 'reset',
             stimulus: trial.stimulus,
             condition: trial.condition,

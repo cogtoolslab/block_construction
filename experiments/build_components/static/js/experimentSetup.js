@@ -1,4 +1,4 @@
-/** experimentSetup.js | Credit : WPM, YF, CW.
+/** experimentSetup.js | Credit : WPM
  * Sets up experiments from a config. Serving tihs expects a config with the following URL parameters:
   - configId: the name of the config file for the experiment.
   - experimentGroup: the name of the subdirectory containing the configs.
@@ -43,7 +43,8 @@ function setupExperiment() {
 
             window.currTrialNum = 0; // keep track of current trial across experiment
             window.decodeTrialNum = 0;
-            window.totalTrials = metadata.trials.length;
+            // window.totalTrials = metadata.trials.length;
+            // window.totalLearnTrials = metadata.trials.length;
 
             setTimeout(() =>{
                 sendMetadata(metadata);
@@ -66,7 +67,7 @@ function setupExperiment() {
         // find non-foil trials
         encodeTrialMetadata = _.filter(metadata.trials, (trial) => trial['condition'] != 'foil');
         
-        window.totalencodeTrials = encodeTrialMetadata.length;
+        window.totalEncodeTrials = encodeTrialMetadata.length;
 
         // console.log(encodeTrialMetadata);
         
@@ -244,6 +245,8 @@ function setupExperiment() {
     // Set up additional trials (consent, instructions)
     setupOtherTrials = function (trialList) {
 
+        // console.log(studyLocation, expConfig.prolificCompInfo)
+
         // console.log(trialList);
 
         if (!expConfig.devMode) {
@@ -258,6 +261,8 @@ function setupExperiment() {
 
             if (expConfig.sonaCompInfo && studyLocation == 'SONA'){
                 instructionPages = _.concat(instructionPages, expConfig.sonaCompensation);
+            } else if (expConfig.prolificCompInfo && studyLocation == 'Prolific'){
+                instructionPages = _.concat(instructionPages, expConfig.prolificCompInfo);
             };
 
             // if (studyLocation == 'SONA'){
@@ -351,7 +356,7 @@ function setupExperiment() {
                 // variables to be uploaded with all data
                 var packet = _.extend({}, trialData, commonData, {
                     datatype: 'trial_end',
-                    response_key_dict: metadata.response_key_dict
+                    // response_key_dict: metadata.response_key_dict
                 });
 
                 // console.log(trialData);

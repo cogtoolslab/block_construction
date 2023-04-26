@@ -100,20 +100,18 @@ jsPsych.plugins["block-tower-building-undo"] = (function () {
 
     const undoredoManager = new UndoRedoManager();
 
-    console.log(undoredoManager);
-
     // extra controls
     function controlHandler(event) {
       switch (event.keyCode) {
         case 68: // d: switch selected block
-          switchSelectedBlock();
+          // switchSelectedBlock();
           break;
         case 32: // space: switch selected block
           event.preventDefault(); //stop spacebar scrolling 
-          switchSelectedBlock();
+          // switchSelectedBlock();
           break;
         case 27: // escape: stop placing block
-          stopPlacingBlock();
+          // stopPlacingBlock();
           break;
         case 90: // z: undo
           if (event.ctrlKey) {
@@ -143,10 +141,15 @@ jsPsych.plugins["block-tower-building-undo"] = (function () {
       }
     };
 
+    // if (trial.trialNum == 1) { // hack to avoid handlers being added more than once
+    //   $(document).on("keydown", controlHandler);
+    // };
+
     $(document).on("keydown", controlHandler);
 
     window.currTrialNum += 1;
 
+  
     display_element.innerHTML = "";
 
     var html_content = "";
@@ -164,7 +167,7 @@ jsPsych.plugins["block-tower-building-undo"] = (function () {
     html_content += '</div>';
 
     html_content += '<div class="col pt-3 text-right">';
-    html_content += '<h5 id="trial-counter-center">Tower '  + window.currTrialNum + ' of ' + window.totalLearnTrials + '</h5>';
+    html_content += '<h5 id="trial-counter-center">Tower '  + window.currTrialNum + ' of ' + window.totalEncodeTrials + '</h5>';
     html_content += '<button id="reset-button" type="button" class="btn btn-primary">Reset</button>';
     html_content += '</div>';
 
@@ -175,38 +178,49 @@ jsPsych.plugins["block-tower-building-undo"] = (function () {
 
     trial.finished = false;
 
+    let handleUndo = function (blockData) {
+
+      console.log('undo handled');
+      console.log('undo from:', trial.trialNum);
+
+      let timeNow = Date.now();
+      trial.nBlocksPlaced -= 1;
+
+      trial.dataForwarder(
+        _.extend(
+          {},
+          blockData,
+          {
+            absolute_time: timeNow,
+            datatype: 'block_undo_placement',
+            relative_time: timeNow - trial.trialStartTime
+          })
+      );
+    };
+    undoredoManager.addEventListener("undo", handleUndo);
+    
+    let handleRedo = function (blockData) {
+
+      let timeNow = Date.now();
+      trial.nBlocksPlaced += 1;
+
+      trial.dataForwarder(
+        _.extend(
+          {},
+          blockData,
+          {
+            absolute_time: timeNow,
+            datatype: 'block_redo_placement',
+            relative_time: timeNow - trial.trialStartTime
+          })
+      );
+    };
+
+    undoredoManager.addEventListener("redo", handleRedo);
 
     if (trial.stimulus !== null) {
 
       trial.trialStartTime = Date.now();
-
-      undoredoManager.addEventListener("undo", (blockData) => {
-        trial.nBlocksPlaced -= 1;
-        // nBlocksPlacedInStep -= 1;
-        trial.dataForwarder(
-          _.extend(
-            {},
-            blockData,
-            {
-              datatype: 'block_undo_placement',
-              rt: Date.now() - trial.trialStartTime
-            })
-        );
-      });
-  
-      undoredoManager.addEventListener("redo", (blockData) => {
-        trial.nBlocksPlaced += 1;
-        // nBlocksPlacedInStep += 1;
-        trial.dataForwarder(
-          _.extend(
-            {},
-            blockData,
-            {
-              datatype: 'block_redo_placement',
-              rt: Date.now() - trial.trialStartTime
-            })
-        );
-      });
 
       trial.nBlocksPlaced = 0;
 
@@ -268,7 +282,10 @@ jsPsych.plugins["block-tower-building-undo"] = (function () {
 
     function endTrial(trial_data) { // called by block_widget when trial ends
 
+      $(document).off("keydown", controlHandler);
       undoredoManager.redostack = [];
+      undoredoManager.removeEventListener("undo", handleUndo);
+      undoredoManager.removeEventListener("redo", handleRedo);
 
       blockUniverse.disabledBlockPlacement = true;
 
@@ -338,13 +355,16 @@ jsPsych.plugins["block-tower-building-undo"] = (function () {
 
     function resetSender(reset_data) { // called by block_widget when a block is placed
 
+      let timeNow = Date.now();
+
       if (!trial.finished){
         curr_data = _.extend(
           reset_data, 
           trial.towerDetails, 
           {
+            absolute_time: timeNow,
             trial_start_time: trial.trialStartTime,
-            relative_time: Date.now() - trial.trialStartTime,
+            relative_time: timeNow - trial.trialStartTime,
             datatype: 'reset',
             stimulus: trial.stimulus,
             condition: trial.condition,

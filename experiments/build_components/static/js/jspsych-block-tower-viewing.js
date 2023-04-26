@@ -107,6 +107,7 @@ jsPsych.plugins["block-tower-viewing"] = (function () {
   plugin.trial = function (display_element, trial) {
 
     window.currTrialNum += 1;
+    // console.log('trial num', window.currTrialNum);
 
     display_element.innerHTML = "";
 
@@ -125,7 +126,7 @@ jsPsych.plugins["block-tower-viewing"] = (function () {
     html_content += '</div>';
 
     html_content += '<div class="col pt-3 text-right">';
-    html_content += '<h5 id="trial-counter-center">Tower ' + window.currTrialNum + ' of ' + window.totalLearnTrials +'</h5>';
+    html_content += '<h5 id="trial-counter-center">Tower ' + window.currTrialNum + ' of ' + window.totalEncodeTrials +'</h5>';
     // html_content += '<button id="reset-button" type="button" class="btn btn-primary">Reset</button>';
     html_content += '</div>';
 

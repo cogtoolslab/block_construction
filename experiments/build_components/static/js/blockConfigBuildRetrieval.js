@@ -66,9 +66,10 @@ config.showStimMenu = false;
 config.displayBuiltInStim = false;
 // config.stimCanvasWidth = config.canvasWidth; 
 // config.stimCanvasHeight = config.canvasHeight;
-config.stimCanvasWidth = 2000;
-config.stimCanvasHeight = 400;
+
+config.stimCanvasWidth = config.canvasWidth; // in case we want canvases to be different sizes
+config.stimCanvasHeight = config.canvasHeight;
 config.envCanvasWidth = config.canvasWidth;
 config.envCanvasHeight = config.canvasHeight;
-config.stimX = 300;
-config.stimY = config.stimCanvasHeight / 3;
+config.stimX = config.stimCanvasWidth / 2;
+config.stimY = config.stimCanvasHeight / 2;

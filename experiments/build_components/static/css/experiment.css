@@ -178,13 +178,28 @@ div.submitted-towers{
     justify-content: space-around;
 }
 
+.button-div {
+    /* display: grid; */
+    margin-bottom: 40px;
+}
+
+button#undo-button, button#redo-button {
+    padding-top: 12px;
+}
+
+.btn-primary.disabled, .btn-primary:disabled {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #000000;
+}
+
 .col.button-col {
     display: flex;
     flex-direction: column-reverse;
     justify-content: flex-start;
     padding-left: 0px;
     background-color: #FFD819;
-    max-width: 220px;;
+    /* max-width: 220px; */
 }
 
 div#tower-gallery{
@@ -198,8 +213,10 @@ p#gallery-title{
 }
 
 .button-col .btn {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+    margin-right: 10px;
     max-width: 130px;
+    float: left;
 }
 
 #zoom-message p{
@@ -343,6 +360,12 @@ h5#trial-counter-center {
     /* 2x margin */
 }
 
+.env-flex{
+    display: flex;
+    flex-direction: column-reverse;
+    padding-bottom: 10px;
+}
+
 .monochrome#top-stimulus{
     object-position: 0px 0px;
     transform: translate(0px, -150px);
@@ -387,14 +410,15 @@ h5#trial-counter-center {
 } */
 
 .jspsych-content p {
-    max-width: 900px;
     margin-top: 20px;
     margin-bottom: auto;
+    max-width: 900px;
 }
 
-#build-recall-prompt{
+.build-recall-prompt{
     text-align: left;
     font-size: medium;
+    width: 450px;
 };
 
 

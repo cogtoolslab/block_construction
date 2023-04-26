@@ -117,8 +117,8 @@ jsPsych.plugins["block-tower-building"] = (function () {
     html_content += '</div>';
 
     html_content += '<div class="col pt-3 text-right">';
-    html_content += '<h5 id="trial-counter-center">Tower '  + window.currTrialNum + ' of ' + window.totalLearnTrials + '</h5>';
-    html_content += '<button id="reset-button" type="button" class="btn btn-primary">Reset</button>';
+    html_content += '<h5 id="trial-counter-center">Tower '  + window.currTrialNum + ' of ' + window.totalEncodeTrials + '</h5>';// Changed from totalLearnTrials
+    html_content += '<button id="reset-button" type="button" class="btn btn-warning">Reset</button>';
     html_content += '</div>';
 
     html_content += "</div>";

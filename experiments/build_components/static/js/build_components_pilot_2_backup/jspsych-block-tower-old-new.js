@@ -211,7 +211,7 @@ jsPsych.plugins["block-tower-old-new"] = (function () {
       $('#old-text').addClass(old_side+"-emoji-text");
 
 
-      var end_trial = function () {
+      var endTrial = function () {
 
         // kill any remaining setTimeout handlers
         jsPsych.pluginAPI.clearAllTimeouts();
@@ -245,7 +245,7 @@ jsPsych.plugins["block-tower-old-new"] = (function () {
         }, trial.iti);
       };
 
-      var after_response = function (response_info) {
+      var afterResponse = function (response_info) {
   
         // only record the first response
         if ((response.key == null)) {
@@ -263,13 +263,13 @@ jsPsych.plugins["block-tower-old-new"] = (function () {
         // document.removeEventListener('keydown', incrementKeyPresses);
   
         if (trial.response_ends_trial) {
-          setTimeout(end_trial, 
+          setTimeout(endTrial, 
             100);
         }
       };
 
       var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
-        callback_function: after_response,
+        callback_function: afterResponse,
         valid_responses: trial.choices,
         rt_method: 'performance',
         persist: false,
