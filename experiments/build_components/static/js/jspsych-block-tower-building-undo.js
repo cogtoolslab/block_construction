@@ -168,13 +168,18 @@ jsPsych.plugins["block-tower-building-undo"] = (function () {
 
     html_content += '<div class="col pt-3 text-right">';
     html_content += '<h5 id="trial-counter-center">Tower '  + window.currTrialNum + ' of ' + window.totalEncodeTrials + '</h5>';
+    html_content += '<div class="button-div-row">';
+    html_content += '<button id="undo-button" type="button" title="undo" class="btn btn-light">↩</button>';
+    html_content += '<button id="redo-button" type="button" title="redo" class="btn btn-light">↪</button>';
     html_content += '<button id="reset-button" type="button" class="btn btn-primary">Reset</button>';
+    html_content += '</div>'
     html_content += '</div>';
 
     html_content += "</div>";
     html_content += '<p>Use ctrl/cmd + minus-sign (-) if windows do not fit on the screen at the same time.</p>';
 
     display_element.innerHTML = html_content;
+    document.getElementById("reset-button").disabled = false;
 
     trial.finished = false;
 
@@ -254,6 +259,14 @@ jsPsych.plugins["block-tower-building-undo"] = (function () {
         resetBuilding();
       });
 
+      $("#undo-button").click(() => {
+        undoredoManager.undo();
+      });
+
+      $("#redo-button").click(() => {
+        undoredoManager.redo();
+      });
+
       resetBuilding = function () {
         undoredoManager.redostack = [];
         let nBlocksWhenReset = trial.nBlocksPlaced;
@@ -286,6 +299,7 @@ jsPsych.plugins["block-tower-building-undo"] = (function () {
       undoredoManager.redostack = [];
       undoredoManager.removeEventListener("undo", handleUndo);
       undoredoManager.removeEventListener("redo", handleRedo);
+      document.getElementById("reset-button").disabled = true;
 
       blockUniverse.disabledBlockPlacement = true;
 

@@ -58,3 +58,9 @@ Plugins:
   - stimuli in: `build_components_6_towers` collection
   - assignments stored in: `df_build_components_6_tower_assignments.csv`
   - participants can submit up to 6 towers (number of target towers)
+
+
+## build_components_build_recall_prolific_pilot_6_towers_2_rep
+- Same as above but 2 repetitions of each encoding trial
+  - Added in rep functionality to experimentSetup
+  - 
