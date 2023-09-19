@@ -50,11 +50,12 @@ function setupExperiment() {
                 sendMetadata(metadata);
             }, 500);
 
-            // setupLearnPhase(trialList, trialList => {
+            setupLearnPhase(trialList, trialList => {
                 setupDecodePhase(trialList, trialList => {
                     setupOtherTrials(trialList);
+                    console.log(trialList);
                 });
-            // });
+            });
         });
     };
 
@@ -67,7 +68,7 @@ function setupExperiment() {
         // find non-foil trials
         encodeTrialMetadata = _.filter(metadata.trials, (trial) => trial['condition'] != 'foil');
         
-        window.totalEncodeTrials = encodeTrialMetadata.length;
+        window.totalEncodeTrials = encodeTrialMetadata.length * (expConfig.experimentParameters.nLearningReps ? expConfig.experimentParameters.nLearningReps : 1);
 
         // console.log(encodeTrialMetadata);
         
@@ -76,18 +77,30 @@ function setupExperiment() {
             return metadatumToLearningTrial(trialMetadatum)
         });
 
-        // randomize order learning trials
-        // TODO: checks on randomization
-        // encodeTrials = _.shuffle(encodeTrials).slice(0, 6); // display first 6 learn trials
-        encodeTrials = _.shuffle(encodeTrials);
+        nLearningReps = expConfig.experimentParameters.nLearningReps ? expConfig.experimentParameters.nLearningReps : 1;
 
-        encodeTrials = psuedoRandomizeTrials(encodeTrials,
-            (ts) => { return (longestSubsequence(_.map(ts, ( t ) => {return t['condition']})) <= 3)});
+        let reps = [];
+        do {
+            reps = [];
 
-        encodeTrials.forEach(trial => {
-            trialNumCounter += 1;
-            trial['trialNum'] = trialNumCounter;
-        });
+            for (let rep = 1; rep <= nLearningReps; rep++) {
+                // randomize order learning trials
+                // TODO: checks on randomization
+                // encodeTrials = _.shuffle(encodeTrials).slice(0, 6); // display first 6 learn trials
+                let localEncodeTrials = _.cloneDeep(encodeTrials);
+                localEncodeTrials = _.shuffle(localEncodeTrials);
+
+                localEncodeTrials = psuedoRandomizeTrials(localEncodeTrials,
+                    (ts) => { return (longestSubsequence(_.map(ts, ( t ) => {return t['condition']})) <= 2)}); // no sequences of 2 or more of same condition 
+
+                localEncodeTrials.forEach(trial => {
+                    trialNumCounter += 1;
+                    trial['trialNum'] = trialNumCounter;
+                    trial['rep'] = rep;
+                    reps.push(trial);
+                });
+            };
+        } while(longestSubsequence(_.map(reps, ( t ) => {return t['condition']})) > 2); // checks that no streaks longer than 2 across entire learn sequence
 
         // add phase instructions
         learnPhaseInstructions = makeInstructions(expConfig['learnPhaseInstructions']);
@@ -95,7 +108,7 @@ function setupExperiment() {
         // append learning trials to (empty) trialList
         trialList = _.concat(trialList,
                              learnPhaseInstructions,
-                             encodeTrials);
+                             reps);
 
         // forward trial list to next setup function
         callback(trialList);

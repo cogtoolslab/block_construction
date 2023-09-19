@@ -193,6 +193,10 @@ button#undo-button, button#redo-button {
     border-color: #000000;
 }
 
+.button-div-row button {
+    margin-right: 20px;
+}
+
 .col.button-col {
     display: flex;
     flex-direction: column-reverse;

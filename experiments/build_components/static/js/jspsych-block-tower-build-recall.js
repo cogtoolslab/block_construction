@@ -61,12 +61,17 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         default: 0,
         description: 'Externally assigned trial number.'
       },
+      maxTowerSubmissions: { type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Max tower submissions',
+        default: 6,
+        description: 'Limit on number of towers to be submitted.'
+      }
     },
   };
 
   plugin.trial = function (display_element, trial) {
 
-    config.stimCanvasWidth = 2800;
+    config.stimCanvasWidth = 2400;
     config.stimCanvasHeight = 400;
     config.envCanvasWidth = config.canvasWidth;
     config.envCanvasHeight = config.canvasHeight;
@@ -142,7 +147,7 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
 
     // submitted towers
     html_content += '<div class="row env-row" id="tower-gallery">';
-    html_content += '<p id="gallery-title">saved towers</p>';
+    html_content += '<p id="gallery-title">submitted towers (0 of '+trial.maxTowerSubmissions+ ')</p>';
     html_content += '<div class="col env-div submitted-towers" id="stimulus-canvas"></div>';
     html_content += '</div>';
 
@@ -156,14 +161,14 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
     html_content += '<div class="button-div">';
     html_content += '<button id="undo-button" type="button" title="undo" class="btn btn-light">↩</button>';
     html_content += '<button id="redo-button" type="button" title="redo" class="btn btn-light">↪</button>';
-    html_content += '<button id="submit-button" type="button"  class="btn btn-primary" style="float:right;" disabled=true>Submit</button>';
+    html_content += '<button id="submit-button" type="button" class="btn btn-primary" style="float:right;" disabled=true>Submit</button>';
     html_content += '</div>'
     html_content += '<button id="reset-button" type="button" class="btn btn-warning">Reset</button>';
 
 
     // html_content += '<p class="build-recall-prompt"></p>';
     // html_content += '<p id="block-counter">' + trial.nBlocksPlaced + ' of ' + trial.nBlocksMax + ' blocks placed</p>';
-    html_content += '<p class="build-recall-prompt">Build all the towers you remember from the previous part of the experiment.</br></br>Press Submit to save a tower that you are happy with.</br>Press Reset to clear the blocks in the building window.</br>Press Exit when you can\'t remember any more towers.</br></br> You can undo and redo blocks with white buttons.</p>';
+    html_content += '<p class="build-recall-prompt">Build all the towers you remember from the previous part of the experiment. Each has tower has 8 blocks.</br></br>You can undo and redo blocks with the white arrow buttons, or press Reset to start building from scratch.</br></br>Once you have placed 8 blocks, press Submit to save your tower. You can submit up to 6 towers.</br>Press Exit when you can\'t remember any more towers.</p>';
 
     html_content += '</div>';
 
@@ -454,6 +459,8 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         // console.log('newTower.alignedTowerBlocks', newTower.alignedTowerBlocks);
         
         trial.submittedTowers.push(newTower);
+
+        document.getElementById("gallery-title").innerText = 'submitted towers (' + trial.submittedTowers.length + ' of '+trial.maxTowerSubmissions+ ')';
         // console.log('tower submitted:', newTower);
         // console.log('submittedTowers:', trial.submittedTowers);
         // TODO: display submitted tower (not here)
@@ -510,6 +517,10 @@ jsPsych.plugins["block-tower-build-recall"] = (function () {
         document.getElementById('block-counter').innerText = '' + trial.nBlocksPlaced + ' of ' + trial.nBlocksMax + ' blocks placed';
         document.getElementById("submit-button").disabled = true;
         blockUniverse.disabledBlockPlacement = false;
+
+        if(trial.submittedTowers.length >= trial.maxTowerSubmissions){
+          endTrial();
+        };
 
       };
 
