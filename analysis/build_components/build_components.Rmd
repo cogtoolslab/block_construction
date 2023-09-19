@@ -21,12 +21,12 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Import data
 
 ```{r import}
-df.recall <- read_csv('../../results/build_components/csv/df_recall_build_components_pilot_2.csv')
+df.recog <- read_csv('../../results/build_components/csv/df_recall_build_components_pilot_2.csv')
 
-df.recall <- df.recall %>%
+df.recog <- df.recog %>%
   mutate(respond_old = 1*(response_meaning == 'old'))
 
-df.recall
+df.recog
 
 df.dprimes <- read_csv('../../results/build_components/csv/df_condition_measures_build_components_pilot_2.csv')
 
@@ -41,22 +41,36 @@ Intercept shows that ppts do recognize towers they have previously experienced.
 Slope on condition shows that participants are more likely to recognize viewed towers than built towers.
 ```{r d.prime.lmers}
 m1 <- lm(data = df.dprimes, d_prime ~ condition)
-# anova(m1)
+anova(m1)
 summary(m1)
+
+confint(m1, level = 0.95)
 ```
 
 ### By trial
 
-```{r lmers.tower}
-m1 <- glmer(data = df.recall, family = binomial, respond_old ~ novelty + (1 | gameID))
-m2 <- glmer(data = df.recall, family = binomial, respond_old ~ novelty + condition + (1 | gameID))
+```{r lmer.resp_old}
+m1 <- glmer(data = df.recog, family = binomial, respond_old ~ (1 | gameID) + (1 | tower_id))
+m2 <- glmer(data = df.recog, family = binomial, respond_old ~ condition + (1 | gameID) + (1 | tower_id))
 anova(m1, m2)
 summary(m2)
+
+# confint(m2, level = 0.95)
+
+```
+```{r lmer.resp_corr}
+m1 <- glmer(data = df.recog, family = binomial, response_correct ~ (1 | gameID)  + (1 | tower_id))
+m2 <- glmer(data = df.recog, family = binomial, response_correct ~ condition + (1 | gameID)  + (1 | tower_id))
+anova(m1, m2)
+summary(m2)
+
+# confint(m2, level = 0.95)
 ```
 
-```{r lmers}
-m1 <- glmer(data = df.recall, family = binomial, respond_old ~ novelty + (1 + novelty | gameID) + (1 | tower_id))
-# m2 <- glmer(data = df.recall, family = binomial, respond_old ~ novelty + condition + (1 | gameID))
+
+```{r lmer.resp_corr}
+m1 <- glmer(data = df.recog, family = binomial, response_correct ~ novelty + (1 + novelty | gameID) + (1 | tower_id))
+m2 <- glmer(data = df.recog, family = binomial, respond_old ~ novelty + condition + (1 + novelty | gameID) +  (1 | tower_id))
 anova(m1, m2)
 summary(m2)
 ```
