@@ -1,0 +1,193 @@
+---
+title: "build_components"
+author: "Will McCarthy"
+date: "2022-11-28"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(lme4)
+# library(lmerTest)
+library(ggthemes)
+library(performance) 
+library(see)
+library(effsize)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+dfBestMatch <- read_csv('../results/build_components/bestMatchConditionCounts.csv')
+dfBestMatch
+```
+
+Diffs in counts
+```{r}
+conditionCountDiffs <- 
+  dfBestMatch %>% 
+  group_by(gameID)  %>%
+    summarise(diff = nMatched[bestMatchCondition == 'build'] -
+                      nMatched[bestMatchCondition == 'view'], .groups = "drop")
+
+conditionCountDiffs
+```
+
+```{r}
+dfBestMatch
+```
+
+
+```{r}
+table(conditionCountDiffs$diff)
+# hist(conditionCountDiffs$diff, main = "Histogram of count diffs", xlab = "count diffs", nclass = 5)
+
+```
+
+```{r}
+# hist(conditionCountDiffs$diff, main = "Histogram of count diffs", xlab = "count diffs", nclass = 5)
+t.test(conditionCountDiffs$diff, mu = 0)
+
+```
+
+```{r}
+cohens_d <- cohen.d(conditionCountDiffs$diff)
+cohens_d
+```
+
+### T-test of diff in F1 scores
+
+Diffs in F1, dropping participant who didn't built at least one of each tower
+```{r}
+conditionF1Diffs <- 
+  dfBestMatch %>% 
+  filter(built_both) %>% 
+  group_by(gameID)  %>%
+    summarise(diff = bestMatchF1Mean[bestMatchCondition == 'build'] -
+                      bestMatchF1Mean[bestMatchCondition == 'view'], .groups = "drop")
+
+conditionF1Diffs
+```
+
+```{r}
+buildF1Filtered <-
+  dfBestMatch %>% 
+  filter(built_both, bestMatchCondition == 'build')
+
+
+viewF1Filtered <-
+  dfBestMatch %>% 
+  filter(built_both, bestMatchCondition == 'view')
+
+```
+
+Paired t-test
+```{r}
+t.test(buildF1Filtered$bestMatchF1Mean, viewF1Filtered$bestMatchF1Mean, paired=TRUE)
+```
+Cohen's d
+```{r}
+# Calculate Cohen's d
+# mean_diff <- abs(mean(buildF1Filtered$bestMatchF1Mean) - mean(viewF1Filtered$bestMatchF1Mean))
+# pooled_sd <- sqrt(((length(buildF1Filtered$bestMatchF1Mean) - 1) * var(buildF1Filtered$bestMatchF1Mean) + (length(viewF1Filtered$bestMatchF1Mean) - 1) * var(viewF1Filtered$bestMatchF1Mean)) / (length(buildF1Filtered$bestMatchF1Mean) + length(viewF1Filtered$bestMatchF1Mean) - 2))
+# cohens_d <- mean_diff / pooled_sd
+
+# oop there's a package that does the same
+cohens_d <- cohen.d(buildF1Filtered$bestMatchF1Mean, viewF1Filtered$bestMatchF1Mean)
+cohens_d
+
+```
+## Accuracy, unpaired
+```{r}
+dfRecalledTowersUnique <- read_csv('../results/build_components/dfRecalledTowersUnique.csv')
+# %>% filter(nTower<=4)
+dfRecalledTowersUnique
+```
+
+### T-test of unpaired averages in condition
+```{r}
+f1Means <-
+  dfRecalledTowersUnique %>%
+    group_by(gameID, bestMatchCondition) %>% 
+    summarise(meanF1 = mean(bestMatchF1))
+f1Means
+```
+
+```{r}
+buildF1Means <- f1Means %>% 
+  filter(bestMatchCondition == 'build')
+
+viewF1Means <- f1Means %>% 
+  filter(bestMatchCondition == 'view')
+```
+
+```{r}
+t.test(buildF1Means$meanF1, viewF1Means$meanF1)
+```
+
+### Linear models of matched condition F1 scores
+
+```{r}
+m1 <- lmer(data = dfRecalledTowersUnique, bestMatchF1 ~ (1 | gameID) + (1 | bestMatch))
+m2 <- lmer(data = dfRecalledTowersUnique, bestMatchF1 ~ bestMatchCondition + (1 | gameID) + (1 | bestMatch))
+# m3 <- lmer(data = dfRecalledTowersUnique, bestMatchF1 ~ bestMatchCondition + nTower + (1 | gameID) + (1 | bestMatch))
+anova(m1, m2)
+summary(m2)
+```
+
+
+```{r}
+m1 <- lmer(data = dfRecalledTowersUnique, bestMatchF1 ~ (1 | gameID) + (1 | bestMatch))
+m2 <- lmer(data = dfRecalledTowersUnique, bestMatchF1 ~ bestMatchCondition + (1 | gameID) + (1 | bestMatch))
+m3 <- lmer(data = dfRecalledTowersUnique, bestMatchF1 ~ bestMatchCondition + nTower + (1 | gameID) + (1 | bestMatch))
+m4 <- lmer(data = dfRecalledTowersUnique, bestMatchF1 ~ bestMatchCondition * nTower + (1 | gameID) + (1 | bestMatch))
+anova(m1, m2, m3, m4)
+summary(m3)
+
+confint(m2, level = 0.95)
+```
+## Try out some models predicting whether or not each stimulus was recalled.
+Now we know which of the learn stims was recalled (at various thresholds of accuracy).
+We can ask: does condition affect whether the stim was recalled.
+
+The good thing about these models is that we can control for stimulus, which wasn't well balanced between conditions.
+
+```{r}
+# Read in dataframe
+df_learn_unique_paired <- read_csv('../results/build_components/df_learn_unique_paired.csv')
+df_learn_unique_paired
+```
+First, does condition have an effect on whether a stimulus was recalled perfectly? (controlling for participant and stims)?
+It looks like it does, and in the direction consistent with our other findings: viewed stims are more likely to be recalled. 
+```{r}
+m1 <- glmer(data = df_learn_unique_paired, perfectMatch ~ condition + (1 | gameID) + (1 | tower_id), family = 'binomial')
+summary(m1)
+```
+We can soften the constraint that the reconstruction be perfect. This generally leads to weaker effects.
+```{r}
+m1 <- glmer(data = df_learn_unique_paired, matched_meeting_threshold_0.85 ~ condition + (1 | gameID) + (1 | tower_id), family = 'binomial')
+summary(m1)
+```
+When we allow any match, it disappears.
+```{r}
+m1 <- glmer(data = df_learn_unique_paired, matched_to_any ~ condition + (1 | gameID) + (1 | tower_id), family = 'binomial')
+summary(m1)
+```
+
+# the random effect for stimulus makes a significant difference to the model
+```{r}
+m1 <- glmer(data = df_learn_unique_paired, perfectMatch ~ condition + (1 | gameID), family = 'binomial')
+m2 <- glmer(data = df_learn_unique_paired, perfectMatch ~ condition + (1 | gameID) + (1 | tower_id), family = 'binomial')
+anova(m1, m2)
+summary(m2)
+```
+
+# the random effect for participant also makes a significant difference to the model
+```{r}
+m1 <- glmer(data = df_learn_unique_paired, perfectMatch ~ condition + (1 | tower_id), family = 'binomial')
+m2 <- glmer(data = df_learn_unique_paired, perfectMatch ~ condition + (1 | tower_id) + (1 | gameID), family = 'binomial')
+anova(m1, m2)
+summary(m2)
+```
