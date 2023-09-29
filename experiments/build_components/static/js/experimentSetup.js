@@ -1,5 +1,5 @@
 /** experimentSetup.js | Credit : WPM
- * Sets up experiments from a config. Serving tihs expects a config with the following URL parameters:
+ * Sets up experiments from a config. Serving this expects a config with the following URL parameters:
   - configId: the name of the config file for the experiment.
   - experimentGroup: the name of the subdirectory containing the configs.
   - batchIndex: which batch of data to use when shuffling any stimuli.
@@ -65,17 +65,31 @@ function setupExperiment() {
          * Towers from all conditions except foil should be converted into trials
          */
 
-        // find non-foil trials
+        // We're using the same trial metadata that was used for the oldnew study, which included foils which we don't need.
+        // Filter out the foils
         encodeTrialMetadata = _.filter(metadata.trials, (trial) => trial['condition'] != 'foil');
+
+        if(expConfig.experimentParameters.towerColors) {
+            let shuffledTowerColors = _.shuffle(_.cloneDeep(expConfig.experimentParameters.towerColors));
+            for (let i = 0; i < encodeTrialMetadata.length; i++) {
+                encodeTrialMetadata[i]['towerColor'] = shuffledTowerColors[i];   
+            }
+        };
         
+        // If the number of repetitions is specified in the metadata, repeat that many times. Otherwise just do a single pass of the metadata trials
         window.totalEncodeTrials = encodeTrialMetadata.length * (expConfig.experimentParameters.nLearningReps ? expConfig.experimentParameters.nLearningReps : 1);
 
-        // console.log(encodeTrialMetadata);
+        console.log('trial metadata after filtering:', encodeTrialMetadata);
         
+
         // map metadatumToTrial
-        encodeTrials = _.map(encodeTrialMetadata, trialMetadatum => {
-            return metadatumToLearningTrial(trialMetadatum)
+        
+        encodeTrials = _.map(encodeTrialMetadata, trialMetadatum => {    
+            return metadatumToLearningTrial(trialMetadatum);
         });
+
+        console.log('encodeTrials:', encodeTrials);
+
 
         nLearningReps = expConfig.experimentParameters.nLearningReps ? expConfig.experimentParameters.nLearningReps : 1;
 
@@ -134,7 +148,8 @@ function setupExperiment() {
             dataForwarder: () => forwardDataToMongo,
             stimulus: {'blocks': metadatum.stim_tall},
             offset: 4,
-            iti: expConfig.experimentParameters.learningITI
+            iti: expConfig.experimentParameters.learningITI,
+            towerColor: metadatum.towerColor
         }, expConfig["taskParameters"][trialType]);
 
         return(trial);

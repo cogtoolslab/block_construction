@@ -31,11 +31,6 @@ Plugins:
 - Ran x ppts
 
 
-## check for newer iteration names!
-
-
-
-
 # Build Retrieval/ "build_recall" version
 
 - New config: experimentConfigBuildRetrieval
@@ -63,4 +58,10 @@ Plugins:
 ## build_components_build_recall_prolific_pilot_6_towers_2_rep
 - Same as above but 2 repetitions of each encoding trial
   - Added in rep functionality to experimentSetup
-  - 
+- N=50 (50 completed)
+
+
+## build_components_build_recall_6_towers_3_rep_color
+- 3 reps
+- Each stimulus is assigned a unique color
+- 

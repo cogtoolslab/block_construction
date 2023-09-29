@@ -92,6 +92,11 @@ jsPsych.plugins["block-tower-building-undo"] = (function () {
         type: jsPsych.plugins.parameterType.OBJECT,
         pretty_name: "Additional tower informatiom to append to data",
         default: {},
+      },
+      towerColor: {
+        type: jsPsych.plugins.parameterType.OBJECT,
+        pretty_name: "Color to display blocks",
+        default: null,
       }
     },
   };
@@ -243,7 +248,8 @@ jsPsych.plugins["block-tower-building-undo"] = (function () {
         offset: trial.offset,
         blockSender: blockSender,
         resetSender: resetSender,
-        endBuildingTrial: endTrial
+        endBuildingTrial: endTrial,
+        towerColor: trial.towerColor // overrides config if not null
       };
 
       trial.constructionTrial = constructionTrial;
