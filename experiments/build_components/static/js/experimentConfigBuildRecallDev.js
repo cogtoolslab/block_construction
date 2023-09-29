@@ -5,7 +5,7 @@ expConfig = {
     "stimColName": "build_components_6_towers", // when stims made, replace with "build_components_6_towers_color"
     "iterationName": "build_components_build_recall_6_towers_3_rep_color_dev",
     "completionCode": "CWRO95FQ",
-    "devMode": false,
+    "devMode": true,
     "experimentParameters": { // parameters for the experiment.
       "learningITI": 1000,
       "nLearningReps": 3,

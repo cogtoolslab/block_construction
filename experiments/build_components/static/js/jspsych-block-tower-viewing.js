@@ -100,6 +100,11 @@ jsPsych.plugins["block-tower-viewing"] = (function () {
         pretty_name: 'Trial Number',
         default: 0,
         description: 'Externally assigned trial number.'
+      },
+      towerColor: {
+        type: jsPsych.plugins.parameterType.OBJECT,
+        pretty_name: "Color to display blocks",
+        default: null,
       }
     },
   };
@@ -161,6 +166,7 @@ jsPsych.plugins["block-tower-viewing"] = (function () {
         nResets: -1, // start minus one as reset env at beginning of new trial
         //nBlocksMax: trial.nBlocksMax,
         offset: trial.offset,
+        towerColor: trial.towerColor // overrides config if not null
         // blockSender: blockSender,
         // endBuildingTrial: endTrial
       };
