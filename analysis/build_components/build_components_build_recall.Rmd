@@ -165,6 +165,7 @@ It looks like it does, and in the direction consistent with our other findings: 
 m1 <- glmer(data = df_learn_unique_paired, perfectMatch ~ condition + (1 | gameID) + (1 | tower_id), family = 'binomial')
 summary(m1)
 ```
+
 We can soften the constraint that the reconstruction be perfect. This generally leads to weaker effects.
 ```{r}
 m1 <- glmer(data = df_learn_unique_paired, matched_meeting_threshold_0.85 ~ condition + (1 | gameID) + (1 | tower_id), family = 'binomial')
@@ -176,7 +177,10 @@ m1 <- glmer(data = df_learn_unique_paired, matched_to_any ~ condition + (1 | gam
 summary(m1)
 ```
 
-# the random effect for stimulus makes a significant difference to the model
+# Model comaparison
+I'd like to run a model comparison to see whether adding condition is really better, but the models fail to converge with both participant and stimulus as random effects. Here I explore the effect of both.
+
+## the random effect for stimulus makes a significant difference to the model
 ```{r}
 m1 <- glmer(data = df_learn_unique_paired, perfectMatch ~ condition + (1 | gameID), family = 'binomial')
 m2 <- glmer(data = df_learn_unique_paired, perfectMatch ~ condition + (1 | gameID) + (1 | tower_id), family = 'binomial')
@@ -190,4 +194,15 @@ m1 <- glmer(data = df_learn_unique_paired, perfectMatch ~ condition + (1 | tower
 m2 <- glmer(data = df_learn_unique_paired, perfectMatch ~ condition + (1 | tower_id) + (1 | gameID), family = 'binomial')
 anova(m1, m2)
 summary(m2)
+```
+
+If I have to drop one random effect from the model I'd want it to be the one resulting in the highest AIC.
+I want my simple model to have the best possible chance of fitting the data. That was the one with tower_id. 
+
+The anova tells us that the model with condition is a better fit, and that condition is a significant predictor.
+```{r}
+m0 <- glmer(data = df_learn_unique_paired, perfectMatch ~ (1 | tower_id), family = 'binomial')
+m1 <- glmer(data = df_learn_unique_paired, perfectMatch ~ condition + (1 | tower_id), family = 'binomial')
+anova(m0,m1)
+summary(m1)
 ```
